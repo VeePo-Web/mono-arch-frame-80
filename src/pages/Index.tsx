@@ -61,8 +61,11 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="THE PROMISE" />
-              <h2 id="trust-heading" className="text-headline text-foreground mt-6 max-w-[18ch]">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="I" label="THE PROMISE" />
+                <span className="coord-mark hidden md:inline-flex">51.0252°N</span>
+              </div>
+              <h2 id="trust-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
                 One contractor. One relationship. A clearer path from idea to completion.
               </h2>
             </div>
@@ -100,8 +103,11 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-16 md:mb-24">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="II" label="WHAT WE BUILD" />
-              <h2 id="services-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="II" label="WHAT WE BUILD" />
+                <span className="coord-mark hidden md:inline-flex">No. 03 · Services</span>
+              </div>
+              <h2 id="services-heading" data-drift className="text-headline text-foreground mt-6 max-w-[20ch]">
                 Three services, held to one standard.
               </h2>
             </div>
@@ -182,8 +188,11 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <Eyebrow numeral="III" label="THE APPROACH" />
-              <h2 id="approach-heading" className="text-headline text-foreground mt-6">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="III" label="THE APPROACH" />
+                <span className="coord-mark hidden md:inline-flex">Field Notes</span>
+              </div>
+              <h2 id="approach-heading" data-drift className="text-headline text-foreground mt-6">
                 A path you can see from the start.
               </h2>
               <p className="mt-6 text-body text-muted-foreground max-w-md">
@@ -193,44 +202,55 @@ const Index = () => {
             </div>
 
             <div className="lg:col-span-7 lg:pl-8 relative">
-              {/* Drawing path-line — animates top→bottom */}
-              <div
-                aria-hidden="true"
-                className="absolute left-[15px] top-3 bottom-3 w-px path-line"
-                data-line-draw
-              />
-              <ol className="space-y-12 lg:space-y-14">
-                {[
-                  { n: "01", title: "Conversation", body: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan." },
-                  { n: "02", title: "Planning", body: "Scope, materials, design considerations, and the practical realities of working on a rural property — clarified before we lift a tool." },
-                  { n: "03", title: "Hands-On Completion", body: "The work is completed with attention to fit, finish, durability, and the small details that decide whether a renovation reads as finished." },
-                ].map((step, i) => (
-                  <li
-                    key={step.n}
-                    className="group/disc relative pl-12"
-                    data-reveal
-                    style={{ ["--reveal-delay" as string]: `${300 + i * 220}ms` }}
-                  >
-                    <span className="absolute left-0 top-1 numeral-disc" aria-hidden="true">
-                      {step.n}
-                    </span>
-                    <h3 className="text-title text-foreground">{step.title}</h3>
-                    <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">
-                      {step.body}
-                    </p>
-                  </li>
-                ))}
-                {/* Finish marker — fades in after step 03 */}
-                <li
-                  className="relative pl-12"
-                  data-reveal
-                  style={{ ["--reveal-delay" as string]: "1100ms" }}
+              {/* Surveyor's frame — corner brackets wrap the entire field-notes block */}
+              <div className="surveyor-frame relative">
+                <span className="surveyor-tr" aria-hidden="true" />
+                <span className="surveyor-bl" aria-hidden="true" />
+
+                {/* Drawing path-line — animates top→bottom, dashed for surveyor read */}
+                <div
                   aria-hidden="true"
-                >
-                  <span className="absolute left-[10px] top-2 h-[10px] w-[10px] rounded-full bg-evergreen shadow-[0_0_0_4px_hsl(var(--evergreen)/0.12)]" />
-                  <p className="text-minimal text-evergreen">Done.</p>
-                </li>
-              </ol>
+                  className="absolute left-[15px] top-3 bottom-3 w-px path-line"
+                  data-line-draw
+                  style={{
+                    backgroundImage:
+                      "repeating-linear-gradient(to bottom, hsl(var(--evergreen) / 0.45) 0 3px, transparent 3px 7px)",
+                    background: "transparent",
+                  }}
+                />
+                <ol className="space-y-12 lg:space-y-14">
+                  {[
+                    { n: "01", title: "Conversation", body: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan." },
+                    { n: "02", title: "Planning", body: "Scope, materials, design considerations, and the practical realities of working on a rural property — clarified before we lift a tool." },
+                    { n: "03", title: "Hands-On Completion", body: "The work is completed with attention to fit, finish, durability, and the small details that decide whether a renovation reads as finished." },
+                  ].map((step, i) => (
+                    <li
+                      key={step.n}
+                      className="group/disc relative pl-12"
+                      data-reveal
+                      style={{ ["--reveal-delay" as string]: `${300 + i * 220}ms` }}
+                    >
+                      <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey" aria-hidden="true">
+                        {step.n}
+                      </span>
+                      <h3 className="text-title text-foreground">{step.title}</h3>
+                      <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">
+                        {step.body}
+                      </p>
+                    </li>
+                  ))}
+                  {/* Finish marker — fades in after step 03 */}
+                  <li
+                    className="relative pl-12"
+                    data-reveal
+                    style={{ ["--reveal-delay" as string]: "1100ms" }}
+                    aria-hidden="true"
+                  >
+                    <span className="absolute left-[10px] top-2 h-[10px] w-[10px] rounded-full bg-evergreen shadow-[0_0_0_4px_hsl(var(--evergreen)/0.12)]" />
+                    <p className="text-minimal text-evergreen">Done.</p>
+                  </li>
+                </ol>
+              </div>
             </div>
           </div>
         </Container>
@@ -246,8 +266,11 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-16 md:mb-24">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="IV" label="THE WORK" />
-              <h2 id="work-heading" className="text-headline text-foreground mt-6 max-w-[18ch]">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="IV" label="THE WORK" />
+                <span className="coord-mark hidden md:inline-flex">Plates I–III</span>
+              </div>
+              <h2 id="work-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
                 Real properties. Real outcomes. Worth a closer look.
               </h2>
             </div>
@@ -290,10 +313,13 @@ const Index = () => {
                       </span>
                     </div>
 
-                    {/* Caption hairline + category mark — figure-caption pattern */}
+                    {/* Figure footnote — Pentagram-style figmark + caption + region */}
                     <div className="px-8 lg:px-9 pt-6">
-                      <span className="block h-px w-10 bg-evergreen/35 mb-3" aria-hidden="true" />
-                      <p className="text-minimal text-evergreen">{p.category.toUpperCase()}</p>
+                      <div className="figure-footnote">
+                        <span className="footnote-figmark">Fig. {["i", "ii", "iii"][i]}.</span>
+                        <span className="flex-1">{p.category.toUpperCase()}</span>
+                        <span className="text-evergreen/55 tabular-nums normal-case tracking-[0.18em]">{p.area}</span>
+                      </div>
                     </div>
 
                     <div className="p-8 lg:p-9 pt-5 flex flex-col flex-1">
@@ -332,8 +358,11 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <Eyebrow numeral="V" label="WHERE WE WORK" />
-              <h2 id="areas-heading" className="text-headline text-foreground mt-6">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="V" label="WHERE WE WORK" />
+                <span className="coord-mark hidden md:inline-flex">4 Localities</span>
+              </div>
+              <h2 id="areas-heading" data-drift className="text-headline text-foreground mt-6">
                 Local, by choice.
               </h2>
               <p className="mt-6 text-body text-muted-foreground max-w-md">
@@ -418,9 +447,13 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <Eyebrow tone="light" numeral="VI" label="NEXT STEP" />
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow tone="light" numeral="VI" label="NEXT STEP" />
+                <span className="coord-mark coord-mark-light hidden md:inline-flex">Resolution</span>
+              </div>
               <h2
                 id="final-cta-heading"
+                data-drift
                 className="text-headline text-background mt-6 max-w-[18ch]"
               >
                 Ready to talk through your next property improvement?
