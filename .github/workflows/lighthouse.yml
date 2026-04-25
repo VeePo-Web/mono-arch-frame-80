@@ -1,0 +1,93 @@
+name: Lighthouse CI
+
+# Two jobs:
+#   - lighthouse-build: runs on every push/PR against the freshly built dist/
+#     served locally. This is the regression gate — its absolute numbers are
+#     pessimistic (no Cloudflare edge, no real CDN), but if it passes here,
+#     production will be better.
+#   - lighthouse-prod: runs nightly + on demand against the live production
+#     URL (set the PROD_URL repo variable). These are the real numbers.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # Nightly at 07:00 UTC (~midnight Mountain Time)
+    - cron: "0 7 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse-build:
+    if: github.event_name != 'schedule'
+    name: Lighthouse (built dist)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run build
+
+      - name: Serve dist & run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://localhost:4173/
+            http://localhost:4173/services
+            http://localhost:4173/work
+            http://localhost:4173/about
+            http://localhost:4173/contact
+          configPath: ./.lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          runs: 3
+          # SPA: serve index.html for any route. http-server's --proxy fallback
+          # to itself does this; -s = silent.
+          serverCommand: npx --yes http-server dist -p 4173 -s --proxy http://localhost:4173?
+          serverBaseUrl: http://localhost:4173
+
+  lighthouse-prod:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    name: Lighthouse (production URL)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve target URL
+        id: target
+        run: |
+          URL="${{ vars.PROD_URL }}"
+          if [ -z "$URL" ]; then
+            echo "PROD_URL repo variable is not set — skipping prod audit." >> "$GITHUB_STEP_SUMMARY"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "url=$URL" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Lighthouse against production
+        if: steps.target.outputs.skip == 'false'
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ steps.target.outputs.url }}/
+            ${{ steps.target.outputs.url }}/services
+            ${{ steps.target.outputs.url }}/work
+            ${{ steps.target.outputs.url }}/about
+            ${{ steps.target.outputs.url }}/contact
+          configPath: ./.lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          runs: 3
