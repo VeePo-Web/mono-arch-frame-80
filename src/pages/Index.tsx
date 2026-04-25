@@ -154,11 +154,8 @@ const Index = () => {
                 aria-label={`${s.title} — ${s.promise}`}
               >
                 <PremiumCard featured={i === 0} className="h-full">
-                  {/* Monogram watermark — bottom-right, brand anchor */}
-                  <span className="card-monogram" aria-hidden="true">HC</span>
-
-                  <div className="relative p-8 lg:p-10 flex flex-col h-full">
-                    <div className="flex items-center gap-4 mb-9">
+                  <div className="relative p-9 lg:p-11 flex flex-col h-full">
+                    <div className="flex items-center gap-4 mb-10">
                       <span className="numeral-disc">{s.numeral}</span>
                       <span className="h-px w-8 bg-evergreen/30 group-hover:w-20 transition-all duration-700 ease-weighted" />
                     </div>
@@ -167,20 +164,11 @@ const Index = () => {
                       {s.title}
                     </h3>
 
-                    <p className="mt-3 text-subhead text-foreground/70 text-[1.05rem]">
-                      {s.promise}
-                    </p>
-
-                    <p className="mt-5 text-body text-muted-foreground text-[0.95rem] leading-relaxed flex-1">
+                    <p className="mt-4 text-body text-muted-foreground text-[0.98rem] leading-relaxed flex-1">
                       {s.cardBody}
                     </p>
 
-                    {/* Micro-caption — area availability */}
-                    <p className="mt-7 text-minimal text-muted-foreground/85 leading-relaxed">
-                      Available in · Bragg Creek · Bearspaw · Rocky View · Water Valley
-                    </p>
-
-                    <div className="mt-5 inline-flex items-center gap-3 text-minimal text-evergreen">
+                    <div className="mt-8 inline-flex items-center gap-3 text-minimal text-evergreen">
                       <span>See the work</span>
                       <span className="icon-chip bg-evergreen/[0.06]">
                         <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
