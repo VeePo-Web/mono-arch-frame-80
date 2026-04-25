@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Container from "./Container";
 import logo from "@/assets/logo/haven-creek-mark.webp";
 import { services } from "@/data/services";
