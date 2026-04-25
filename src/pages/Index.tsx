@@ -103,8 +103,11 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-16 md:mb-24">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="II" label="WHAT WE BUILD" />
-              <h2 id="services-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="II" label="WHAT WE BUILD" />
+                <span className="coord-mark hidden md:inline-flex">No. 03 · Services</span>
+              </div>
+              <h2 id="services-heading" data-drift className="text-headline text-foreground mt-6 max-w-[20ch]">
                 Three services, held to one standard.
               </h2>
             </div>
