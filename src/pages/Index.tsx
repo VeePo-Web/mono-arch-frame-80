@@ -7,6 +7,7 @@ import Eyebrow from "@/components/Eyebrow";
 import Hero from "@/components/Hero";
 import PremiumCard from "@/components/PremiumCard";
 import { ProjectVignette, type VignetteCategory } from "@/components/ProjectVignette";
+import SelectedWorks from "@/components/gallery/SelectedWorks";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useReveal } from "@/hooks/useReveal";
