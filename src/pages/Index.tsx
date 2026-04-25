@@ -7,6 +7,7 @@ import Hero from "@/components/Hero";
 import PremiumCard from "@/components/PremiumCard";
 import { ProjectVignette, type VignetteCategory } from "@/components/ProjectVignette";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
+import ConsultationForm from "@/components/ConsultationForm";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useReveal } from "@/hooks/useReveal";
 import { services } from "@/data/services";
