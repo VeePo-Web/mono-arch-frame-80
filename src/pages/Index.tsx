@@ -61,8 +61,11 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="THE PROMISE" />
-              <h2 id="trust-heading" className="text-headline text-foreground mt-6 max-w-[18ch]">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="I" label="THE PROMISE" />
+                <span className="coord-mark hidden md:inline-flex">51.0252°N</span>
+              </div>
+              <h2 id="trust-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
                 One contractor. One relationship. A clearer path from idea to completion.
               </h2>
             </div>
