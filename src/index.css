@@ -457,7 +457,8 @@
       0 0 0 8px hsl(36 25% 99% / 0.08),
       var(--shadow-haptic-evergreen);
   }
-}
+
+
 
   /* ──────────────────────────────────────────────────────────────────────
      Section coordinates — top-right marginalia per section heading.
