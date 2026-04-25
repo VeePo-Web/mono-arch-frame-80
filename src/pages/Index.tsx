@@ -509,7 +509,16 @@ const Index = () => {
                       <span className="h-px flex-1 bg-foreground/10" />
                     </div>
 
-                    <ConsultationForm source="home_final_cta" />
+                    <Suspense
+                      fallback={
+                        <div
+                          aria-hidden="true"
+                          className="h-[460px] rounded-md bg-foreground/[0.03] animate-pulse"
+                        />
+                      }
+                    >
+                      <ConsultationForm source="home_final_cta" />
+                    </Suspense>
 
                     {/* Quiet escape hatch — full contact page for those who'd rather */}
                     <div className="mt-8 pt-6 border-t border-foreground/10 flex items-center gap-3">
