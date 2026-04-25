@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
@@ -7,6 +8,7 @@ import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import { useSeo } from "@/hooks/useSeo";
+import { PROJECT_TYPES } from "@/lib/validation/consultation";
 
 const SECTION = "py-20 md:py-28";
 
@@ -17,13 +19,52 @@ const NEXT_LINKS = [
   { to: "/about", title: "About", body: "How we work, and why." },
 ];
 
+interface ThankYouState {
+  name?: string;
+  projectType?: string;
+  preferredTime?: string | null;
+  submittedAt?: string;
+  source?: string;
+}
+
+const PROJECT_LABEL = new Map<string, string>(PROJECT_TYPES.map((p) => [p.value, p.label]));
+
 const ThankYou = () => {
+  const location = useLocation();
+  const state = (location.state ?? null) as ThankYouState | null;
+
+  const personalized = Boolean(state?.name);
+  const firstName = useMemo(() => {
+    if (!state?.name) return "";
+    return state.name.trim().split(/\s+/)[0];
+  }, [state?.name]);
+  const projectLabel = state?.projectType ? PROJECT_LABEL.get(state.projectType) : undefined;
+  const receivedAt = useMemo(() => {
+    if (!state?.submittedAt) return null;
+    const d = new Date(state.submittedAt);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleString(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }, [state?.submittedAt]);
+
   useSeo({
-    title: "Thank You — We've Got Your Note",
-    description: "Your consultation request has been received. We respond within two business days.",
+    title: personalized
+      ? `Thank you, ${firstName} — We've Got Your Note`
+      : "Thank You — We've Got Your Note",
+    description:
+      "Your consultation request has been received. We respond within two business days.",
     path: "/thank-you",
     noindex: true,
   });
+
+  const headline = personalized
+    ? `Thank you, ${firstName}. We've got your note.`
+    : "Thank you. We've got your note.";
+  const accent = personalized ? firstName : "got";
 
   return (
     <main id="main">
@@ -31,11 +72,62 @@ const ThankYou = () => {
         compact
         eyebrowNumeral="·"
         eyebrowLabel="RECEIVED"
-        headline="Thank you. We've got your note."
-        accentWord="got"
+        headline={headline}
+        accentWord={accent}
         subhead="We respond within two business days. If your project is time-sensitive, mention it when we reach out."
         coordMark="Fig. iv. RECEIVED"
       />
+
+      {/* Receipt stamp — only when arriving from a successful submission */}
+      {receivedAt && (
+        <RevealSection className="pt-10 md:pt-14">
+          <Container size="wide">
+            <div
+              className="max-w-3xl mx-auto"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "0ms" }}
+              role="status"
+              aria-live="polite"
+            >
+              <div className="figure-footnote flex items-center gap-3">
+                <svg
+                  className="receipt-check-svg shrink-0"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="16"
+                    cy="16"
+                    r="14"
+                    stroke="hsl(var(--evergreen) / 0.7)"
+                    strokeWidth="1.25"
+                    fill="none"
+                  />
+                  <path
+                    d="M 10 16.5 L 14.5 21 L 22.5 12.5"
+                    stroke="hsl(var(--evergreen))"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                </svg>
+                <span className="footnote-figmark">Fig. iv.</span>
+                <span className="flex-1">RECEIVED</span>
+                <span className="text-evergreen/60 tabular-nums normal-case tracking-[0.18em]">
+                  {receivedAt}
+                </span>
+              </div>
+              {projectLabel && (
+                <p className="thread-tag mt-5">Re: {projectLabel}.</p>
+              )}
+            </div>
+          </Container>
+        </RevealSection>
+      )}
 
       {/* § I — What happens next */}
       <RevealSection aria-labelledby="next-heading" className={SECTION}>
@@ -46,6 +138,9 @@ const ThankYou = () => {
               <h2 id="next-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
                 A calm follow-up, on our end.
               </h2>
+              {projectLabel && (
+                <p className="thread-tag mt-5">Re: {projectLabel}. We'll come prepared.</p>
+              )}
             </div>
             <div className="lg:col-span-7 lg:pl-8 relative">
               <div className="surveyor-frame relative">
@@ -128,13 +223,30 @@ const ThankYou = () => {
         </Container>
       </RevealSection>
 
-      {/* § III — Quiet sign-off */}
+      {/* § III — Quiet sign-off (different copy for direct visits) */}
       <RevealSection className="py-20 md:py-28">
         <Container size="wide">
           <div className="max-w-2xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <p className="font-serif italic font-light text-foreground/75 text-[1.4rem] md:text-[1.6rem] leading-snug">
-              No need to refresh — we'll come to you.
-            </p>
+            {personalized ? (
+              <p className="font-serif italic font-light text-foreground/75 text-[1.4rem] md:text-[1.6rem] leading-snug">
+                No need to refresh — we'll come to you.
+              </p>
+            ) : (
+              <>
+                <p className="font-serif italic font-light text-foreground/75 text-[1.4rem] md:text-[1.6rem] leading-snug">
+                  Looking for the contact form?
+                </p>
+                <Link
+                  to="/contact"
+                  className="group/ghost mt-6 inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
+                >
+                  <span>Open Contact</span>
+                  <span className="icon-chip bg-evergreen/[0.06]">
+                    <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
+                  </span>
+                </Link>
+              </>
+            )}
           </div>
         </Container>
       </RevealSection>

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
@@ -23,16 +24,24 @@ import {
 } from "@/components/ui/select";
 import {
   BUDGET_RANGES,
+  PREFERRED_TIMES,
   PROJECT_TYPES,
   consultationSchema,
+  projectTypeFromQuery,
   type ConsultationFormValues,
 } from "@/lib/validation/consultation";
 
 interface ConsultationFormProps {
   /** Lead source — recorded server-side so the team can attribute later */
   source?: string;
+  /** Pre-fill the project type, e.g. when the form is opened from a service page */
+  initialProjectType?: string | null;
+  /** Override the post-submit behavior. Defaults: "redirect" on /contact, "inline" elsewhere */
+  successMode?: "redirect" | "inline";
   className?: string;
 }
+
+const RESPONSE_NOTE_ID = "consultation-response-window-note";
 
 /**
  * ConsultationForm — inline lead-capture for the Final CTA.
@@ -41,20 +50,46 @@ interface ConsultationFormProps {
  *
  * Validation: zod (client) + DB CHECK constraints + RLS shape policy.
  * Honeypot field "company" must be empty — bot submissions are dropped silently.
+ *
+ * Success modes:
+ *  - "redirect" → navigate to /thank-you with personalization state
+ *  - "inline"   → render the existing in-card "Thank you" message
+ *  Default: "redirect" when this form is rendered on /contact, else "inline".
  */
-const ConsultationForm = ({ source = "home_final_cta", className }: ConsultationFormProps) => {
+const ConsultationForm = ({
+  source = "home_final_cta",
+  initialProjectType,
+  successMode,
+  className,
+}: ConsultationFormProps) => {
+  const navigate = useNavigate();
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
+
+  const resolvedSuccessMode: "redirect" | "inline" =
+    successMode ?? (typeof window !== "undefined" && window.location.pathname === "/contact" ? "redirect" : "inline");
 
   const form = useForm<ConsultationFormValues>({
     resolver: zodResolver(consultationSchema),
+    mode: "onTouched",
     defaultValues: {
       name: "",
       email: "",
-      projectType: undefined as unknown as ConsultationFormValues["projectType"],
+      projectType: (projectTypeFromQuery(initialProjectType) ??
+        (undefined as unknown as ConsultationFormValues["projectType"])),
       budget: undefined as unknown as ConsultationFormValues["budget"],
+      preferredTime: undefined,
       company: "",
     },
   });
+
+  // If parent later resolves a query param after mount, honour it once.
+  useEffect(() => {
+    const next = projectTypeFromQuery(initialProjectType);
+    if (next && form.getValues("projectType") !== next) {
+      form.setValue("projectType", next, { shouldValidate: true, shouldDirty: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialProjectType]);
 
   const isSubmitting = form.formState.isSubmitting;
 
@@ -70,6 +105,7 @@ const ConsultationForm = ({ source = "home_final_cta", className }: Consultation
       email: values.email,
       project_type: values.projectType,
       budget: values.budget,
+      preferred_time: values.preferredTime ?? null,
       source,
     });
 
@@ -79,11 +115,32 @@ const ConsultationForm = ({ source = "home_final_cta", className }: Consultation
       return;
     }
 
-    setSubmittedAt(new Date());
+    const stamp = new Date();
+
+    if (resolvedSuccessMode === "redirect") {
+      try {
+        navigate("/thank-you", {
+          replace: true,
+          state: {
+            name: values.name,
+            projectType: values.projectType,
+            preferredTime: values.preferredTime ?? null,
+            submittedAt: stamp.toISOString(),
+            source,
+          },
+        });
+        return;
+      } catch (e) {
+        // Defensive fallback — render the inline success state.
+        console.warn("Redirect to /thank-you failed; falling back to inline confirmation.", e);
+      }
+    }
+
+    setSubmittedAt(stamp);
     toast.success("Thank you. We'll be in touch.");
   };
 
-  // ── Success state ──────────────────────────────────────────────────────
+  // ── Inline success state (used when successMode === "inline") ─────────
   if (submittedAt) {
     const time = submittedAt.toLocaleString(undefined, {
       month: "short",
@@ -129,6 +186,7 @@ const ConsultationForm = ({ source = "home_final_cta", className }: Consultation
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn("space-y-5", className)}
         noValidate
+        aria-busy={isSubmitting}
       >
         {/* Honeypot — visually hidden, off the a11y tree */}
         <div className="absolute -left-[10000px] h-0 w-0 overflow-hidden" aria-hidden="true">
@@ -177,6 +235,10 @@ const ConsultationForm = ({ source = "home_final_cta", className }: Consultation
                 <Input
                   {...field}
                   type="email"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   placeholder="you@example.com"
                   autoComplete="email"
                   className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen/50"
@@ -219,7 +281,7 @@ const ConsultationForm = ({ source = "home_final_cta", className }: Consultation
           control={form.control}
           name="budget"
           render={({ field }) => (
-            <FormItem className="space-y-1.5">
+            <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
               <FormLabel className="flex items-baseline gap-2 text-minimal text-foreground/70">
                 <span className="numeral-mark tabular-nums">04</span>
                 <span>Budget range</span>
@@ -243,9 +305,42 @@ const ConsultationForm = ({ source = "home_final_cta", className }: Consultation
           )}
         />
 
+        {/* Optional — preferred property-walk window */}
+        <FormField
+          control={form.control}
+          name="preferredTime"
+          render={({ field }) => (
+            <FormItem className="space-y-1.5">
+              <FormLabel className="flex items-baseline gap-2 text-minimal text-foreground/70">
+                <span className="numeral-mark tabular-nums">05</span>
+                <span>Best time to walk the property</span>
+                <span className="ml-1 text-[0.65rem] tracking-[0.18em] text-muted-foreground/70 normal-case">
+                  optional
+                </span>
+              </FormLabel>
+              <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                <FormControl>
+                  <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
+                    <SelectValue placeholder="Anytime" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {PREFERRED_TIMES.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>
+                      {p.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage className="text-xs" />
+            </FormItem>
+          )}
+        />
+
         <button
           type="submit"
           disabled={isSubmitting}
+          aria-describedby={RESPONSE_NOTE_ID}
           className={cn(
             "group/btn mt-2 flex items-center justify-between gap-4 w-full",
             "bg-evergreen text-evergreen-foreground rounded-full pl-7 pr-1.5 py-1.5 min-h-[56px] text-minimal",
@@ -261,7 +356,7 @@ const ConsultationForm = ({ source = "home_final_cta", className }: Consultation
           </span>
         </button>
 
-        <p className="text-minimal text-muted-foreground leading-relaxed pt-1">
+        <p id={RESPONSE_NOTE_ID} className="text-minimal text-muted-foreground leading-relaxed pt-1">
           We respond within two business days. No pressure, no automated funnel.
         </p>
       </form>
