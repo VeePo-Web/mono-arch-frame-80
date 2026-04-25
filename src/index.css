@@ -336,7 +336,7 @@
     line-height: 1.4;
   }
 
-  /* Numeral disc — outlined circular chip used in Steps + Hero proof rows. */
+  /* Numeral disc — flat outlined chip used in step lists + service cards. */
   .numeral-disc {
     display: inline-flex;
     align-items: center;
@@ -344,22 +344,18 @@
     height: 2rem;
     width: 2rem;
     border-radius: 9999px;
-    background: hsl(var(--background));
-    box-shadow:
-      inset 0 0 0 1px hsl(var(--evergreen) / 0.30),
-      0 1px 0 hsl(var(--foreground) / 0.04);
+    background: transparent;
+    border: 1px solid hsl(var(--evergreen) / 0.40);
     font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
     font-size: 0.7rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: hsl(var(--evergreen));
     font-feature-settings: "tnum";
-    transition: box-shadow 600ms var(--ease-silk), background 600ms var(--ease-silk);
+    transition: border-color 400ms var(--ease-silk), background 400ms var(--ease-silk);
   }
   .group:hover .numeral-disc,
   .group\/disc:hover .numeral-disc {
-    box-shadow:
-      inset 0 0 0 1px hsl(var(--evergreen) / 0.55),
-      0 6px 16px -8px hsl(var(--evergreen) / 0.4);
+    border-color: hsl(var(--evergreen) / 0.65);
     background: hsl(var(--evergreen-soft));
   }
 
@@ -402,31 +398,15 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Card monogram watermark — Fraunces italic "HC" anchored bottom-right.
-     Compositional anchor for service cards; rises subtly on hover.
+     RETIRED ornaments (declutter pass) — hidden, kept as no-op selectors so
+     legacy markup renders cleanly without further refactor.
      ────────────────────────────────────────────────────────────────────── */
-  .card-monogram {
-    position: absolute;
-    right: -0.25rem;
-    bottom: -1.25rem;
-    font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 14rem;
-    line-height: 1;
-    color: hsl(var(--evergreen) / 0.04);
-    pointer-events: none;
-    user-select: none;
-    transition: color 700ms var(--ease-silk);
-    letter-spacing: -0.04em;
-  }
-  .group:hover .card-monogram {
-    color: hsl(var(--evergreen) / 0.08);
-  }
+  .card-monogram { display: none !important; }
+  .figure-footnote { display: none !important; }
+  .colophon-signoff { display: none !important; }
+  .bezel-shell-closing { padding: 0; box-shadow: var(--shadow-elegant); }
 
-  /* ──────────────────────────────────────────────────────────────────────
-     Area roster row — left→right hairline draws under on hover.
-     ────────────────────────────────────────────────────────────────────── */
+  /* Area roster row — left→right hairline draws under on hover. */
   .area-row {
     position: relative;
   }
@@ -444,50 +424,12 @@
     width: 100%;
   }
 
-  /* ──────────────────────────────────────────────────────────────────────
-     Triple-Bezel — closing variant for the Final CTA panel.
-     Adds a third concentric ring for visual weight at the page's resolution.
-     ────────────────────────────────────────────────────────────────────── */
-  .bezel-shell-closing {
-    padding: 0.75rem;
-    box-shadow:
-      0 0 0 1px hsl(36 25% 99% / 0.18),
-      0 0 0 7px hsl(145 22% 38% / 0.12),
-      0 0 0 8px hsl(36 25% 99% / 0.08),
-      var(--shadow-haptic-evergreen);
-  }
 
 
-
-  /* ──────────────────────────────────────────────────────────────────────
-     Section coordinates — top-right marginalia per section heading.
-     ────────────────────────────────────────────────────────────────────── */
-  .coord-mark {
-    font-family: 'Inter', 'Inter Fallback', system-ui, sans-serif;
-    font-size: 0.625rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    font-weight: 500;
-    color: hsl(var(--evergreen) / 0.55);
-    font-variant-numeric: tabular-nums;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.625rem;
-    white-space: nowrap;
-  }
-  .coord-mark::before {
-    content: "";
-    display: block;
-    width: 1.25rem;
-    height: 1px;
-    background: hsl(var(--evergreen) / 0.30);
-  }
-  .coord-mark-light {
-    color: hsl(var(--background) / 0.6);
-  }
-  .coord-mark-light::before {
-    background: hsl(var(--background) / 0.30);
-  }
+  /* Section coordinates — RETIRED. Kept as a no-op for legacy markup. */
+  .coord-mark { display: none !important; }
+  .coord-mark-light { display: none !important; }
+  .numeral-mark { display: none !important; }
 
   /* Dotted leader — table-of-contents row, used on Hero proof rows. */
   .leader-dotted {
