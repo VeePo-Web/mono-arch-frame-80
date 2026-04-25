@@ -205,6 +205,7 @@ const Index = () => {
         id="approach"
         aria-labelledby="approach-heading"
         className={SECTION_PADDING}
+        style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 1600px" }}
       >
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
@@ -388,6 +389,7 @@ const Index = () => {
         id="areas"
         aria-labelledby="areas-heading"
         className={SECTION_PADDING}
+        style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 1400px" }}
       >
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
@@ -452,6 +454,8 @@ const Index = () => {
         aria-labelledby="final-cta-heading"
         className="relative py-32 md:py-44 overflow-hidden bg-evergreen-deep"
         style={{
+          contentVisibility: "auto",
+          containIntrinsicSize: "1200px 1200px",
           backgroundImage:
             "radial-gradient(120% 80% at 15% 0%, hsl(145 22% 22%) 0%, hsl(var(--evergreen-deep)) 70%)",
         }}

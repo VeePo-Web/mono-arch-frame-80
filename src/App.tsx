@@ -6,6 +6,7 @@ import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import ChapterSpine from "./components/ChapterSpine";
 import PageSlug from "./components/PageSlug";
+import RoutePrefetcher from "./components/RoutePrefetcher";
 
 // Eager: home (LCP-critical) + 404 (tiny, instant fallback)
 import Index from "./pages/Index";
@@ -74,6 +75,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <ScrollToTop />
+        <RoutePrefetcher />
         <ChapterSpine />
         <PageSlug />
         <Navigation />
