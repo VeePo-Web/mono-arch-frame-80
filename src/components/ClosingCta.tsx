@@ -28,10 +28,11 @@ const ClosingCta = ({
 }: ClosingCtaProps) => (
   <RevealSection
     aria-labelledby="closing-cta-heading"
-    className="relative py-28 md:py-36 overflow-hidden bg-evergreen-deep"
+    className="cv-auto relative py-28 md:py-36 overflow-hidden bg-evergreen-deep"
     style={{
       backgroundImage:
         "radial-gradient(120% 80% at 15% 0%, hsl(145 22% 22%) 0%, hsl(var(--evergreen-deep)) 70%)",
+      containIntrinsicSize: "1200px 600px",
     }}
   >
     <div

@@ -132,7 +132,7 @@ const Services = () => {
       </RevealSection>
 
       {/* § II — Full-circle support */}
-      <RevealSection aria-labelledby="circle-heading" className={cn(SECTION, "section-wash")}>
+      <RevealSection aria-labelledby="circle-heading" className={cn(SECTION, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>

@@ -6,11 +6,10 @@ import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
 import Hero from "@/components/Hero";
 import PremiumCard from "@/components/PremiumCard";
+import RevealSection from "@/components/RevealSection";
 import { ProjectVignette, type VignetteCategory } from "@/components/ProjectVignette";
-import SelectedWorks from "@/components/gallery/SelectedWorks";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
-import { useReveal } from "@/hooks/useReveal";
 import { services } from "@/data/services";
 import { projects } from "@/data/projects";
 import { serviceAreas } from "@/data/serviceAreas";
@@ -18,6 +17,10 @@ import { serviceAreas } from "@/data/serviceAreas";
 // Lazy: form pulls in react-hook-form + zod resolver — fetched only when the
 // final CTA enters the viewport, keeping the home-page initial JS lean.
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
+
+// Lazy: Selected Works lives below the fold and pulls in 6 inline-SVG plates.
+// Splitting it shaves the eager Index chunk by ~5 KB gz.
+const SelectedWorks = lazy(() => import("@/components/gallery/SelectedWorks"));
 
 const SECTION_PADDING = "py-28 md:py-40";
 
@@ -27,23 +30,6 @@ const AREA_POSTAL: Record<string, string> = {
   "rocky-view-county": "T4A",
   bearspaw: "T3R",
   "water-valley": "T0M",
-};
-
-/* ─────────────────────────────────────────────────────────────────────────
-   Section wrapper that wires a single IntersectionObserver to its subtree.
-   Children using `data-reveal` resolve in cascade via --reveal-delay tokens.
-   ───────────────────────────────────────────────────────────────────────── */
-const RevealSection = ({
-  children,
-  className,
-  ...rest
-}: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) => {
-  const { ref, revealed } = useReveal<HTMLElement>({ threshold: 0.12 });
-  return (
-    <section ref={ref} data-revealed={revealed} className={className} {...rest}>
-      {children}
-    </section>
-  );
 };
 
 const Index = () => {
@@ -385,7 +371,17 @@ const Index = () => {
       </RevealSection>
 
       {/* ─── § IV.b — Selected Works (featured-plate gallery) ──────────── */}
-      <SelectedWorks />
+      <Suspense
+        fallback={
+          <div
+            aria-hidden="true"
+            className="min-h-[800px]"
+            style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 1600px" }}
+          />
+        }
+      >
+        <SelectedWorks />
+      </Suspense>
 
       {/* ─── § V — Service Areas Roster ─────────────────────────────────── */}
       <RevealSection
