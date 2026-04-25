@@ -381,11 +381,55 @@ const Index = () => {
         <SelectedWorks />
       </Suspense>
 
-      {/* ─── § V — Service Areas Roster ─────────────────────────────────── */}
+      {/* ─── § V — Trust Panel: three quiet reassurances ──────────────── */}
+      <RevealSection
+        aria-labelledby="trust-panel-heading"
+        className="py-24 md:py-32"
+      >
+        <Container size="wide">
+          <h2 id="trust-panel-heading" className="sr-only">Why homeowners choose Haven Creek</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-14">
+            {[
+              {
+                n: "01",
+                title: "Local",
+                body: "Bragg Creek, Bearspaw, Rocky View County, and Water Valley. Four communities — one team that knows them.",
+              },
+              {
+                n: "02",
+                title: "Hands-on",
+                body: "One contractor across planning, the work itself, and the final walk-through. No fragmented trades.",
+              },
+              {
+                n: "03",
+                title: "Long-term",
+                body: "Built for clients improving their property in phases — over years, not just one project.",
+              },
+            ].map((c, i) => (
+              <div
+                key={c.n}
+                className="relative"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: `${i * 120}ms` }}
+              >
+                <span className="numeral-disc mb-6" aria-hidden="true">
+                  {c.n}
+                </span>
+                <h3 className="mt-6 text-title text-foreground">{c.title}</h3>
+                <p className="mt-4 text-body text-muted-foreground text-[0.98rem] leading-relaxed max-w-[36ch]">
+                  {c.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </RevealSection>
+
+      {/* ─── § VI — Service Areas Roster ────────────────────────────────── */}
       <RevealSection
         id="areas"
         aria-labelledby="areas-heading"
-        className={SECTION_PADDING}
+        className={cn(SECTION_PADDING, "section-wash")}
         style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 1400px" }}
       >
         <Container size="wide">
@@ -442,11 +486,11 @@ const Index = () => {
         </Container>
       </RevealSection>
 
-      {/* ─── § VI — Final CTA: textured deep-evergreen close ────────────── */}
+      {/* ─── § VII — Final CTA: deep-evergreen anchor close ──────────── */}
       <RevealSection
         id="final-cta"
         aria-labelledby="final-cta-heading"
-        className="relative py-32 md:py-44 overflow-hidden bg-evergreen-deep"
+        className="relative py-36 md:py-48 overflow-hidden bg-evergreen-deep"
         style={{
           contentVisibility: "auto",
           containIntrinsicSize: "1200px 1200px",
@@ -454,12 +498,6 @@ const Index = () => {
             "radial-gradient(120% 80% at 15% 0%, hsl(145 22% 22%) 0%, hsl(var(--evergreen-deep)) 70%)",
         }}
       >
-        {/* Center hairline */}
-        <div
-          aria-hidden="true"
-          className="absolute left-1/2 top-0 bottom-0 w-px bg-background/10"
-        />
-
         {/* Brand silhouette — single-stroke skyline along bottom edge */}
         <svg
           aria-hidden="true"
@@ -477,9 +515,9 @@ const Index = () => {
         </svg>
 
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20 items-start">
             <div
-              className="lg:col-span-7"
+              className="lg:col-span-6"
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
@@ -487,13 +525,39 @@ const Index = () => {
               <h2
                 id="final-cta-heading"
                 data-drift
-                className="text-headline text-background mt-6 max-w-[18ch]"
+                className="text-headline text-background mt-6 max-w-[20ch]"
               >
-                Ready to talk through your next property improvement?
+                A quiet conversation about your property.
               </h2>
+              <p className="mt-7 text-body text-background/85 max-w-[44ch]">
+                No template quote. No pressure. We reply within two business days.
+              </p>
 
-              {/* Manifest list — left rule + hanging numerals */}
-              <ul className="mt-12 max-w-xl border-l border-background/15 pl-6 space-y-5 text-body text-background/85">
+              {/* Direct-contact escape hatch */}
+              <div className="mt-10 pt-8 border-t border-background/15 max-w-[44ch] space-y-3">
+                <p className="text-minimal text-background/65">
+                  Or reach us directly
+                </p>
+                <p>
+                  <a
+                    href="mailto:hello@havencreekrenovations.ca"
+                    className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300"
+                  >
+                    hello@havencreekrenovations.ca
+                  </a>
+                </p>
+                <p>
+                  <a
+                    href="tel:+14035550100"
+                    className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300 tabular-nums"
+                  >
+                    (403) 555-0100
+                  </a>
+                </p>
+              </div>
+
+              {/* Promise list — left rule + hanging numerals */}
+              <ul className="mt-12 max-w-[44ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
                 {[
                   "Hands-on support from planning to completion.",
                   "Interior finishing, exterior repairs, and decking for rural homes.",
@@ -514,7 +578,7 @@ const Index = () => {
             </div>
 
             <div
-              className="lg:col-span-5"
+              className="lg:col-span-6"
               data-reveal
               style={{ ["--reveal-delay" as string]: "180ms" }}
             >
@@ -522,7 +586,7 @@ const Index = () => {
                 <div className="p-7 md:p-9">
                   <p
                     data-drift
-                    className="font-serif text-foreground text-[1.25rem] md:text-[1.4rem] leading-snug"
+                    className="font-serif text-foreground text-[1.3rem] md:text-[1.5rem] leading-snug"
                   >
                     Tell us about the project.
                   </p>
@@ -542,17 +606,6 @@ const Index = () => {
                   >
                     <ConsultationForm source="home_final_cta" />
                   </Suspense>
-
-                  <div className="mt-8 pt-6 border-t border-foreground/10 flex items-center gap-3">
-                    <span className="text-minimal text-muted-foreground">Or</span>
-                    <Link
-                      to="/contact"
-                      className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/85 hover:text-evergreen transition-colors duration-500"
-                    >
-                      <span>Open the full contact page</span>
-                      <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
