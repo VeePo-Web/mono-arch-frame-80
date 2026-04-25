@@ -1,100 +1,69 @@
-## Consultation Form on Landing Page — Editorial CTA
+## What you'll see
 
-Replace the secondary "Talk Through Your Project" link inside the Final CTA's right-hand bezel card with a full inline consultation form. Keep the primary "Request a Consultation" button as a quick-link fallback above the form for users who'd rather land on the dedicated `/contact` page later.
+A new section sits below the current "Project Gallery Preview" (§ IV) on the home page, framed as **§ IV.b — Selected Works**.
 
-### 1. Backend — `consultations` table (Lovable Cloud)
+**Layout (desktop ≥ 1024px):**
+- Left 7/12 columns — the **featured plate**: large architectural line-drawing in the existing evergreen-on-plaster style, with `Plate IV` corner marker, figure footnote, and a chevron CTA "Read the case note." Clicking it expands the plate's full scope/challenge/result/why-it-mattered in place beneath the image.
+- Right 5/12 columns — a **vertical sidebar list** of 5 supporting plates as clickable rows: small thumb (60×60 SVG glyph) + plate roman numeral + project title + region + a hairline divider between rows. The currently-selected row gets an evergreen left-border and bolder figmark. Clicking a row promotes that plate into the featured position.
+- A "Plates IV–IX" coord-mark in the section header echoes the existing `Plates I–III` marker on the preview above.
 
-New table `public.consultations`:
+**Tablet (768–1023px):** featured plate stacks above the sidebar, sidebar becomes a 2-column grid.
 
-| column | type | notes |
-|---|---|---|
-| `id` | `uuid` PK, `default gen_random_uuid()` | |
-| `created_at` | `timestamptz` default `now()` | |
-| `name` | `text` not null, length 1–100 (CHECK) | |
-| `email` | `text` not null, length ≤ 255, regex CHECK | |
-| `project_type` | `text` not null, enum-like CHECK in (`interior`, `exterior`, `decking`, `multiple`, `not-sure`) | |
-| `budget` | `text` not null, enum-like CHECK in (`under-25k`, `25-50k`, `50-100k`, `100k-plus`, `prefer-discuss`) | |
-| `notes` | `text` nullable, length ≤ 2000 (reserved for future use) | |
-| `source` | `text` default `'home_final_cta'` | |
+**Mobile (<768px):** single column. Featured plate at top, supporting plates below as a vertically-stacked list with the same hairline-divided treatment. Inline expansion behavior is identical.
 
-**RLS** enabled with two policies:
-- `INSERT` allowed for `anon` + `authenticated` (public lead capture).
-- `SELECT` denied to `anon`; only allowed for users with the `admin` role via the `has_role()` security-definer pattern.
+**Interaction:**
+- Click any plate (sidebar row or featured) → smooth promotion (250ms cross-fade of the SVG + caption swap, no layout shift thanks to `aspect-[4/3]`).
+- Click "Read the case note" on the featured plate → expands a panel below with `scope`, `challenge`, `result`, and `why it mattered`, each preceded by an `01 / 02 / 03 / 04` numeral-mark in the existing editorial vocabulary. Click again → collapses.
+- Keyboard: arrow-up/down navigates the sidebar list; Enter promotes; Space toggles the case-note expansion. Each row is a real `<button>` with `aria-pressed`.
+- Reduced motion: cross-fade and expansion become instant.
 
-Roles infrastructure: create the standard `app_role` enum, `user_roles` table, and `has_role()` SECURITY DEFINER function per the project standard. (No admin user is seeded — owner can be granted later.)
+## Visual language (the "black-and-white image style")
 
-### 2. Validation — `src/lib/validation/consultation.ts`
+The site doesn't currently use B&W photography — its image system is **monochromatic SVG architectural line drawings** (single-ink evergreen strokes on warm plaster, draftsman's-note feel, dimension marks, plumb lines). I'll match this exactly. Six new ~600-byte SVG vignettes, two per category, drawn from real project archetypes:
 
-Zod schema mirroring the DB constraints:
+1. **Interior — Bragg Creek Trim & Transition** (existing motif, refined)
+2. **Interior — Water Valley Built-In Shelving** (new: shelving cross-section + book silhouettes)
+3. **Exterior — Rocky View Siding Repair** (existing motif, refined)
+4. **Exterior — Bearspaw Soffit & Fascia** (new: gable-end elevation with vent detail)
+5. **Decking — Bearspaw Wraparound** (existing motif, refined)
+6. **Decking — Water Valley Step-Down Platform** (new: section view with stair stringer)
 
-```ts
-export const consultationSchema = z.object({
-  name: z.string().trim().min(1, "Please share your name").max(100),
-  email: z.string().trim().email("Enter a valid email").max(255),
-  projectType: z.enum(["interior", "exterior", "decking", "multiple", "not-sure"]),
-  budget: z.enum(["under-25k", "25-50k", "50-100k", "100k-plus", "prefer-discuss"]),
-});
-```
+All drawn with the same stroke widths (0.5–1.0px), the same evergreen opacity ramp (0.20–0.55), the same plaster background fill, and the same dimension/plumb tick vocabulary. No photographs, no fake stock — fully aligned with §1.5 "Dealbreakers" in the brand identity doc.
 
-Both client- and pre-insert validated.
+## Files I'll touch
 
-### 3. New component — `src/components/ConsultationForm.tsx`
+**New:**
+- `src/data/galleryPlates.ts` — typed array of 6 plate records (slug, romanNumeral, title, category, area, scope, challenge, result, whyItMattered, vignetteKey).
+- `src/components/gallery/GalleryVignettes.tsx` — six new SVG components + a `GalleryVignette` resolver, mirroring the structure of `ProjectVignette.tsx`.
+- `src/components/gallery/SelectedWorks.tsx` — the section component (featured plate + sidebar list + inline case-note expansion). Self-contained client logic (`useState` for active plate + expansion). Uses existing primitives: `Container`, `bezel-shell`, `figure-footnote`, `numeral-mark`, `coord-mark`.
 
-Self-contained form using react-hook-form + zod resolver (already in the project per `Form` component). Visual notes:
+**Edited:**
+- `src/pages/Index.tsx` — import `SelectedWorks`, drop it into a new `RevealSection` immediately after § IV (the existing preview). Numbering stays clean: existing § IV stays as-is; new section is labeled § IV.b in code comments and `Eyebrow numeral="IV.b"` to telegraph "more of the same chapter, deeper cut" rather than introducing a § V renumber.
 
-- **Layout:** Single column, generous spacing inside the existing closing `bezel-shell-evergreen` card; matches Pentagram-grade editorial restraint.
-- **Fields:**
-  1. `Name` — `Input`, label "Your name".
-  2. `Email` — `Input` type=email.
-  3. `Project type` — `Select` with the five labeled options:  
-     "Interior finishing", "Exterior finishing & repairs", "Decking", "Multiple / phased project", "Not sure yet — let's talk".
-  4. `Budget range` — `Select` with five options:  
-     "Under $25k", "$25k–$50k", "$50k–$100k", "$100k+", "Prefer to discuss".
-- **Submit button:** Re-uses the cedar/evergreen pill pattern (`bg-evergreen text-evergreen-foreground rounded-full`) with the trailing `icon-chip` arrow — matches the existing "Request a Consultation" pill so the visual rhythm holds.
-- **Helper text:** Microcopy under submit reads "We respond within two business days. No pressure, no automated funnel." — aligned to the brand voice rules in `2.2-page-by-page-copy-plan.md`.
-- **Loading state:** Submit button disabled, replaces label with "Sending…" and a hairline progress underline.
-- **Success state:** Form swaps to an editorial confirmation panel — italic Fraunces sign-off ("Thank you. We'll be in touch."), `Fig. iv —` figure-mark caption with timestamp, and a quiet `Send another note` text-link. Reuses the existing `figure-footnote` and `colophon-signoff` classes for tonal continuity.
-- **Error state:** Inline field errors via `FormMessage`; a top-level alert if the insert fails (e.g., network), styled as a hairline red-tinted note (uses `text-destructive`).
-- **Honeypot field:** Hidden `company` text input — bot submissions discarded client-side before insert.
-- **Accessibility:** Native labels, `aria-invalid`, `aria-describedby` wired by `FormControl`. Submit button is a real `<button type="submit">` with min-height 56px to match the existing CTA pill.
+**Untouched:** every existing component, every existing data file, every existing route. Zero risk to current preview, hero, services, areas, CTA, footer.
 
-### 4. Edits to `src/pages/Index.tsx`
+## Editorial details (Fantasy.co-tier finish)
 
-In the Final CTA section (around lines 489–522), restructure the right-hand `bezel-shell-evergreen bezel-shell-closing` card:
+- Section eyebrow: `IV.b — SELECTED WORKS` paired with the coord-mark `Plates IV–IX`.
+- Section heading: *"A closer look at six recent properties."* (Fraunces drift-coupled)
+- Featured plate caption uses the existing `figure-footnote` pattern: `Fig. iv. INTERIOR FINISHING — BRAGG CREEK`.
+- Sidebar rows use a 6px evergreen left-border on the active row (matches the existing "why it mattered" border treatment) and dotted-leader spacing between title and region.
+- Case-note expansion uses the same `numeral-mark` styling as the consultation form (`01 / 02 / 03 / 04`) for visual continuity with the closing CTA.
+- The whole section sits on `section-wash` (the existing alternating background) so it reads as one continuous chapter with the preview above.
 
-- Keep the primary `Request a Consultation` Link button at the top — it remains a one-click escape hatch for users who don't want to fill the form inline.
-- Keep the existing "Or" divider.
-- Replace the secondary `Talk Through Your Project` link + footnote with `<ConsultationForm source="home_final_cta" />`.
-- Slightly increase the card's vertical padding to accommodate the form without breaking the triple-bezel proportions (`p-7 md:p-8` → `p-7 md:p-9`).
-- Manifest list on the left stays as-is; the form lives only in the right column.
+## Performance & accessibility
 
-### 5. Editorial details (Fantasy.co-tier polish)
+- **No new dependencies.** Zero impact on JS bundle (everything is plain React + SVG).
+- All six SVGs inline = ~3.6 KB total, no network requests.
+- `content-visibility: auto` + `contain-intrinsic-size` on the section to keep below-fold paint cheap (matches the pattern already used on § IV).
+- Sidebar rows are real `<button>` elements with `aria-pressed`, keyboard-navigable (arrow keys + Enter), focus-visible ring in evergreen.
+- Case-note expansion uses `aria-expanded` + `aria-controls`; the panel is `role="region"` with an `aria-labelledby` pointing to the plate title.
+- Reduced-motion media query disables cross-fade + expansion animation.
+- Color contrast: evergreen (#3d5a48) on plaster (#fbf8f3) measures 7.8:1 — exceeds WCAG AAA.
 
-- **Fieldset hairlines:** Each field group separated by 1px `border-evergreen/12` rule, mirroring the figure-footnote pattern used on project plates.
-- **Numeric labels:** Each label prefixed with a tiny tabular numeral (`01 — Your name`, `02 — Email`, …) using the same `numeral-mark` class already used in the colophon. Reinforces the editorial spine without adding new tokens.
-- **Drift on the form heading:** The form's "Tell us about the project" sub-heading uses `data-drift` for the same scroll-coupled 4px settle as the section H2 — keeps the kinetic vocabulary consistent.
-- **Reduced motion:** All transitions respect `prefers-reduced-motion` (already global).
+## Out of scope (will not do)
 
-### 6. Files touched
-
-| Action | Path |
-|---|---|
-| Migration | `consultations` table + RLS + roles infra (via Lovable migration tool) |
-| New | `src/lib/validation/consultation.ts` |
-| New | `src/components/ConsultationForm.tsx` |
-| Edit | `src/pages/Index.tsx` (Final CTA right column only) |
-
-### 7. Out of scope (explicit)
-
-- No email notifications on submit. (Can add a transactional edge function in a follow-up — the table will already hold every lead.)
-- No spam/captcha beyond the honeypot. (Cloudflare Turnstile is a future upgrade.)
-- No edits to the dedicated `/contact` route — that page remains a placeholder for now and can be expanded later with the same `ConsultationForm` reused.
-- No bundle-size regression: zod and react-hook-form are already in the bundle via shadcn `Form`.
-
-### 8. Verification after implementation
-
-1. `bun run build` succeeds, no TS errors.
-2. Submitting a valid form inserts a row visible via `psql` / Lovable Cloud read.
-3. Submitting an invalid email shows the inline `FormMessage` and never hits the network.
-4. Anonymous SELECT against `consultations` returns zero rows (RLS verified).
-5. Lighthouse a11y on `/` stays at 100.
+- No real photography (would break §1.5 dealbreakers and contradict "existing image style").
+- No modal/lightbox (you chose inline expansion).
+- No category filter chips (you chose featured + sidebar layout, which makes filters redundant — all 6 are visible at once).
+- No changes to the existing § IV preview, the `/work` route, or the `projects` data file.
