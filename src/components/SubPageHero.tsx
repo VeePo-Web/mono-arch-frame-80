@@ -11,8 +11,10 @@ interface CtaSpec {
 }
 
 interface SubPageHeroProps {
+  /** @deprecated retained for back-compat; no longer rendered. */
   eyebrowNumeral?: string;
   eyebrowLabel: string;
+  /** @deprecated retained for back-compat; no longer rendered. */
   coordMark?: string;
   /** Plain headline. Use `accentWord` to italicize+underline a single word. */
   headline: string;
@@ -31,13 +33,10 @@ interface SubPageHeroProps {
 
 /**
  * SubPageHero — the editorial chapter-opening pattern shared by every non-home route.
- * Mirrors Hero.tsx scaffolding (radial bloom, reveal-up cadence, hand-drawn underline).
- * Single visual anchor that makes all 13 pages read as chapters of one monograph.
+ * Eyebrow + headline + optional subhead + CTA pair. Single anchor across pages.
  */
 const SubPageHero = ({
-  eyebrowNumeral,
   eyebrowLabel,
-  coordMark,
   headline,
   accentWord,
   subhead,
@@ -108,7 +107,7 @@ const SubPageHero = ({
         >
           <div className={cn(vignette ? "lg:col-span-7" : "max-w-3xl")}>
             <div className="reveal-up" style={{ animationDelay: "0ms" }}>
-              <Eyebrow numeral={eyebrowNumeral} label={eyebrowLabel} />
+              <Eyebrow label={eyebrowLabel} />
             </div>
 
             {folio && (
@@ -183,14 +182,6 @@ const SubPageHero = ({
               </div>
             )}
 
-            {coordMark && (
-              <p
-                className="mt-12 reveal-up"
-                style={{ animationDelay: "560ms" }}
-              >
-                <span className="coord-mark">{coordMark}</span>
-              </p>
-            )}
           </div>
 
           {vignette && (

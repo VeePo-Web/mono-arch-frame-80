@@ -77,7 +77,7 @@ const Index = () => {
 
       <Hero />
 
-      {/* ─── § I — Trust Promise ─────────────────────────────────────────── */}
+      {/* ─── § I — The seven things you're probably wondering ──────────── */}
       <RevealSection
         id="trust-promise"
         aria-labelledby="trust-heading"
@@ -85,32 +85,86 @@ const Index = () => {
       >
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="The promise" />
-              <h2 id="trust-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
-                One contractor. One relationship. A clearer path from idea to completion.
-              </h2>
-            </div>
             <div
-              className="lg:col-span-5 lg:pt-8 space-y-7"
+              className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start"
               data-reveal
-              style={{ ["--reveal-delay" as string]: "120ms" }}
+              style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <p className="text-body text-foreground/85">
-                Renovation work should feel as solid as the result. Too many handoffs make
-                the project feel scattered — and rural properties deserve more care than that.
+              <Eyebrow label="What you're probably thinking" />
+              <h2 id="trust-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
+                The seven things most rural homeowners want to know first.
+              </h2>
+              <p className="mt-7 text-body text-muted-foreground max-w-md">
+                Said plainly. Answered the same way. If any of these were on
+                your mind, you&apos;re in the right place.
               </p>
-              <p className="pull-quote text-[1.15rem] md:text-[1.25rem]">
-                Haven Creek was built for homeowners who want a more personal, hands-on
-                way to improve their property.
-              </p>
-              <Link
-                to="/about"
-                className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
+            </div>
+
+            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
+              <ul aria-label="Common questions from rural homeowners">
+                {[
+                  {
+                    n: "01",
+                    q: "Will you respect my property?",
+                    a: "Yes — access, animals, equipment, and clean-up are part of the deliverable, not afterthoughts. The site is left the way we found it, minus the work that needed doing.",
+                  },
+                  {
+                    n: "02",
+                    q: "Can I trust who's in my home?",
+                    a: "The same person plans the work, does the work, and walks the finish with you. No rotating cast of unfamiliar trades coming and going.",
+                  },
+                  {
+                    n: "03",
+                    q: "How many people will be coming and going?",
+                    a: "As few as the work allows. Most days it's one or two familiar faces — quiet on arrival, careful on the property, gone when they said they would be.",
+                  },
+                  {
+                    n: "04",
+                    q: "Will it actually be finished — or just done?",
+                    a: "Fit, edges, transitions, and the small details decide that. They're the work, not extras. We don't call a project complete until it reads that way.",
+                  },
+                  {
+                    n: "05",
+                    q: "Can you support phased projects over years?",
+                    a: "Yes. Many of our clients improve their property one stage at a time. Working with the same contractor across phases means continuity — we already know the building and the land.",
+                  },
+                  {
+                    n: "06",
+                    q: "How does pricing work?",
+                    a: "Custom, written plainly, after we see the property. No template numbers, no surprises mid-project. The quote follows the conversation.",
+                  },
+                  {
+                    n: "07",
+                    q: "What happens after I reach out?",
+                    a: "A real reply within two business days — from a real person, not an automated funnel. We talk first; we walk the property second.",
+                  },
+                ].map((row) => (
+                  <li key={row.n} className="fear-row">
+                    <span className="numeral-disc shrink-0" aria-hidden="true">
+                      {row.n}
+                    </span>
+                    <p className="fear-q">{row.q}</p>
+                    <p className="fear-a">{row.a}</p>
+                  </li>
+                ))}
+              </ul>
+
+              <div
+                className="mt-12 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "300ms" }}
               >
-                <span>How we work</span>
-                <span className="block w-6 h-px bg-evergreen/60 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
-              </Link>
+                <Link to="/contact" className="cta-anchor group/btn">
+                  <span>Request a Consultation</span>
+                  <span className="icon-chip icon-chip-light bg-background/15">
+                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                  </span>
+                </Link>
+                <p className="trust-microcopy">
+                  <span>Reply within 2 business days</span>
+                  <span>No obligation</span>
+                </p>
+              </div>
             </div>
           </div>
         </Container>
@@ -168,11 +222,9 @@ const Index = () => {
                       {s.cardBody}
                     </p>
 
-                    <div className="mt-8 inline-flex items-center gap-3 text-minimal text-evergreen">
-                      <span>See the work</span>
-                      <span className="icon-chip bg-evergreen/[0.06]">
-                        <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
-                      </span>
+                    <div className="mt-8 inline-flex items-center gap-3 text-minimal text-foreground/70 group-hover:text-evergreen transition-colors duration-500">
+                      <span>Read the service</span>
+                      <span className="block w-6 h-px bg-evergreen/50 group-hover:w-12 transition-all duration-500 ease-swift" />
                     </div>
                   </div>
                 </PremiumCard>
@@ -229,6 +281,22 @@ const Index = () => {
                   </li>
                 ))}
               </ol>
+
+              <div
+                className="mt-16 pt-10 border-t border-border/60 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "1100ms" }}
+              >
+                <p className="font-serif italic font-light text-foreground/85 text-[1.1rem] leading-snug max-w-md">
+                  From conversation to completion, you talk to one person.
+                </p>
+                <Link to="/contact" className="cta-anchor group/btn shrink-0">
+                  <span>Start that conversation</span>
+                  <span className="icon-chip icon-chip-light bg-background/15">
+                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                  </span>
+                </Link>
+              </div>
             </div>
           </div>
         </Container>
@@ -313,11 +381,55 @@ const Index = () => {
         <SelectedWorks />
       </Suspense>
 
-      {/* ─── § V — Service Areas Roster ─────────────────────────────────── */}
+      {/* ─── § V — Trust Panel: three quiet reassurances ──────────────── */}
+      <RevealSection
+        aria-labelledby="trust-panel-heading"
+        className="py-24 md:py-32"
+      >
+        <Container size="wide">
+          <h2 id="trust-panel-heading" className="sr-only">Why homeowners choose Haven Creek</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-14">
+            {[
+              {
+                n: "01",
+                title: "Local",
+                body: "Bragg Creek, Bearspaw, Rocky View County, and Water Valley. Four communities — one team that knows them.",
+              },
+              {
+                n: "02",
+                title: "Hands-on",
+                body: "One contractor across planning, the work itself, and the final walk-through. No fragmented trades.",
+              },
+              {
+                n: "03",
+                title: "Long-term",
+                body: "Built for clients improving their property in phases — over years, not just one project.",
+              },
+            ].map((c, i) => (
+              <div
+                key={c.n}
+                className="relative"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: `${i * 120}ms` }}
+              >
+                <span className="numeral-disc mb-6" aria-hidden="true">
+                  {c.n}
+                </span>
+                <h3 className="mt-6 text-title text-foreground">{c.title}</h3>
+                <p className="mt-4 text-body text-muted-foreground text-[0.98rem] leading-relaxed max-w-[36ch]">
+                  {c.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </RevealSection>
+
+      {/* ─── § VI — Service Areas Roster ────────────────────────────────── */}
       <RevealSection
         id="areas"
         aria-labelledby="areas-heading"
-        className={SECTION_PADDING}
+        className={cn(SECTION_PADDING, "section-wash")}
         style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 1400px" }}
       >
         <Container size="wide">
@@ -374,11 +486,11 @@ const Index = () => {
         </Container>
       </RevealSection>
 
-      {/* ─── § VI — Final CTA: textured deep-evergreen close ────────────── */}
+      {/* ─── § VII — Final CTA: deep-evergreen anchor close ──────────── */}
       <RevealSection
         id="final-cta"
         aria-labelledby="final-cta-heading"
-        className="relative py-32 md:py-44 overflow-hidden bg-evergreen-deep"
+        className="relative py-36 md:py-48 overflow-hidden bg-evergreen-deep"
         style={{
           contentVisibility: "auto",
           containIntrinsicSize: "1200px 1200px",
@@ -386,12 +498,6 @@ const Index = () => {
             "radial-gradient(120% 80% at 15% 0%, hsl(145 22% 22%) 0%, hsl(var(--evergreen-deep)) 70%)",
         }}
       >
-        {/* Center hairline */}
-        <div
-          aria-hidden="true"
-          className="absolute left-1/2 top-0 bottom-0 w-px bg-background/10"
-        />
-
         {/* Brand silhouette — single-stroke skyline along bottom edge */}
         <svg
           aria-hidden="true"
@@ -409,9 +515,9 @@ const Index = () => {
         </svg>
 
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20 items-start">
             <div
-              className="lg:col-span-7"
+              className="lg:col-span-6"
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
@@ -419,13 +525,39 @@ const Index = () => {
               <h2
                 id="final-cta-heading"
                 data-drift
-                className="text-headline text-background mt-6 max-w-[18ch]"
+                className="text-headline text-background mt-6 max-w-[20ch]"
               >
-                Ready to talk through your next property improvement?
+                A quiet conversation about your property.
               </h2>
+              <p className="mt-7 text-body text-background/85 max-w-[44ch]">
+                No template quote. No pressure. We reply within two business days.
+              </p>
 
-              {/* Manifest list — left rule + hanging numerals */}
-              <ul className="mt-12 max-w-xl border-l border-background/15 pl-6 space-y-5 text-body text-background/85">
+              {/* Direct-contact escape hatch */}
+              <div className="mt-10 pt-8 border-t border-background/15 max-w-[44ch] space-y-3">
+                <p className="text-minimal text-background/65">
+                  Or reach us directly
+                </p>
+                <p>
+                  <a
+                    href="mailto:hello@havencreekrenovations.ca"
+                    className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300"
+                  >
+                    hello@havencreekrenovations.ca
+                  </a>
+                </p>
+                <p>
+                  <a
+                    href="tel:+14035550100"
+                    className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300 tabular-nums"
+                  >
+                    (403) 555-0100
+                  </a>
+                </p>
+              </div>
+
+              {/* Promise list — left rule + hanging numerals */}
+              <ul className="mt-12 max-w-[44ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
                 {[
                   "Hands-on support from planning to completion.",
                   "Interior finishing, exterior repairs, and decking for rural homes.",
@@ -446,7 +578,7 @@ const Index = () => {
             </div>
 
             <div
-              className="lg:col-span-5"
+              className="lg:col-span-6"
               data-reveal
               style={{ ["--reveal-delay" as string]: "180ms" }}
             >
@@ -454,7 +586,7 @@ const Index = () => {
                 <div className="p-7 md:p-9">
                   <p
                     data-drift
-                    className="font-serif text-foreground text-[1.25rem] md:text-[1.4rem] leading-snug"
+                    className="font-serif text-foreground text-[1.3rem] md:text-[1.5rem] leading-snug"
                   >
                     Tell us about the project.
                   </p>
@@ -474,17 +606,6 @@ const Index = () => {
                   >
                     <ConsultationForm source="home_final_cta" />
                   </Suspense>
-
-                  <div className="mt-8 pt-6 border-t border-foreground/10 flex items-center gap-3">
-                    <span className="text-minimal text-muted-foreground">Or</span>
-                    <Link
-                      to="/contact"
-                      className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/85 hover:text-evergreen transition-colors duration-500"
-                    >
-                      <span>Open the full contact page</span>
-                      <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>

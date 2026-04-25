@@ -104,7 +104,7 @@ const ConsultationForm = ({
       name: values.name,
       email: values.email,
       project_type: values.projectType,
-      budget: values.budget,
+      budget: values.budget ?? null,
       preferred_time: values.preferredTime ?? null,
       source,
     });
@@ -285,11 +285,14 @@ const ConsultationForm = ({
               <FormLabel className="flex items-baseline gap-2 text-minimal text-foreground/70">
                 <span className="numeral-mark tabular-nums">04</span>
                 <span>Budget range</span>
+                <span className="ml-1 text-[0.65rem] tracking-[0.18em] text-muted-foreground/70 normal-case">
+                  optional
+                </span>
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value ?? ""}>
                 <FormControl>
                   <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
-                    <SelectValue placeholder="Select a range" />
+                    <SelectValue placeholder="Not sure yet — we'll discuss" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -350,14 +353,14 @@ const ConsultationForm = ({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep",
           )}
         >
-          <span>{isSubmitting ? "Sending…" : "Send Consultation Request"}</span>
+          <span>{isSubmitting ? "Sending…" : "Request the Conversation"}</span>
           <span className="icon-chip icon-chip-light bg-background/15">
             <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
           </span>
         </button>
 
         <p id={RESPONSE_NOTE_ID} className="text-minimal text-muted-foreground leading-relaxed pt-1">
-          We respond within two business days. No pressure, no automated funnel.
+          We reply within two business days. No obligation. No automated funnel.
         </p>
       </form>
     </Form>

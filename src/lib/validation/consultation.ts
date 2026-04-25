@@ -44,9 +44,11 @@ export const consultationSchema = z.object({
   projectType: z.enum(projectTypeValues, {
     errorMap: () => ({ message: "Please choose a project type" }),
   }),
-  budget: z.enum(budgetValues, {
-    errorMap: () => ({ message: "Please choose a budget range" }),
-  }),
+  budget: z
+    .enum(budgetValues, {
+      errorMap: () => ({ message: "Please choose a budget range" }),
+    })
+    .optional(),
   // Optional — when we should ideally walk the property
   preferredTime: z
     .enum(preferredTimeValues, {
