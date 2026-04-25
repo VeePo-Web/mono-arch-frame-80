@@ -64,6 +64,8 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/09a14ae7-bd4a-415b-b22e-66bbeb1a9240) and click on Share -> Publish.
 
+For details on how compression and long-term caching work on Lovable's hosting (and what is/isn't configurable from this repo), see [PERFORMANCE.md](./PERFORMANCE.md).
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!
