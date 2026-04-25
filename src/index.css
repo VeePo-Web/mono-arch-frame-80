@@ -8,6 +8,7 @@
    Haven Creek Renovations — Design System
    Source of truth: knowledge/source-documents/ui-ux/1.3-client-design-preferences.md
    Visual direction: 2.3 — rural-refined, trust-first, calm, editorial restraint.
+   Craft language: Fantasy.co-tier — haptic depth, double-bezel, cinematic motion.
    ========================================================================== */
 
 @layer base {
@@ -15,8 +16,8 @@
     color-scheme: light;
 
     /* Surfaces — warm off-white like plaster or warm painted millwork */
-    --background: 36 25% 97%;        /* paper / warm off-white */
-    --foreground: 20 8% 14%;         /* charcoal — iron hardware */
+    --background: 36 25% 97%;
+    --foreground: 20 8% 14%;
 
     --card: 36 22% 95%;
     --card-foreground: 20 8% 14%;
@@ -24,15 +25,12 @@
     --popover: 36 25% 97%;
     --popover-foreground: 20 8% 14%;
 
-    /* Primary — charcoal for body authority */
     --primary: 20 8% 14%;
     --primary-foreground: 36 25% 97%;
 
-    /* Secondary — warm stone */
     --secondary: 36 12% 92%;
     --secondary-foreground: 20 8% 14%;
 
-    /* Muted — warm taupe-stone */
     --muted: 30 10% 92%;
     --muted-foreground: 25 8% 38%;
 
@@ -44,8 +42,8 @@
     --evergreen-foreground: 36 25% 97%;
     --evergreen-hover: 145 22% 22%;
     --evergreen-soft: 145 14% 90%;
+    --evergreen-deep: 145 24% 16%;
 
-    /* Supporting natural neutrals */
     --bark: 25 15% 20%;
     --sand: 35 18% 86%;
     --dry-grass: 45 12% 70%;
@@ -59,6 +57,10 @@
 
     --radius: 0.375rem;
 
+    /* Concentric radii — every Double-Bezel container shares this ratio. */
+    --r-shell: 1.75rem;
+    --r-core: calc(var(--r-shell) - 0.375rem);
+
     --sidebar-background: 36 22% 95%;
     --sidebar-foreground: 20 8% 22%;
     --sidebar-primary: 20 8% 14%;
@@ -68,17 +70,32 @@
     --sidebar-border: 30 10% 86%;
     --sidebar-ring: 145 18% 28%;
 
-    /* Calm gradients — used sparingly */
-    --gradient-hero: linear-gradient(180deg, hsl(20 8% 14% / 0.05) 0%, hsl(20 8% 14% / 0.18) 100%);
-    --gradient-overlay: linear-gradient(180deg, hsl(20 8% 14% / 0.10) 0%, hsl(20 8% 14% / 0.40) 100%);
-
     /* Restrained shadows — paper-soft */
     --shadow-soft: 0 1px 2px hsl(20 8% 14% / 0.04), 0 1px 4px hsl(20 8% 14% / 0.03);
     --shadow-card: 0 4px 12px -2px hsl(20 8% 14% / 0.06), 0 2px 6px -1px hsl(20 8% 14% / 0.04);
     --shadow-elegant: 0 12px 32px -12px hsl(20 8% 14% / 0.10);
 
-    --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    --transition-fast: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Haptic shadow — outer ambient + inner highlight (Double-Bezel signature). */
+    --shadow-haptic:
+      0 1px 0 hsl(36 25% 99% / 0.6) inset,
+      0 30px 60px -30px hsl(20 8% 14% / 0.18),
+      0 18px 36px -18px hsl(20 8% 14% / 0.10);
+    --shadow-haptic-strong:
+      0 1px 0 hsl(36 25% 99% / 0.7) inset,
+      0 40px 80px -32px hsl(20 8% 14% / 0.24),
+      0 24px 48px -22px hsl(20 8% 14% / 0.14);
+    --shadow-haptic-evergreen:
+      0 1px 0 hsl(145 22% 38% / 0.4) inset,
+      0 40px 80px -32px hsl(145 24% 8% / 0.55),
+      0 24px 48px -22px hsl(145 24% 8% / 0.35);
+
+    /* Custom cubic-beziers — Fantasy-tier mass and spring physics. */
+    --ease-swift: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-silk: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-weighted: cubic-bezier(0.22, 1, 0.36, 1);
+
+    --transition-smooth: all 0.4s var(--ease-silk);
+    --transition-fast: all 0.22s var(--ease-swift);
   }
 
   html {
@@ -91,6 +108,21 @@
   body {
     @apply bg-background text-foreground font-sans;
     font-feature-settings: "ss01", "kern";
+    position: relative;
+  }
+
+  /* Plaster grain overlay — fixed, pointer-events-none, whisper-quiet (~0.025 opacity).
+     Inline SVG noise (~600 bytes), GPU-cheap because it's fixed and tiny. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.04;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 160px 160px;
   }
 
   * {
@@ -113,7 +145,6 @@
 
 /* ==========================================================================
    Typography Scale — refined serif for headings, clean sans for body.
-   Per 1.3 §6 + 2.3 §7. Fraunces (heading) + Inter (body), wired in tailwind.
    ========================================================================== */
 
 @layer components {
@@ -126,7 +157,6 @@
     text-wrap: balance;
   }
 
-  /* Italic Fraunces signature — used as a single typographic gesture in hero. */
   .text-display-italic {
     font-family: 'Fraunces', Georgia, serif;
     font-style: italic;
@@ -135,7 +165,6 @@
     letter-spacing: -0.03em;
   }
 
-  /* Soft hairline animation for the full-circle path. */
   .path-line {
     background: linear-gradient(180deg, hsl(var(--evergreen) / 0.45) 0%, hsl(var(--evergreen) / 0.10) 100%);
   }
@@ -181,12 +210,10 @@
 
   .text-balance { text-wrap: balance; }
 
-  /* Editorial label/eyebrow */
   .eyebrow {
     @apply text-minimal text-muted-foreground;
   }
 
-  /* Numeral mark used in section headers (I · II · III) */
   .numeral-mark {
     font-family: 'Fraunces', Georgia, serif;
     font-size: 0.75rem;
@@ -195,14 +222,67 @@
     font-weight: 400;
   }
 
-  /* Quiet hairline divider */
   .divider-line {
     width: 64px;
     height: 1px;
     background: hsl(var(--evergreen) / 0.35);
   }
 
-  /* Calm card surface — soft warm shadow, no glass */
+  /* ──────────────────────────────────────────────────────────────────────
+     Double-Bezel architecture — every premium card uses this pattern.
+     Outer shell carries the ambient shadow + ring; inner core carries
+     the solid surface + inset top highlight. Concentric radii via tokens.
+     ────────────────────────────────────────────────────────────────────── */
+  .bezel-shell {
+    position: relative;
+    border-radius: var(--r-shell);
+    background: hsl(var(--card) / 0.55);
+    box-shadow:
+      0 0 0 1px hsl(var(--foreground) / 0.06),
+      var(--shadow-haptic);
+    padding: 0.375rem;
+    transition: box-shadow 700ms var(--ease-weighted), transform 700ms var(--ease-silk);
+  }
+  .bezel-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg,
+      hsl(36 25% 99% / 0.45) 0%,
+      hsl(36 25% 99% / 0) 28%);
+  }
+  .bezel-core {
+    position: relative;
+    border-radius: var(--r-core);
+    background: hsl(var(--card));
+    box-shadow:
+      inset 0 1px 0 hsl(36 25% 99% / 0.7),
+      inset 0 0 0 1px hsl(var(--foreground) / 0.04);
+    overflow: hidden;
+  }
+  .bezel-shell:hover {
+    box-shadow:
+      0 0 0 1px hsl(var(--evergreen) / 0.22),
+      var(--shadow-haptic-strong);
+  }
+
+  /* Evergreen-toned variant for the final CTA panel */
+  .bezel-shell-evergreen {
+    background: hsl(145 22% 38% / 0.18);
+    box-shadow:
+      0 0 0 1px hsl(36 25% 99% / 0.12),
+      var(--shadow-haptic-evergreen);
+  }
+  .bezel-shell-evergreen .bezel-core {
+    background: hsl(var(--background));
+    box-shadow:
+      inset 0 1px 0 hsl(36 25% 99% / 0.9),
+      inset 0 0 0 1px hsl(var(--foreground) / 0.04);
+  }
+
+  /* Legacy soft card kept for back-compat but unused on Home now. */
   .card-soft {
     background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
@@ -215,7 +295,6 @@
     transform: translateY(-1px);
   }
 
-  /* Project gallery card — scoped hover for inspection feel */
   .card-project {
     background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
@@ -227,10 +306,9 @@
     border-color: hsl(var(--evergreen) / 0.45);
     box-shadow: var(--shadow-elegant);
   }
-  .card-project img { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+  .card-project img { transition: transform 0.6s var(--ease-silk); }
   .card-project:hover img { transform: scale(1.02); }
 
-  /* Pull quote (used on About) */
   .pull-quote {
     font-family: 'Fraunces', Georgia, serif;
     font-style: italic;
@@ -240,17 +318,71 @@
     padding-left: 1.5rem;
     line-height: 1.4;
   }
+
+  /* Numeral disc — outlined circular chip used in Steps + Hero proof rows. */
+  .numeral-disc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2rem;
+    width: 2rem;
+    border-radius: 9999px;
+    background: hsl(var(--background));
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--evergreen) / 0.30),
+      0 1px 0 hsl(var(--foreground) / 0.04);
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: hsl(var(--evergreen));
+    font-feature-settings: "tnum";
+    transition: box-shadow 600ms var(--ease-silk), background 600ms var(--ease-silk);
+  }
+  .group:hover .numeral-disc,
+  .group\/disc:hover .numeral-disc {
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--evergreen) / 0.55),
+      0 6px 16px -8px hsl(var(--evergreen) / 0.4);
+    background: hsl(var(--evergreen-soft));
+  }
+
+  /* Button-in-Button trailing icon chip — used on every primary CTA. */
+  .icon-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.875rem;
+    width: 1.875rem;
+    border-radius: 9999px;
+    background: hsl(var(--foreground) / 0.06);
+    transition:
+      transform 500ms var(--ease-swift),
+      background 500ms var(--ease-swift);
+  }
+  .group:hover .icon-chip,
+  .group\/btn:hover .icon-chip {
+    transform: translate(3px, -1px) scale(1.06);
+    background: hsl(var(--foreground) / 0.10);
+  }
+  .icon-chip-light {
+    background: hsl(var(--background) / 0.12);
+  }
+  .group:hover .icon-chip-light,
+  .group\/btn:hover .icon-chip-light {
+    background: hsl(var(--background) / 0.20);
+  }
 }
 
 /* ==========================================================================
-   Motion — restrained, 180–280ms per 2.1 §Performance.
+   Motion — reveal choreography (CSS-driven, hooked via data-revealed attr).
    ========================================================================== */
 
 @layer utilities {
+  /* Legacy reveal — kept for the Hero's existing inline reveal-up classes. */
   .reveal-up {
     opacity: 0;
     transform: translateY(12px);
-    animation: reveal-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: reveal-up 0.65s var(--ease-weighted) forwards;
   }
   @keyframes reveal-up {
     to { opacity: 1; transform: translateY(0); }
@@ -258,13 +390,61 @@
 
   .reveal-fade {
     opacity: 0;
-    animation: reveal-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: reveal-fade 0.5s var(--ease-silk) forwards;
   }
   @keyframes reveal-fade {
     to { opacity: 1; }
   }
 
-  /* Honor reduced motion */
+  /* Dissolve — translate + blur resolves to crisp; the signature reveal. */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(10px);
+    transition:
+      opacity 900ms var(--ease-weighted),
+      transform 900ms var(--ease-weighted),
+      filter 900ms var(--ease-weighted);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: transform, opacity, filter;
+  }
+  [data-reveal][data-revealed="true"] {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  /* Mask reveal — clip-path draws content from the bottom. */
+  [data-reveal-mask] {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 1100ms var(--ease-weighted);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal-mask][data-revealed="true"] {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* Vertical line draw — used on the Approach path. */
+  [data-line-draw] {
+    transform-origin: top;
+    transform: scaleY(0);
+    transition: transform 1400ms var(--ease-weighted);
+  }
+  [data-line-draw][data-revealed="true"] {
+    transform: scaleY(1);
+  }
+
+  /* Hero hand-drawn vignette stroke draw. */
+  .vignette-stroke {
+    stroke-dasharray: 1200;
+    stroke-dashoffset: 1200;
+    animation: stroke-draw 1.8s var(--ease-weighted) 0.4s forwards;
+  }
+  @keyframes stroke-draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Honor reduced motion — collapse all entry animations to instant. */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -272,5 +452,13 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+    [data-reveal] {
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+    }
+    [data-reveal-mask] { clip-path: none !important; }
+    [data-line-draw] { transform: scaleY(1) !important; }
+    .vignette-stroke { stroke-dashoffset: 0 !important; animation: none !important; }
   }
 }

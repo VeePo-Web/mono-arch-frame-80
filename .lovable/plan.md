@@ -1,150 +1,211 @@
+# Haven Creek — Fantasy.co Design Upgrade Plan
 
-# Haven Creek — Home Page & Chrome, Fantasy-grade Build
+**Filtering through the three values**
+1. *Elevate the Human Experience* — slow the visitor down with intentional motion, never trap them with dark patterns.
+2. *Embody Brand Truth with Excellence* — every haptic detail must read "rural-refined", not "luxury SaaS". Fraunces serif and warm plaster surfaces stay; we add depth, not noise.
+3. *Innovate Responsibly for Impact* — every visual upgrade must serve the one goal: a homeowner pressing "Request a Consultation" with confidence. Zero novelty for novelty's sake.
 
-## Reality check first
+**Audit verdict** (from the live preview + soft-skill SKILL.md anti-pattern list)
 
-`Index.tsx` is currently a placeholder ("Build in progress — full page returning shortly"). There is no Navigation, no Footer, no Hero — none of the actual home page exists. So "upgrade the design" means **build the Home page (and the chrome it sits inside) to a Fantasy.co caliber from the clean, performance-tuned foundation we just laid**.
+| AI tell present today | Why it fails the Fantasy.co bar |
+|---|---|
+| Edge-to-edge sticky navbar glued to top | Banned layout — feels like a generic SaaS |
+| Hero proof panel sits flatly on bg, single 1px border | Banned — needs Double-Bezel architecture |
+| Project cards are pure text on warm card | No vignette, no proof of craft, reads as Lorem |
+| `ease-smooth` everywhere via Tailwind defaults | Banned — needs custom cubic-beziers w/ mass |
+| `bg-evergreen` final CTA is a solid color block | Reads as a Bootstrap CTA strip |
+| Lucide arrows used everywhere | Acceptable but uniformly sized — feels stamped |
+| Reveals are pure translate-up | Missing the "blur dissolve" signature |
+| Mobile menu is full-bleed solid background | Should be a heavy diffused glass overlay |
 
-Everything below honors three non-negotiables already established:
-- The brand spec (1.3, 1.5, 2.1, 2.2, 2.3) — rural-refined, trust-first, calm, editorial restraint.
-- Your performance work — variable Fraunces (400 / 1,300 only), Inter, lazy routes, WebP logos, useLayoutEffect scroll, no bloat.
-- "Quiet confidence." No glassmorphism, no gradients-on-gradients, no fake luxury, no urgency theater.
-
----
-
-## The design thesis (what makes this feel Fantasy-grade, not "another contractor site")
-
-Fantasy's signature isn't motion or colors — it's **editorial confidence**. Long sentences are short. Sections that other sites scream, this site whispers. Negative space is treated as a material, not a leftover. Every interaction has a reason. Every image is earned.
-
-For Haven Creek that translates into five composition rules I'll apply everywhere:
-
-1. **Numeral-led editorial structure.** Sections marked I · II · III in a tiny serif numeral, hairline rule, then a small uppercase eyebrow — the same masthead language a thoughtful magazine uses. This is already in `SectionHeader.tsx`; we'll lean into it harder.
-2. **Asymmetric two-column rhythm.** Headlines occupy a 7-col column, body copy a 5-col column offset below — not centered, not full-bleed. This single choice is what separates "editorial" from "marketing slide."
-3. **One signature visual moment per scroll.** Hero, first project card, full-circle approach, and final CTA each get one bespoke detail nobody else has. Not four heroes — one hero, three quiet surprises.
-4. **Type as the primary visual.** Fraunces variable italic at large sizes, with optical kerning, hanging punctuation, and pull-quote treatments — typography carries the brand more than any image will.
-5. **Motion ≤ 280ms, only where it earns trust.** Reveal-up on scroll, hairline-grow on hover, image scale 1.02 on card hover. Nothing parallaxes. Nothing bounces. Reduced-motion fully honored (already wired in `index.css`).
+We bring it to Awwwards-tier in **eight tightly-scoped passes**, no new dependencies, no new fonts, no new images beyond two tiny inline SVG textures.
 
 ---
 
-## What gets built (six deliverables, one focused pass)
+## Pass 1 — Tokens & motion language (foundation)
+**Files:** `src/index.css`, `tailwind.config.ts`
 
-### 1. `Navigation.tsx` — the masthead
+Add the bespoke craft tokens the entire site will reuse:
 
-Top of every page. Sticky, paper-thin (1px hairline border on scroll, no shadow). 64px tall, 80px on desktop.
+- **Custom cubic-beziers** as Tailwind `transitionTimingFunction` keys:
+  - `swift: cubic-bezier(0.32, 0.72, 0, 1)` — UI clicks, button physics
+  - `silk: cubic-bezier(0.16, 1, 0.3, 1)` — already exists; rename to `ease-silk`
+  - `weighted: cubic-bezier(0.22, 1, 0.36, 1)` — large reveals, modal expansion
+- **Concentric radius variables** in CSS: `--r-shell: 1.75rem; --r-core: calc(var(--r-shell) - 6px);` so every Double-Bezel container shares one ratio.
+- **Plaster grain overlay** — a fixed `pointer-events:none` `::before` on `body`, an inline SVG noise data-URI at `opacity: 0.025`. Adds the "physical paper" texture from the Editorial Luxury archetype (banned in heavy doses; ours is whisper-quiet, ≤ 1 KB inlined).
+- **Inset highlight + diffused ambient shadow utilities**:
+  - `.shadow-haptic`: `0 1px 0 hsl(var(--background)/0.7) inset, 0 30px 60px -30px hsl(20 8% 14% / 0.18), 0 18px 36px -18px hsl(20 8% 14% / 0.10)`
+  - `.shadow-haptic-evergreen`: same recipe in evergreen tones for the final CTA
+- **Reveal keyframes** (CSS, no JS overhead):
+  - `reveal-dissolve`: from `{ opacity: 0; transform: translateY(28px); filter: blur(10px); }` → resolved over 800 ms on `weighted`. Honors `prefers-reduced-motion`.
+  - `reveal-mask`: clip-path inset reveal from bottom for headlines.
+- **Hairline-grow utility** standardized so the underline/border growth is identical across nav, links, and dividers.
 
-- **Left:** Haven Creek horizontal WebP logo (already optimized, ~32 KB), 28px tall, links home.
-- **Center (desktop only):** Six restrained nav links in `text-minimal` (11px, letter-spaced 0.22em uppercase) — Work · Services · Service Areas · About · Contact. Underline grows from left on hover (300ms). Active route gets a 1px evergreen rule below the label.
-- **Right:** Single ghost CTA "Request a Consultation" → `/contact`. On scroll-down past 80px, it solidifies into a small primary chip (the only motion in the bar).
-- **Mobile:** Hamburger → full-screen sheet (Radix `Sheet` already installed). Nav items stack as large serif italic Fraunces — the menu becomes a small editorial moment, not a checklist.
-- Skip-to-content link for a11y. Focus-visible ring on every interactive element.
-
-### 2. `Footer.tsx` — the closing page
-
-Three editorial blocks across desktop, stacked on mobile. Off-white `--card` background, hairline top border in evergreen/30.
-
-- **Left:** Logo mark + the line "One trusted contractor for the property you value." in serif italic.
-- **Middle:** Two thin columns — Services / Service Areas — quiet text links.
-- **Right:** Contact line ("Talk through your property — we'll respond within two business days."), email, phone, ghost CTA "Request a Consultation."
-- **Bottom rule:** Tiny copyright + a single hairline `divider-line` (already in CSS) above. No social icons unless you want them — Haven Creek's audience doesn't live there.
-
-### 3. `Hero.tsx` (Index hero) — the signature opening
-
-Per the wireframe spec, this must answer "Can I trust this person on my property?" in five seconds. The layout is a 12-col asymmetric grid:
-
-- **Cols 1–6 (left, vertically centered):**
-  - Tiny eyebrow: `EST. ALBERTA · RURAL HOMES` (numeral mark + hairline + label, exact pattern from `SectionHeader`).
-  - **Headline** in Fraunces 400, fluid `clamp(2.75rem, 5vw + 1rem, 5.75rem)`: "Trusted renovations for rural homes." — italic Fraunces on the word "Trusted" only, as the signature typographic gesture. (Knowledge §2.1: this exact 35-char headline is mandated.)
-  - Subhead in Fraunces 300 italic: "Hands-on finishing, repairs, and decks — from planning to completion."
-  - CTA pair using existing `PrimaryCTA`: primary "Request a Consultation" + secondary "View Our Work."
-  - Microcopy below in `text-minimal text-muted-foreground`: "No pressure. Just a clear conversation about your property."
-  - Trust line: "Serving Bragg Creek · Rocky View County · Bearspaw · Water Valley" — the four areas as middle-dot-separated chips, evergreen on hover.
-- **Cols 7–12 (right):** Per knowledge §2.1, since real photography hasn't arrived yet, we build the **mandated fallback as a feature, not a placeholder**:
-  - Warm off-white panel with the Haven Creek monogram WebP at low opacity (8%) as a watermark.
-  - Three small proof chips stacked: `I — Interior Finishing` / `II — Exterior Repairs` / `III — Decking`, each with a one-line caption. Hairline borders, hover lifts 1px.
-  - A subtle vertical evergreen line on the left edge of the panel — the "creek" suggestion, never said out loud.
-  - When real hero photography arrives later, the panel swaps to a single image with `fetchpriority="high"` + `decoding="async"` and the chips slide below.
-- **Below the fold:** A single small chevron + "Continue" in `text-minimal` — gentle, not a giant "scroll" badge.
-
-This hero alone is 70% of the first impression. It's intentionally quiet on motion: the entire section reveals once with `reveal-up`, staggered 60ms between elements. Nothing parallaxes.
-
-### 4. Home sections (the body of `Index.tsx`)
-
-Six sections, each one numeral-led, each with the asymmetric 7/5 rhythm. Generous vertical spacing — `py-24 md:py-32` minimum between sections (this is the "acreage living, distance, air" feeling from §2.3 §15).
-
-- **§ I — Trust Promise.** Numeral I, eyebrow "THE PROMISE", headline "One contractor. One relationship. A clearer path from idea to completion." Three short paragraphs offset right, no icons, no cards — just typography breathing.
-- **§ II — Services Preview.** Three editorial cards built on `card-soft` (already in CSS). Each card: numeral, service name in Fraunces, one-line promise, 2–3 sentence body, ghost link "See the work →." Pulled from `src/data/services.ts`. Hover: border shifts to evergreen/45, hairline below the title grows from 24px → 56px (300ms). No image yet — captions and type carry it. Interior Finishing visually weighted slightly heavier (it's the flagship per §2.2).
-- **§ III — Full-Circle Approach.** This is **signature visual moment #2**. Instead of a horizontal "1-2-3" timeline (every contractor site has one), we render it as a vertical editorial path: three numbered moments — Conversation · Planning · Hands-On Completion — connected by a single 1px evergreen line that draws itself on scroll-into-view (300ms, reduced-motion safe). Each step is a Fraunces title + one sentence. Quiet, deliberate, slow.
-- **§ IV — Project Gallery Preview.** Three projects from `src/data/projects.ts`, rendered as `card-project` (already in CSS). Each card: warm caption-led tile (no fake luxury stock — explicit per §1.5 dealbreakers), category eyebrow, location, project title in Fraunces, scope sentence. When real images arrive, they slot in with `loading="lazy" decoding="async"` and the existing 1.02× scale-on-hover. Footer link: "See all work →."
-- **§ V — Service Areas.** A single quiet row: four area names in large Fraunces, each linking to its area page, with the `shortLine` from the data file as a small caption beneath. Hovering an area name reveals a hairline rule and a small chevron — invitation, not announcement. This is **signature visual moment #3**: locality expressed through editorial restraint, not a map.
-- **§ VI — Final CTA.** Full-bleed warm card section. Headline in Fraunces: "Ready to talk through your next property improvement?" Four bullet lines (the value recap from §2.1). Primary CTA + ghost CTA "Talk Through Your Project." Microcopy: "Custom quotes based on your property, scope, and timeline."
-
-### 5. Tiny supporting components (extracted, reusable)
-
-- `Container.tsx` — `max-w-[1280px] mx-auto px-6 md:px-10` — single source of truth for content width. Per §2.1: max 1180–1280px.
-- `Eyebrow.tsx` — wraps the numeral + hairline + label trio so we use it identically across all sections (currently inlined in `SectionHeader`).
-- `JsonLd` already exists — wire LocalBusiness + Breadcrumb schema into `Index.tsx`.
-
-### 6. Two small polish moves on what already exists
-
-- `index.css`: Add `.text-display-italic` utility for the hero "Trusted" word — Fraunces italic at the same fluid size as `.text-display`, with optical-size shift via `font-variation-settings: "opsz" 144` (free, no extra payload — we already loaded the variable axis we need).
-- `Index.tsx`: Add `<JsonLd>` and `useDocumentTitle` for proper SEO from page one.
+Why now: every later pass references these tokens. Without them we'd hard-code the same magic numbers ten times.
 
 ---
 
-## Performance discipline (preserve everything we just earned)
+## Pass 2 — Floating glass island Navigation
+**File:** `src/components/Navigation.tsx`
 
-- **Zero new asset weight.** No new images, no new fonts, no new icon sets. Lucide icons (already a dep) only — `ArrowRight`, `ChevronDown`, `Menu`, `X`. Nothing else.
-- **Hero is fully eager** (it's the LCP). Every section below the hero gets `content-visibility: auto` + `contain-intrinsic-size` per the existing performance memory.
-- **Motion gated by `prefers-reduced-motion`** — already wired globally in `index.css`. New scroll-triggered reveals use `IntersectionObserver` with `once: true` + 12% threshold, never `requestAnimationFrame` loops.
-- **Navigation scroll listener** is passive + throttled with `requestAnimationFrame`. Single listener, removed on unmount.
-- **No new npm dependencies.** Everything uses what's already installed (Radix, lucide-react, react-router-dom).
-- Estimated impact: Home page JS adds ~6–8 KB gzipped over current placeholder. No change to font payload, no change to image payload.
+Rebuild as the soft-skill "Fluid Island" archetype, tuned warm:
 
----
+- Detached from the top: `mt-5`, centered, `w-max max-w-[min(96vw,1080px)]`, `rounded-full`, `px-2 py-2`.
+- **Outer shell**: `bg-background/70 backdrop-blur-xl ring-1 ring-foreground/8`, with a soft ambient drop shadow (no harsh blacks — uses the bark token at 8 % alpha).
+- **Inner core**: a `rounded-full` strip holding the logo (left, in its own `rounded-full` chip), the centered link cluster, and the right-side CTA pill.
+- **Link hover**: chip-style background fade-in (no underline at this scale; underlines belong to body links). Active route shows a 4 px evergreen dot below the label that draws in via `transform: scaleX(0)` → `scaleX(1)` on `swift`.
+- **CTA button**: pill with the **Button-in-Button** trailing icon — arrow lives inside its own `h-8 w-8 rounded-full bg-foreground/5` chip, flush right. On hover the chip translates `+3px / -1px` and scales 1.05 while the parent `active:scale-[0.98]`.
+- **Scroll behavior**: instead of "solidify on scroll", the island *contracts* — `py-2 → py-1.5`, brand text fades to mark-only, all on `swift 320 ms`. No background swap, no layout jank.
+- **Hamburger morph**: two lines that rotate to `+45° / -45°` (no third line — calmer rural feel).
+- **Mobile sheet**: heavy diffused glass (`bg-background/82 backdrop-blur-2xl`), staggered link reveal (delays 80/140/200/260/320 ms), each link is the editorial italic Fraunces but now with a `reveal-mask` clip-path so it draws in from below.
 
-## Accessibility & a11y discipline
-
-- Every interactive element ≥ 44×44 touch target (already in PrimaryCTA).
-- Every section has a unique `id` + `aria-labelledby` pointing at its heading.
-- Skip-to-content link in Navigation.
-- Mobile sheet traps focus, restores on close, Escape closes.
-- Color contrast: foreground/background already passes AAA at body size, AA at minimum size — verified against the tokens in `index.css`.
-- No motion ever blocks comprehension; reduced-motion drops every transform/opacity transition to 0.01ms (already global).
+Performance: scroll listener already passive + rAF-throttled; we drop it and use a single `IntersectionObserver` on a 1px sentinel `<div>` instead — zero scroll handler.
 
 ---
 
-## What I will NOT do (boundary check, per your prompt)
+## Pass 3 — Hero: signature opening with hand-drawn vignette
+**Files:** `src/components/Hero.tsx`, new `src/components/hero-vignette.tsx`
 
-- No carousels, no auto-rotating heroes, no video backgrounds.
-- No fake testimonials. Use "project proof captions" per §2.1 until real testimonials exist.
-- No urgency badges, no countdowns, no "limited spots."
-- No stock photography of generic luxury interiors. The fallback hero IS the design until real photos arrive.
-- No dark mode toggle (per existing memory: single light mode).
-- No new color introductions — the evergreen + warm off-white + charcoal palette stays untouched.
-- No Navigation/Footer redesign every page — they're built once, used everywhere.
+The hero is still the biggest trust moment. Two surgical upgrades:
 
----
+**A. Double-Bezel proof panel**
+The right column becomes a true nested enclosure:
+- *Outer shell*: `rounded-[var(--r-shell)] bg-card/60 ring-1 ring-foreground/8 p-1.5 shadow-haptic`
+- *Inner core*: `rounded-[var(--r-core)] bg-card` holding the existing eyebrow + three service rows.
+- The vertical evergreen "creek" line moves to the inner core's left edge so it reads like a deliberate inlay.
 
-## Order of operations (one focused implementation pass after approval)
+**B. Replace the watermark logo with a hand-drawn property scene**
+A single, ~3 KB inline SVG: minimalist line drawing of a rural home silhouette + a single tree + a horizontal land line, drawn with `stroke-dasharray` animation that completes once on mount (1.6 s, then static — no looping). Uses `hsl(var(--evergreen) / 0.30)`. This is the *signature visual moment* the brand brief explicitly asks for, and it solves "no real photography yet" without resorting to stock.
 
-1. `Container.tsx` + `Eyebrow.tsx` (5 min, foundation).
-2. `.text-display-italic` utility in `index.css`.
-3. `Navigation.tsx` (desktop + mobile sheet).
-4. `Footer.tsx`.
-5. `Hero.tsx` with the editorial fallback panel.
-6. The six home sections inline in `Index.tsx`, in order.
-7. Wire `<Navigation />` + `<Footer />` into `App.tsx` so every route inherits them (placeholder pages stay valid).
-8. Smoke-test the build, walk through reduced-motion, walk through mobile breakpoints in code (375 / 768 / 1280).
+**C. Service rows become tactile**
+Each of the three service rows in the panel:
+- Numeral chip becomes a `rounded-full` `h-7 w-7` outlined disc, the numeral inside in tabular-nums.
+- Hairline beneath each row grows from 12 px → 80 px on hover (matches the underline language elsewhere).
+- The trailing arrow gets the Button-in-Button treatment (icon inside a `h-7 w-7` `rounded-full` evergreen-tinted chip that brightens + nudges on hover).
 
-After this lands, the natural next moves (separate passes — not part of this plan):
-- Real hero photography integration when supplied.
-- The narrative copy elevation pass (your storyteller prompt) — Home first.
-- The other page builds (About, Services, Work, Areas, Contact).
+**D. Headline choreography**
+The "Trusted" italic + "renovations for rural homes." stack uses `reveal-mask` per line so each line draws in from below instead of fading in, on `weighted 900 ms` with 120 ms stagger. The italic word gets a 100 ms head start so it reads like it was set first.
 
 ---
 
-## Why this is the right move now
+## Pass 4 — Card system with Double-Bezel
+**Files:** `src/components/ui/card-premium.tsx` (new wrapper), `src/pages/Index.tsx` (Services + Project sections)
 
-You said "upgrade the design" — but the truthful read of the codebase is that the design hasn't been built yet, only its tokens and chrome-less performance shell. Trying to "upgrade" a placeholder would mean inventing decoration. The Fantasy-grade move is to **finally build the Home page properly, the first time**, with editorial restraint as the differentiator, and to do it without spending one byte of the performance budget you just earned.
+A single shared `<PremiumCard>` component with the nested architecture so we never re-implement it:
 
-Approve and I'll execute the eight steps above in a single disciplined pass.
+```
+<PremiumCard>            // outer shell: bg, ring, p-1.5, shell radius, shadow-haptic
+  <div className="core"> // inner core: solid card bg, inset top highlight, core radius
+    {children}
+  </div>
+</PremiumCard>
+```
+
+**Services preview (§ II)**
+- Three premium cards.
+- Hover: outer shell ring tightens from `foreground/8` to `evergreen/30`, ambient shadow deepens 30 → 50 % alpha, the inner core tilts 0 → -0.4° on `swift 600 ms` (subtle Z-Axis Cascade hint, no aggressive 2-3° rotations that would feel novelty).
+- Numeral chip uses the disc treatment from Pass 3 for cross-page consistency.
+- "See the work" CTA gets the Button-in-Button trailing arrow.
+- Featured emphasis on Interior Finishing: outer shell ring sits at `evergreen/15` even at rest (the strategy doc mandates this hierarchy).
+
+**Project gallery preview (§ IV)**
+Today these are pure text — the most disappointing section. Upgrade plan that respects "no fake stock" rule:
+- Each card gets a **proof vignette** at the top: a 4:3 inline-SVG composition (~600 bytes each) showing an abstract craft motif:
+  - *Saw Mill Kitchen* → cross-section of a beveled cabinet edge
+  - *Ridgeline Deck Rebuild* → deck-board parallel-lines ending on a railing post
+  - *South-Facing Soffit Repair* → soffit-and-fascia profile with vent slats
+  These are drawn in evergreen + bark on a warm-stone fill, using only `<rect>` and `<line>` — they read as architectural drawings, fully aligned with "craftsmanship notes, not marketing blurbs". Total payload: < 2 KB inlined.
+- Project metadata layout becomes: vignette → category eyebrow → serif title → italic location → scope → "Why it mattered" pull-line in evergreen with a 2 px left rule (matches the `.pull-quote` already in CSS).
+- Card hover: shell ring → evergreen, vignette gently scales `1.0 → 1.015`, all on `weighted 700 ms`.
+
+---
+
+## Pass 5 — Trust Promise, Approach, Areas — calm, readable upgrades
+**File:** `src/pages/Index.tsx`
+
+These three sections are already strong editorially. Tightening:
+
+**§ I Trust Promise**
+- Pull quote on the right column gets the `.pull-quote` styling already defined (currently unused) — reframes the second paragraph as a quoted line of philosophy.
+- Add a single hairline numeral chip to the left of the headline so the "I" eyebrow reads as the section opener, not a label.
+
+**§ III Approach**
+- Step discs upgrade from a flat `border` to the same outlined disc system (concentric: outer ring at 8 % evergreen, inner solid background, numeral in tabular-nums).
+- The vertical path line gets a `reveal-mask` that draws downward from top to bottom on enter — choreographed with the steps so each step's disc lights up as the line passes it (pure CSS `animation-delay` chained off `IntersectionObserver`).
+- Each step body gets a `max-w-[52ch]` for true editorial measure.
+
+**§ V Service Areas**
+- Today is a divide-list — keep it but add a *floating preview* on hover: a small inline-SVG mini-map (geometric, not a real map, ~400 bytes per area) anchored bottom-right of each row, fading + sliding in on hover. Calm, never noisy. Disabled on touch to avoid sticky hovers.
+- Right-aligned arrow gets the Button-in-Button chip treatment.
+
+---
+
+## Pass 6 — Final CTA: textured editorial close
+**File:** `src/pages/Index.tsx` (§ VI)
+
+Today: a flat evergreen color block. Upgrade to **textured editorial close**:
+
+- Background: keep evergreen base, layer a radial gradient bloom from top-left at 20 % evergreen-hover, plus the same plaster grain overlay at `opacity: 0.04`. Reads as deep, breathable green, not a slab.
+- The single vertical hairline becomes a vertical *reveal-mask* line that draws in on view-enter.
+- Replace the two large CTA rows with a **Double-Bezel CTA stack**:
+  - Outer shell: `bg-background/8 ring-1 ring-background/15 p-1.5 rounded-[var(--r-shell)]`
+  - Inner core: a single calm cream surface holding the primary CTA pill (Button-in-Button), a hairline divider, and a secondary text-link CTA below it. Reduces the "two equal buttons" awkwardness and creates one clear next step.
+- The four-line proof list becomes a **vertical list with hairline counters** (`I · II · III · IV` in tabular-nums) so it visually mirrors the rest of the page's numeral language.
+- Closing line "Custom quotes based on your property, scope, and timeline." stays as the calm afterword.
+
+---
+
+## Pass 7 — Footer: editorial closing page
+**File:** `src/components/Footer.tsx`
+
+Already solid. Three light touches:
+
+- Wrap the brand block in a **PremiumCard** at quarter-strength (outer shell with `ring-foreground/4`) so the footer feels like a final composed plate, not a list.
+- Replace the column heading text with the eyebrow numeral pattern (e.g. `· SERVICES`, `· AREAS`, `· CONTACT`) — visual continuity with the body sections.
+- Add a single **end-mark** glyph after the © line (a small evergreen square ⬛ at 6 px) — Pentagram-style closing punctuation. The kind of detail no one names but everyone feels.
+
+---
+
+## Pass 8 — Reveal choreography + polish + verification
+**Files:** new `src/hooks/useReveal.ts`, sections in `src/pages/Index.tsx`
+
+- One tiny shared hook: `useReveal(ref)` wires `IntersectionObserver` (rootMargin `0px 0px -10% 0px`, `threshold: 0.15`) and toggles a `data-revealed="true"` attribute. CSS handles the rest via `[data-reveal]` → `[data-reveal][data-revealed="true"]` rules using `reveal-dissolve`. **No JS animation libs**, ≈ 600 bytes hook + a few CSS rules.
+- Apply `data-reveal` with stagger indices to: hero proof panel rows, every Service card, every Step disc + body, every Project card, every Area row, the final CTA's Double-Bezel stack.
+- `prefers-reduced-motion`: all `data-reveal` elements snap to final state immediately (already handled by the existing media query — we just inherit it).
+- **Pre-output checklist run** against the soft-skill matrix (Section 8):
+  - [ ] No banned fonts/icons/borders/shadows/layouts
+  - [ ] Vibe = Editorial Luxury · Layout = Editorial Split (hero) + Asymmetrical Bento (services/projects)
+  - [ ] All major cards = Double-Bezel
+  - [ ] CTAs = Button-in-Button
+  - [ ] Section padding ≥ `py-24` (already true, raising final CTA to `py-36`)
+  - [ ] All transitions on custom cubic-beziers
+  - [ ] Scroll entry on every above-fold-2 element
+  - [ ] Mobile collapses to single-column at `md:` breakpoint
+  - [ ] Animations only on `transform`/`opacity`/`filter` (blur is GPU-cheap on small elements)
+
+**Verification step**
+1. `bun run build` — confirm bundle stays at or near current 108 KB gz JS / 12.6 KB gz CSS. Budget ceiling: +8 KB JS, +4 KB CSS (the inline SVGs add ~3 KB CSS, the hook adds < 1 KB JS, no new deps).
+2. Browser screenshot pass at 1440×900, 768×1024, 390×844 — the canonical desktop, tablet, and mobile.
+3. Lighthouse-equivalent eyeball: hero LCP element is still the headline `<h1>`, no new render-blocking work, no CLS introduced (every revealed element has a final-state `min-height` reserved or uses `transform`-only motion).
+
+---
+
+## What we're explicitly NOT doing (and why)
+
+- **No new fonts.** Fraunces + Inter is doing the editorial work; adding Geist or Clash Display would dilute the rural-refined identity and bust the perf budget.
+- **No fake architectural stock photography.** The brief at `1.5-brand-identity-north-star.md` lists "luxury stock imagery" as a dealbreaker. Inline SVG vignettes solve the empty-photo problem without faking craft.
+- **No GSAP / Framer Motion.** Every upgrade above is achievable with CSS transitions on `transform`/`opacity`/`filter` + one tiny IntersectionObserver hook. Adding Framer Motion would cost ~30 KB gz for visuals we can do in CSS.
+- **No bento-grid masonry on the home.** The brief calls for "calm pathway, not a generic process diagram." We use the Editorial Split / Card Triplet rhythm instead — Bento would feel SaaS.
+- **No "What we believe" / testimonials section.** Out of scope for this pass and the current copy isn't ready. We'll surface it in a later pass once real client quotes exist.
+
+---
+
+## Order of operations once approved
+
+1. Pass 1 (tokens) — single CSS + Tailwind config edit, foundation for everything else.
+2. Pass 2 (Navigation) + Pass 7 (Footer) in parallel — chrome locks in.
+3. Pass 3 (Hero) + Pass 4 (Card system + Services + Projects) — biggest visible upgrade.
+4. Pass 5 (Trust/Approach/Areas) + Pass 6 (Final CTA) — section polish.
+5. Pass 8 (reveal hook + checklist + build verification + screenshot QA).
+
+**Approve to switch to default mode and execute.**

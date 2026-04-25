@@ -41,13 +41,13 @@ const Footer = () => {
           {/* Services + Areas columns */}
           <div className="md:col-span-4 grid grid-cols-2 gap-8">
             <div>
-              <h3 className="text-minimal text-evergreen mb-5">Services</h3>
+              <p className="text-minimal text-evergreen mb-5">· SERVICES</p>
               <ul className="space-y-3">
                 {services.map((s) => (
                   <li key={s.slug}>
                     <Link
                       to={s.href}
-                      className="text-body text-foreground/80 hover:text-evergreen transition-colors text-[0.95rem]"
+                      className="text-body text-foreground/80 hover:text-evergreen transition-colors duration-500 text-[0.95rem]"
                     >
                       {s.shortName}
                     </Link>
@@ -56,13 +56,13 @@ const Footer = () => {
               </ul>
             </div>
             <div>
-              <h3 className="text-minimal text-evergreen mb-5">Service Areas</h3>
+              <p className="text-minimal text-evergreen mb-5">· AREAS</p>
               <ul className="space-y-3">
                 {serviceAreas.map((a) => (
                   <li key={a.slug}>
                     <Link
                       to={a.href}
-                      className="text-body text-foreground/80 hover:text-evergreen transition-colors text-[0.95rem]"
+                      className="text-body text-foreground/80 hover:text-evergreen transition-colors duration-500 text-[0.95rem]"
                     >
                       {a.name}
                     </Link>
@@ -74,16 +74,18 @@ const Footer = () => {
 
           {/* Contact + CTA */}
           <div className="md:col-span-3">
-            <h3 className="text-minimal text-evergreen mb-5">Talk it through</h3>
+            <p className="text-minimal text-evergreen mb-5">· TALK IT THROUGH</p>
             <p className="text-body text-foreground/80 text-[0.95rem] leading-relaxed">
               Reach out and we'll respond within two business days.
             </p>
             <Link
               to="/contact"
-              className="mt-6 inline-flex items-center gap-2 text-minimal text-foreground hover:text-evergreen transition-colors group"
+              className="group/btn mt-6 inline-flex items-center gap-3 text-minimal text-foreground hover:text-evergreen transition-colors duration-500"
             >
               <span>Request a Consultation</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+              <span className="icon-chip bg-evergreen/[0.06]">
+                <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
+              </span>
             </Link>
           </div>
         </div>
