@@ -1,165 +1,165 @@
-# Lighthouse CI + Web Vitals + Top-5 honest fixes
 
-> Your instruction: *"never do nothing. always upgrade this."*
-> I'm taking that seriously — but I'm also going to be honest about the **state of the code today**. The obvious, expensive optimizations (self-hosted fonts, code-split routes, lazy toasters, lazy form, no raster hero, hashed assets, edge brotli, intersection-observed reveals) **are already done from earlier turns in this conversation**. So the "top 5 fixes" below are the *next* tier — smaller, real, measurable wins, plus actual instrumentation so we stop guessing.
->
-> I will not invent fake fixes to pad a list of 5. If a fix is marginal I will say so.
+# Editorial Declutter — Sitewide Refinement Pass
 
----
+## Diagnosis (why it reads "cheap" right now)
 
-## Part A — CI + measurement (the part you actually asked for first)
+The site is **over-decorated**, not under-designed. Every section currently competes with multiple ornamental layers:
 
-### A1. Lighthouse CI in GitHub Actions
+- Roman numeral eyebrows **+** coord-mark marginalia **+** numeral discs **+** card monograms **+** figure footnotes **+** plate numerals **+** surveyor brackets **+** dashed path lines **+** ridge silhouettes **+** vignette tick marks **+** body grain overlay **+** thermal arc gradient.
+- Three different "label" typographic systems (eyebrow, coord-mark, figmark) doing the same job.
+- Cards stacked with 5+ pieces of meta (numeral disc, plate, figmark, category, area, monogram) before you reach the actual content.
+- Hero has TWO competing focal points (left headline column + right service-list panel) — neither wins.
 
-New file: **`.github/workflows/lighthouse.yml`**
+Fantasy.co, Pentagram, and Collins do the opposite: **one clear move per surface**, enormous whitespace, and one signature ornament per page (not seven).
 
-Two jobs:
-
-- **`lighthouse-build`** (runs on every push + PR): does `bun install`, `bun run build`, serves `dist/` with `npx http-server -p 4173 -s`, runs `treosh/lighthouse-ci-action@v12` against `http://localhost:4173/` for these routes:
-  - `/`, `/services`, `/work`, `/about`, `/contact`
-  - 3 runs each, mobile preset, throttled to "Moderate 4G / 4× CPU slowdown" (Lighthouse default mobile)
-  - Asserts: **performance ≥ 0.90**, **accessibility ≥ 0.95**, **best-practices ≥ 0.95**, **CLS ≤ 0.05**, **LCP ≤ 2500 ms**, **TBT ≤ 200 ms**. Failures break the PR.
-- **`lighthouse-prod`** (runs on `workflow_dispatch` + nightly cron `0 7 * * *` UTC): same audits against `https://havencreekrenovations.ca` (configurable via repo variable `PROD_URL`). Reports are uploaded to the temporary public storage that the action provides — link is dropped in the workflow summary so you can click straight into the report.
-
-New file: **`.lighthouserc.json`** with the assertion budget so the same thresholds apply locally (`npx lhci autorun`) and in CI.
-
-> **Caveat I will not paper over:** the *build* job runs against the locally-served `dist/`, which is **not** behind the Cloudflare edge, so its Brotli/CDN/TTFB numbers are pessimistic relative to production. That's actually what we want for a regression gate — if it passes here, prod will be better. The `prod` job is the one whose absolute numbers should be trusted.
-
-### A2. Web Vitals real-user telemetry
-
-New file: **`src/lib/vitals.ts`** — imports `web-vitals` (~1.5 kB gz), registers `onLCP`, `onCLS`, `onINP`, `onFCP`, `onTTFB`, sends each to:
-
-1. `console.info("[web-vitals]", metric)` in dev
-2. `navigator.sendBeacon('/__vitals', JSON.stringify(metric))` in prod **if** `VITE_VITALS_ENDPOINT` is set, otherwise no-op (we don't have a collector wired up yet — I am not going to fake one)
-
-Wired into `src/main.tsx` via a dynamic import inside `requestIdleCallback` so it never touches the LCP-critical path:
-
-```ts
-if (typeof window !== "undefined") {
-  const idle = (cb: () => void) =>
-    "requestIdleCallback" in window
-      ? (window as any).requestIdleCallback(cb)
-      : setTimeout(cb, 1500);
-  idle(() => import("./lib/vitals").then(m => m.report()));
-}
-```
-
-New dep: `web-vitals@^4`. ~1.5 kB gz, deferred, never blocks.
-
-> **Honest note:** without a collector endpoint this is *local logging only* — useful for spot-checking in a real browser, not a dashboard. If you want a real RUM dashboard I'd plumb it into a Lovable Cloud edge function + a `vitals` table; that's a separate, larger ask and I'll only do it if you say "wire up the collector too." Otherwise this stays as instrumentation-ready code that flips on the day you add `VITE_VITALS_ENDPOINT`.
+The fix is subtractive, not additive.
 
 ---
 
-## Part B — The top 5 fixes (ranked by honest expected impact)
+## The Editorial Principles (filter every change through these)
 
-### Fix 1 — Preload the above-the-fold logo & critical font woff2
-
-**Problem:** `Navigation.tsx` has `fetchPriority="high"` on the `<img>`, but the browser still discovers `haven-creek-horizontal.webp` only after parsing+executing the eager JS bundle (it's an ESM-imported asset, not in the HTML). Same for the two woff2 files actually painted above the fold (Fraunces upright 400 + Inter 500).
-
-**Change:** in `vite.config.ts` add a tiny custom plugin that, post-build, emits `<link rel="preload">` tags into `dist/index.html` for:
-
-- the hashed logo webp (resolved by reading the manifest)
-- `fraunces-latin-wght-normal.woff2` and `inter-latin-500-normal.woff2` from `@fontsource`, with `crossorigin` and `as="font" type="font/woff2"`
-
-Why a plugin and not hard-coded `<link>` tags in `index.html`: the filenames are content-hashed and change per build. Hard-coded preloads would 404 after the next deploy and silently waste a request.
-
-**Expected:** -150 to -300 ms LCP on a cold mobile load. Real, measurable, will show in the Lighthouse waterfall.
-
-### Fix 2 — Width/height on every `<img>` + `decoding="async"` audit
-
-**Problem:** `Footer` logo and a few other images don't set explicit width/height, so they contribute to CLS until the network round-trip resolves intrinsic size. CLS is the cheapest CWV to fix and the most punished if you miss it.
-
-**Change:** sweep `src/components/Navigation.tsx`, `src/components/Footer.tsx`, and any `<img>` in `src/components/gallery/*`, `src/components/HeroVignette.tsx`, `src/components/ProjectVignette.tsx`. For each:
-- add explicit `width` + `height` attributes matching the intrinsic ratio
-- `loading="lazy"` for everything below the fold (Footer logo qualifies)
-- `decoding="async"` everywhere except the LCP-candidate (nav logo)
-
-**Expected:** CLS drop of ~0.01–0.03. Small in absolute terms, but Lighthouse weights CLS heavily and the assertion budget I'm setting is `≤ 0.05`.
-
-### Fix 3 — Drop unused shadcn `ui/*` files from the repo
-
-**Problem:** `src/components/ui/{drawer,chart,carousel,calendar,command,input-otp,resizable,sonner}.tsx` are not imported anywhere in `src/` (verified with ripgrep). They tree-shake out of the *bundle*, but they still get type-checked, eslinted, and re-parsed by the IDE every dev run, and they pull `framer-motion`, `recharts`, `embla-carousel-react`, `react-day-picker`, `cmdk`, `input-otp`, `vaul` into `package.json` "as if" they were used.
-
-**Change:**
-- delete the 8 unused `ui/*` files
-- `bun remove framer-motion recharts embla-carousel-react react-day-picker cmdk input-otp vaul next-themes`
-- (`sonner` stays — `App.tsx` lazy-loads it)
-
-**Expected:**
-- **Bundle:** ~0 bytes change for end users (they were already tree-shaken)
-- **Install size:** ~40 MB smaller `node_modules`
-- **Cold dev start:** noticeably faster
-- **Honesty:** this is a maintenance/devex win, NOT a runtime perf win. I'm including it because dropping ~40 MB of unused deps is the right call and I'm not going to pretend it moves LCP.
-
-> If you'd rather keep all shadcn primitives "in case", say so and I'll skip this fix.
-
-### Fix 4 — `<link rel="modulepreload">` for the route chunks the user is most likely to visit next
-
-**Problem:** Route chunks (`About`, `Services`, `Work`, `Contact`) are fetched only when the user clicks. On a slow connection that's a visible 200–800 ms hang on first navigation.
-
-**Change:** new component `src/components/RoutePrefetcher.tsx` mounted from `App.tsx`. After `requestIdleCallback`, it dynamically `import()`s the four most-likely-next routes from the home page (`Services`, `Work`, `Contact`, `About`). Vite turns this into `modulepreload` automatically. Pure idle-time work, never blocks main.
-
-Guarded by `navigator.connection?.saveData !== true` and `navigator.connection?.effectiveType !== "2g"` so we don't burn bytes on slow/metered connections.
-
-**Expected:** -200 to -600 ms TTI on second navigation. Doesn't move home-page Lighthouse score, but moves the *perceived* speed dramatically.
-
-### Fix 5 — Add `content-visibility: auto` to long below-the-fold sections on Index
-
-**Problem:** the home page has many large sections (Trust Promise, Services grid, Selected Works, Service Areas, Closing CTA). Browsers still do layout/paint work for them even when off-screen.
-
-**Change:** add `content-visibility: auto; contain-intrinsic-size: 800px;` to the wrapper of each below-fold `<section>` on `Index.tsx` (4–5 sections). Memory mentions a `performance-rendering-strategy` rule already exists for this — I'll apply it to the home page's heaviest sections specifically, since that's where the LCP/INP measurement happens.
-
-**Expected:** -50 to -150 ms on initial paint and on scroll INP for the home page on mid-tier mobile. Real, but small.
+1. **One ornament per surface.** Pick the strongest mark; delete the rest.
+2. **Type does the work.** If a label, divider, or icon isn't earning its space, remove it.
+3. **Whitespace is the design.** Increase vertical rhythm; let sections breathe.
+4. **One focal point per section.** Eye lands once, then reads.
+5. **Pure black/charcoal type on warm off-white.** Evergreen becomes an *accent*, not a costume.
 
 ---
 
-## What I am NOT doing, and why
+## Scope — Surface-by-Surface
 
-- ❌ **Adding a service worker.** Cloudflare already serves immutable hashed assets with `max-age=31536000`. A SW adds complexity (offline strategy, update flow, stale-content footguns) that doesn't move CWV here.
-- ❌ **Switching `lucide-react` to per-icon imports project-wide.** Already done — every import in the codebase is `lucide-react/dist/esm/icons/<name>`. Verified.
-- ❌ **Adding AVIF `<picture>` for hero.** There is no raster hero; the hero is SVG + CSS. AVIF would have been a fix on a different site.
-- ❌ **Inlining critical CSS.** Vite already inlines `<style>` for the entry chunk's CSS in `index.html` for the visited route. Manually critical-CSS-ing on top of that is theater.
-- ❌ **Pre-compressing assets with `vite-plugin-compression`.** Cloudflare brotlis on the fly. Pre-compressed siblings would never be served.
-- ❌ **Replacing `framer-motion` with CSS.** Not used in the app code (only in unused `ui/drawer.tsx`, which Fix 3 deletes).
+### 1. Global system (`src/index.css`, `tailwind.config.ts`)
+
+- **Kill the body grain overlay + thermal arc.** Two full-viewport fixed layers competing with content. Replace with a single, almost imperceptible top-of-page warm wash that fades by 600px.
+- **Consolidate label systems** to one: `.eyebrow` (Inter, 11px, 0.22em tracked, uppercase, muted). Delete `.coord-mark`, `.numeral-mark`, `.footnote-figmark` styling — they all become `.eyebrow` variants or are removed entirely.
+- **Tighten the type scale.** `text-display` is currently `clamp(2.75rem, 5vw + 1rem, 5.75rem)` — bump the floor to 3.25rem and ceiling to 6.5rem so headlines feel editorial-bold, not safe.
+- **Reduce shadow stack.** `--shadow-haptic-strong` + double-bezel + ring + inset highlight is too much. Keep one paper-soft shadow (`--shadow-card`) and a subtle 1px ring. Retire the `.bezel-shell` / `.bezel-core` / `.bezel-shell-evergreen` / `.bezel-shell-closing` chain in favor of one `.surface` class.
+- **Section padding rhythm**: standardize on `py-32 md:py-44` for major sections (currently inconsistent: `py-24`, `py-28`, `py-40`).
+- **Container**: bump default max from 1280 → 1240 with wider gutters (`px-6 md:px-12 lg:px-20`) for more editorial margin.
+
+### 2. Hero (`src/components/Hero.tsx`)
+
+Currently a two-column split with the right column hosting a Double-Bezel proof panel containing services + vignette + creek ticks. Reads as two heroes glued together.
+
+**New hero, single move:**
+- **Full-width left-aligned editorial headline.** Headline takes 9–10 columns. Remove the right-side bezel panel entirely.
+- Eyebrow → headline → subhead → CTA pair → service-area trust line. That's it.
+- The headline gets room: `text-display` bumped, `max-w-[14ch]` to force a beautiful 3-line break.
+- Replace the right panel with a single quiet element on the right: a small vertical "HC / EST. ALBERTA" colophon mark (think Pentagram book spine) — pure type, no panel, no shadow, no vignette.
+- Keep the "Trusted" italic + hand-drawn underline — that's the signature moment.
+- Drop the "Continue" chevron at the bottom (visual noise).
+
+Result: hero feels like a magazine opening spread, not a dashboard.
+
+### 3. Navigation (`src/components/Navigation.tsx`)
+
+The floating glass island is well-crafted but the meridian dot + scrolled mark swap + brand-chip-with-divider adds fiddle.
+
+- Keep the floating pill, keep the scroll contraction.
+- **Remove** the meridian evergreen dot that appears on scroll.
+- **Remove** the hairline divider between brand and links.
+- **Remove** the inset-top-highlight pseudo gradient (subtle but adds to the "trying too hard" feeling).
+- Keep one CTA, label simplifies to **"Consultation"** at all sizes (drop the "Request a" toggle dance).
+
+### 4. Home — Trust Promise section (`src/pages/Index.tsx` § I)
+
+- Drop the `coord-mark "51.0252°N"`. It looks like decoration cosplaying as data.
+- Drop the Roman numeral on the eyebrow; leave just `THE PROMISE`.
+- Headline keeps its current line — it's strong.
+
+### 5. Home — Services Preview (§ II)
+
+- **Drop the card-monogram "HC" watermark.** It's the loudest noise on the cards.
+- Drop the `card-monogram` from `Index.tsx`, `About.tsx`, and `PremiumCard` consumers.
+- Drop the "Available in · Bragg Creek · Bearspaw · …" micro-caption from each card (already in footer + service areas page; redundant).
+- Reduce card meta to: numeral, title, one-line promise, one-paragraph body, "See the work →".
+- The numeral disc stays — but flatter (no ring + shadow stack, just an outlined circle).
+- Cards become flat `.surface` (1px border + paper shadow) instead of double-bezel.
+
+### 6. Home — Approach (§ III)
+
+- **Remove** the surveyor corner brackets (`.surveyor-tr` / `.surveyor-bl`).
+- **Remove** the dashed path-line down the left edge.
+- **Remove** the "Done." finish marker.
+- Keep the three numbered steps; let them sit as clean numbered paragraphs with generous space between.
+
+### 7. Home — Work Preview (§ IV)
+
+- Drop the figure-footnote row (Fig. i. / INTERIOR FINISHING / area). Replace with a single line: `INTERIOR FINISHING · BRAGG CREEK` in eyebrow style.
+- Drop the "Plate I" overlay on each vignette image.
+- Cards: vignette → label line → title → location. That's the entire card.
+
+### 8. Home — Final CTA / Closing
+
+- Retire `.bezel-shell-closing` triple-bezel. Replace with a single full-width band (warm card background) with the headline + CTA centered. Editorial, not jeweled.
+
+### 9. Work page (`src/pages/Work.tsx`)
+
+- Drop "Plate I/II/III" overlays.
+- Drop the `figure-footnote` row inside each card.
+- Filter rail stays but pills lose the area-color dot — just text.
+- "Why it mattered" pull-out keeps the left border but the eyebrow above it goes (the italic copy is enough signal).
+
+### 10. About page (`src/pages/About.tsx`)
+
+- Drop the surveyor frame + dashed path line in § II (same treatment as Home approach).
+- Drop the `card-monogram "HC"` watermarks in § III.
+- Drop the Roman numerals on every eyebrow on this page (I / II / III / IV) — keep just the labels.
+
+### 11. Footer (`src/components/Footer.tsx`)
+
+- **Remove** the ridge-silhouette SVG at the top. It's a callback nobody reads.
+- **Remove** the colophon line "Set in Fraunces & Inter. Composed in Calgary, MMXXV." — clever but reads as agency self-indulgence.
+- **Remove** the oversized italic "Built locally. Finished personally." sign-off + hand-drawn underline. That voice belongs in the hero, not the footer.
+- **Remove** the "No. 001 — First Edition" + "The experience of quality." fine-print row.
+- New footer = three columns (Services, Areas, Contact) + single copyright line. Calm, useful, done.
+
+### 12. Sub-page hero (`src/components/SubPageHero.tsx`) and service pages
+
+- Audit and remove `coordMark` prop usage.
+- Audit and remove `eyebrowNumeral` prop — eyebrows go label-only sitewide.
+- Service pages (`Decking.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`): same declutter pass — drop monograms, surveyor frames, coord marks, figmarks. (I'll inspect these in the implementation step and apply the same rules.)
 
 ---
 
-## Files touched
+## What stays (the signature moments)
 
-**New:**
-- `.github/workflows/lighthouse.yml`
-- `.lighthouserc.json`
-- `src/lib/vitals.ts`
-- `src/components/RoutePrefetcher.tsx`
-
-**Edited:**
-- `package.json` (add `web-vitals`, optionally remove the 7 unused heavies)
-- `vite.config.ts` (add the preload-emitting plugin)
-- `src/main.tsx` (idle-load vitals)
-- `src/App.tsx` (mount `RoutePrefetcher`)
-- `src/components/Navigation.tsx`, `src/components/Footer.tsx`, `src/components/HeroVignette.tsx`, `src/components/ProjectVignette.tsx`, `src/components/gallery/*` (img dimensions + lazy/decoding sweep)
-- `src/pages/Index.tsx` (add `content-visibility` wrapper class to 4–5 below-fold sections)
-- `src/index.css` (one utility class `.cv-auto` if needed, else inline)
-
-**Deleted (Fix 3, only if you OK it):**
-- `src/components/ui/{drawer,chart,carousel,calendar,command,input-otp,resizable}.tsx`
+- The "Trusted" italic + hand-drawn underline in the hero.
+- Numeral discs on the three home steps and three service cards (one ornament family, used twice).
+- Fraunces italic for emphasis words, Inter for everything else.
+- Warm off-white background + evergreen accent.
+- Reveal-up scroll animations (already tasteful).
 
 ---
 
-## Acceptance
+## Files to edit (roughly)
 
-- `lighthouse-build` job passes on this PR with the assertion budget above.
-- `web-vitals` logs appear in the browser console on the deployed preview when DevTools is open.
-- A second visit to `/services` from `/` happens with no visible spinner (route already preloaded).
-- Repo `node_modules` shrinks by ≥30 MB after Fix 3.
-- No regression in any existing visual or interaction.
+1. `src/index.css` — consolidate type, reduce shadows, kill grain + arc + bezel chain, simplify eyebrow.
+2. `src/components/Hero.tsx` — full restructure to single-column editorial open.
+3. `src/components/Navigation.tsx` — remove dot, divider, gradient highlight; simplify CTA label.
+4. `src/components/Footer.tsx` — strip to three-column functional footer.
+5. `src/components/Eyebrow.tsx` — drop numeral support (or make it opt-in and never used).
+6. `src/components/PremiumCard.tsx` — collapse to single `.surface` style.
+7. `src/components/SubPageHero.tsx` — drop coord/numeral props.
+8. `src/pages/Index.tsx` — remove coord-marks, monograms, surveyor frame, plate overlays, figmarks, micro-captions.
+9. `src/pages/Work.tsx` — remove plate overlays, figmarks, area dots on filters.
+10. `src/pages/About.tsx` — remove surveyor frame, monograms, eyebrow numerals.
+11. `src/pages/Services.tsx`, `Decking.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `ServiceAreas.tsx`, `Contact.tsx`, `ThankYou.tsx`, area pages — same declutter pass.
+
+No new dependencies. No new images. Pure subtractive editing + type/spacing tuning.
 
 ---
 
-## Open questions before I start
+## Verification
 
-1. **Fix 3 (delete unused shadcn + 7 deps):** ship it, or keep the components as a future-proof toolkit?
-2. **Web Vitals collector:** stop at instrumentation-ready code (current plan), or also wire up a Lovable Cloud edge function + `vitals` table for a real RUM dashboard?
-3. **Lighthouse `prod` job URL:** confirm `https://havencreekrenovations.ca` is the right target, or should the workflow only run after you publish and you'll set the repo variable yourself?
+- Build cleanly (no TS errors from removed props).
+- Visit Home, Work, About, Services, Decking, Contact in preview to confirm calm, single-focal-point sections.
+- Lighthouse: should hold or improve (less DOM, fewer pseudo-elements, no fixed grain layer).
+- Self-review pass: each surface should answer **"what is the one thing I am supposed to look at?"** in under one second.
 
-If you approve as-is I'll default to: Fix 3 = ship it, Vitals = instrumentation-only, Prod URL = repo variable `PROD_URL` (workflow no-ops if unset).
+---
+
+## Out of scope (deferred to future loops)
+
+- Real photography — still using SVG vignettes; replacing them with B&W editorial photos is the natural next upgrade once a single hero shot exists.
+- Dark mode, animation overhaul, route transitions.
