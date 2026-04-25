@@ -204,7 +204,7 @@ const Hero = () => {
                       >
                         <div className="flex items-center gap-4">
                           <span className="numeral-disc shrink-0">{s.numeral}</span>
-                          <div className="flex-1 min-w-0 group-hover/disc:leader-dotted transition-all duration-500">
+                          <div className="flex-1 min-w-0 leader-target">
                             <h3 className="text-[1.1rem] md:text-[1.2rem] font-serif text-foreground group-hover/disc:text-evergreen transition-colors duration-500 leading-tight">
                               {s.title}
                             </h3>
