@@ -188,8 +188,11 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <Eyebrow numeral="III" label="THE APPROACH" />
-              <h2 id="approach-heading" className="text-headline text-foreground mt-6">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="III" label="THE APPROACH" />
+                <span className="coord-mark hidden md:inline-flex">Field Notes</span>
+              </div>
+              <h2 id="approach-heading" data-drift className="text-headline text-foreground mt-6">
                 A path you can see from the start.
               </h2>
               <p className="mt-6 text-body text-muted-foreground max-w-md">
@@ -199,44 +202,55 @@ const Index = () => {
             </div>
 
             <div className="lg:col-span-7 lg:pl-8 relative">
-              {/* Drawing path-line — animates top→bottom */}
-              <div
-                aria-hidden="true"
-                className="absolute left-[15px] top-3 bottom-3 w-px path-line"
-                data-line-draw
-              />
-              <ol className="space-y-12 lg:space-y-14">
-                {[
-                  { n: "01", title: "Conversation", body: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan." },
-                  { n: "02", title: "Planning", body: "Scope, materials, design considerations, and the practical realities of working on a rural property — clarified before we lift a tool." },
-                  { n: "03", title: "Hands-On Completion", body: "The work is completed with attention to fit, finish, durability, and the small details that decide whether a renovation reads as finished." },
-                ].map((step, i) => (
-                  <li
-                    key={step.n}
-                    className="group/disc relative pl-12"
-                    data-reveal
-                    style={{ ["--reveal-delay" as string]: `${300 + i * 220}ms` }}
-                  >
-                    <span className="absolute left-0 top-1 numeral-disc" aria-hidden="true">
-                      {step.n}
-                    </span>
-                    <h3 className="text-title text-foreground">{step.title}</h3>
-                    <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">
-                      {step.body}
-                    </p>
-                  </li>
-                ))}
-                {/* Finish marker — fades in after step 03 */}
-                <li
-                  className="relative pl-12"
-                  data-reveal
-                  style={{ ["--reveal-delay" as string]: "1100ms" }}
+              {/* Surveyor's frame — corner brackets wrap the entire field-notes block */}
+              <div className="surveyor-frame relative">
+                <span className="surveyor-tr" aria-hidden="true" />
+                <span className="surveyor-bl" aria-hidden="true" />
+
+                {/* Drawing path-line — animates top→bottom, dashed for surveyor read */}
+                <div
                   aria-hidden="true"
-                >
-                  <span className="absolute left-[10px] top-2 h-[10px] w-[10px] rounded-full bg-evergreen shadow-[0_0_0_4px_hsl(var(--evergreen)/0.12)]" />
-                  <p className="text-minimal text-evergreen">Done.</p>
-                </li>
-              </ol>
+                  className="absolute left-[15px] top-3 bottom-3 w-px path-line"
+                  data-line-draw
+                  style={{
+                    backgroundImage:
+                      "repeating-linear-gradient(to bottom, hsl(var(--evergreen) / 0.45) 0 3px, transparent 3px 7px)",
+                    background: "transparent",
+                  }}
+                />
+                <ol className="space-y-12 lg:space-y-14">
+                  {[
+                    { n: "01", title: "Conversation", body: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan." },
+                    { n: "02", title: "Planning", body: "Scope, materials, design considerations, and the practical realities of working on a rural property — clarified before we lift a tool." },
+                    { n: "03", title: "Hands-On Completion", body: "The work is completed with attention to fit, finish, durability, and the small details that decide whether a renovation reads as finished." },
+                  ].map((step, i) => (
+                    <li
+                      key={step.n}
+                      className="group/disc relative pl-12"
+                      data-reveal
+                      style={{ ["--reveal-delay" as string]: `${300 + i * 220}ms` }}
+                    >
+                      <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey" aria-hidden="true">
+                        {step.n}
+                      </span>
+                      <h3 className="text-title text-foreground">{step.title}</h3>
+                      <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">
+                        {step.body}
+                      </p>
+                    </li>
+                  ))}
+                  {/* Finish marker — fades in after step 03 */}
+                  <li
+                    className="relative pl-12"
+                    data-reveal
+                    style={{ ["--reveal-delay" as string]: "1100ms" }}
+                    aria-hidden="true"
+                  >
+                    <span className="absolute left-[10px] top-2 h-[10px] w-[10px] rounded-full bg-evergreen shadow-[0_0_0_4px_hsl(var(--evergreen)/0.12)]" />
+                    <p className="text-minimal text-evergreen">Done.</p>
+                  </li>
+                </ol>
+              </div>
             </div>
           </div>
         </Container>
