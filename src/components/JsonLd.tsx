@@ -1,5 +1,5 @@
-import { Helmet } from "react-helmet-async";
-// Lightweight inline SEO without extra dependency: we use direct DOM updates.
+// Lightweight JSON-LD components — no helmet dependency, just script tags.
+// useDocumentTitle handles the dynamic <title>/<meta description>.
 
 interface BreadcrumbItem { name: string; url: string; }
 
@@ -76,5 +76,3 @@ export function ServiceJsonLd({ name, description }: { name: string; description
   );
 }
 
-// Suppress unused import warning during transitional phases
-void Helmet;
