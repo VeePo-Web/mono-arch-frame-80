@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
+import ChapterSpine from "./components/ChapterSpine";
+import PageSlug from "./components/PageSlug";
 
 // Eager: home (LCP-critical) + 404 (tiny, instant fallback)
 import Index from "./pages/Index";
@@ -47,6 +49,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <ChapterSpine />
+        <PageSlug />
         <Navigation />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
