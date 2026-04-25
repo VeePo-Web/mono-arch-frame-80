@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Container from "./Container";
 import Eyebrow from "./Eyebrow";
 import HeroVignette from "./HeroVignette";
+import { useDrift } from "@/hooks/useDrift";
 import { services } from "@/data/services";
 import { serviceAreas } from "@/data/serviceAreas";
 
