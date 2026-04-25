@@ -1,20 +1,19 @@
 import type { Config } from "tailwindcss";
 
 export default {
+  darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
     container: {
       center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      padding: "1.5rem",
+      screens: { "2xl": "1280px" },
     },
     extend: {
       fontFamily: {
-        sans: ["'DM Sans'", "system-ui", "sans-serif"],
-        serif: ["'DM Serif Display'", "Georgia", "serif"],
+        sans: ["'Inter'", "system-ui", "sans-serif"],
+        serif: ["'Fraunces'", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -42,11 +41,15 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
-        cedar: {
-          DEFAULT: "hsl(var(--cedar))",
-          foreground: "hsl(var(--cedar-foreground))",
-          hover: "hsl(var(--cedar-hover))",
+        evergreen: {
+          DEFAULT: "hsl(var(--evergreen))",
+          foreground: "hsl(var(--evergreen-foreground))",
+          hover: "hsl(var(--evergreen-hover))",
+          soft: "hsl(var(--evergreen-soft))",
         },
+        bark: "hsl(var(--bark))",
+        sand: "hsl(var(--sand))",
+        "dry-grass": "hsl(var(--dry-grass))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -80,32 +83,20 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-in-up": {
-          "0%": { opacity: "0", transform: "translateY(30px)" },
+        "reveal-up": {
+          "0%": { opacity: "0", transform: "translateY(12px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "scale-in": {
-          "0%": { opacity: "0", transform: "scale(0.95)" },
-          "100%": { opacity: "1", transform: "scale(1)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in-up": "fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
-        "scale-in": "scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
-      },
-      backgroundImage: {
-        "gradient-hero": "var(--gradient-hero)",
-        "gradient-overlay": "var(--gradient-overlay)",
+        "reveal-up": "reveal-up 0.45s cubic-bezier(0.16, 1, 0.3, 1)",
       },
       boxShadow: {
-        architectural: "var(--shadow-architectural)",
+        soft: "var(--shadow-soft)",
+        card: "var(--shadow-card)",
         elegant: "var(--shadow-elegant)",
-        contact: "0 1px 2px hsl(20 10% 12% / 0.04), 0 1px 4px hsl(20 10% 12% / 0.02)",
-        elevated: "0 4px 12px -2px hsl(20 10% 12% / 0.08), 0 2px 6px -1px hsl(20 10% 12% / 0.04), 0 8px 24px -4px hsl(28 50% 52% / 0.06)",
-        floating: "0 12px 40px -8px hsl(20 10% 12% / 0.12), 0 6px 20px -4px hsl(20 10% 12% / 0.08), 0 24px 64px -16px hsl(28 50% 52% / 0.08)",
-        thermal: "0 0 12px hsl(28 50% 52% / 0.25), 0 0 24px hsl(28 50% 52% / 0.12), 0 4px 16px hsl(28 50% 52% / 0.08)",
       },
       transitionTimingFunction: {
         smooth: "cubic-bezier(0.16, 1, 0.3, 1)",

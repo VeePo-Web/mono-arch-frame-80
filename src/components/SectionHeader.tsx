@@ -1,77 +1,45 @@
-import ScrollRevealMotion from "@/components/ScrollRevealMotion";
+import type { ReactNode } from "react";
 
 interface SectionHeaderProps {
-  /** Roman numeral or number string, e.g. "I", "II", "03" */
-  numeral: string;
-  /** Uppercase label for the section, e.g. "THE RITUAL" */
-  label: string;
-  /** Section heading id for aria-labelledby */
+  numeral?: string;          // e.g. "I", "II", "III"
+  eyebrow: string;           // e.g. "THE PROMISE"
   headingId: string;
-  /** Optional: use cedar color for label (default: muted-foreground) */
-  cedarLabel?: boolean;
-  /** Main display heading */
   heading: string;
-  /** Italic serif sub-heading */
   subheading?: string;
-  /** Counter badge text, e.g. "03 Truths" */
-  badge?: string;
-  /** Delays for staggered reveal */
-  baseDelay?: number;
+  align?: "left" | "center";
+  children?: ReactNode;
 }
 
 /**
- * SectionHeader — editorial section intro used across all homepage sections.
- * Renders: numeral · divider · label, then heading, subheading, and optional badge.
+ * SectionHeader — quiet editorial section intro.
+ * Per 2.3 §16: shorter copy blocks, stronger section titles, large negative space.
+ * No heavy ornamentation — a numeral + hairline + label, then heading + optional serif italic subhead.
  */
 const SectionHeader = ({
   numeral,
-  label,
+  eyebrow,
   headingId,
-  cedarLabel = false,
   heading,
   subheading,
-  badge,
-  baseDelay = 0,
+  align = "left",
+  children,
 }: SectionHeaderProps) => {
+  const alignClass = align === "center" ? "items-center text-center" : "items-start text-left";
   return (
-    <>
-      <ScrollRevealMotion delay={baseDelay}>
-        <div className="flex items-center gap-4 mb-6">
-          <span className="text-[11px] tracking-[0.2em] text-cedar/40 font-light tabular-nums">
-            {numeral}
-          </span>
-          <div className="w-8 h-px bg-cedar/20" />
-          <span
-            className={`text-minimal ${cedarLabel ? "text-cedar" : "text-muted-foreground"}`}
-          >
-            {label}
-          </span>
-        </div>
-      </ScrollRevealMotion>
-
-      <ScrollRevealMotion delay={baseDelay + 0.1}>
-        <h2 id={headingId} className="text-display text-foreground mb-4">{heading}</h2>
-      </ScrollRevealMotion>
-
+    <div className={`flex flex-col ${alignClass}`}>
+      <div className="flex items-center gap-3 mb-5">
+        {numeral && <span className="numeral-mark tabular-nums">{numeral}</span>}
+        <span className="w-8 h-px bg-evergreen/30" aria-hidden="true" />
+        <span className="text-minimal text-evergreen">{eyebrow}</span>
+      </div>
+      <h2 id={headingId} className="text-headline text-foreground mb-4 max-w-3xl">
+        {heading}
+      </h2>
       {subheading && (
-        <ScrollRevealMotion delay={baseDelay + 0.15}>
-          <p className="text-subhead text-foreground/60 italic font-serif mb-8">
-            {subheading}
-          </p>
-        </ScrollRevealMotion>
+        <p className="text-subhead text-muted-foreground max-w-2xl">{subheading}</p>
       )}
-
-      {badge && (
-        <ScrollRevealMotion delay={baseDelay + 0.2}>
-          <div className="flex items-center gap-3" aria-label={badge}>
-            <div className="w-12 h-px bg-cedar/15" />
-            <span className="text-[10px] tracking-[0.25em] text-muted-foreground/50 uppercase">
-              {badge}
-            </span>
-          </div>
-        </ScrollRevealMotion>
-      )}
-    </>
+      {children}
+    </div>
   );
 };
 
