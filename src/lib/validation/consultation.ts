@@ -3,6 +3,14 @@ import { z } from "zod";
 /**
  * Consultation form schema.
  * Mirrors the public.consultations table CHECK constraints in the database.
+ *
+ * The cautious-lead form is designed around two persona fears:
+ *   - Quote anxiety  → budget is optional, written context preferred.
+ *   - Trust          → message (textarea) replaces a categorical dropdown so
+ *                      the homeowner can describe the project in their own
+ *                      words; project_type is now optional.
+ *
+ * One field accepts email-or-phone — see contactValueSchema below.
  */
 export const PROJECT_TYPES = [
   { value: "interior", label: "Interior finishing" },
@@ -30,26 +38,66 @@ const projectTypeValues = PROJECT_TYPES.map((p) => p.value) as [string, ...strin
 const budgetValues = BUDGET_RANGES.map((b) => b.value) as [string, ...string[]];
 const preferredTimeValues = PREFERRED_TIMES.map((p) => p.value) as [string, ...string[]];
 
+/**
+ * One field, two intents — the visitor types either an email or a phone
+ * number. We detect which on submit and route into the right column.
+ */
+const PHONE_REGEX = /^[+\d][\d\s().\-/]{6,}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export type ContactKind = "email" | "phone";
+
+export interface DetectedContact {
+  kind: ContactKind;
+  value: string;
+}
+
+export function detectContact(raw: string): DetectedContact | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (EMAIL_REGEX.test(trimmed)) return { kind: "email", value: trimmed.toLowerCase() };
+  // Strip everything except digits + leading + so the comparison is lenient.
+  const digits = trimmed.replace(/[^\d]/g, "");
+  if (PHONE_REGEX.test(trimmed) && digits.length >= 7) {
+    return { kind: "phone", value: trimmed };
+  }
+  return null;
+}
+
 export const consultationSchema = z.object({
   name: z
     .string()
     .trim()
     .min(1, "Please share your name")
     .max(100, "Name must be under 100 characters"),
-  email: z
+  /** Email OR phone — single field, detected at submit time. */
+  contact: z
     .string()
     .trim()
-    .email("Enter a valid email address")
-    .max(255, "Email must be under 255 characters"),
-  projectType: z.enum(projectTypeValues, {
-    errorMap: () => ({ message: "Please choose a project type" }),
-  }),
+    .min(3, "Email or phone — whichever you prefer")
+    .max(255)
+    .refine((v) => detectContact(v) !== null, {
+      message: "Please enter a valid email or phone number",
+    }),
+  /** Required — the homeowner's note about the project, in their own words. */
+  message: z
+    .string()
+    .trim()
+    .min(1, "A sentence about the project is plenty")
+    .max(2000, "Please keep this under 2,000 characters"),
+  /** Optional — free-text property location (e.g. "Bragg Creek"). */
+  location: z.string().trim().max(200, "Please keep this short").optional(),
+  /** Optional — used when the visitor lands from a service page. */
+  projectType: z
+    .enum(projectTypeValues, {
+      errorMap: () => ({ message: "Please choose a project type" }),
+    })
+    .optional(),
   budget: z
     .enum(budgetValues, {
       errorMap: () => ({ message: "Please choose a budget range" }),
     })
     .optional(),
-  // Optional — when we should ideally walk the property
   preferredTime: z
     .enum(preferredTimeValues, {
       errorMap: () => ({ message: "Please choose a preferred time" }),
