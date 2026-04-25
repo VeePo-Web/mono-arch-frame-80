@@ -1,96 +1,109 @@
-# Performance Optimisation Pass
+# Refine Gold — Contact ↔ ThankYou Flow
 
-## Diagnosis
-
-The app **compiles cleanly** — `tsc --noEmit` is silent, `vite build` succeeds, dev server is up. There is nothing to fix. So this plan is the audit pass.
-
-Build numbers (production, gzip):
-
-| Chunk | Raw | Gzip |
-|---|---|---|
-| `index` (eager: App + Index + Hero + JsonLd + Galleries) | 396.7 KB | **120.0 KB** |
-| `ConsultationForm` (lazy) | 326.5 KB | 90.0 KB |
-| All 13 route chunks combined | < 80 KB | < 27 KB |
-| CSS | 92.2 KB | 16.4 KB |
-
-The **eager 120 KB gz** is the only real concern. Everything else is already well-split.
+Both pages already exist with default exports and are wired into the router. The breakage is the **flow**: `ConsultationForm` never navigates after success, so the dedicated ThankYou page is unreachable from the form. Beyond fixing that, this plan lifts both pages from "built" to "polished gold."
 
 ---
 
-## Changes (ordered by impact)
+## 1 · Schema — add `preferred_time` to `consultations`
 
-### 1. Trim the eager main bundle (~25–35 KB gz savings)
+Migration:
+- `ALTER TABLE public.consultations ADD COLUMN preferred_time text` — nullable.
+- Drop and recreate the `Anyone can submit a consultation request` INSERT policy so its WITH CHECK accepts `preferred_time IS NULL OR preferred_time = ANY (ARRAY['morning','afternoon','either'])`.
+- Keep `notes IS NULL` constraint intact (no notes field added — staying lean).
 
-- **`App.tsx`** — defer `Toaster`, `Sonner`, and the global `TooltipProvider` behind `lazy()` + `Suspense`. None of these render anything before user interaction, but they currently ship in the eager bundle. Wrap only the `<Routes>` subtree in `TooltipProvider` lazily; render Toaster/Sonner mounted inside a `useEffect` after first paint.
-- **`pages/Index.tsx`** — delete the locally redefined `RevealSection` (lines 32–47) and import the shared `@/components/RevealSection` instead. Removes ~30 LoC and one duplicated hook wiring.
-- **`pages/Index.tsx`** — split `SelectedWorks` to a lazy import (it's already below the fold). Saves ~5 KB gz from the eager Index chunk.
-- **`components/JsonLd.tsx`** — wrap each schema object in `useMemo` so `JSON.stringify` doesn't run on every parent re-render. Tiny CPU win on each route change, especially for the area pages that emit two LD blocks each.
+This is the only DB change. RLS shape stays restrictive.
 
-### 2. Below-the-fold rendering hints (paint + scroll perf)
+---
 
-Per the project standard at `mem://standards/performance-rendering-strategy`, every section past the hero should declare `content-visibility: auto` with `contain-intrinsic-size`. Currently nothing does.
+## 2 · `src/lib/validation/consultation.ts` — extend schema
 
-- Add a `.cv-auto` utility to `src/index.css`:
-  ```css
-  @media (min-width: 0px) {
-    .cv-auto { content-visibility: auto; contain-intrinsic-size: 800px; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .cv-auto { content-visibility: visible; }
-  }
-  ```
-- Apply via `className` on every `<RevealSection>` after the first one — Index sections II–VI, the Selected Works grid, all `ClosingCta` instances, all `Services`/`Work`/`ServiceAreas`/area-page sections past §I.
+- Add `PREFERRED_TIMES = [{ value: "morning", label: "Morning" }, { value: "afternoon", label: "Afternoon" }, { value: "either", label: "Either works" }]`.
+- Add `preferredTime: z.enum([...]).optional()` to `consultationSchema`.
+- Export `ConsultationFormValues` type continues to work.
 
-### 3. Font-loading tune (LCP for the Hero H1)
+---
 
-The Hero `<h1>` uses Fraunces — currently behind a preload-then-swap stylesheet. Two improvements:
+## 3 · `src/components/ConsultationForm.tsx` — wire redirect + harden
 
-- Add `<link rel="preload" as="font" type="font/woff2" crossorigin>` for the **single Fraunces 400 weight subset** that the H1 uses. Browsers can then fetch the woff2 in parallel with the CSS instead of waiting for the CSS to parse first.
-- Add `&text=` URL slicing on the Google Fonts URL to ship only the glyphs the H1 actually renders (the headline copy is short and known at build time). This typically drops the Fraunces payload from ~30 KB to ~4 KB.
-- Add `font-display: swap` already implied by `&display=swap` — verify it's still in the URL after the change.
+Critical wiring:
+- Import `useNavigate` from react-router-dom and `useSearchParams` for query-param prefill.
+- On mount, read `?service=interior|exterior|decking|multiple|not-sure` and pre-set `projectType` via `form.reset({ projectType: param, ... })` if valid.
+- On successful insert, capture the inserted timestamp and call `navigate("/thank-you", { state: { name, projectType, preferredTime, submittedAt: new Date().toISOString() }, replace: true })`. `replace: true` so back-button doesn't re-submit.
+- Keep the existing inline success state as a graceful fallback (rendered only if `navigate` throws or the component is mounted outside a Router — defensive).
+- Add the optional **05 · Best time to walk the property** field as a `Select` matching the existing 01–04 styling (numeral, hairline divider, evergreen focus ring).
+- Disable submit until `form.formState.isValid` — pill quietly "wakes up" only when complete. Add `aria-describedby="response-window-note"` on the submit button.
+- Add `inputMode="email"` and `autoCapitalize="none"` to the email field.
+- Add `aria-busy={isSubmitting}` on the form element.
+- Replace the Sonner toast on success with the redirect (no toast — the new page IS the confirmation). Keep the error toast.
 
-### 4. Render hot-path memoisation
+---
 
-- **`pages/Work.tsx`** — wrap each `GalleryVignette` plate inside a `React.memo`'d `<PlateCard>` so filter clicks don't re-render the 4 cards that didn't change category. Already lazy + reveal'd, but cheap re-renders still cost on mid-tier devices.
-- **`components/gallery/SelectedWorks.tsx`** — the active plate switch re-renders the entire sidebar list. Memoise the sidebar row component.
-- **`components/Hero.tsx`** — verify `useDrift` uses `{ passive: true }` on scroll/pointermove listeners and rAF-throttles state writes. Patch if not.
+## 4 · `src/pages/Contact.tsx` — sticky rail + direct-contact panel + query-param awareness
 
-### 5. Image / asset hygiene
+- Wrap the left-rail "What happens next" column in `lg:sticky lg:top-28 lg:self-start` so it stays visible as the form is filled. Keep the existing 4-step ordered list and Eames-style pull quote.
+- Add a new sub-section between the form and "About the quote" — a **"Or reach us directly"** hairline-divided 3-row table:
+  - Row 01 · `hello@havencreekrenovations.ca` (mailto link, evergreen hover slide)
+  - Row 02 · `(403) 555-0100` (tel: link, marked with `{/* TODO: real phone */}` comment)
+  - Row 03 · `Reply within two business days` (no link, evergreen tabular numeral on the right)
+  Use the same `area-row` group hover treatment from the service-areas section so it visually rhymes.
+- Read `?service=` from the URL at the page level and pass it into the lazy-loaded `ConsultationForm` as a prop, so deep-links from `/services/interior-finishing` etc. arrive primed.
+- Tighten section vertical rhythm: form section keeps `pb-24`, new direct-contact subsection sits inside the same `RevealSection` with a top hairline `border-t border-evergreen/15 mt-16 pt-16`.
 
-- `Navigation.tsx` already sets `decoding="async"` on the wordmark — also add `fetchpriority="high"` so the LCP image (the wordmark in the nav above the H1) is prioritised.
-- `Footer.tsx` already lazy-loads correctly. No change.
-- The two webp brand assets (28 KB + 62 KB) are fine — no action.
+---
 
-### 6. Vite config
+## 5 · `src/pages/ThankYou.tsx` — personalize + animated receipt mark + softer empty-state
 
-- Add an `optimizeDeps.include: ['lucide-react/dist/esm/icons/arrow-up-right', 'lucide-react/dist/esm/icons/chevron-down']` entry so Vite pre-bundles the two icons used across many chunks — avoids re-resolving them per chunk in dev and slightly improves cold-start HMR.
-- Add `build.rollupOptions.output.manualChunks` to split `react-router-dom` and `@tanstack/react-query` into their own vendor chunks. They change rarely; isolating them lets returning visitors hit the browser cache instead of redownloading the merged main bundle on each deploy.
+- Read `useLocation().state` (typed) for `{ name?, projectType?, preferredTime?, submittedAt? }`.
+- Headline becomes `"Thank you, {name}. We've got your note."` when name is present; falls back to current copy otherwise. The `accentWord` switches from `"got"` to `name` when personalized.
+- Below the SubPageHero (above § I), insert a **figure-footnote receipt stamp**: `Fig. iv. · RECEIVED · {Apr 25, 2026, 4:12 PM}` rendered via `submittedAt` from state, or hidden entirely on direct visits.
+- Add a small **animated check-mark glyph** drawn with SVG `stroke-dasharray` over ~900ms, sitting beside the receipt stamp. Wrap the keyframes in `@media (prefers-reduced-motion: no-preference)` so reduced-motion users see the static check.
+- In § I "What happens next," when `projectType` is in state, prepend a one-line "Re: {Interior Finishing}." subhead under the section H2 so the visitor sees their thread acknowledged.
+- Soften § III sign-off for direct visits (no `state`): swap the sign-off paragraph for `"Looking for the contact form?"` + a quiet ghost link to `/contact`. With state present, keep the current "No need to refresh — we'll come to you." copy.
 
-### 7. Console / network sanity (verification only)
+---
 
-After the changes, I'll:
-- Re-run `bun run build` and report new chunk sizes (target: eager `index` chunk under **95 KB gz**, down from 120).
-- Open the preview with the browser tool, capture a `performance_profile`, and confirm no layout thrash from the new `content-visibility` rules.
-- Verify the Hero H1 still paints with Fraunces (no FOUT regression from the woff2 preload).
+## 6 · `src/index.css` — three additions only
+
+- `.receipt-check` keyframes for the SVG dasharray draw (reduced-motion guarded).
+- `.contact-row` — share styling with the existing `.area-row` so the direct-contact table reads as a sibling pattern.
+- One small utility: `.thread-tag` for the "Re: {service}" line — italic Fraunces, evergreen 70% opacity, `text-[0.95rem]`.
+
+No design tokens added. No new color values. Stays inside the cedar/evergreen system already in `mem://design/thermal-crescendo-pattern`.
+
+---
+
+## 7 · Footer consistency pass
+
+- Read `src/components/Footer.tsx` and align its email/phone to the same `hello@havencreekrenovations.ca` + `(403) 555-0100` placeholder so the site speaks with one voice. Only change those two strings if they differ; leave layout untouched.
+
+---
+
+## 8 · Acceptance — what "polished gold" means
+
+- Submit the form on `/contact` → DB insert succeeds → browser navigates to `/thank-you` with state → headline reads `"Thank you, {name}."` → `Re: {projectType}` thread tag renders → receipt timestamp + animated check show → back-button returns to `/contact` without re-firing the submit (because of `replace: true`).
+- Visit `/thank-you` directly (bookmarked) → generic copy renders, no receipt stamp, sign-off offers the gentle `/contact` ghost link.
+- Visit `/contact?service=decking` → form arrives with **Decking** pre-selected in field 03.
+- Form is invalid until name + email + project type + budget are all filled. Optional field 05 doesn't block submit.
+- Direct-contact table renders below the form with `mailto:` + `tel:` working, hairline-divided, evergreen hover slide.
+- Sticky left rail stays visible at `lg:` breakpoints while scrolling the form.
+- Lighthouse Performance unchanged (no new heavy imports — `useNavigate`/`useLocation`/`useSearchParams` are already in the React Router bundle the app pays for).
+- All existing `useSeo` + `BreadcrumbJsonLd` + `noindex` behavior unchanged.
 
 ---
 
 ## Files touched
 
-- **Edit**: `src/App.tsx`, `src/pages/Index.tsx`, `src/pages/Work.tsx`, `src/components/JsonLd.tsx`, `src/components/gallery/SelectedWorks.tsx`, `src/components/Hero.tsx`, `src/components/Navigation.tsx`, `src/index.css`, `index.html`, `vite.config.ts`
-- **Add `cv-auto` className**: every page in `src/pages/` (10 files) and `src/components/AreaPage.tsx`, `src/components/ClosingCta.tsx`
-- **No new dependencies. No deletions. No schema or content changes.**
+**New migration**: 1 — adds `preferred_time` column + updated INSERT policy.
 
-## Out of scope (intentionally)
+**Edited (7)**:
+- `src/lib/validation/consultation.ts` — schema + PREFERRED_TIMES export
+- `src/components/ConsultationForm.tsx` — redirect, prefill, hardening, optional field
+- `src/pages/Contact.tsx` — sticky rail, direct-contact panel, query-param forwarding
+- `src/pages/ThankYou.tsx` — personalization, receipt stamp, animated check, softer empty state
+- `src/index.css` — `.receipt-check`, `.contact-row`, `.thread-tag` (≤30 lines added)
+- `src/components/Footer.tsx` — phone/email string alignment only (if needed)
+- `.lovable/plan.md` — task tracking (housekeeping)
 
-- React 19 migration / RSC — large lift, no clear win for a marketing site.
-- Replacing `react-hook-form` / `zod` — they only ship in the lazy `ConsultationForm` chunk, so the cost is paid only by users who actually open the form.
-- Image CDN / responsive `srcset` — only two raster assets, both already small webp.
-- SSR / prerendering — would help LCP further but is a much larger architectural change.
+**Created (0)** — every component already exists; this is refinement, not new scaffolding.
 
-## Success criteria
-
-- Eager `index` chunk **≤ 95 KB gz** (from 120).
-- Lighthouse Performance score **≥ 95** on `/` (mobile, slow 4G).
-- Hero H1 LCP **≤ 1.5 s** on a 4× CPU throttle / Slow 4G profile.
-- Zero new TS errors. Zero new console warnings.
+No new dependencies. No router changes (route was already registered). No SEO regressions. No schema renames.
