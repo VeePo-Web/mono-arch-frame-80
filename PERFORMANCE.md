@@ -119,10 +119,17 @@ Network-level performance is already handled. The bytes that actually move
 the needle live in application code:
 
 - **Bundle code-splitting** — route-level `lazy()` + `Suspense` so each page
-  loads only its own code. (`vite.config.ts` already splits the React and
-  React Query vendors into long-cached chunks.)
-- **Responsive images** — `<picture>` with AVIF/WebP sources, `srcset`,
-  `sizes`, and `loading="lazy"` on below-the-fold imagery.
+  loads only its own code. `vite.config.ts` splits React and React Query
+  vendors into long-cached chunks.
+- **Critical-asset preload** — `vite.config.ts` includes the
+  `preloadCriticalAssets` plugin, which post-build injects
+  `<link rel="preload">` tags for the LCP logo and the two woff2 weights
+  painted above the fold (Inter 500, Fraunces upright). Filenames are
+  resolved per-build from the hashed bundle output, so they never 404.
+- **Idle-time route prefetch** — `src/components/RoutePrefetcher.tsx`
+  warms the four most-likely-next route chunks from the home page during
+  `requestIdleCallback`, gated by `Save-Data` and `effectiveType` so it
+  never burns metered bytes.
 - **Self-hosted fonts** — already done. Fraunces (variable, latin) and
   Inter (400/500/600 latin) are bundled by Vite from `@fontsource`,
   served same-origin with content-hashed filenames. See `src/main.tsx`
@@ -130,5 +137,21 @@ the needle live in application code:
   `size-adjust` to eliminate font-swap CLS).
 - **Below-the-fold lazy mounting** — `useReveal` + `content-visibility: auto`
   on long pages so off-screen sections don't pay layout/paint cost upfront.
+  Applied to sections III, IV, V, VI on the home page.
 
 Spend optimization effort there, not on edge-level concerns.
+
+## Continuous monitoring
+
+- **Lighthouse CI** — `.github/workflows/lighthouse.yml` runs on every push
+  and PR against the freshly built `dist/` (regression gate, mobile preset,
+  desktop assertions in `.lighthouserc.json`). A second job runs nightly +
+  on demand against the production URL (set the repo variable `PROD_URL`).
+  Failure breaks the PR; report links land in the workflow summary.
+- **Web Vitals** — `src/lib/vitals.ts` registers `onLCP`, `onCLS`, `onINP`,
+  `onFCP`, `onTTFB` and is loaded after first paint via
+  `requestIdleCallback`. In dev: logged to console. In prod: posted to
+  `VITE_VITALS_ENDPOINT` via `navigator.sendBeacon` if that env var is set.
+  No collector backend is wired up yet — flipping on RUM is one env var
+  + one edge function away.
+
