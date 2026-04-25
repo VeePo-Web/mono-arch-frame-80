@@ -13,19 +13,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- Fonts: Fraunces (display serif, restricted weights) + Inter (body sans).
-         Async-load via preload-then-swap to remove the only render-blocking resource. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;1,300&family=Inter:wght@400;500;600&display=swap"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;1,300&family=Inter:wght@400;500;600&display=swap" />
-    </noscript>
+    <!-- Fonts are self-hosted via @fontsource and bundled by Vite (see src/main.tsx).
+         Same-origin delivery removes the third-party DNS/TLS hop and lets the
+         browser cache woff2 files with content-hashed filenames. -->
+
 
     <!-- Open Graph -->
     <meta property="og:title" content="Haven Creek Renovations — One trusted contractor for the property you value." />
