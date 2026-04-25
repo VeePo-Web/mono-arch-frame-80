@@ -415,10 +415,7 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow tone="light" numeral="VI" label="NEXT STEP" />
-                <span className="coord-mark coord-mark-light hidden md:inline-flex">Resolution</span>
-              </div>
+              <Eyebrow tone="light" label="Next step" />
               <h2
                 id="final-cta-heading"
                 data-drift
@@ -448,52 +445,45 @@ const Index = () => {
               </ul>
             </div>
 
-            {/* Triple-Bezel CTA stack on the right */}
             <div
               className="lg:col-span-5"
               data-reveal
               style={{ ["--reveal-delay" as string]: "180ms" }}
             >
-              <div className="bezel-shell bezel-shell-evergreen bezel-shell-closing">
-                <div className="bezel-core h-full">
-                  <div className="p-7 md:p-9">
-                    {/* Form heading — drift-coupled for kinetic continuity */}
-                    <p
-                      data-drift
-                      className="font-serif text-foreground text-[1.25rem] md:text-[1.4rem] leading-snug"
+              <div className="surface-card">
+                <div className="p-7 md:p-9">
+                  <p
+                    data-drift
+                    className="font-serif text-foreground text-[1.25rem] md:text-[1.4rem] leading-snug"
+                  >
+                    Tell us about the project.
+                  </p>
+                  <p className="mt-2 text-minimal text-muted-foreground">
+                    A few details so we can come prepared.
+                  </p>
+
+                  <div className="mt-7 mb-6 h-px bg-foreground/10" />
+
+                  <Suspense
+                    fallback={
+                      <div
+                        aria-hidden="true"
+                        className="h-[460px] rounded-md bg-foreground/[0.03] animate-pulse"
+                      />
+                    }
+                  >
+                    <ConsultationForm source="home_final_cta" />
+                  </Suspense>
+
+                  <div className="mt-8 pt-6 border-t border-foreground/10 flex items-center gap-3">
+                    <span className="text-minimal text-muted-foreground">Or</span>
+                    <Link
+                      to="/contact"
+                      className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/85 hover:text-evergreen transition-colors duration-500"
                     >
-                      Tell us about the project.
-                    </p>
-                    <p className="mt-2 text-minimal text-muted-foreground">
-                      A few details so we can come prepared.
-                    </p>
-
-                    <div className="mt-7 mb-6 flex items-center gap-3">
-                      <span className="h-px flex-1 bg-foreground/10" />
-                    </div>
-
-                    <Suspense
-                      fallback={
-                        <div
-                          aria-hidden="true"
-                          className="h-[460px] rounded-md bg-foreground/[0.03] animate-pulse"
-                        />
-                      }
-                    >
-                      <ConsultationForm source="home_final_cta" />
-                    </Suspense>
-
-                    {/* Quiet escape hatch — full contact page for those who'd rather */}
-                    <div className="mt-8 pt-6 border-t border-foreground/10 flex items-center gap-3">
-                      <span className="text-minimal text-muted-foreground">Or</span>
-                      <Link
-                        to="/contact"
-                        className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/85 hover:text-evergreen transition-colors duration-500"
-                      >
-                        <span>Open the full contact page</span>
-                        <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
-                      </Link>
-                    </div>
+                      <span>Open the full contact page</span>
+                      <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
+                    </Link>
                   </div>
                 </div>
               </div>
