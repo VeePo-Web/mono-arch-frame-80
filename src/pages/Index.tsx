@@ -313,10 +313,13 @@ const Index = () => {
                       </span>
                     </div>
 
-                    {/* Caption hairline + category mark — figure-caption pattern */}
+                    {/* Figure footnote — Pentagram-style figmark + caption + region */}
                     <div className="px-8 lg:px-9 pt-6">
-                      <span className="block h-px w-10 bg-evergreen/35 mb-3" aria-hidden="true" />
-                      <p className="text-minimal text-evergreen">{p.category.toUpperCase()}</p>
+                      <div className="figure-footnote">
+                        <span className="footnote-figmark">Fig. {["i", "ii", "iii"][i]}.</span>
+                        <span className="flex-1">{p.category.toUpperCase()}</span>
+                        <span className="text-evergreen/55 tabular-nums normal-case tracking-[0.18em]">{p.area}</span>
+                      </div>
                     </div>
 
                     <div className="p-8 lg:p-9 pt-5 flex flex-col flex-1">
