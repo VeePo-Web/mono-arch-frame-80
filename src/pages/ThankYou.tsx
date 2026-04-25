@@ -27,7 +27,7 @@ interface ThankYouState {
   source?: string;
 }
 
-const PROJECT_LABEL = new Map(PROJECT_TYPES.map((p) => [p.value, p.label]));
+const PROJECT_LABEL = new Map<string, string>(PROJECT_TYPES.map((p) => [p.value, p.label]));
 
 const ThankYou = () => {
   const location = useLocation();
