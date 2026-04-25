@@ -252,57 +252,51 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Double-Bezel architecture — every premium card uses this pattern.
-     Outer shell carries the ambient shadow + ring; inner core carries
-     the solid surface + inset top highlight. Concentric radii via tokens.
+     Surface card — the single editorial card treatment.
+     One paper-soft shadow, one hairline border. No double-bezel.
      ────────────────────────────────────────────────────────────────────── */
+  .surface-card {
+    position: relative;
+    border-radius: var(--r-shell);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: border-color 500ms var(--ease-silk), box-shadow 500ms var(--ease-silk), transform 500ms var(--ease-silk);
+  }
+  .surface-card:hover {
+    border-color: hsl(var(--evergreen) / 0.30);
+    box-shadow: var(--shadow-elegant);
+  }
+  .surface-card-featured {
+    border-color: hsl(var(--evergreen) / 0.25);
+  }
+
+  /* Legacy bezel classes — neutralized to surface-card behavior so any
+     remaining markup renders cleanly without a second look. */
   .bezel-shell {
     position: relative;
     border-radius: var(--r-shell);
-    background: hsl(var(--card) / 0.55);
-    box-shadow:
-      0 0 0 1px hsl(var(--foreground) / 0.06),
-      var(--shadow-haptic);
-    padding: 0.375rem;
-    transition: box-shadow 700ms var(--ease-weighted), transform 700ms var(--ease-silk);
-  }
-  .bezel-shell::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background: linear-gradient(180deg,
-      hsl(36 25% 99% / 0.45) 0%,
-      hsl(36 25% 99% / 0) 28%);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    padding: 0;
+    transition: border-color 500ms var(--ease-silk), box-shadow 500ms var(--ease-silk);
   }
   .bezel-core {
     position: relative;
-    border-radius: var(--r-core);
-    background: hsl(var(--card));
-    box-shadow:
-      inset 0 1px 0 hsl(36 25% 99% / 0.7),
-      inset 0 0 0 1px hsl(var(--foreground) / 0.04);
+    border-radius: var(--r-shell);
+    background: transparent;
     overflow: hidden;
   }
   .bezel-shell:hover {
-    box-shadow:
-      0 0 0 1px hsl(var(--evergreen) / 0.22),
-      var(--shadow-haptic-strong);
+    border-color: hsl(var(--evergreen) / 0.30);
+    box-shadow: var(--shadow-elegant);
   }
-
-  /* Evergreen-toned variant for the final CTA panel */
-  .bezel-shell-evergreen {
-    background: hsl(145 22% 38% / 0.18);
-    box-shadow:
-      0 0 0 1px hsl(36 25% 99% / 0.12),
-      var(--shadow-haptic-evergreen);
-  }
-  .bezel-shell-evergreen .bezel-core {
-    background: hsl(var(--background));
-    box-shadow:
-      inset 0 1px 0 hsl(36 25% 99% / 0.9),
-      inset 0 0 0 1px hsl(var(--foreground) / 0.04);
+  .bezel-shell-evergreen,
+  .bezel-shell-closing {
+    background: hsl(var(--card));
+    box-shadow: var(--shadow-elegant);
   }
 
   /* Legacy soft card kept for back-compat but unused on Home now. */
