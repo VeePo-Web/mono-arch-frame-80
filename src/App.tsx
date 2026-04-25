@@ -75,6 +75,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <ScrollToTop />
+        <RoutePrefetcher />
         <ChapterSpine />
         <PageSlug />
         <Navigation />
