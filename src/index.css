@@ -371,6 +371,74 @@
   .group\/btn:hover .icon-chip-light {
     background: hsl(var(--background) / 0.20);
   }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Section wash — two-tone vertical gradient replaces flat bg-card/40.
+     Adds depth without paint cost.
+     ────────────────────────────────────────────────────────────────────── */
+  .section-wash {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--card) / 0.65) 0%,
+      hsl(var(--card) / 0.20) 100%
+    );
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Card monogram watermark — Fraunces italic "HC" anchored bottom-right.
+     Compositional anchor for service cards; rises subtly on hover.
+     ────────────────────────────────────────────────────────────────────── */
+  .card-monogram {
+    position: absolute;
+    right: -0.25rem;
+    bottom: -1.25rem;
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 14rem;
+    line-height: 1;
+    color: hsl(var(--evergreen) / 0.04);
+    pointer-events: none;
+    user-select: none;
+    transition: color 700ms var(--ease-silk);
+    letter-spacing: -0.04em;
+  }
+  .group:hover .card-monogram {
+    color: hsl(var(--evergreen) / 0.08);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Area roster row — left→right hairline draws under on hover.
+     ────────────────────────────────────────────────────────────────────── */
+  .area-row {
+    position: relative;
+  }
+  .area-row::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 0;
+    background: hsl(var(--evergreen) / 0.55);
+    transition: width 600ms var(--ease-weighted);
+  }
+  .area-row:hover::after {
+    width: 100%;
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Triple-Bezel — closing variant for the Final CTA panel.
+     Adds a third concentric ring for visual weight at the page's resolution.
+     ────────────────────────────────────────────────────────────────────── */
+  .bezel-shell-closing {
+    padding: 0.75rem;
+    box-shadow:
+      0 0 0 1px hsl(36 25% 99% / 0.18),
+      0 0 0 7px hsl(145 22% 38% / 0.12),
+      0 0 0 8px hsl(36 25% 99% / 0.08),
+      var(--shadow-haptic-evergreen);
+  }
 }
 
 /* ==========================================================================
