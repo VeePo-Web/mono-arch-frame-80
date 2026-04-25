@@ -125,6 +125,24 @@
     background-size: 160px 160px;
   }
 
+  /* Thermal arc — dawn (cool) at top, dusk (warm) at bottom.
+     Sits above the grain, below content; tints the page across the scroll. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      hsl(210 28% 78% / 0.10) 0%,
+      hsl(36 25% 97% / 0)     32%,
+      hsl(36 25% 97% / 0)     62%,
+      hsl(25 38% 78% / 0.14)  100%
+    );
+  }
+  #root { position: relative; z-index: 2; }
+
   * {
     @apply border-border;
   }
