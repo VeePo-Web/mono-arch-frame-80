@@ -22,6 +22,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          preferred_time: string | null
           project_type: string
           source: string
           updated_at: string
@@ -33,6 +34,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          preferred_time?: string | null
           project_type: string
           source?: string
           updated_at?: string
@@ -44,6 +46,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          preferred_time?: string | null
           project_type?: string
           source?: string
           updated_at?: string
