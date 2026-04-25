@@ -266,8 +266,11 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-16 md:mb-24">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="IV" label="THE WORK" />
-              <h2 id="work-heading" className="text-headline text-foreground mt-6 max-w-[18ch]">
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="IV" label="THE WORK" />
+                <span className="coord-mark hidden md:inline-flex">Plates I–III</span>
+              </div>
+              <h2 id="work-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
                 Real properties. Real outcomes. Worth a closer look.
               </h2>
             </div>
