@@ -77,7 +77,7 @@ const Index = () => {
 
       <Hero />
 
-      {/* ─── § I — Trust Promise ─────────────────────────────────────────── */}
+      {/* ─── § I — The seven things you're probably wondering ──────────── */}
       <RevealSection
         id="trust-promise"
         aria-labelledby="trust-heading"
@@ -85,32 +85,86 @@ const Index = () => {
       >
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="The promise" />
-              <h2 id="trust-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
-                One contractor. One relationship. A clearer path from idea to completion.
-              </h2>
-            </div>
             <div
-              className="lg:col-span-5 lg:pt-8 space-y-7"
+              className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start"
               data-reveal
-              style={{ ["--reveal-delay" as string]: "120ms" }}
+              style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <p className="text-body text-foreground/85">
-                Renovation work should feel as solid as the result. Too many handoffs make
-                the project feel scattered — and rural properties deserve more care than that.
+              <Eyebrow label="What you're probably thinking" />
+              <h2 id="trust-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
+                The seven things most rural homeowners want to know first.
+              </h2>
+              <p className="mt-7 text-body text-muted-foreground max-w-md">
+                Said plainly. Answered the same way. If any of these were on
+                your mind, you&apos;re in the right place.
               </p>
-              <p className="pull-quote text-[1.15rem] md:text-[1.25rem]">
-                Haven Creek was built for homeowners who want a more personal, hands-on
-                way to improve their property.
-              </p>
-              <Link
-                to="/about"
-                className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
+            </div>
+
+            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
+              <ul aria-label="Common questions from rural homeowners">
+                {[
+                  {
+                    n: "01",
+                    q: "Will you respect my property?",
+                    a: "Yes — access, animals, equipment, and clean-up are part of the deliverable, not afterthoughts. The site is left the way we found it, minus the work that needed doing.",
+                  },
+                  {
+                    n: "02",
+                    q: "Can I trust who's in my home?",
+                    a: "The same person plans the work, does the work, and walks the finish with you. No rotating cast of unfamiliar trades coming and going.",
+                  },
+                  {
+                    n: "03",
+                    q: "How many people will be coming and going?",
+                    a: "As few as the work allows. Most days it's one or two familiar faces — quiet on arrival, careful on the property, gone when they said they would be.",
+                  },
+                  {
+                    n: "04",
+                    q: "Will it actually be finished — or just done?",
+                    a: "Fit, edges, transitions, and the small details decide that. They're the work, not extras. We don't call a project complete until it reads that way.",
+                  },
+                  {
+                    n: "05",
+                    q: "Can you support phased projects over years?",
+                    a: "Yes. Many of our clients improve their property one stage at a time. Working with the same contractor across phases means continuity — we already know the building and the land.",
+                  },
+                  {
+                    n: "06",
+                    q: "How does pricing work?",
+                    a: "Custom, written plainly, after we see the property. No template numbers, no surprises mid-project. The quote follows the conversation.",
+                  },
+                  {
+                    n: "07",
+                    q: "What happens after I reach out?",
+                    a: "A real reply within two business days — from a real person, not an automated funnel. We talk first; we walk the property second.",
+                  },
+                ].map((row) => (
+                  <li key={row.n} className="fear-row">
+                    <span className="numeral-disc shrink-0" aria-hidden="true">
+                      {row.n}
+                    </span>
+                    <p className="fear-q">{row.q}</p>
+                    <p className="fear-a">{row.a}</p>
+                  </li>
+                ))}
+              </ul>
+
+              <div
+                className="mt-12 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "300ms" }}
               >
-                <span>How we work</span>
-                <span className="block w-6 h-px bg-evergreen/60 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
-              </Link>
+                <Link to="/contact" className="cta-anchor group/btn">
+                  <span>Request a Consultation</span>
+                  <span className="icon-chip icon-chip-light bg-background/15">
+                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                  </span>
+                </Link>
+                <p className="trust-microcopy">
+                  <span>Reply within 2 business days</span>
+                  <span>No obligation</span>
+                </p>
+              </div>
             </div>
           </div>
         </Container>
