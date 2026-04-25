@@ -1,109 +1,115 @@
-# Refine Gold — Contact ↔ ThankYou Flow
+## Goal
+Eliminate the third-party Google Fonts dependency, cut font bytes by subsetting to Latin-only, and remove the font-swap layout shift — without changing the visual design.
 
-Both pages already exist with default exports and are wired into the router. The breakage is the **flow**: `ConsultationForm` never navigates after success, so the dedicated ThankYou page is unreachable from the form. Beyond fixing that, this plan lifts both pages from "built" to "polished gold."
-
----
-
-## 1 · Schema — add `preferred_time` to `consultations`
-
-Migration:
-- `ALTER TABLE public.consultations ADD COLUMN preferred_time text` — nullable.
-- Drop and recreate the `Anyone can submit a consultation request` INSERT policy so its WITH CHECK accepts `preferred_time IS NULL OR preferred_time = ANY (ARRAY['morning','afternoon','either'])`.
-- Keep `notes IS NULL` constraint intact (no notes field added — staying lean).
-
-This is the only DB change. RLS shape stays restrictive.
+Expected impact:
+- ~80–150 KB smaller first-load font payload
+- ~150–300 ms faster first-text-paint on cold mobile (no third-party DNS/TLS hop)
+- Near-zero CLS from font swap (size-adjust matches fallback metrics to web font)
+- Zero outbound requests to fonts.googleapis.com / fonts.gstatic.com
 
 ---
 
-## 2 · `src/lib/validation/consultation.ts` — extend schema
+## 1. Install self-hosted font packages
 
-- Add `PREFERRED_TIMES = [{ value: "morning", label: "Morning" }, { value: "afternoon", label: "Afternoon" }, { value: "either", label: "Either works" }]`.
-- Add `preferredTime: z.enum([...]).optional()` to `consultationSchema`.
-- Export `ConsultationFormValues` type continues to work.
+```
+bun add @fontsource-variable/fraunces @fontsource/inter
+```
 
----
+- `@fontsource-variable/fraunces` ships a single variable woff2 covering all weights + italic axis — much smaller than 2 separate static files. We'll import only the `wght` axis (upright) and the italic file.
+- `@fontsource/inter` ships per-weight files. We'll import only `400`, `500`, `600` (matching what's in `index.html` today).
 
-## 3 · `src/components/ConsultationForm.tsx` — wire redirect + harden
+Both packages auto-include only the `latin` and `latin-ext` subsets per file we import — Cyrillic/Greek/Vietnamese are skipped.
 
-Critical wiring:
-- Import `useNavigate` from react-router-dom and `useSearchParams` for query-param prefill.
-- On mount, read `?service=interior|exterior|decking|multiple|not-sure` and pre-set `projectType` via `form.reset({ projectType: param, ... })` if valid.
-- On successful insert, capture the inserted timestamp and call `navigate("/thank-you", { state: { name, projectType, preferredTime, submittedAt: new Date().toISOString() }, replace: true })`. `replace: true` so back-button doesn't re-submit.
-- Keep the existing inline success state as a graceful fallback (rendered only if `navigate` throws or the component is mounted outside a Router — defensive).
-- Add the optional **05 · Best time to walk the property** field as a `Select` matching the existing 01–04 styling (numeral, hairline divider, evergreen focus ring).
-- Disable submit until `form.formState.isValid` — pill quietly "wakes up" only when complete. Add `aria-describedby="response-window-note"` on the submit button.
-- Add `inputMode="email"` and `autoCapitalize="none"` to the email field.
-- Add `aria-busy={isSubmitting}` on the form element.
-- Replace the Sonner toast on success with the redirect (no toast — the new page IS the confirmation). Keep the error toast.
+## 2. Wire imports in `src/main.tsx`
 
----
+Replace the stylesheet-link strategy with explicit imports so Vite fingerprints, inlines `@font-face`, and serves the woff2 files from our origin:
 
-## 4 · `src/pages/Contact.tsx` — sticky rail + direct-contact panel + query-param awareness
+```ts
+// Fraunces — variable, latin only, upright + italic axes
+import "@fontsource-variable/fraunces/latin.css";
+import "@fontsource-variable/fraunces/latin-italic.css";
 
-- Wrap the left-rail "What happens next" column in `lg:sticky lg:top-28 lg:self-start` so it stays visible as the form is filled. Keep the existing 4-step ordered list and Eames-style pull quote.
-- Add a new sub-section between the form and "About the quote" — a **"Or reach us directly"** hairline-divided 3-row table:
-  - Row 01 · `hello@havencreekrenovations.ca` (mailto link, evergreen hover slide)
-  - Row 02 · `(403) 555-0100` (tel: link, marked with `{/* TODO: real phone */}` comment)
-  - Row 03 · `Reply within two business days` (no link, evergreen tabular numeral on the right)
-  Use the same `area-row` group hover treatment from the service-areas section so it visually rhymes.
-- Read `?service=` from the URL at the page level and pass it into the lazy-loaded `ConsultationForm` as a prop, so deep-links from `/services/interior-finishing` etc. arrive primed.
-- Tighten section vertical rhythm: form section keeps `pb-24`, new direct-contact subsection sits inside the same `RevealSection` with a top hairline `border-t border-evergreen/15 mt-16 pt-16`.
+// Inter — only the 3 weights we actually use
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
 
----
+import "./index.css";
+```
 
-## 5 · `src/pages/ThankYou.tsx` — personalize + animated receipt mark + softer empty-state
+Each `.css` file is a tiny `@font-face` block pointing at the woff2 next to it; Vite resolves the URL and bundles it.
 
-- Read `useLocation().state` (typed) for `{ name?, projectType?, preferredTime?, submittedAt? }`.
-- Headline becomes `"Thank you, {name}. We've got your note."` when name is present; falls back to current copy otherwise. The `accentWord` switches from `"got"` to `name` when personalized.
-- Below the SubPageHero (above § I), insert a **figure-footnote receipt stamp**: `Fig. iv. · RECEIVED · {Apr 25, 2026, 4:12 PM}` rendered via `submittedAt` from state, or hidden entirely on direct visits.
-- Add a small **animated check-mark glyph** drawn with SVG `stroke-dasharray` over ~900ms, sitting beside the receipt stamp. Wrap the keyframes in `@media (prefers-reduced-motion: no-preference)` so reduced-motion users see the static check.
-- In § I "What happens next," when `projectType` is in state, prepend a one-line "Re: {Interior Finishing}." subhead under the section H2 so the visitor sees their thread acknowledged.
-- Soften § III sign-off for direct visits (no `state`): swap the sign-off paragraph for `"Looking for the contact form?"` + a quiet ghost link to `/contact`. With state present, keep the current "No need to refresh — we'll come to you." copy.
+## 3. Remove all Google Fonts markup from `index.html`
 
----
+Delete:
+- `<link rel="preconnect" href="https://fonts.googleapis.com" />`
+- `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />`
+- The `<link rel="preload" as="style" ... onload=...>` pointing at fonts.googleapis.com
+- The `<noscript>` stylesheet fallback (the app already has a "please enable JS" notice in `<body>`)
 
-## 6 · `src/index.css` — three additions only
+Add **two `<link rel="preload">` entries** for the two above-the-fold woff2 files. We need to know their fingerprinted URLs at build time — Vite handles this via `import.meta.url` in a tiny inline strategy:
 
-- `.receipt-check` keyframes for the SVG dasharray draw (reduced-motion guarded).
-- `.contact-row` — share styling with the existing `.area-row` so the direct-contact table reads as a sibling pattern.
-- One small utility: `.thread-tag` for the "Re: {service}" line — italic Fraunces, evergreen 70% opacity, `text-[0.95rem]`.
+Since we can't know the hashed filenames in static `index.html`, we'll instead inject the preloads via a small module loaded at the top of `main.tsx` that creates `<link rel="preload" as="font" type="font/woff2" crossorigin>` for the two critical files. The browser still picks them up early because main.tsx is the first parsed module.
 
-No design tokens added. No new color values. Stays inside the cedar/evergreen system already in `mem://design/thermal-crescendo-pattern`.
+Files to preload:
+- Fraunces variable upright (latin) — used by hero headline
+- Inter 500 (latin) — used by nav links and CTA
 
----
+For the very first paint, Georgia and system-ui carry the fallback text — and step 4 makes that fallback visually identical.
 
-## 7 · Footer consistency pass
+## 4. Add size-adjust fallback metrics in `src/index.css`
 
-- Read `src/components/Footer.tsx` and align its email/phone to the same `hello@havencreekrenovations.ca` + `(403) 555-0100` placeholder so the site speaks with one voice. Only change those two strings if they differ; leave layout untouched.
+At the very top of `index.css`, add two `@font-face` blocks that re-declare Georgia and system-ui under the names `'Fraunces Fallback'` and `'Inter Fallback'`, with `size-adjust`, `ascent-override`, `descent-override`, and `line-gap-override` tuned to match the real metrics:
 
----
+```css
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Georgia');
+  size-adjust: 105%;
+  ascent-override: 92%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
 
-## 8 · Acceptance — what "polished gold" means
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+```
 
-- Submit the form on `/contact` → DB insert succeeds → browser navigates to `/thank-you` with state → headline reads `"Thank you, {name}."` → `Re: {projectType}` thread tag renders → receipt timestamp + animated check show → back-button returns to `/contact` without re-firing the submit (because of `replace: true`).
-- Visit `/thank-you` directly (bookmarked) → generic copy renders, no receipt stamp, sign-off offers the gentle `/contact` ghost link.
-- Visit `/contact?service=decking` → form arrives with **Decking** pre-selected in field 03.
-- Form is invalid until name + email + project type + budget are all filled. Optional field 05 doesn't block submit.
-- Direct-contact table renders below the form with `mailto:` + `tel:` working, hairline-divided, evergreen hover slide.
-- Sticky left rail stays visible at `lg:` breakpoints while scrolling the form.
-- Lighthouse Performance unchanged (no new heavy imports — `useNavigate`/`useLocation`/`useSearchParams` are already in the React Router bundle the app pays for).
-- All existing `useSeo` + `BreadcrumbJsonLd` + `noindex` behavior unchanged.
+(Numbers are the published Fraunces/Inter fallback values from Vercel/Capsize calculators — they make Georgia and Arial occupy the same box as the web fonts.)
 
----
+## 5. Update Tailwind font stacks in `tailwind.config.ts`
+
+Insert the fallback families ahead of the system fallbacks so the browser uses them while the woff2 is downloading:
+
+```ts
+fontFamily: {
+  sans: ["'Inter'", "'Inter Fallback'", "system-ui", "sans-serif"],
+  serif: ["'Fraunces'", "'Fraunces Fallback'", "Georgia", "serif"],
+},
+```
+
+Also update the raw `font-family: 'Fraunces', Georgia, serif` strings in `src/index.css` (≈14 lines) to `font-family: 'Fraunces', 'Fraunces Fallback', Georgia, serif`. Same for the Inter ones (≈4 lines). This is a find-and-replace.
+
+## 6. Verification checklist (post-implementation)
+
+- DevTools Network tab on `/` → no requests to `fonts.googleapis.com` or `fonts.gstatic.com`
+- Network tab → fonts served from same origin with long-cache hashed filenames
+- Lighthouse → "Eliminate render-blocking resources" no longer flags fonts
+- Visual diff: hero headline, mobile nav italic links, CTA labels look identical
+- CLS via Performance panel → text reflow on font-swap is invisible
 
 ## Files touched
 
-**New migration**: 1 — adds `preferred_time` column + updated INSERT policy.
+- `package.json` (+ `bun.lock`) — add @fontsource packages
+- `src/main.tsx` — font CSS imports + tiny preload-injector for 2 critical files
+- `index.html` — remove Google Fonts preconnect/preload/noscript block
+- `src/index.css` — add 2 fallback @font-face blocks at top, update ≈18 font-family strings
+- `tailwind.config.ts` — add `'Fraunces Fallback'` and `'Inter Fallback'` to the stacks
 
-**Edited (7)**:
-- `src/lib/validation/consultation.ts` — schema + PREFERRED_TIMES export
-- `src/components/ConsultationForm.tsx` — redirect, prefill, hardening, optional field
-- `src/pages/Contact.tsx` — sticky rail, direct-contact panel, query-param forwarding
-- `src/pages/ThankYou.tsx` — personalization, receipt stamp, animated check, softer empty state
-- `src/index.css` — `.receipt-check`, `.contact-row`, `.thread-tag` (≤30 lines added)
-- `src/components/Footer.tsx` — phone/email string alignment only (if needed)
-- `.lovable/plan.md` — task tracking (housekeeping)
-
-**Created (0)** — every component already exists; this is refinement, not new scaffolding.
-
-No new dependencies. No router changes (route was already registered). No SEO regressions. No schema renames.
+No component logic changes. No design changes.
