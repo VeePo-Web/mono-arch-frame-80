@@ -119,11 +119,25 @@
 @layer components {
   .text-display {
     font-family: 'Fraunces', Georgia, serif;
-    font-size: clamp(2.25rem, 4.2vw + 1rem, 4.75rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+    font-size: clamp(2.75rem, 5vw + 1rem, 5.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
     font-weight: 400;
     text-wrap: balance;
+  }
+
+  /* Italic Fraunces signature — used as a single typographic gesture in hero. */
+  .text-display-italic {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic;
+    font-weight: 300;
+    font-variation-settings: "opsz" 144;
+    letter-spacing: -0.03em;
+  }
+
+  /* Soft hairline animation for the full-circle path. */
+  .path-line {
+    background: linear-gradient(180deg, hsl(var(--evergreen) / 0.45) 0%, hsl(var(--evergreen) / 0.10) 100%);
   }
 
   .text-headline {
