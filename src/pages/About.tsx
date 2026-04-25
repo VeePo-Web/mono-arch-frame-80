@@ -1,11 +1,201 @@
-const About = () => (
-  <main className="min-h-screen flex items-center justify-center bg-background text-foreground p-12">
-    <div className="text-center max-w-xl">
-      <p className="text-minimal text-evergreen mb-4">HAVEN CREEK RENOVATIONS</p>
-      <h1 className="text-headline mb-3">About</h1>
-      <p className="text-body text-charcoal/70">Coming soon.</p>
-    </div>
-  </main>
-);
+import { cn } from "@/lib/utils";
+import Container from "@/components/Container";
+import Eyebrow from "@/components/Eyebrow";
+import PremiumCard from "@/components/PremiumCard";
+import RevealSection from "@/components/RevealSection";
+import SubPageHero from "@/components/SubPageHero";
+import ClosingCta from "@/components/ClosingCta";
+import { BreadcrumbJsonLd } from "@/components/JsonLd";
+import { useSeo } from "@/hooks/useSeo";
+
+const SECTION = "py-24 md:py-32";
+const SITE = "https://havencreekrenovations.ca";
+
+const RESPECT = [
+  { n: "01", title: "Access", body: "We arrive when we said we would, take the route that respects the property, and leave gates the way we found them." },
+  { n: "02", title: "Animals & family routines", body: "Dogs, horses, kids, work-from-home — the day on the property goes on. We work around it, not through it." },
+  { n: "03", title: "Equipment & materials", body: "Staged where they belong, off the lawn, off the drive. Cleaned up at the end of every day, not the end of the job." },
+  { n: "04", title: "Leave it as we found it", body: "Minus the work that needed doing. The site is part of the deliverable." },
+];
+
+const CONTINUITY = [
+  { n: "01", title: "Personal involvement", body: "The same person who plans the work is the person doing it — and the person you call when there's a question." },
+  { n: "02", title: "Fewer handoffs", body: "Most renovation friction lives in the gaps between trades. We close those gaps by holding the work together." },
+  { n: "03", title: "A long-term relationship", body: "Many of our clients improve their property over years. We're built for that pace, and for that trust." },
+];
+
+const About = () => {
+  useSeo({
+    title: "About — Hands-On Renovation",
+    description:
+      "A hands-on renovation partner for rural and acreage homeowners. Property respect, fewer handoffs, and quality work from planning through completion across rural Alberta.",
+    path: "/about",
+  });
+
+  return (
+    <main id="main">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: SITE },
+          { name: "About", url: `${SITE}/about` },
+        ]}
+      />
+
+      <SubPageHero
+        eyebrowNumeral="·"
+        eyebrowLabel="ABOUT"
+        headline="A hands-on renovation partner for rural properties."
+        accentWord="hands-on"
+        subhead="Haven Creek was built for homeowners who want a more personal, less scattered way to improve the property they care about."
+        primaryCta={{ to: "/contact", label: "Talk through your project" }}
+        secondaryCta={{ to: "/work", label: "See the work" }}
+        coordMark="Section · About"
+      />
+
+      {/* § I — Working philosophy */}
+      <RevealSection aria-labelledby="philosophy-heading" className={SECTION}>
+        <Container size="wide">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+            <div className="lg:col-span-6" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+              <Eyebrow numeral="I" label="WORKING PHILOSOPHY" />
+              <h2 id="philosophy-heading" className="sr-only">Working philosophy</h2>
+              <p className="pull-quote text-[1.5rem] md:text-[1.85rem] mt-7 leading-snug max-w-[22ch]">
+                "The experience of quality. The quality of experience."
+              </p>
+              <p className="mt-6 text-minimal text-evergreen/70">— The work, in one line.</p>
+            </div>
+
+            <div className="lg:col-span-6 space-y-7" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
+              <p className="text-body text-foreground/85">
+                A finished renovation is judged twice. Once when it's done, and again every
+                day after. The first judgement is about quality — does the work fit, does
+                it last, does it read as resolved. The second is about the experience —
+                what it was like to live with the project from start to finish.
+              </p>
+              <p className="text-body text-muted-foreground">
+                We hold both standards because the homeowner does. The job isn't finished
+                until both feel right.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </RevealSection>
+
+      {/* § II — Property respect */}
+      <RevealSection aria-labelledby="respect-heading" className={cn(SECTION, "section-wash")}>
+        <Container size="wide">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+            <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+              <Eyebrow numeral="II" label="PROPERTY RESPECT" />
+              <h2 id="respect-heading" className="text-headline text-foreground mt-6">
+                The property is part of the deliverable.
+              </h2>
+              <p className="mt-6 text-body text-muted-foreground max-w-md">
+                Rural homeowners care about who is on their property — and how. The
+                trust isn't separate from the work. It is the work.
+              </p>
+            </div>
+
+            <div className="lg:col-span-7 lg:pl-8 relative">
+              <div className="surveyor-frame relative">
+                <span className="surveyor-tr" aria-hidden="true" />
+                <span className="surveyor-bl" aria-hidden="true" />
+                <div
+                  aria-hidden="true"
+                  className="absolute left-[15px] top-3 bottom-3 w-px"
+                  data-line-draw
+                  style={{
+                    backgroundImage:
+                      "repeating-linear-gradient(to bottom, hsl(var(--evergreen) / 0.45) 0 3px, transparent 3px 7px)",
+                  }}
+                />
+                <ol className="space-y-10 lg:space-y-12">
+                  {RESPECT.map((step, i) => (
+                    <li
+                      key={step.n}
+                      className="relative pl-12"
+                      data-reveal
+                      style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
+                    >
+                      <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey">{step.n}</span>
+                      <h3 className="text-title text-foreground">{step.title}</h3>
+                      <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">{step.body}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </RevealSection>
+
+      {/* § III — Hands-on continuity */}
+      <RevealSection aria-labelledby="continuity-heading" className={SECTION}>
+        <Container size="wide">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
+            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow numeral="III" label="HANDS-ON CONTINUITY" />
+                <span className="coord-mark hidden md:inline-flex">One contractor</span>
+              </div>
+              <h2 id="continuity-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+                The same person, from first walk-through to final.
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 lg:gap-9">
+            {CONTINUITY.map((c, i) => (
+              <PremiumCard
+                key={c.n}
+                data-reveal
+                style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
+                className="h-full"
+              >
+                <div className="relative p-8 lg:p-10 flex flex-col h-full">
+                  <span className="card-monogram" aria-hidden="true">HC</span>
+                  <span className="numeral-disc">{c.n}</span>
+                  <h3 className="text-title text-foreground mt-7">{c.title}</h3>
+                  <p className="mt-4 text-body text-muted-foreground text-[0.95rem] leading-relaxed flex-1">
+                    {c.body}
+                  </p>
+                </div>
+              </PremiumCard>
+            ))}
+          </div>
+        </Container>
+      </RevealSection>
+
+      {/* § IV — Long-term relationship */}
+      <RevealSection aria-labelledby="longterm-heading" className={cn(SECTION, "section-wash")}>
+        <Container size="wide">
+          <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+            <Eyebrow align="center" numeral="IV" label="A LONGER HORIZON" />
+            <h2 id="longterm-heading" className="text-headline text-foreground mt-6 max-w-[24ch] mx-auto">
+              Most rural properties are improved a stage at a time.
+            </h2>
+            <p className="mt-7 text-body text-muted-foreground max-w-[58ch] mx-auto">
+              A deck this year. Interior finishing next. Exterior repairs the year after.
+              Working with one trusted contractor across phases means continuity —
+              someone who already knows the building, the land, and how you live on it.
+            </p>
+            <p className="mt-7 font-serif italic text-foreground/85 text-[1.1rem]">
+              We're built for that pace.
+            </p>
+          </div>
+        </Container>
+      </RevealSection>
+
+      <ClosingCta
+        numeral="V"
+        eyebrow="START THE CONVERSATION"
+        heading="Tell us about the property and what's on your mind."
+        body="One project or many. We're glad to walk it through."
+        primary={{ to: "/contact", label: "Talk through your project" }}
+        secondary={{ to: "/services", label: "What we offer" }}
+      />
+    </main>
+  );
+};
 
 export default About;
