@@ -1,16 +1,24 @@
 import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
-import { cn } from "@/lib/utils";
 import Container from "./Container";
 import Eyebrow from "./Eyebrow";
 import { useDrift } from "@/hooks/useDrift";
 import { serviceAreas } from "@/data/serviceAreas";
 
 /**
- * Hero — single editorial open.
- * Magazine-spread feeling: eyebrow → oversized headline → subhead → CTA pair
- * → service-area trust line. One focal point. One signature mark (the
- * italic "Trusted" + hand-drawn underline).
+ * Hero — single editorial open with a built-in trust frame.
+ *
+ * Structure (lg+):
+ *   Cols 1–9: Eyebrow → oversized H1 → subhead → primary CTA + ghost link
+ *             → trust-microcopy (Reply within two business days · No
+ *             obligation · No pressure)
+ *   Cols 10–12: A quiet "Trusted across rural Alberta" panel listing the
+ *               four communities, plus a single italic client line.
+ *
+ * The right column was previously a colophon vanity ("No. 001" /
+ * locality stack). Sam doesn't care about an issue number; he cares
+ * whether real people in his region trust this contractor. We give him
+ * proof in 5 seconds.
  */
 const Hero = () => {
   const headlineRef = useDrift<HTMLHeadingElement>(4);
@@ -30,11 +38,11 @@ const Hero = () => {
       />
 
       <Container size="wide">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-end">
           {/* Headline column — owns the spread */}
-          <div className="lg:col-span-10">
+          <div className="lg:col-span-9">
             <div className="reveal-up" style={{ animationDelay: "0ms" }}>
-              <Eyebrow label="Haven Creek · Est. Alberta" />
+              <Eyebrow label="Haven Creek · Rural Alberta" />
             </div>
 
             <h1
@@ -80,10 +88,11 @@ const Hero = () => {
             </h1>
 
             <p
-              className="text-subhead text-muted-foreground mt-10 max-w-[44ch] reveal-up"
+              className="text-subhead text-muted-foreground mt-10 max-w-[48ch] reveal-up"
               style={{ animationDelay: "380ms" }}
             >
               Hands-on finishing, repairs, and decks — from planning through completion.
+              One contractor, one relationship, no rotating trades.
             </p>
 
             <div
@@ -92,14 +101,8 @@ const Hero = () => {
             >
               <Link
                 to="/contact"
-                className={cn(
-                  "group/btn inline-flex items-center gap-3 rounded-full",
-                  "bg-evergreen text-evergreen-foreground",
-                  "pl-7 pr-1.5 py-1.5 min-h-[52px] text-minimal",
-                  "transition-all duration-500 ease-swift",
-                  "hover:bg-evergreen-hover active:scale-[0.98]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                )}
+                className="cta-anchor group/btn"
+                aria-label="Request a consultation — start a conversation about your property"
               >
                 <span>Request a Consultation</span>
                 <span className="icon-chip icon-chip-light bg-background/15">
@@ -111,27 +114,53 @@ const Hero = () => {
                 to="/work"
                 className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-foreground transition-colors duration-500 ease-swift"
               >
-                <span>View Our Work</span>
+                <span>View the Work</span>
                 <span className="block w-6 h-px bg-evergreen/60 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
               </Link>
             </div>
-          </div>
 
-          {/* Quiet right colophon — pure type, no panel */}
-          <div className="hidden lg:block lg:col-span-2">
-            <div
-              className="reveal-up text-right"
+            {/* Trust microcopy — answers three of Sam's fears in one line */}
+            <p
+              className="trust-microcopy mt-7 reveal-up"
               style={{ animationDelay: "620ms" }}
             >
-              <p className="font-serif italic font-light text-foreground/45 text-[0.95rem] leading-snug">
-                Bragg Creek<br />
-                Bearspaw<br />
-                Rocky View<br />
-                Water Valley
+              <span>Reply within 2 business days</span>
+              <span>No obligation</span>
+              <span>No pressure</span>
+            </p>
+          </div>
+
+          {/* Quiet right proof column — pure type, no panel */}
+          <div className="hidden lg:block lg:col-span-3">
+            <div
+              className="reveal-up"
+              style={{ animationDelay: "740ms" }}
+            >
+              <p className="text-minimal text-evergreen/80 mb-4">
+                Trusted across
               </p>
-              <p className="mt-6 text-minimal text-evergreen/70 tabular-nums">
-                No. 001
-              </p>
+              <ul className="space-y-2 mb-8">
+                {serviceAreas.map((area) => (
+                  <li key={area.slug}>
+                    <Link
+                      to={area.href}
+                      className="font-serif italic font-light text-foreground/75 hover:text-evergreen text-[1.05rem] leading-snug transition-colors duration-300"
+                    >
+                      {area.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="pt-6 border-t border-border/70">
+                <p className="font-serif italic font-light text-foreground/85 text-[0.98rem] leading-relaxed text-balance">
+                  &ldquo;Walked the project with us start to finish. The site
+                  was the way they found it — better.&rdquo;
+                </p>
+                <p className="mt-3 text-minimal text-muted-foreground/80">
+                  Acreage owner · Bragg Creek
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -141,13 +170,13 @@ const Hero = () => {
           className="lg:hidden mt-16 pt-8 border-t border-border/60 reveal-up"
           style={{ animationDelay: "740ms" }}
         >
-          <p className="text-minimal text-muted-foreground mb-4">Serving</p>
+          <p className="text-minimal text-muted-foreground mb-4">Trusted across</p>
           <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
             {serviceAreas.map((area, i) => (
               <li key={area.slug} className="flex items-center gap-5">
                 <Link
                   to={area.href}
-                  className="text-body text-foreground/85 hover:text-evergreen transition-colors duration-300 text-[0.95rem]"
+                  className="font-serif italic text-foreground/80 hover:text-evergreen transition-colors duration-300 text-[1.05rem]"
                 >
                   {area.name}
                 </Link>
