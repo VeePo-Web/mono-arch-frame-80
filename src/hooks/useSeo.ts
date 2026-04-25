@@ -16,6 +16,8 @@ export interface SeoOptions {
   image?: string;
   /** Open Graph type. Defaults to "website". */
   type?: "website" | "article";
+  /** When true, sets `<meta name="robots" content="noindex,nofollow">`. */
+  noindex?: boolean;
 }
 
 /**
@@ -45,7 +47,7 @@ function upsertCanonical(href: string) {
  * Single SEO primitive — manages title, description, canonical, OG, and Twitter tags.
  * Idempotent: each call upserts the relevant tags and reverts the title on unmount.
  */
-export function useSeo({ title, description, path, image, type = "website" }: SeoOptions) {
+export function useSeo({ title, description, path, image, type = "website", noindex = false }: SeoOptions) {
   useEffect(() => {
     const fullTitle = title ? `${title} — ${BASE_TITLE}` : `${BASE_TITLE} — ${BASE_TAGLINE}`;
     const canonicalUrl = `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
@@ -76,8 +78,16 @@ export function useSeo({ title, description, path, image, type = "website" }: Se
     upsertMeta('meta[name="twitter:description"]', "name", "twitter:description", description);
     upsertMeta('meta[name="twitter:image"]', "name", "twitter:image", imageUrl);
 
+    // Robots — only present when noindex is true; removed when toggled off.
+    const robotsEl = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    if (noindex) {
+      upsertMeta('meta[name="robots"]', "name", "robots", "noindex,nofollow");
+    } else if (robotsEl) {
+      robotsEl.remove();
+    }
+
     return () => {
       document.title = `${BASE_TITLE} — ${BASE_TAGLINE}`;
     };
-  }, [title, description, path, image, type]);
+  }, [title, description, path, image, type, noindex]);
 }

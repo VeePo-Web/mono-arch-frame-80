@@ -1,11 +1,21 @@
+import AreaPage from "@/components/AreaPage";
+
 const BraggCreek = () => (
-  <main className="min-h-screen flex items-center justify-center bg-background text-foreground p-12">
-    <div className="text-center max-w-xl">
-      <p className="text-minimal text-evergreen mb-4">HAVEN CREEK RENOVATIONS</p>
-      <h1 className="text-headline mb-3">Bragg Creek</h1>
-      <p className="text-body text-charcoal/70">Coming soon.</p>
-    </div>
-  </main>
+  <AreaPage
+    slug="bragg-creek"
+    headline="Bragg Creek renovation work, kept quiet on the property."
+    accentWord="quiet"
+    serviceLines={{
+      "interior-finishing":
+        "For homes that have been quietly cared for, finishing that holds up to that standard.",
+      "exterior-finishing":
+        "Wooded lots and weathered exposures — repairs that respect the trees and the privacy.",
+      decking:
+        "Decks built around the view, the shade, and the way the property already breathes.",
+    }}
+    closingHeading="Tell us about your Bragg Creek property."
+    metaDescription="Trusted renovation work for Bragg Creek homes — interior finishing, exterior repairs, and decking, planned with respect for the trees, privacy, and access."
+  />
 );
 
 export default BraggCreek;
