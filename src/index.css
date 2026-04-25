@@ -645,6 +645,39 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.05em;
   }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Selected Works — featured-plate cross-fade + case-note expansion.
+     ────────────────────────────────────────────────────────────────────── */
+  .plate-fade {
+    animation: plate-fade 320ms var(--ease-weighted);
+  }
+  @keyframes plate-fade {
+    from { opacity: 0; transform: scale(1.01); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .case-note {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 360ms var(--ease-weighted),
+      transform 360ms var(--ease-weighted);
+  }
+  .case-note-open {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plate-fade { animation: none; }
+    .case-note,
+    .case-note-open {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }
 
 /* ==========================================================================
