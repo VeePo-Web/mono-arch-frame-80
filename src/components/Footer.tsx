@@ -41,7 +41,8 @@ const Footer = () => {
           {/* Services + Areas columns */}
           <div className="md:col-span-4 grid grid-cols-2 gap-8">
             <div>
-              <p className="text-minimal text-evergreen mb-5">· SERVICES</p>
+              <p className="numeral-mark mb-2">i</p>
+              <p className="font-serif text-foreground/90 text-[1.05rem] mb-5">Services</p>
               <ul className="space-y-3">
                 {services.map((s) => (
                   <li key={s.slug}>
@@ -56,7 +57,8 @@ const Footer = () => {
               </ul>
             </div>
             <div>
-              <p className="text-minimal text-evergreen mb-5">· AREAS</p>
+              <p className="numeral-mark mb-2">ii</p>
+              <p className="font-serif text-foreground/90 text-[1.05rem] mb-5">Areas</p>
               <ul className="space-y-3">
                 {serviceAreas.map((a) => (
                   <li key={a.slug}>
@@ -74,7 +76,8 @@ const Footer = () => {
 
           {/* Contact + CTA */}
           <div className="md:col-span-3">
-            <p className="text-minimal text-evergreen mb-5">· TALK IT THROUGH</p>
+            <p className="numeral-mark mb-2">iii</p>
+            <p className="font-serif text-foreground/90 text-[1.05rem] mb-5">Talk it through</p>
             <p className="text-body text-foreground/80 text-[0.95rem] leading-relaxed">
               Reach out and we'll respond within two business days.
             </p>
@@ -89,6 +92,11 @@ const Footer = () => {
             </Link>
           </div>
         </div>
+
+        {/* Brand signature — Fantasy-style closing line */}
+        <p className="text-center font-serif italic font-light text-foreground/65 text-[1.1rem] py-10 border-t border-border/60">
+          Built locally. Finished personally.
+        </p>
 
         {/* Bottom rule */}
         <div className="border-t border-border py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
