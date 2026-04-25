@@ -351,6 +351,9 @@ const Index = () => {
         </Container>
       </RevealSection>
 
+      {/* ─── § IV.b — Selected Works (featured-plate gallery) ──────────── */}
+      <SelectedWorks />
+
       {/* ─── § V — Service Areas Roster ─────────────────────────────────── */}
       <RevealSection
         id="areas"
