@@ -232,6 +232,7 @@ const Hero = () => {
       </div>
     </Container>
   </section>
-);
+  );
+};
 
 export default Hero;
