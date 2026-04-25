@@ -837,5 +837,7 @@
     [data-reveal-mask] { clip-path: none !important; }
     [data-line-draw] { transform: scaleY(1) !important; }
     .vignette-stroke { stroke-dashoffset: 0 !important; animation: none !important; }
+    .receipt-check-svg path,
+    .receipt-check-svg circle { stroke-dashoffset: 0 !important; animation: none !important; }
   }
 }
