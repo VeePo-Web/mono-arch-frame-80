@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowUpRight, ChevronDown } from "lucide-react";
+import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import { cn } from "@/lib/utils";
 import Container from "./Container";
 import Eyebrow from "./Eyebrow";
@@ -46,7 +47,26 @@ const Hero = () => (
                 className="block reveal-up"
                 style={{ animationDelay: "120ms" }}
               >
-                <span className="text-display-italic text-evergreen">Trusted</span> renovations
+                <span className="relative inline-block text-display-italic text-evergreen">
+                  Trusted
+                  {/* Hand-drawn underline — draws after the word lands */}
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 200 12"
+                    className="absolute left-0 right-0 -bottom-2 w-full h-2.5 overflow-visible"
+                    fill="none"
+                  >
+                    <path
+                      d="M 4 8 C 50 2, 110 10, 196 5"
+                      stroke="hsl(var(--evergreen) / 0.55)"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      className="vignette-stroke"
+                      style={{ animationDelay: "1.0s" }}
+                    />
+                  </svg>
+                </span>{" "}
+                renovations
               </span>
             </span>
             <span className="block overflow-hidden">

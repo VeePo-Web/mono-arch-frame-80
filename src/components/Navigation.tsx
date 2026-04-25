@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
+import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/logo/haven-creek-horizontal.webp";
 import logoMark from "@/assets/logo/haven-creek-mark.webp";
