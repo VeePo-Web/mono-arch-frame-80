@@ -161,14 +161,29 @@ const Hero = () => {
         >
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4]">
-              {/* Hand-drawn property vignette — fills lower 60% of panel */}
-              <HeroVignette className="absolute inset-x-0 bottom-0 h-[64%] w-full opacity-90 pointer-events-none" />
+              {/* Hand-drawn property vignette — breathes 12s loop, imperceptible per-frame */}
+              <div className="absolute inset-x-0 bottom-0 h-[64%] vignette-breathe pointer-events-none">
+                <HeroVignette className="absolute inset-0 w-full h-full opacity-90" />
+              </div>
 
-              {/* Vertical evergreen "creek" — left edge inlay */}
+              {/* Vertical evergreen "creek" — left edge inlay with surveyor ticks */}
               <div
                 aria-hidden="true"
                 className="absolute left-0 top-12 bottom-12 w-px bg-evergreen/40"
-              />
+              >
+                <span
+                  className="creek-tick absolute left-0 -translate-x-1/2 h-px w-2 bg-evergreen/60"
+                  style={{ top: "20%", animationDelay: "0s" }}
+                />
+                <span
+                  className="creek-tick absolute left-0 -translate-x-1/2 h-px w-2 bg-evergreen/60"
+                  style={{ top: "50%", animationDelay: "2.3s" }}
+                />
+                <span
+                  className="creek-tick absolute left-0 -translate-x-1/2 h-px w-2 bg-evergreen/60"
+                  style={{ top: "80%", animationDelay: "4.6s" }}
+                />
+              </div>
 
               {/* Top eyebrow + headline */}
               <div className="relative h-full flex flex-col justify-between p-7 md:p-9">
@@ -179,7 +194,7 @@ const Hero = () => {
                   </p>
                 </div>
 
-                {/* Three service rows — numeral disc + title + Button-in-Button arrow */}
+                {/* Three service rows — TOC pattern with dotted leader on hover */}
                 <ul className="space-y-2 -mx-2">
                   {services.map((s) => (
                     <li key={s.slug} className="group/disc">
@@ -189,7 +204,7 @@ const Hero = () => {
                       >
                         <div className="flex items-center gap-4">
                           <span className="numeral-disc shrink-0">{s.numeral}</span>
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 group-hover/disc:leader-dotted transition-all duration-500">
                             <h3 className="text-[1.1rem] md:text-[1.2rem] font-serif text-foreground group-hover/disc:text-evergreen transition-colors duration-500 leading-tight">
                               {s.title}
                             </h3>
