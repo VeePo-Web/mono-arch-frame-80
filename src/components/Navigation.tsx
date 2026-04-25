@@ -225,7 +225,7 @@ const Navigation = () => {
           <div className="relative h-full flex flex-col px-6 pt-5 pb-10">
             <div className="flex items-center justify-between">
               <Link to="/" onClick={() => setOpen(false)} aria-label="Haven Creek — home">
-                <img src={logo} alt="" width={160} height={28} className="h-6 w-auto" />
+                <img src={logo} alt="" width={160} height={28} className="h-6 w-auto" loading="lazy" decoding="async" />
               </Link>
               <button
                 type="button"
