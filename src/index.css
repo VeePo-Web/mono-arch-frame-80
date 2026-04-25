@@ -474,6 +474,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.625rem;
+    white-space: nowrap;
   }
   .coord-mark::before {
     content: "";
@@ -481,6 +482,12 @@
     width: 1.25rem;
     height: 1px;
     background: hsl(var(--evergreen) / 0.30);
+  }
+  .coord-mark-light {
+    color: hsl(var(--background) / 0.6);
+  }
+  .coord-mark-light::before {
+    background: hsl(var(--background) / 0.30);
   }
 
   /* Dotted leader — table-of-contents row, used on Hero proof rows. */
