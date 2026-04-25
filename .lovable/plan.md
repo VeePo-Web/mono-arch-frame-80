@@ -1,126 +1,147 @@
-# Pass 2 — Fantasy.co Editorial Upgrade
+# Pass 3 — Bespoke Fantasy.co Editorial Upgrade
 
-The bones are right (Double-Bezel hero card, glass-island nav, plaster surface). What's missing is the **cinematic confidence** Fantasy.co is known for — paced reveals, scroll-coupled motion, signature flourishes — plus a few **real defects** I caught while auditing live:
+The current site is clean, performant, and on-brand. What it still lacks — measured against Fantasy.co's own production work for clients like the Met, USA Today, and Balenciaga — is **chapter rhythm**, **kinetic restraint inside otherwise still compositions**, and **editorial marginalia**: the small typographic gestures that signal a master's hand. This pass adds those without adding weight.
 
-- **Final CTA is invisible**: the deep-evergreen panel is rendering as a flat off-white band, because `content-visibility: auto` plus an under-reserved `contain-intrinsic-size` is collapsing the section. The radial-gradient background never paints in the visible layout.
-- **Render-blocking Google Fonts** link (~84 ms) — easy win to async this.
-- **lucide-react ships 159 KB unbundled** because we import from the barrel. Switching to per-icon paths drops first JS materially.
-- **CLS 0.0323** comes from the nav (no reserved height) and a `lg:col-span-7` shifting on hydration.
-
-This pass fixes those three defects *and* performs a substantive design upgrade — without adding a single npm dependency and without exceeding the JS budget.
+**Performance budget:** JS ≤ 95 KB gz, CSS ≤ 14 KB gz, no new fonts, no new dependencies. All motion CSS-only or via the existing `useReveal` IntersectionObserver.
 
 ---
 
-## Part A — Defects (must fix)
+## A. Diagnosis — what the page still tells the eye
 
-1. **Final CTA visibility**
-   - Remove `content-visibility: auto` from sections that contain background gradients or absolutely-positioned ornaments (Final CTA, Approach path-line). Those sections paint critical chrome that the browser shouldn't skip.
-   - Keep `content-visibility: auto` only on **photographic / heavy DOM** sections (Project Gallery), with a more accurate `contain-intrinsic-size` (e.g. `1200px 1400px`).
-   - Add a fallback solid `background-color` token next to the radial gradient so the panel is never blank during paint.
+After auditing `Index.tsx`, `Hero.tsx`, `Navigation.tsx`, `Footer.tsx`, and `index.css` against Fantasy.co's editorial vocabulary:
 
-2. **Async fonts**
-   - Convert the Google Fonts `<link>` to the standard preload-then-swap pattern: `<link rel="preload" as="style" ... onload="this.rel='stylesheet'">` plus a `<noscript>` fallback. Removes the only render-blocking resource.
-
-3. **lucide-react tree-shake**
-   - Replace `import { ArrowUpRight, ... } from "lucide-react"` with deep imports (`from "lucide-react/dist/esm/icons/arrow-up-right"`). Touches Nav, Footer, Hero, Index, PremiumCard. Saves ~120 KB raw / ~30 KB gz on initial JS.
-
-4. **Nav CLS**
-   - Reserve a fixed-height invisible spacer for the floating nav so the first paint doesn't push content. (Sets header height as a CSS var consumed by `<main>`'s `scroll-margin-top`.)
+1. **Hero proof panel is static.** Beautifully composed, but once revealed it stops moving. Fantasy panels almost always have one quiet kinetic element — a slow drift, a scroll-coupled parallax, a generative tick.
+2. **No chapter spine.** Sections I–VI exist as eyebrows but nothing visually threads them. A great editorial site (NYT Magazine, RIBA Journal, Pentagram case studies) carries a persistent margin device.
+3. **Monochromatic temperature.** The whole page sits at one warmth. Fantasy work uses a *thermal arc* — Hero cool/dawn → mid-page neutral → Final CTA warm/dusk. The deep-evergreen close hints at it but isn't earned by gradient continuity.
+4. **Headlines don't breathe.** Once revealed, they're static stone. A 2–4 px scroll-coupled translate gives them living weight.
+5. **No marginalia.** Fantasy, Pentagram, and Collins all use side-margin ticks — running headers, tiny coordinates, page numbers — that say "this was set, not generated."
+6. **Figure captions are present but flat.** Project plates have a number but no source-line, no measurement, no figure footnote.
+7. **Footer is competent but not a colophon.** Pentagram footers feel like the back-cover of a monograph. Ours feels like a sitemap.
+8. **Final CTA skyline is symbolic but unattached** — it ought to *connect* to the Hero (ridge → ridge), closing the visual loop.
 
 ---
 
-## Part B — Editorial design upgrade (Fantasy-tier)
+## B. The eight upgrades
 
-### B1. Hero — scroll-paced cinema
-- Add a **scroll-coupled drift** to the hero serif headline (`Trusted renovations…`): a subtle 2-3% upward translate + 1-2% letter-spacing tighten driven by `IntersectionObserver` ratio (no scroll listeners). Effect is barely perceptible but reads as "alive."
-- **Italic "Trusted" gesture**: lift it into its own absolutely-positioned layer with a 600 ms delayed mask-reveal; add a hand-drawn 1-stroke underline SVG that draws in with `stroke-dashoffset` after the word lands.
-- **Hero proof panel** (right column "What we do" card): elevate to a true tower — split into a top *manifesto block* and a bottom *services manifest* with a hairline divider, an internal numeral column (I/II/III currently shown), and a faint topographic line illustration anchored to the bottom edge (purely SVG, < 2 KB).
-- Add a quiet **"scroll" mark** at the bottom of the hero — a 1px vertical hairline that draws downward on load, with the word "Continue" rotated -90°.
+### 1. Editorial Chapter Spine (left margin device)
 
-### B2. Section-to-section choreography
-- Wire `useReveal` into Index sections so the **headline + body + supporting block reveal in a 3-beat cascade** (0 / 90 / 180 ms staggered). Each section currently appears all-at-once, which feels static.
-- Sections II and IV currently use `bg-card/40` flat fills. Replace with a **two-tone vertical wash** (top: `card/60`, bottom: `card/20`) using a single CSS gradient — adds depth without adding paint cost.
+A persistent 1px hairline runs down the left margin of the entire page (only on `lg:` and up), inset 32px from the viewport edge. At each section transition it carries:
 
-### B3. Services cards (II) — bespoke hover
-- Add a **monogram watermark** ("HC" in Fraunces light italic, 240 px, opacity 0.04) to each card's bottom-right corner. Currently the cards are visually identical; this gives each a subtle compositional anchor.
-- On hover: monogram opacity rises to 0.08, the numeral disc grows by 4 px, and the card's haptic shadow shifts from neutral to a 5% evergreen tint. Currently only the disc + ring respond.
-- Add a **micro-caption row** below each card title showing "Available in: Bragg Creek · Bearspaw · Water Valley" in `text-minimal`. Builds local trust without adding sections.
+- a tiny serif italic chapter mark (`I.`, `II.`, …) hung from the spine
+- a 6px evergreen tick at the section's vertical midpoint
+- an ultra-light running header sideways: `HAVEN CREEK / HOME` (writing-mode: vertical-rl, 9px, 0.3em tracking)
 
-### B4. Approach (III) — kinetic path line
-- The vertical hairline is currently static. Add `data-line-draw` (already styled in CSS) so it **draws top-to-bottom over 1400 ms** as the section enters view.
-- Each numeral disc gets a **delayed scale-in** (0.85 → 1.0, opacity 0 → 1) staggered by 220 ms, synced with the line's draw.
-- Add a quiet **"finish marker"** at the bottom of the path: a small filled evergreen circle (8 px) with the word "Done" in `text-minimal`, that fades in after step 03 reveals.
+The spine is purely decorative, `aria-hidden`, and `position: fixed` so it doesn't reflow. Cost: ~50 LOC CSS, 0 JS.
 
-### B5. Project gallery (IV) — captioned monograms
-- Each `ProjectVignette` currently sits above the metadata. Add a **figure-caption pattern**: under the image, a single 1px hairline + a one-word category mark (`INTERIOR / EXTERIOR / DECKING`) in `text-minimal`, then the title. This is the Pentagram editorial pattern — caption-led, confident.
-- Add a **plate number** ("Plate I", "Plate II", "Plate III") in Fraunces italic light at the top-left of each vignette, fading in at 60% scroll-into-view. Bespoke editorial detail Fantasy uses constantly.
-- On hover: the vignette translates up by 4 px and the haptic shadow deepens; the plate number translates down 2 px (parallax counter-motion).
+**Why it works:** It's the single most recognizable Fantasy/Pentagram move on a long-scroll editorial page. It tells the eye "you are reading a publication, not a website."
 
-### B6. Service Areas (V) — typographic list
-- Convert the divided list into a **larger, looser editorial roster**: row height grows from `py-7` to `py-10`, the area name uses `text-headline` (smaller variant ~2rem), and the right-edge arrow is replaced with the area's **postal code** in `text-minimal` followed by the icon-chip.
-- On hover: a 1px evergreen hairline draws under the row from left to right (300 ms), and the name shifts right by 8 px (currently 6 px, but with cubic-bezier swift). Reads like browsing a directory.
+### 2. Hero Proof Panel — Kinetic Tick (a "Generative" calmness)
 
-### B7. Final CTA (VI) — true closing scene
-- Once defect A1 is fixed, *upgrade* the panel:
-  - Add a **second concentric ring** to the Double-Bezel CTA card (third bezel layer) — gives it the heaviest visual weight on the page, signalling it's the resolution.
-  - Behind the deep-evergreen, add a **subtle hand-drawn property silhouette** (single SVG line, 0.06 opacity, `currentColor=background`) along the bottom edge — closes the brand loop with the hero's vignette.
-  - The numbered list (01–04) gets a **left-aligned 1px column line** with each numeral hanging off it — turns it into an editorial "manifest" block instead of a list.
+Inside the Double-Bezel proof panel on the Hero's right column, add three quiet life-signs:
 
-### B8. Footer — signature close
-- Add the brand signature line at the very bottom (above the © row): the literal phrase "Built locally. Finished personally." in Fraunces italic, centered, opacity 0.7. The kind of human signature Fantasy puts on every closing footer.
-- Convert the three middle columns into a **wireframe directory** — replace the section eyebrows (· SERVICES / · AREAS / · TALK IT THROUGH) with numerals (i / ii / iii) and let the column titles set in Fraunces light. Editorial, restrained.
+- **Vertical creek line ticks slowly** — three tiny serifed measurement marks fade in/out on a 7s loop, suggesting a water-level or surveyor's rod.
+- **Hand-drawn vignette breathes** — the SVG vignette gets a 12s `transform: scale(1) ↔ scale(1.008)` ease-in-out infinite. Imperceptible per-frame; cumulative effect is *alive*.
+- **Service rows have a 1px dotted leader** between title and arrow chip — drawn as `border-bottom: 1px dotted hsl(var(--evergreen)/0.2)` on hover via `group-hover` on each row, evoking a table-of-contents.
 
-### B9. Plaster grain texture
-- Currently the body grain overlay sits at opacity 0.04 across the full viewport. Reduce to **0.025** so it disappears in the hero's serif type but stays felt on flat panels. The grain is currently *just* loud enough to read as "noise filter" rather than "paper."
+Each is `prefers-reduced-motion` aware.
 
-### B10. Cursor + focus polish
-- The default text cursor on dark panels (Final CTA) reads as black-on-dark. Add `caret-color: hsl(var(--background))` globally to inputs (future-proofing — Contact form will need it).
-- Add a **focus-visible underline** to all `text-minimal` link variants — currently the focus ring sits on a wide rounded chip that's invisible when the text is short. A 2px underline + 4px offset in evergreen is more honest.
+### 3. Scroll-Coupled Headline Drift (cinematic stillness)
 
----
+Hero `<h1>` and each section `<h2>` get a `data-drift` attribute. A single `IntersectionObserver` (reused from `useReveal`) toggles a CSS variable `--drift` from `0` to `-4px` as the headline crosses the viewport. The transform is `translateY(var(--drift))` with a 1200ms ease-out.
 
-## Part C — Performance budget (verified via build)
+The effect: headlines settle into place over a long beat instead of snapping. ~30 LOC, no scroll listener, no `requestAnimationFrame`.
 
-After this pass:
-- **JS gz**: target ≤ **95 KB** initial (down from ~108 KB) — driven by lucide deep-imports.
-- **CSS gz**: ≤ **14 KB** (up from 12.6 KB; new gradients + monogram + plate styles).
-- **Critical CSS**: still inlined via Vite's default.
-- **Render-blocking resources**: target **0** (down from 1).
-- **CLS**: target ≤ **0.01** (from 0.0323) via reserved nav height and explicit `aspect-ratio` on vignettes.
-- **No new npm dependencies.**
-- **No new fonts** (the Fraunces 400 + 300i and Inter 400/500/600 we already ship cover everything proposed).
+### 4. Marginalia — Coordinates & Figure Footnotes
 
----
+Three new typographic patterns added to the design system, then sprinkled judiciously:
 
-## Files touched
+- **Section coordinates** — top-right of each section heading row: `51.0252°N · 114.6314°W` for Bragg Creek-area sections, `Lat. 51° / Long. -114°` rendered in 9px tabular-nums Inter with `0.18em` letter-spacing. (Real Bragg Creek coordinates — embedded brand truth.)
+- **Figure footnotes** — Project Gallery cards get a hairline footer rule with a tiny `Fig. i — Bearspaw, 2024 · Interior` line. Replaces the current bare metadata.
+- **Page slug** in the very top-right of the viewport (fixed): `Page 01 / Home`. Updates per route via context. Cost: 1 React context, 8 LOC.
 
-- `src/index.css` — grain reduce, two-tone wash, plate/monogram styles, third-bezel variant, signature line, focus underline
-- `index.html` — preload-swap pattern for fonts, nav-height CSS var
-- `src/pages/Index.tsx` — defect fixes (content-visibility), reveal wiring, gallery captions, areas roster, CTA manifest list
-- `src/components/Hero.tsx` — scroll-coupled drift, italic underline, scroll mark, topographic line
-- `src/components/Navigation.tsx` — reserved height, focus underline
-- `src/components/Footer.tsx` — signature line, numeral columns
-- `src/components/PremiumCard.tsx` — third-bezel `featured="closing"` variant
-- `src/components/ProjectVignette.tsx` — plate-number prop
-- All icon imports (~6 files) — switch to deep imports for tree-shake
+### 5. Thermal Arc — Dawn → Dusk Gradient Underlay
 
----
+A single `body::after` fixed full-viewport gradient layer, opacity 0.06, sits between the plaster grain and the content:
 
-## Out of scope (for a later pass)
+```
+linear-gradient(180deg,
+  hsl(210 20% 85% / 0.4)  0%,    /* dawn cool */
+  hsl(36 25% 97% / 0)     35%,
+  hsl(36 25% 97% / 0)     65%,
+  hsl(25 30% 85% / 0.5)   100%   /* dusk warm */
+)
+```
 
-- Building the Work / Services / Contact / Areas detail pages (still placeholders today).
-- Photography integration — vignettes stay as the editorial fallback.
-- Form validation / Supabase wiring for Contact.
-- View Transitions API for cross-page navigation (great future Fantasy-tier touch).
+Plus a section-scoped variant: the Hero gets a faint cool wash, the Final CTA's existing radial gets pulled warmer (add a 25° hue-shift band at the top edge). The page now *travels* tonally from morning to evening.
+
+### 6. Approach Section — Surveyor's Diagram
+
+Upgrade the existing path-line to a true surveyor's-drawing aesthetic:
+
+- The vertical path-line becomes **dashed** (3px on, 4px off) with the dash itself drawing top→bottom (already animated via `data-line-draw` — extend with `stroke-dasharray` animation on the SVG conversion).
+- Each numeral disc gets two small horizontal tick marks at 12 o'clock and 6 o'clock, like a surveyor's transit point.
+- A faint corner-bracket frame `⌐ ⌐` wraps the entire ordered list at 8px from each corner, drawn with 4 SVG line corners, `evergreen/0.25`.
+
+Reads as field-notes, not slideware.
+
+### 7. Footer → Editorial Colophon
+
+Replace the current 3-block footer with a true colophon:
+
+- **Top band:** A 1px rule across the full width, then the brand mark centered, then beneath it in 11px Fraunces italic: `Set in Fraunces & Inter. Composed in Calgary, Alberta. MMXXV.`
+- **Three editorial blocks** (Services / Areas / Talk it through) — keep, but tighten typography to 13px and add a `numeral-mark` running header above each (`§ I`, `§ II`, `§ III`).
+- **Sign-off line:** `Built locally. Finished personally.` — keep, but render it as oversized Fraunces italic (clamp 2rem→3rem) centered, with a hand-drawn underline SVG echoing the Hero's "Trusted" underline. Visual loop closure.
+- **Fine print row** with the year, but add: `No. 001 — First Edition.` (positions the company as a craft house releasing editions, not a contractor running campaigns).
+- **Lifted skyline silhouette** — copy the Final CTA's skyline SVG into the footer at 30px height, opacity 0.12, anchored to the footer's top edge. The same ridge that closes the CTA opens the colophon. The page is now a closed loop.
+
+### 8. Navigation — Tightened to Floating Capsule with Index Mode
+
+Two refinements to the existing glass island:
+
+- **Brand mark gets a meridian dot.** When `scrolled` is true, a 3px evergreen dot appears to the left of the logo mark, like a publication's chapter dot. Subtle and editorial.
+- **"Index" hover affordance.** Add a tiny vertical-text `INDEX ↗` at the right of the menu (between the last link and the CTA) that, on click, opens a *full-page editorial sitemap overlay* — already mostly built (mobile menu) but styled as a printed contents page: numbered chapters, hand-drawn underlines, all routes listed with tiny abstracts. Desktop-only addition, ~80 LOC, JS already exists.
 
 ---
 
-## Acceptance criteria
+## C. Files touched
 
-1. Final CTA panel renders the deep-evergreen radial gradient + full content on first scroll-into-view.
-2. Hero italic word draws an underline after landing; section reveals are perceptibly staggered.
-3. Each service card shows a monogram watermark + micro-caption; each project card shows a plate number + caption hairline.
-4. The Approach path line draws in over ~1.4 s; numerals stagger; finish marker fades in.
-5. Service Areas list reads as a typographic roster with postal codes and underline draw on hover.
-6. Build succeeds; lucide-react contribution to JS bundle drops by ≥ 60%; no render-blocking fonts.
-7. CLS ≤ 0.01; no new dependencies.
+| File | Change |
+|---|---|
+| `src/index.css` | + chapter spine, marginalia, thermal arc layer, dotted leaders, surveyor brackets, colophon utilities (~140 LOC added) |
+| `src/components/Hero.tsx` | + kinetic ticks on creek line, breathing vignette, dotted leaders on service rows |
+| `src/pages/Index.tsx` | + section coordinates per section, `data-drift` on headlines, surveyor brackets on Approach |
+| `src/components/Navigation.tsx` | + meridian dot when scrolled, optional "Index ↗" desktop link |
+| `src/components/Footer.tsx` | rewrite as colophon (top mark + composition note, oversized italic sign-off, ridge silhouette echo) |
+| `src/components/PageSlug.tsx` *(new, ~30 LOC)* | fixed top-right `Page 0X / <name>` slug |
+| `src/components/ChapterSpine.tsx` *(new, ~50 LOC)* | fixed left-margin spine + running header |
+| `src/hooks/useDrift.ts` *(new, ~40 LOC)* | reusable scroll-coupled drift via IntersectionObserver + scroll progress |
+
+No new dependencies. Lucide icons already deep-imported.
+
+---
+
+## D. Performance & QA contract
+
+- **JS:** ≤ 95 KB gz held. New components are pure JSX; only `useDrift` adds ~0.4 KB.
+- **CSS:** ≤ 14 KB gz held. ~140 new LOC, but mostly utilities replacing existing inline classes.
+- **Motion:** All new motion respects `prefers-reduced-motion`.
+- **A11y:** Spine, slug, marginalia, ridge silhouette, surveyor brackets all `aria-hidden`. No new focus traps. Navigation Index overlay reuses existing dialog semantics.
+- **CLS:** Zero — all new fixed elements are positioned, not flowed.
+- **Verification:** After implementation, build + manual visual QA at 1440 / 1024 / 390 widths.
+
+---
+
+## E. What this is *not*
+
+- Not adding photography (still no real assets, still hand-drawn vignettes).
+- Not adding parallax JS, GSAP, Framer Motion, or any animation library.
+- Not changing routing, data, or copy except where marginalia adds to it.
+- Not redesigning components; only enriching them with editorial gestures.
+
+---
+
+## F. Outcome
+
+After this pass the page should read as a single, meticulously typeset publication with chapter spine, running headers, page slug, coordinates, figure footnotes, surveyor diagrams, breathing proof panels, scroll-settled headlines, a thermal dawn-to-dusk arc, and a true Pentagram-style colophon. Every gesture is small. The cumulative effect is unmistakable: this was set by hand, not generated.
+
+**Approve to switch to default mode and execute all eight upgrades in one pass.**
