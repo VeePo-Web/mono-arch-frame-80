@@ -327,10 +327,7 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="V" label="WHERE WE WORK" />
-                <span className="coord-mark hidden md:inline-flex">4 Localities</span>
-              </div>
+              <Eyebrow label="Where we work" />
               <h2 id="areas-heading" data-drift className="text-headline text-foreground mt-6">
                 Local, by choice.
               </h2>
