@@ -8,8 +8,8 @@ import Hero from "@/components/Hero";
 import PremiumCard from "@/components/PremiumCard";
 import { ProjectVignette, type VignetteCategory } from "@/components/ProjectVignette";
 import SelectedWorks from "@/components/gallery/SelectedWorks";
-import { LocalBusinessJsonLd } from "@/components/JsonLd";
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
+import { useSeo } from "@/hooks/useSeo";
 import { useReveal } from "@/hooks/useReveal";
 import { services } from "@/data/services";
 import { projects } from "@/data/projects";
@@ -47,14 +47,47 @@ const RevealSection = ({
 };
 
 const Index = () => {
-  useDocumentTitle(
-    "",
-    "Hands-on interior finishing, exterior repairs, and decking for rural homeowners in Bragg Creek, Rocky View County, Bearspaw, and Water Valley.",
-  );
+  useSeo({
+    title: "Trusted Renovations for Rural Homes",
+    description:
+      "Hands-on interior finishing, exterior repairs, and decking for rural and acreage homeowners across Bragg Creek, Rocky View County, Bearspaw, and Water Valley.",
+    path: "/",
+  });
 
   return (
     <main id="main">
       <LocalBusinessJsonLd />
+      <WebSiteJsonLd />
+      <FAQJsonLd
+        items={[
+          {
+            question: "What kind of renovation work does Haven Creek take on?",
+            answer:
+              "Three core services: interior finishing (the visible details — trim, transitions, fit, and finish), exterior finishing and repairs (durable protection against weather and time), and decking (outdoor living that fits the property and lasts). Each is handled hands-on, planning through completion.",
+          },
+          {
+            question: "Which areas do you serve?",
+            answer:
+              "Bragg Creek, Rocky View County, Bearspaw, and Water Valley — rural and acreage properties across the foothills west and north of Calgary.",
+          },
+          {
+            question: "How does the consultation process work?",
+            answer:
+              "Start with a request through the consultation form. We follow up to discuss your property, the scope you're considering, and your timeline. Quotes are custom — based on the work, the site, and the materials that suit it. There's no obligation to proceed.",
+          },
+          {
+            question: "Do you handle phased renovations over time?",
+            answer:
+              "Yes. Many rural homeowners prefer to improve their property one thoughtful stage at a time. Working with one trusted contractor across phases means continuity — someone who already knows the building, the land, and how you live on it.",
+          },
+          {
+            question: "What does property respect mean on a Haven Creek job site?",
+            answer:
+              "It means careful access, clean equipment management, awareness of land, animals, and family routines, and leaving the property the way we found it — minus the work that needed doing.",
+          },
+        ]}
+      />
+
 
       <Hero />
 

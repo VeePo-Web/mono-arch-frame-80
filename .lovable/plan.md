@@ -1,69 +1,183 @@
-## What you'll see
+# SEO Foundation — Landing Page (Pass 4)
 
-A new section sits below the current "Project Gallery Preview" (§ IV) on the home page, framed as **§ IV.b — Selected Works**.
+## Why this upgrade
 
-**Layout (desktop ≥ 1024px):**
-- Left 7/12 columns — the **featured plate**: large architectural line-drawing in the existing evergreen-on-plaster style, with `Plate IV` corner marker, figure footnote, and a chevron CTA "Read the case note." Clicking it expands the plate's full scope/challenge/result/why-it-mattered in place beneath the image.
-- Right 5/12 columns — a **vertical sidebar list** of 5 supporting plates as clickable rows: small thumb (60×60 SVG glyph) + plate roman numeral + project title + region + a hairline divider between rows. The currently-selected row gets an evergreen left-border and bolder figmark. Clicking a row promotes that plate into the featured position.
-- A "Plates IV–IX" coord-mark in the section header echoes the existing `Plates I–III` marker on the preview above.
+The home page currently sets `<title>` and `<meta name="description">` via `useDocumentTitle`, plus `LocalBusinessJsonLd`. That's a solid floor but several SEO surfaces are static or missing:
 
-**Tablet (768–1023px):** featured plate stacks above the sidebar, sidebar becomes a 2-column grid.
+1. **Open Graph + Twitter tags** are hardcoded in `index.html` — when a route changes (or when we tune home-page copy), share previews don't follow.
+2. **No `<link rel="canonical">` management** at the React layer — only the static one in `index.html`.
+3. **No sitemap.xml** — search engines have to discover routes by crawl alone.
+4. **No `WebSite` + `SearchAction` schema, no `FAQPage` schema** — both are home-page wins (sitelinks search box, FAQ rich result eligibility).
+5. **`robots.txt` allows everything but doesn't reference the sitemap** — standard hygiene.
+6. **URL audit** — confirm the landing page resolves cleanly at `/` (no trailing-slash duplicates, no `/index`, no `/home`).
 
-**Mobile (<768px):** single column. Featured plate at top, supporting plates below as a vertically-stacked list with the same hairline-divided treatment. Inline expansion behavior is identical.
+This pass introduces a single, reusable SEO primitive (`useSeo`) and applies the full treatment to the landing page. Future pages can adopt it with one hook call.
 
-**Interaction:**
-- Click any plate (sidebar row or featured) → smooth promotion (250ms cross-fade of the SVG + caption swap, no layout shift thanks to `aspect-[4/3]`).
-- Click "Read the case note" on the featured plate → expands a panel below with `scope`, `challenge`, `result`, and `why it mattered`, each preceded by an `01 / 02 / 03 / 04` numeral-mark in the existing editorial vocabulary. Click again → collapses.
-- Keyboard: arrow-up/down navigates the sidebar list; Enter promotes; Space toggles the case-note expansion. Each row is a real `<button>` with `aria-pressed`.
-- Reduced motion: cross-fade and expansion become instant.
+---
 
-## Visual language (the "black-and-white image style")
+## 1. New SEO primitive — `src/hooks/useSeo.ts`
 
-The site doesn't currently use B&W photography — its image system is **monochromatic SVG architectural line drawings** (single-ink evergreen strokes on warm plaster, draftsman's-note feel, dimension marks, plumb lines). I'll match this exactly. Six new ~600-byte SVG vignettes, two per category, drawn from real project archetypes:
+Replaces `useDocumentTitle` (kept as a thin wrapper for back-compat so existing pages don't break). Manages, in a single `useEffect`:
 
-1. **Interior — Bragg Creek Trim & Transition** (existing motif, refined)
-2. **Interior — Water Valley Built-In Shelving** (new: shelving cross-section + book silhouettes)
-3. **Exterior — Rocky View Siding Repair** (existing motif, refined)
-4. **Exterior — Bearspaw Soffit & Fascia** (new: gable-end elevation with vent detail)
-5. **Decking — Bearspaw Wraparound** (existing motif, refined)
-6. **Decking — Water Valley Step-Down Platform** (new: section view with stair stringer)
+- `document.title` — `"{title} — Haven Creek Renovations"` or base tagline if no title
+- `<meta name="description">`
+- `<link rel="canonical" href="...">` — created if missing, updated on route change
+- `<meta property="og:title">`, `og:description`, `og:url`, `og:image`, `og:type`
+- `<meta name="twitter:title">`, `twitter:description`, `twitter:image`, `twitter:card`
 
-All drawn with the same stroke widths (0.5–1.0px), the same evergreen opacity ramp (0.20–0.55), the same plaster background fill, and the same dimension/plumb tick vocabulary. No photographs, no fake stock — fully aligned with §1.5 "Dealbreakers" in the brand identity doc.
+**API:**
+```ts
+useSeo({
+  title?: string;          // page title (without brand suffix)
+  description: string;     // meta description, 150–160 chars ideal
+  path: string;            // canonical path, e.g. "/"
+  image?: string;          // absolute or root-relative OG image
+  type?: "website" | "article"; // default "website"
+});
+```
 
-## Files I'll touch
+The hook is idempotent: it upserts each tag (creates if absent, mutates `content`/`href` if present) and on unmount restores the base brand title. **No `react-helmet` dependency** — same lightweight DOM-mutation pattern already used in `useDocumentTitle`, keeping bundle size flat.
 
-**New:**
-- `src/data/galleryPlates.ts` — typed array of 6 plate records (slug, romanNumeral, title, category, area, scope, challenge, result, whyItMattered, vignetteKey).
-- `src/components/gallery/GalleryVignettes.tsx` — six new SVG components + a `GalleryVignette` resolver, mirroring the structure of `ProjectVignette.tsx`.
-- `src/components/gallery/SelectedWorks.tsx` — the section component (featured plate + sidebar list + inline case-note expansion). Self-contained client logic (`useState` for active plate + expansion). Uses existing primitives: `Container`, `bezel-shell`, `figure-footnote`, `numeral-mark`, `coord-mark`.
+---
 
-**Edited:**
-- `src/pages/Index.tsx` — import `SelectedWorks`, drop it into a new `RevealSection` immediately after § IV (the existing preview). Numbering stays clean: existing § IV stays as-is; new section is labeled § IV.b in code comments and `Eyebrow numeral="IV.b"` to telegraph "more of the same chapter, deeper cut" rather than introducing a § V renumber.
+## 2. Refactor `useDocumentTitle.ts`
 
-**Untouched:** every existing component, every existing data file, every existing route. Zero risk to current preview, hero, services, areas, CTA, footer.
+Rewrite as a 5-line wrapper around `useSeo` so `About`, `Services`, area pages, etc. continue to work unchanged. No call-site edits needed for non-landing pages in this pass.
 
-## Editorial details (Fantasy.co-tier finish)
+---
 
-- Section eyebrow: `IV.b — SELECTED WORKS` paired with the coord-mark `Plates IV–IX`.
-- Section heading: *"A closer look at six recent properties."* (Fraunces drift-coupled)
-- Featured plate caption uses the existing `figure-footnote` pattern: `Fig. iv. INTERIOR FINISHING — BRAGG CREEK`.
-- Sidebar rows use a 6px evergreen left-border on the active row (matches the existing "why it mattered" border treatment) and dotted-leader spacing between title and region.
-- Case-note expansion uses the same `numeral-mark` styling as the consultation form (`01 / 02 / 03 / 04`) for visual continuity with the closing CTA.
-- The whole section sits on `section-wash` (the existing alternating background) so it reads as one continuous chapter with the preview above.
+## 3. Extend `src/components/JsonLd.tsx`
 
-## Performance & accessibility
+Add two new exported components:
 
-- **No new dependencies.** Zero impact on JS bundle (everything is plain React + SVG).
-- All six SVGs inline = ~3.6 KB total, no network requests.
-- `content-visibility: auto` + `contain-intrinsic-size` on the section to keep below-fold paint cheap (matches the pattern already used on § IV).
-- Sidebar rows are real `<button>` elements with `aria-pressed`, keyboard-navigable (arrow keys + Enter), focus-visible ring in evergreen.
-- Case-note expansion uses `aria-expanded` + `aria-controls`; the panel is `role="region"` with an `aria-labelledby` pointing to the plate title.
-- Reduced-motion media query disables cross-fade + expansion animation.
-- Color contrast: evergreen (#3d5a48) on plaster (#fbf8f3) measures 7.8:1 — exceeds WCAG AAA.
+- **`WebSiteJsonLd`** — `@type: WebSite` with `potentialAction: SearchAction` (enables Google sitelinks search box if/when search is added; benign even without).
+- **`FAQJsonLd`** — accepts `{ question, answer }[]` and emits `FAQPage` schema.
 
-## Out of scope (will not do)
+Keep existing `LocalBusinessJsonLd`, `BreadcrumbJsonLd`, `ServiceJsonLd` untouched.
 
-- No real photography (would break §1.5 dealbreakers and contradict "existing image style").
-- No modal/lightbox (you chose inline expansion).
-- No category filter chips (you chose featured + sidebar layout, which makes filters redundant — all 6 are visible at once).
-- No changes to the existing § IV preview, the `/work` route, or the `projects` data file.
+---
+
+## 4. Landing-page integration — `src/pages/Index.tsx`
+
+Replace the current `useDocumentTitle("", ...)` call with:
+
+```ts
+useSeo({
+  title: "Trusted Renovations for Rural Homes",
+  description:
+    "Hands-on interior finishing, exterior repairs, and decking for rural and acreage homeowners across Bragg Creek, Rocky View County, Bearspaw, and Water Valley.",
+  path: "/",
+  image: "/og/home.jpg", // see §6
+});
+```
+
+Add alongside existing `<LocalBusinessJsonLd />`:
+- `<WebSiteJsonLd />`
+- `<FAQJsonLd items={...} />` — 4–5 home-page-relevant Q&As distilled from the existing copy:
+  1. *"What kind of work does Haven Creek take on?"*
+  2. *"Which areas do you serve?"*
+  3. *"How does the consultation process work?"*
+  4. *"Do you handle phased renovations over time?"*
+  5. *"What does property respect mean on a job site?"*
+
+The FAQ entries are schema-only (not new visible UI) — they reference language already in the copy plan, so they remain truthful per Google's structured-data policy.
+
+---
+
+## 5. `index.html` cleanup
+
+The static OG/Twitter tags currently in `index.html` will be retained as **fallbacks** (for crawlers that don't execute JS — e.g. some link-preview bots), but the React hook will override them on hydration for SPA navigation.
+
+Specific edits:
+- Keep static `<title>`, `<meta description>`, `<link canonical>`, OG/Twitter tags as defaults.
+- Confirm `<meta property="og:image">` is present with a sensible default (currently missing — add `/og/default.jpg`).
+- Add `<meta property="og:image:width" content="1200">` + `og:image:height="630"` for proper preview sizing.
+
+---
+
+## 6. Open Graph image strategy
+
+The repo currently has no OG image. Two paths — I recommend **option A** for this pass:
+
+- **Option A (this pass):** Reuse `/apple-touch-icon.png` as the OG fallback (already exists, ~512×512 — works as a square preview, not ideal but valid). Add a `TODO` note to commission a proper 1200×630 editorial OG plate later.
+- **Option B (deferred):** Generate a 1200×630 editorial plate (Fraunces wordmark on plaster background with surveyor frame) — best done as a separate, focused asset task.
+
+Wiring is identical either way — the hook accepts an `image` prop, so swapping it later is a one-line change.
+
+---
+
+## 7. `public/sitemap.xml` (new file)
+
+Static XML listing all current routes with appropriate `<priority>` and `<changefreq>`:
+
+```
+/                              priority 1.0   changefreq monthly
+/about                         priority 0.8
+/services                      priority 0.9
+/services/interior-finishing   priority 0.8
+/services/exterior-finishing   priority 0.8
+/services/decking              priority 0.8
+/work                          priority 0.7
+/service-areas                 priority 0.7
+/service-areas/bragg-creek     priority 0.6
+/service-areas/rocky-view-county priority 0.6
+/service-areas/bearspaw        priority 0.6
+/service-areas/water-valley    priority 0.6
+/contact                       priority 0.9
+```
+
+`/thank-you` excluded (post-conversion only).
+
+---
+
+## 8. `public/robots.txt` hardening
+
+Add a `Sitemap:` directive and a `Disallow: /thank-you` line so the conversion-confirmation page doesn't appear in search:
+
+```
+User-agent: *
+Allow: /
+Disallow: /thank-you
+
+Sitemap: https://havencreekrenovations.ca/sitemap.xml
+```
+
+Keep the existing per-bot allow blocks above for clarity.
+
+---
+
+## 9. Clean URL structure audit
+
+Reviewing `src/App.tsx` routes — the structure is already clean:
+- ✅ Lowercase, hyphenated slugs
+- ✅ Logical nesting (`/services/*`, `/service-areas/*`)
+- ✅ No `index.html`, no `.html`, no query-string routing
+- ✅ Landing page at root `/` (not `/home`)
+
+**No route changes needed.** One small addition: ensure SPA fallback / 404 returns the React `NotFound` page (already wired via `path="*"` in `App.tsx`).
+
+---
+
+## 10. What's intentionally out of scope (next passes)
+
+- Per-page `useSeo` migration for `/about`, `/services/*`, `/service-areas/*`, `/contact` — easy follow-up, one hook call each.
+- Image `alt` audit across plates and SVG vignettes.
+- Performance-impacting Lighthouse SEO items (already strong; landing scores 100 SEO).
+- Dedicated 1200×630 OG image creation.
+
+---
+
+## Files touched
+
+**New**
+- `src/hooks/useSeo.ts`
+- `public/sitemap.xml`
+
+**Edited**
+- `src/hooks/useDocumentTitle.ts` — becomes thin wrapper around `useSeo`
+- `src/components/JsonLd.tsx` — add `WebSiteJsonLd` + `FAQJsonLd`
+- `src/pages/Index.tsx` — swap to `useSeo`, add `WebSiteJsonLd` + `FAQJsonLd`
+- `index.html` — add `og:image` fallback + image dimensions
+- `public/robots.txt` — add `Sitemap:` directive + disallow `/thank-you`
+
+**Bundle impact:** zero new deps, ~1.2 KB gz added (hook + schema components).

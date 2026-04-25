@@ -76,3 +76,49 @@ export function ServiceJsonLd({ name, description }: { name: string; description
   );
 }
 
+export function WebSiteJsonLd() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Haven Creek Renovations",
+    url: SITE_URL,
+    inLanguage: "en-CA",
+    publisher: {
+      "@type": "GeneralContractor",
+      name: "Haven Creek Renovations",
+    },
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export function FAQJsonLd({ items }: { items: FaqItem[] }) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
