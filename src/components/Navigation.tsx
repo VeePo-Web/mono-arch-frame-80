@@ -80,17 +80,7 @@ const Navigation = () => {
             scrolled ? "p-1.5 max-w-[min(94vw,940px)]" : "p-2 max-w-[min(96vw,1040px)]",
           )}
         >
-          {/* Inset top highlight via pseudo — uses index.css? Inline gradient instead for surgical control. */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-full"
-            style={{
-              background:
-                "linear-gradient(180deg, hsl(36 25% 99% / 0.5) 0%, hsl(36 25% 99% / 0) 40%)",
-            }}
-          />
-
-          {/* Brand chip — left, with meridian dot when scrolled */}
+          {/* Brand chip — left */}
           <Link
             to="/"
             aria-label="Haven Creek Renovations — home"
@@ -100,14 +90,6 @@ const Navigation = () => {
               scrolled ? "px-2.5 py-1.5" : "px-3 py-2",
             )}
           >
-            <span
-              aria-hidden="true"
-              className={cn(
-                "block h-[5px] w-[5px] rounded-full bg-evergreen",
-                "transition-all duration-700 ease-weighted",
-                scrolled ? "opacity-100 scale-100" : "opacity-0 scale-50 -ml-2",
-              )}
-            />
             <img
               src={scrolled ? logoMark : logo}
               alt="Haven Creek Renovations"
@@ -121,12 +103,6 @@ const Navigation = () => {
               decoding="async"
             />
           </Link>
-
-          {/* Hairline divider */}
-          <span
-            aria-hidden="true"
-            className="hidden md:block relative z-10 h-5 w-px bg-foreground/10 mx-1"
-          />
 
           {/* Desktop links */}
           <ul className="hidden md:flex relative z-10 items-center gap-0.5">
@@ -179,9 +155,7 @@ const Navigation = () => {
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
           >
-            <span className="hidden sm:inline">
-              {scrolled ? "Consultation" : "Request a Consultation"}
-            </span>
+            <span className="hidden sm:inline">Consultation</span>
             <span className="sm:hidden">Consultation</span>
             <span className="icon-chip icon-chip-light bg-background/15">
               <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.5} />
