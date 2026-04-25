@@ -22,3 +22,17 @@ createRoot(document.getElementById("root")!).render(
     <App />
   </StrictMode>
 );
+
+// Web Vitals — loaded after first paint via requestIdleCallback so it never
+// touches LCP. No-op in prod unless VITE_VITALS_ENDPOINT is configured.
+if (typeof window !== "undefined") {
+  type IdleWindow = Window & {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+  };
+  const w = window as IdleWindow;
+  const idle = (cb: () => void) =>
+    w.requestIdleCallback ? w.requestIdleCallback(cb, { timeout: 3000 }) : setTimeout(cb, 1500);
+  idle(() => {
+    void import("./lib/vitals").then((m) => m.report());
+  });
+}
