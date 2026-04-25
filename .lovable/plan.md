@@ -1,115 +1,39 @@
 ## Goal
-Eliminate the third-party Google Fonts dependency, cut font bytes by subsetting to Latin-only, and remove the font-swap layout shift — without changing the visual design.
 
-Expected impact:
-- ~80–150 KB smaller first-load font payload
-- ~150–300 ms faster first-text-paint on cold mobile (no third-party DNS/TLS hop)
-- Near-zero CLS from font swap (size-adjust matches fallback metrics to web font)
-- Zero outbound requests to fonts.googleapis.com / fonts.gstatic.com
+Document — accurately, in the repo — that compression and long-term caching are already handled by Lovable's Cloudflare edge, so this concern stops resurfacing and future contributors know what is and isn't configurable from this codebase.
 
----
+**No runtime code changes. No bytes shipped to users. No dependencies added.** This is a single documentation file plus one README link.
 
-## 1. Install self-hosted font packages
+## What I confirmed before writing
 
-```
-bun add @fontsource-variable/fraunces @fontsource/inter
-```
+- `curl -I` against the preview URL returned `server: cloudflare` and `cf-ray: …` — Lovable's static hosting is Cloudflare-fronted.
+- No `_headers`, `_redirects`, `vercel.json`, or `netlify.toml` exist in the repo, and Lovable's hosting does not honor any of them — there is no per-route header config surface available to this project.
+- `vite.config.ts` already emits content-hashed filenames in `dist/assets/` (the `react-vendor` and `query-vendor` chunks plus Vite's default hashing), which is the prerequisite for the `immutable` long-cache pattern to be safe.
 
-- `@fontsource-variable/fraunces` ships a single variable woff2 covering all weights + italic axis — much smaller than 2 separate static files. We'll import only the `wght` axis (upright) and the italic file.
-- `@fontsource/inter` ships per-weight files. We'll import only `400`, `500`, `600` (matching what's in `index.html` today).
+## What gets created
 
-Both packages auto-include only the `latin` and `latin-ext` subsets per file we import — Cyrillic/Greek/Vietnamese are skipped.
+**One new file: `PERFORMANCE.md`** at the repo root.
 
-## 2. Wire imports in `src/main.tsx`
+Sections:
 
-Replace the stylesheet-link strategy with explicit imports so Vite fingerprints, inlines `@font-face`, and serves the woff2 files from our origin:
+1. **Compression — handled at the edge.** Cloudflare negotiates Brotli or gzip per request based on `Accept-Encoding`. Applies automatically to HTML, JS, CSS, SVG, JSON, and other text MIME types. Woff2 fonts are intentionally not re-compressed (already compressed). Nothing in this repo enables or disables this.
+2. **Long-term caching — handled by content hashing.** Vite emits hashed filenames in `dist/assets/*` (e.g. `index-aB3xK9.js`). Lovable's hosting serves these with a long `Cache-Control` and `immutable`. `index.html` is served with a short cache so new deploys are picked up immediately. This is the standard hashed-asset pattern and requires no config.
+3. **What this repo does NOT control.** A short list: `Cache-Control` headers per-route, custom MIME compression rules, edge cache TTL, `Vary` header tuning. If any of these become required, the work moves out of the repo and into hosting configuration that Lovable does not currently expose.
+4. **How to verify on a published deploy.** A copy-pasteable curl snippet that fetches the production URL after publish and prints `content-encoding`, `cache-control`, `etag`, and `age` for HTML, a hashed JS asset, a hashed CSS asset, and a woff2 font. Includes the expected values so anyone can sanity-check in 30 seconds.
+5. **Where the real performance levers are in this repo.** A short pointer list to the things that *do* live in code: the bundle code-splitting plan (still pending from earlier in this conversation), the `<picture>` + AVIF work (also pending), the already-implemented self-hosted fonts, and `useReveal` lazy mounting for below-the-fold sections.
 
-```ts
-// Fraunces — variable, latin only, upright + italic axes
-import "@fontsource-variable/fraunces/latin.css";
-import "@fontsource-variable/fraunces/latin-italic.css";
+**One small edit: `README.md`** — append a single line under the existing "How can I deploy this project?" section linking to `PERFORMANCE.md` so it's discoverable.
 
-// Inter — only the 3 weights we actually use
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "@fontsource/inter/600.css";
+## What I am explicitly NOT doing, and why
 
-import "./index.css";
-```
+- ❌ Adding `vite-plugin-compression` to pre-generate `.br` / `.gz` siblings. Cloudflare already brotli-compresses on the fly; the pre-generated files would be unused dead weight in `dist/` and would not change a single byte delivered to users.
+- ❌ Adding `_headers`, `vercel.json`, or `netlify.toml`. Lovable hosting ignores these. They would be cargo-cult files that mislead future contributors into thinking they're effective.
+- ❌ Adding `<meta http-equiv="Cache-Control">` to `index.html`. Modern browsers and CDNs ignore it. It would be theater.
+- ❌ Touching `vite.config.ts`. The current `manualChunks` config is already correct for the long-cache strategy described in the doc.
 
-Each `.css` file is a tiny `@font-face` block pointing at the woff2 next to it; Vite resolves the URL and bundles it.
+## Acceptance
 
-## 3. Remove all Google Fonts markup from `index.html`
-
-Delete:
-- `<link rel="preconnect" href="https://fonts.googleapis.com" />`
-- `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />`
-- The `<link rel="preload" as="style" ... onload=...>` pointing at fonts.googleapis.com
-- The `<noscript>` stylesheet fallback (the app already has a "please enable JS" notice in `<body>`)
-
-Add **two `<link rel="preload">` entries** for the two above-the-fold woff2 files. We need to know their fingerprinted URLs at build time — Vite handles this via `import.meta.url` in a tiny inline strategy:
-
-Since we can't know the hashed filenames in static `index.html`, we'll instead inject the preloads via a small module loaded at the top of `main.tsx` that creates `<link rel="preload" as="font" type="font/woff2" crossorigin>` for the two critical files. The browser still picks them up early because main.tsx is the first parsed module.
-
-Files to preload:
-- Fraunces variable upright (latin) — used by hero headline
-- Inter 500 (latin) — used by nav links and CTA
-
-For the very first paint, Georgia and system-ui carry the fallback text — and step 4 makes that fallback visually identical.
-
-## 4. Add size-adjust fallback metrics in `src/index.css`
-
-At the very top of `index.css`, add two `@font-face` blocks that re-declare Georgia and system-ui under the names `'Fraunces Fallback'` and `'Inter Fallback'`, with `size-adjust`, `ascent-override`, `descent-override`, and `line-gap-override` tuned to match the real metrics:
-
-```css
-@font-face {
-  font-family: 'Fraunces Fallback';
-  src: local('Georgia');
-  size-adjust: 105%;
-  ascent-override: 92%;
-  descent-override: 23%;
-  line-gap-override: 0%;
-}
-
-@font-face {
-  font-family: 'Inter Fallback';
-  src: local('Arial');
-  size-adjust: 107%;
-  ascent-override: 90%;
-  descent-override: 22%;
-  line-gap-override: 0%;
-}
-```
-
-(Numbers are the published Fraunces/Inter fallback values from Vercel/Capsize calculators — they make Georgia and Arial occupy the same box as the web fonts.)
-
-## 5. Update Tailwind font stacks in `tailwind.config.ts`
-
-Insert the fallback families ahead of the system fallbacks so the browser uses them while the woff2 is downloading:
-
-```ts
-fontFamily: {
-  sans: ["'Inter'", "'Inter Fallback'", "system-ui", "sans-serif"],
-  serif: ["'Fraunces'", "'Fraunces Fallback'", "Georgia", "serif"],
-},
-```
-
-Also update the raw `font-family: 'Fraunces', Georgia, serif` strings in `src/index.css` (≈14 lines) to `font-family: 'Fraunces', 'Fraunces Fallback', Georgia, serif`. Same for the Inter ones (≈4 lines). This is a find-and-replace.
-
-## 6. Verification checklist (post-implementation)
-
-- DevTools Network tab on `/` → no requests to `fonts.googleapis.com` or `fonts.gstatic.com`
-- Network tab → fonts served from same origin with long-cache hashed filenames
-- Lighthouse → "Eliminate render-blocking resources" no longer flags fonts
-- Visual diff: hero headline, mobile nav italic links, CTA labels look identical
-- CLS via Performance panel → text reflow on font-swap is invisible
-
-## Files touched
-
-- `package.json` (+ `bun.lock`) — add @fontsource packages
-- `src/main.tsx` — font CSS imports + tiny preload-injector for 2 critical files
-- `index.html` — remove Google Fonts preconnect/preload/noscript block
-- `src/index.css` — add 2 fallback @font-face blocks at top, update ≈18 font-family strings
-- `tailwind.config.ts` — add `'Fraunces Fallback'` and `'Inter Fallback'` to the stacks
-
-No component logic changes. No design changes.
+- `PERFORMANCE.md` exists at repo root, is accurate against what Cloudflare actually does, and reads in under two minutes.
+- `README.md` has one new link to it.
+- Zero changes to `src/`, `index.html`, `vite.config.ts`, `tailwind.config.ts`, `package.json`, or any runtime asset.
+- No new dependencies.
