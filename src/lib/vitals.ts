@@ -18,7 +18,6 @@ const isDev = import.meta.env.DEV;
 
 function send(metric: Metric) {
   if (isDev) {
-    // eslint-disable-next-line no-console
     console.info(`[web-vitals] ${metric.name}`, {
       value: Math.round(metric.value * 100) / 100,
       rating: metric.rating,
