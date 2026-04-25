@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface EyebrowProps {
+  /** @deprecated retained for backwards-compat; ignored. */
   numeral?: string;
   label: string;
   align?: "left" | "center";
@@ -9,10 +10,11 @@ interface EyebrowProps {
 }
 
 /**
- * Numeral · hairline · label — the editorial eyebrow used across every section.
- * Mirrors the masthead language of a thoughtful magazine (per 2.3 §16).
+ * Editorial eyebrow — a single hairline + label.
+ * One label system across the whole site (ornament passed to .eyebrow / coord
+ * marks / figmarks / numerals was retired in the editorial declutter pass).
  */
-const Eyebrow = ({ numeral, label, align = "left", className, tone = "default" }: EyebrowProps) => {
+const Eyebrow = ({ label, align = "left", className, tone = "default" }: EyebrowProps) => {
   const isLight = tone === "light";
   return (
     <div
@@ -22,27 +24,14 @@ const Eyebrow = ({ numeral, label, align = "left", className, tone = "default" }
         className,
       )}
     >
-      {numeral && (
-        <span
-          className={cn(
-            "numeral-mark tabular-nums",
-            isLight && "text-background/70",
-          )}
-        >
-          {numeral}
-        </span>
-      )}
       <span
-        className={cn(
-          "h-px w-8",
-          isLight ? "bg-background/40" : "bg-evergreen/30",
-        )}
+        className={cn("h-px w-8", isLight ? "bg-background/40" : "bg-evergreen/35")}
         aria-hidden="true"
       />
       <span
         className={cn(
           "text-minimal",
-          isLight ? "text-background/80" : "text-evergreen",
+          isLight ? "text-background/80" : "text-evergreen/90",
         )}
       >
         {label}
