@@ -1,6 +1,4 @@
-import { lazy, Suspense, useLayoutEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
@@ -13,7 +11,7 @@ import PageSlug from "./components/PageSlug";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
-// Lazy: every other route — split into its own JS chunk, fetched on demand
+// Lazy routes — split into separate JS chunks, fetched on demand
 const About = lazy(() => import("./pages/About"));
 const Services = lazy(() => import("./pages/Services"));
 const InteriorFinishing = lazy(() => import("./pages/InteriorFinishing"));
@@ -28,6 +26,15 @@ const WaterValley = lazy(() => import("./pages/areas/WaterValley"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 
+// Toaster + Sonner only render output after a user interaction.
+// Defer them so they don't ship in the eager LCP-critical bundle.
+const Toaster = lazy(() =>
+  import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })),
+);
+const Sonner = lazy(() =>
+  import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })),
+);
+
 const queryClient = new QueryClient();
 
 function ScrollToTop() {
@@ -39,14 +46,32 @@ function ScrollToTop() {
   return null;
 }
 
+// Mount toasters only after first paint to keep them out of the eager bundle.
+function DeferredToasters() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const idle = (cb: () => void) => {
+      const w = window as unknown as { requestIdleCallback?: (cb: () => void) => number };
+      if (w.requestIdleCallback) w.requestIdleCallback(cb);
+      else setTimeout(cb, 200);
+    };
+    idle(() => setReady(true));
+  }, []);
+  if (!ready) return null;
+  return (
+    <Suspense fallback={null}>
+      <Toaster />
+      <Sonner />
+    </Suspense>
+  );
+}
+
 // Minimal, bg-matching fallback — invisible during fast chunk loads, no layout shift
 const RouteFallback = () => <div className="min-h-screen bg-background" aria-hidden="true" />;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <BrowserRouter>
         <ScrollToTop />
         <ChapterSpine />
@@ -73,6 +98,7 @@ const App = () => (
           </Routes>
         </Suspense>
         <Footer />
+        <DeferredToasters />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

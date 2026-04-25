@@ -758,6 +758,17 @@
     to { stroke-dashoffset: 0; }
   }
 
+  /* Below-the-fold rendering hint. Browser skips painting + layout for
+     off-screen sections until they scroll close. Pair with `cv-auto` on
+     any section past the hero — Hero stays default to avoid LCP penalty. */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 800px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cv-auto { content-visibility: visible; }
+  }
+
   /* Honor reduced motion — collapse all entry animations to instant. */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
