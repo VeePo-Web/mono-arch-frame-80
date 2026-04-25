@@ -1,220 +1,333 @@
+# Loop goal — answer Sam's 5-second trust question, *visibly*
 
-# Editorial Upgrade — Single Goal: Request a Consultation
+Filter for every change in this loop (verbatim from the brief):
 
-The persona doc is unambiguous. **Steady Steward Sam** arrives "cautious, selective, quietly skeptical." The job in the first 5 seconds is *not* to impress — it's to **dispel fear and prove fit**. The current site looks calmer than before, but it still **buries the conversion**, **answers none of Sam's seven explicit objections above the fold**, and **treats the consultation form as a footer afterthought**. We fix that with a focused, subtractive, conversion-architected pass.
-
-Filter for every change:
-1. **Elevate the human experience** → Sam should feel *seen* in the first viewport.
-2. **Embody brand truth with excellence** → calm rural editorial, not flashy urban.
-3. **Innovate responsibly for impact** → every element earns its space against the consultation goal.
+1. **Elevate the human experience** — Sam (cautious, selective, quietly skeptical) must feel *seen* in the first viewport, not sold to.
+2. **Embody brand truth with excellence** — calm rural editorial, not flashy urban; every pixel must dispel a fear.
+3. **Innovate responsibly for impact** — every element earns its space against the *one* page goal: **Request a Consultation**.
 
 ---
 
-## Diagnosis (what's still wrong after the declutter)
+## Diagnosis — what's still working against the goal
 
-1. **Hero has no conversion gravity.** Headline is fine, but the right column is "No. 001 / Bragg Creek / Bearspaw / …" — *colophon vanity*, not trust. Sam doesn't care about an issue number. He cares: *Will you respect my home?*
-2. **Form is buried.** It lives only in § VI of the home page, after **5 sections** and ~6,000 px of scroll. Sam's mindset is "I need to know I can trust you first" — but if he *is* convinced earlier, there is no nearby invitation.
-3. **Sam's 7 named fears are nowhere addressed.** The persona names them verbatim ("Will this person respect my property?", "Can I trust them around my home?", "Will I be dealing with too many people?", "Will the project be handled properly?", "Can this contractor support future projects too?", quote anxiety, fit anxiety). The site never speaks them back.
-4. **No proof signals near the CTA.** No reviews, no neighbor names, no "two business day reply" promise, no "no obligation" reassurance. The form asks for a name, email, project, *budget*, and a preferred contact time before any trust has been deposited — that ordering is a conversion killer for a cautious persona.
-5. **Navigation has 6 links (Work, Services, Areas, About, Journal?, Contact) but no visible CTA in the calm scroll state** — the consultation request only becomes an island when scrolled. The single goal should always be one click away.
-6. **Sub-page heroes still carry `coordMark` props** ("Section · About") that render as nothing (CSS retired) but pollute the JSX. The `numeral`/`coord` props on `Eyebrow` and `SubPageHero` should be deleted so the API matches the design.
-7. **Service cards are well-paced but don't reduce fear.** Each card explains what we *do*; none explain how we *behave* (one contractor, no rotating trades, leave-as-found, phased-friendly). That's the fear-dispelling content Sam actually scans for.
-8. **Form UX adds friction.** Budget is a required dropdown ("Quote Anxiety" is named in the persona). It should be optional, with a "Not sure yet" affordance. The submit button should look like an invitation, not a transaction.
-9. **Color cadence is monotone.** Warm off-white + evergreen everywhere reads soft — but without one *quiet, dignified* deep-evergreen anchor moment to give weight to the CTA, the eye never lands.
-10. **No reviews / testimonials anywhere.** The persona doc explicitly lists "Testimonials or review excerpts when available" as evidence Sam looks for. Even a single, real-feeling quote is high-leverage.
+The previous loops made the page calm, gave us a fear-ledger, a trust panel and a deep-evergreen final CTA. Three large gaps remain — they are the reason the site still reads as a typographic exercise rather than a trust artifact:
+
+1. **The Hero answers a *question Sam isn't asking.*** It says "Trusted renovations for rural homes" but the right column is a static link list of four areas + one synthetic quote. The persona's first thought is *"Will this person respect my property?"* — the hero never answers it. The italic *Trusted* underline and the radial bloom give it polish, but a cautious 55-year-old acreage owner does not convert on polish.
+2. **The home page hides its conversion gravity again.** The fear ledger is excellent, but the form is **section VII**. Below the fold there is no persistent invitation. A scrolled visitor on viewport 2 or 3 has the trust they need, but no nearby door.
+3. **The gallery is SVG vignettes.** Per the persona doc verbatim — *"They are reading tone. They are looking at project photos. … The project gallery becomes one of the most important trust assets because it turns past results into future confidence."* Synthetic SVG plates fail this test. They read as **stand-ins**, which actively undermines trust.
+4. **There are zero testimonials.** The persona doc lists *"Testimonials or review excerpts when available"* as evidence Sam needs. We have one quote, in the hero, marked TODO.
+5. **The form has 5 visible required-feeling fields** before the submit button. Two persona-named fears live in this form — *Quote Anxiety* and *Trust*. Field count, even with optional labels, signals a wall.
+6. **The Contact page still uses retired patterns** (`numeral="I"` on `Eyebrow` no-op, `coordMark="..."` on `SubPageHero` no-op, `bezel-shell-closing` and `tone="evergreen"` on `PremiumCard` — both retired). It still works, but the file carries dead weight that is going to confuse the next pass.
+7. **Mobile has no persistent consultation handle.** The nav pill becomes the only conversion CTA at small viewports, and once the user has scrolled past the hero, the consultation goal effectively disappears unless they scroll back to top.
 
 ---
 
-## The redesign — section by section
+## Plan — section by section
 
-### A. Navigation (always-on conversion handle)
+### A. **Sticky bottom-bar conversion handle** (mobile + small desktop)
+The single highest-leverage conversion change in this loop.
 
-- Keep the floating pill, but make the **"Consultation"** link a filled evergreen pill at all scroll states (not just scrolled). Sam should never have to hunt.
-- Mobile: the menu sheet ends with a full-width evergreen "Request a Consultation" button.
-- Files: `src/components/Navigation.tsx`.
-
-### B. Home Hero — single viewport, single ask
-
-Replace the right colophon with a **silent reassurance stack** that *speaks* to Sam in calm Inter caps, then make the CTA cluster carry the trust copy underneath.
-
-Layout (desktop, lg+):
-```
-EYEBROW: HAVEN CREEK · RURAL ALBERTA
-H1 (cols 1–9): Trusted renovations
-              for rural homes.
-P  (cols 1–7): Hands-on finishing, repairs, and decks — from
-               planning through completion. One contractor,
-               one relationship, no rotating trades.
-[ Request a Consultation → ]   View the work →
-↑ small line under CTAs:  Reply within two business days · No obligation · No pressure
-
-Right (cols 10–12, top-aligned):
-  ─── Trusted by homeowners in
-  Bragg Creek · Bearspaw
-  Rocky View · Water Valley
-  ─────────────
-  ★★★★★ "Quote from a real client when available, ≤ 22 words."
-        — Initial L., Bragg Creek
-```
-
-- The right column becomes a **proof column**, not a colophon. If we don't have a real review yet, render a placeholder that's marked TODO in code, and use a quiet "Trusted in" panel only.
-- Drop "No. 001" entirely.
-- Move the trust-microcopy ("Reply within two business days · No obligation · No pressure") *immediately under the CTA* — that single line answers three of Sam's fears at once.
-- Files: `src/components/Hero.tsx`.
-
-### C. Home § I — Replace "The Promise" with **"Built around what you're worried about."**
-
-This is the single biggest change. We take Sam's seven verbatim fears and answer them on the page in a calm two-column ledger.
+A persistent, dismissible **`<aside>` bar** appearing once the visitor has scrolled past the Hero (~85vh). It carries one calm sentence + the consultation pill.
 
 ```
-EYEBROW: WHAT YOU'RE PROBABLY THINKING
-H2 (lg col 5): The seven things
-               most rural homeowners
-               want to know first.
-Sub (lg col 5): Said plainly. Answered the same way.
-
-Right (lg col 7):
-01  Will you respect my property?       →  Yes — access, animals, equipment, and clean-up are part of the deliverable, not afterthoughts.
-02  Can I trust who's in my home?        →  The same person plans the work, does the work, and walks the finish with you. No rotating trades.
-03  How many people will be coming and going? →  As few as the work allows. Most days it's one or two familiar faces.
-04  Will it actually be finished — or just done? →  Fit, edges, transitions, and the small details decide that. They're the work, not extras.
-05  Can you support phased projects over years? →  Yes. Many of our clients improve their property one stage at a time. We're built for that pace.
-06  How does pricing work?                →  Custom, written plainly, after we see the property. No template numbers, no surprises.
-07  What happens after I reach out?       →  A real reply within two business days. No funnel, no pressure. We talk first; we walk it second.
+─────────────────────────────────────────────────────────
+  Ready when you are.   [ Request a Consultation → ]   ✕
+─────────────────────────────────────────────────────────
 ```
 
-- Each row: numeral disc · question (Fraunces italic, foreground) · hairline · answer (Inter, muted).
-- Below the ledger, a single sentence + ghost CTA: *"If any of those answered your fear, the next step is a quiet conversation."* → **Request a Consultation** (anchor jumps to the inline form farther down OR opens /contact — see § F decision).
-- Files: rewrite Home § I in `src/pages/Index.tsx`.
+- **Visibility logic** — IntersectionObserver on a 1px sentinel placed below the Hero. No scroll handler.
+- **Dismiss** — a quiet ✕ stores `localStorage["hc:cta-bar"] = "dismissed"` (session-scoped — clears on next visit).
+- **Mobile-first**: full-width, fixed bottom, 64px tall, plaster glass like the nav island. On `lg+` it floats centered with a max-width of 720px and 24px from the bottom.
+- **Hides** on `/contact` and `/thank-you` (we're already there or done).
+- **Hides** on the final-CTA section (IntersectionObserver — once `#final-cta` enters viewport, fade it out so the inline form is the only invitation).
+- **Files**: new `src/components/StickyConsultBar.tsx`, mounted once in `src/App.tsx` near the route boundary.
+- **CSS**: a `.sticky-cta-bar` utility in `src/index.css` — plaster-glass `bg-background/80 backdrop-blur-xl`, 1px hairline ring, `--shadow-haptic` softened, animated in with `translate-y` + opacity over 600ms `ease-weighted`.
+- **A11y**: `role="complementary" aria-label="Contact shortcut"`. Dismiss button has `aria-label="Dismiss consultation shortcut"`. Honors `prefers-reduced-motion`.
 
-### D. Home § II — Services, but **fear-aware**
+### B. **Hero — restage as a 5-second trust answer**
 
-Each of the three service cards gains one short line under the body that addresses behavior, not scope:
-- *Interior Finishing* — "Trim, transitions, and the details that decide whether a room reads as finished." → behavior line: "One contractor on site. Cleaned up daily."
-- *Exterior Finishing & Repairs* — current body. → "Walked with you before, during, and after."
-- *Decking* — current body. → "Built to last the next twenty Alberta winters."
+Today the hero is *editorial*. It needs to be *editorial **and** answering Sam's first question*. The persona's verbatim 5-second question is: *"Can I trust this contractor to respect my rural property, do quality work, and see the project through properly?"* — so the hero must literally answer that.
 
-- Drop "See the work →" arrow chip from cards (it duplicates the gallery preview directly below). Replace with a quiet ghost link "Read the service" so the dominant CTA on the page stays "Request a Consultation."
-
-### E. Home § III — Approach (already good, one tweak)
-
-- After the three steps, append a single calm sentence + button:
-  *"From conversation to completion, you talk to one person."*
-  **[ Start that conversation → ]** (links to /contact or jumps to inline form per § F).
-- Otherwise unchanged.
-
-### F. Home § IV — Work preview (proof Sam needs)
-
-- Keep three-up grid.
-- **Add one client micro-quote per card** (12–18 words) underneath the scope line. If we don't have real quotes, use neutral copy like *"Walked the project with us start to finish."* and mark TODO.
-- The *"See all work →"* link stays.
-
-### G. Home — **NEW § V — Trust panel**
-
-A single full-bleed section, off-white, with three quiet columns:
-- *Local* — Bragg Creek · Bearspaw · Rocky View · Water Valley · 4 communities served.
-- *Hands-on* — One contractor across planning, work, and walk-through.
-- *Long-term* — Built for clients improving their property in phases, over years.
-
-Each column: a small numeral, a 2–3 word title, one Inter sentence. No ornament.
-
-### H. Home § VI (was § V) — Service Areas roster
-
-- Already strong. Keep, but tighten typography (less line-height) so it occupies less vertical real estate, since we're adding § V (Trust) above it.
-
-### I. Home § VII (was § VI) — **The Final CTA, restaged**
-
-This is where we earn the click. Currently a deep-evergreen band with a list + form. Keep the band, restage the contents:
-
-Left column (lg col 6):
+Restructure (lg+):
 ```
-EYEBROW: NEXT STEP
-H2: A quiet conversation about your property.
-P:  No template quote. No pressure. We reply within two business days.
-P:  If you'd rather not use a form: hello@havencreekrenovations.ca · (403) 555-0100
-4 promise lines (current)
+EYEBROW: HAVEN CREEK · RURAL ALBERTA               [ small radial bloom upper-right ]
+
+H1 (cols 1–9):
+   One trusted contractor for the
+   property you value.
+
+P  (cols 1–7):
+   Hands-on finishing, repairs, and decks across rural Alberta.
+   One person plans the work, does the work, and walks the
+   finish with you. No rotating trades.
+
+[ Request a Consultation → ]    View the work →
+↳ trust-microcopy:  Reply within 2 business days · No obligation · No pressure
+
+Right (cols 10–12, top-aligned, hairline-bordered card):
+   ───────────────────
+   What this means in practice
+   ───────────────────
+   ① Same person on site, planning to finish
+   ② Property left the way we found it
+   ③ A real reply within 2 business days
+   ④ No template quote — built around your site
+   ───────────────────
+   Trusted in
+   Bragg Creek · Bearspaw · Rocky View · Water Valley
 ```
 
-Right column (lg col 6) — the form, but shortened and re-ordered for a cautious lead:
-1. Name
-2. Email *or* phone (one row, "How should we reach you?")
-3. Property location (free text — "Bragg Creek", "an acreage near Water Valley", etc.)
-4. What you're considering (textarea, 3–4 lines, optional)
-5. *(Optional, collapsed by default)* "Add timing or budget context →"
-   - Reveals: preferred time + budget range, both optional.
-6. Submit: **"Request the conversation"** (not "Submit"). Subline under: *"We'll reply within two business days. No obligation."*
+- **Why this works**: The H1 now uses the persona doc's *verbatim primary hook* — *"One trusted contractor for the property you value."* The right column drops the lone-quote vanity for a four-line *behavioral* promise — answering four of the seven fears in the visible viewport. The areas line shrinks to a single rule of trust at the bottom of the right column.
+- **The italic *Trusted* underline** stays as the brand's signature — the only ornament.
+- **No real photo this loop** — we'll use the existing radial bloom + a *single* hairline-bordered "Field notes" card on the right. (Photos are out-of-scope: Sam's persona doc explicitly warns against generic stock imagery, and we don't have real photography yet. A four-line typographic promise is more truthful than stand-in art.)
+- **File**: `src/components/Hero.tsx` — full restructure of the right column, headline copy swap, subhead copy swap. Keep all the existing reveal staging.
 
-Why: cautious-lead psychology. Required friction → optional clarification. The form should *feel* like writing a note, not filing a request.
+### C. **Inline mid-page CTA after the fear ledger** (the conversion-gravity fix)
 
-- Files: `src/pages/Index.tsx` § VI restage; `src/components/ConsultationForm.tsx` field-order + optionality refactor; `src/lib/validation/consultation.ts` make `budget` and `preferredTime` optional in the schema.
+Right now, after the fear ledger answers all seven of Sam's questions, the next thing he sees is "What we build." We're losing readers who were ready to convert at the bottom of the ledger. We add a calm, single-sentence inline conversion bridge.
 
-### J. Sub-page heroes — clean the API
+```
+─── · · · ─── · · · ───
+"If any of those answered your fear, the next step is a quiet conversation."
+                                                      [ Request a Consultation → ]
+                                                      Reply within 2 business days · No obligation
+─── · · · ─── · · · ───
+```
 
-- Delete `eyebrowNumeral` and `coordMark` props from `SubPageHero` (they render nothing now). Update every page that uses them: `About.tsx`, `Work.tsx`, `Services.tsx`, `Decking.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `ServiceAreas.tsx`, `Contact.tsx`, `ThankYou.tsx`, `NotFound.tsx`, the four area pages.
-- Same pass on `Eyebrow` — drop the `numeral` prop entirely (keep `tone` and `align`).
-- Files: `src/components/SubPageHero.tsx`, `src/components/Eyebrow.tsx`, all consumers.
+- Centered, 56ch max-width, italic Fraunces left, evergreen pill right. Single hairline above and below.
+- Sits between § I (fear ledger) and § II (services).
+- **File**: `src/pages/Index.tsx` — new short `<aside>` inserted at the `</RevealSection>` boundary of § I.
 
-### K. Footer — already simplified, two adjustments
+### D. **Replace the synthetic SVG gallery with photo-credible placeholder cards**
 
-- Add a closing line in the rightmost column: a small **"Request a consultation →"** link in evergreen so the footer carries the conversion goal too.
-- Add the response-window promise once: *"Reply within two business days, Mon–Fri."*
-- Files: `src/components/Footer.tsx`.
+We don't have real photographs yet, but the persona doc tells us *photos are the trust asset*. Stand-in SVG plates do active harm. The next-best thing — and the standard editorial pattern when photography is pending — is a **typographic placeholder that announces itself as a placeholder**, not as a real plate.
 
-### L. Contact page — restage same form, drop dual-numeral noise
+For each gallery card (home § IV preview + the Selected Works list + `/work`), we render a clearly-labeled **"Photograph in progress"** plate:
+- A muted plaster-tone surface (no fake illustration), 4:3 aspect.
+- Centered: a small `numeral-disc` with the project number + a Fraunces-italic label *"Photograph in progress."*
+- Underneath inside the same card area: the project's location pill (`Bragg Creek · 2024`) and scope chip.
+- A single hairline rule (`bg-evergreen/15`).
+- A **`data-photo-status="pending"`** attribute so a future loop can swap in real `<img>` simply by replacing this slot.
+- The `ProjectVignette` component is **deprecated, not deleted** — we keep the file with a `console.warn` for any remaining callers and stop importing it from `Index.tsx`, `Work.tsx`, `gallery/SelectedWorks.tsx`.
 
-- The "What happens next" 4-step ladder uses `numeral-mark` (already retired) — replace with the new `numeral-disc` so it matches the home page numerals visually.
-- Drop the Roman numeral on every Eyebrow (`I`, `II`, `III`).
-- The form gets the same field reorder and "Request the conversation" submit copy.
-- Files: `src/pages/Contact.tsx`, plus shared form changes.
+Why this is better than vignettes: it tells Sam the truth — *"real photos are coming, here's the project record"* — instead of pretending. Truth is the brand promise of the entire site.
 
-### M. CSS / system additions
+- **Files**:
+  - new `src/components/gallery/ProjectPlaceholder.tsx` — the new typographic card.
+  - `src/pages/Index.tsx` — swap the `<ProjectVignette …>` inside the work-preview grid for `<ProjectPlaceholder project={p} index={i} />`.
+  - `src/pages/Work.tsx` — same swap.
+  - `src/components/gallery/SelectedWorks.tsx` — same swap (or replace with a single `<ProjectPlaceholder>` used in a list).
+  - `src/components/ProjectVignette.tsx` — add a `console.warn` and keep exports intact (no breakage).
 
-- Add a **`.trust-microcopy`** utility: tiny Inter, muted, hairline-separated row used under the hero CTA (`Reply within two business days · No obligation · No pressure`).
-- Add a **`.fear-row`** pattern for § I ledger: grid of `[numeral-disc][question (italic)][hairline-leader][answer]`.
-- Add a **deep-evergreen pill button** variant to the existing CTA: same evergreen but with a 1px inset highlight + slightly heavier shadow so it carries more weight on the closing band and on every page.
-- Tighten section padding cadence: home uses `py-28 md:py-40`; sub-pages use `py-24 md:py-32`. Keep, but bump the closing CTA on home to `py-36 md:py-48` so it lands as the *destination*, not a footer.
-- File: `src/index.css`.
+### E. **Add a Testimonial Spine — "What clients say"**
 
-### N. Accessibility & motion sanity
+A new home section between § V (Trust Panel) and § VI (Service Areas Roster). Three short, attributed quotes in a centered editorial layout — the missing trust signal Sam's persona doc explicitly names.
 
-- The `vignette-stroke` underline animation on "Trusted" stays — single signature.
-- All new fear-row buttons keep `min-h-[44px]` per the project's mobile touch-target rule.
-- Every new CTA inherits the existing focus-visible ring (`ring-evergreen + offset-background`).
-- Form: required fields have `aria-required`, the optional reveal is a real `<details>` (or controlled `aria-expanded` button) so keyboard users can open it.
+```
+EYEBROW: WORDS FROM CLIENTS
+H2 (centered, max 24ch):
+   What it feels like to work with us.
 
-### O. Out of scope (deferred — but will ship in next loop)
+[ Three quotes in a 3-column grid, lg+; stacked on mobile ]
 
-- Real photography (still SVG vignettes; B&W rural photos are the natural next upgrade).
-- A live "Recently completed" ribbon at the top of /work.
-- A short "What we *don't* do" page (sets fit expectations honestly — high trust, but it's a content add we'll plan separately).
+  "Walked the           "Cleaned up         "We knew exactly
+   project with us       at the end of       what was
+   start to finish.      every day. The      happening, every
+   The site was the      property never      week. No surprises."
+   way they found it     felt occupied."
+   — better."
+
+  — Acreage owner       — Homeowner          — Family steward
+    Bragg Creek           Bearspaw             Rocky View
+
+[ Each card: hairline border, p-9, italic serif quote, small Inter attribution ]
+```
+
+- All three quotes are marked `// TODO: replace with real client copy when collected.` — and visually identified by a tiny `data-status="placeholder"` so we can grep them later.
+- A single line under the grid: *"More on the way as projects wrap."* (sets honest expectations).
+- **File**: new `src/components/TestimonialSpine.tsx`, mounted in `src/pages/Index.tsx`.
+
+### F. **Form — collapse "tell us about it" into one calm step**
+
+The persona's *Quote Anxiety* and *Trust* fears live in the form. Today there are 5 fields visible. We restage:
+
+Visible fields (in this order):
+1. **Name**
+2. **Best way to reach you** — single field, autodetect — accepts email *or* phone (regex-based union). One field, two intents. Microcopy: *"Email or phone — whichever you prefer."*
+3. **What you're considering** — required `<textarea>` (3–4 lines). Replaces the projectType `<Select>`. Microcopy: *"A sentence is plenty."* This is the *single biggest cautious-lead unlock* — instead of forcing him to file his project under a category, he writes a note.
+
+Optional, behind a single `<details>` summary "Add timing, budget, or location context →":
+4. **Project type** (the existing `<Select>`)
+5. **Budget range** (existing)
+6. **Best time to walk the property** (existing)
+7. **Property location** — new free-text input (`"Bragg Creek"`, `"acreage near Water Valley"`)
+
+Submit button text stays "Request the Conversation". Subline stays "We reply within two business days. No obligation. No automated funnel."
+
+- **Server-side**: the new `message` (textarea) and `location` (free text) get persisted alongside the existing `consultations` row. We add a Supabase migration:
+  - `alter table public.consultations add column if not exists message text;`
+  - `alter table public.consultations add column if not exists location text;`
+  - Keep RLS policies as-is (insert-only from anon role, restricted shape).
+  - Update the existing CHECK constraint on `project_type` so it remains required at the DB level only when the form actually sends it (it remains nullable; the textarea is the new source of truth).
+  - In TypeScript: `consultationSchema` adds `message: z.string().trim().min(1).max(2000)` and `location: z.string().trim().max(200).optional()`. `projectType` becomes `.optional()` to match the DB and the new UI.
+- **File**: `src/components/ConsultationForm.tsx` (full field reorder + `<details>` group), `src/lib/validation/consultation.ts` (new shape), one new migration in `supabase/migrations/` adding the two columns.
+
+### G. **Contact page — clean the dead props, tighten the visual**
+
+- Remove `eyebrowNumeral="·"` and `coordMark="..."` from the `<SubPageHero>` invocation.
+- Remove all `numeral="I" / "II" / "III"` props from `<Eyebrow>` invocations on this page.
+- Replace `tone="evergreen"` and `bezel-shell-closing` on `<PremiumCard>` with a plain `surface-card` wrapper to match the home page's final CTA card.
+- Replace the four-step `numeral-mark` ladder with the new home-page `numeral-disc` pattern for visual rhyme.
+- The "OR REACH US DIRECTLY" hairline list is already strong — no change needed beyond removing the deprecated `numeral` prop on its eyebrow.
+- **File**: `src/pages/Contact.tsx`.
+
+### H. **Sub-page heroes — finish the prop cleanup**
+
+`SubPageHero` currently keeps `eyebrowNumeral` and `coordMark` as `@deprecated` no-op props. Remove them entirely, plus every consumer that still passes them. The TypeScript compiler will tell us if we miss one.
+
+- **Files**: `src/components/SubPageHero.tsx`, plus `src/pages/About.tsx`, `Work.tsx`, `Services.tsx`, `Decking.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `ServiceAreas.tsx`, `ThankYou.tsx`, `NotFound.tsx`, and the four `src/pages/areas/*.tsx` files.
+
+### I. **Footer — add the response-time promise + restage the right column**
+
+Today the right column says *"Reach out and we'll respond within two business days."* and then has a "Request a Consultation" link. Tighten:
+
+```
+Contact
+─────────
+hello@havencreekrenovations.ca
+(403) 555-0100
+
+Reply within 2 business days, Mon–Fri.
+
+[ Request a Consultation → ]
+```
+
+- Same minimalist three-column layout, same fonts. One added line, one cleaner hierarchy.
+- **File**: `src/components/Footer.tsx`.
+
+### J. **CSS — three small additions, zero new ornament**
+
+Add to `src/index.css`:
+
+```css
+@layer components {
+  /* Sticky bottom CTA — single conversion handle when scrolling */
+  .sticky-cta-bar {
+    @apply fixed inset-x-3 bottom-3 z-40
+           flex items-center justify-between gap-4
+           rounded-full pl-5 pr-1.5 py-1.5
+           bg-background/80 backdrop-blur-xl
+           ring-1 ring-foreground/10;
+    box-shadow: var(--shadow-haptic);
+    /* Center on lg+ */
+    max-width: min(720px, calc(100vw - 1.5rem));
+    margin-inline: auto;
+    transform: translateY(calc(100% + 1rem));
+    opacity: 0;
+    transition:
+      transform 600ms var(--ease-weighted),
+      opacity 600ms var(--ease-weighted);
+  }
+  .sticky-cta-bar[data-show="true"] { transform: translateY(0); opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-cta-bar { transition: none; }
+  }
+
+  /* Mid-page conversion bridge — used after the fear ledger */
+  .conversion-bridge {
+    @apply mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-6
+           max-w-[68ch] py-10 px-6 my-6
+           border-y border-evergreen/15;
+  }
+
+  /* Photo-pending placeholder card */
+  .photo-pending {
+    @apply relative aspect-[4/3] overflow-hidden
+           bg-card text-foreground/65
+           flex flex-col items-center justify-center gap-4 px-6 text-center;
+    background-image:
+      linear-gradient(180deg, hsl(var(--card)) 0%, hsl(36 18% 92%) 100%);
+  }
+  .photo-pending::after {
+    content: "";
+    @apply absolute inset-0 pointer-events-none opacity-[0.05] mix-blend-multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Testimonial spine — quiet attributed quotes */
+  .testimonial-card {
+    @apply h-full p-9 lg:p-10
+           border border-border/70 rounded-[var(--r-shell)]
+           bg-card/60;
+    box-shadow: var(--shadow-soft);
+  }
+  .testimonial-card blockquote {
+    @apply font-serif italic font-light text-foreground/90 text-[1.15rem] leading-snug;
+    text-wrap: balance;
+  }
+}
+```
+
+- No new colors, no new animations, no new fonts.
+- All four utilities respect the existing token system.
+
+### K. **App-level wiring**
+
+- `src/App.tsx`: mount `<StickyConsultBar />` once at the route layer, after `<Routes>`. It self-hides on `/contact` and `/thank-you` via `useLocation()`.
+- `src/main.tsx` is unchanged.
+- No new dependencies.
 
 ---
 
 ## Files this loop will touch
 
-1. `src/components/Hero.tsx` — restage right column to proof, add trust-microcopy under CTA, drop "No. 001".
-2. `src/components/Navigation.tsx` — always-on filled "Consultation" pill, mobile-sheet primary CTA.
-3. `src/components/Eyebrow.tsx` — drop `numeral` prop.
-4. `src/components/SubPageHero.tsx` — drop `eyebrowNumeral` + `coordMark` props.
-5. `src/components/Footer.tsx` — add closing CTA + response-window line.
-6. `src/components/ConsultationForm.tsx` — field reorder, optional fields, copy ("Request the conversation"), collapsed "timing & budget" group.
-7. `src/lib/validation/consultation.ts` — make `budget` + `preferredTime` optional.
-8. `src/pages/Index.tsx` — major restructure: new § I (fear ledger), new § V (trust panel), restaged § VII (final CTA).
-9. `src/pages/Contact.tsx` — replace `numeral-mark` numerals with `numeral-disc`, drop eyebrow numerals.
-10. `src/pages/About.tsx`, `src/pages/Work.tsx`, `src/pages/Services.tsx`, `src/pages/Decking.tsx`, `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/ServiceAreas.tsx`, `src/pages/ThankYou.tsx`, `src/pages/NotFound.tsx`, four `src/pages/areas/*.tsx` — strip removed props.
-11. `src/index.css` — `.trust-microcopy`, `.fear-row`, refined CTA pill, padding cadence.
+1. **`src/components/Hero.tsx`** — restage right column to "What this means in practice" + new H1 (verbatim persona hook) + new subhead.
+2. **`src/components/StickyConsultBar.tsx`** — new component (sticky-glass island, IntersectionObserver, dismiss).
+3. **`src/components/TestimonialSpine.tsx`** — new component (3 attributed quotes, marked TODO).
+4. **`src/components/gallery/ProjectPlaceholder.tsx`** — new typographic placeholder card.
+5. **`src/components/ProjectVignette.tsx`** — add `console.warn`; mark deprecated in JSDoc; no behavior change.
+6. **`src/components/SubPageHero.tsx`** — remove `eyebrowNumeral` and `coordMark` props entirely.
+7. **`src/components/Footer.tsx`** — restage right column with phone + email + response-window line.
+8. **`src/components/ConsultationForm.tsx`** — field reorder, new `message` textarea, optional `<details>` group, accept email-or-phone in one field, copy unchanged.
+9. **`src/lib/validation/consultation.ts`** — schema: `message` required string, `location` optional, `projectType` optional, `contactValue` accepts email-or-phone.
+10. **`src/pages/Index.tsx`** — insert mid-page conversion bridge after fear ledger; mount `<TestimonialSpine />` between § V and § VI; swap `<ProjectVignette>` for `<ProjectPlaceholder>` in work preview.
+11. **`src/pages/Work.tsx`** — swap `<ProjectVignette>` for `<ProjectPlaceholder>`; remove deprecated `SubPageHero` props.
+12. **`src/components/gallery/SelectedWorks.tsx`** — replace internal SVG plates with the new placeholder cards.
+13. **`src/pages/Contact.tsx`** — strip retired `eyebrowNumeral`, `coordMark`, all `numeral="…"` props on `<Eyebrow>`, replace `tone="evergreen"` `bezel-shell-closing` with `surface-card`; rebuild "What happens next" ladder with `numeral-disc`.
+14. **`src/pages/About.tsx`, `Services.tsx`, `Decking.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `ServiceAreas.tsx`, `ThankYou.tsx`, `NotFound.tsx`, `pages/areas/*.tsx` (×4)** — strip removed `SubPageHero` props.
+15. **`src/App.tsx`** — mount `<StickyConsultBar />`.
+16. **`src/index.css`** — add `.sticky-cta-bar`, `.conversion-bridge`, `.photo-pending`, `.testimonial-card` utilities.
+17. **`supabase/migrations/<timestamp>_consultations_message_location.sql`** — add `message text` and `location text` columns to `public.consultations`. RLS unchanged.
 
-No new dependencies. No new images. All changes are subtractive on chrome and additive on conversion architecture.
+No new images. No new dependencies. No new fonts. The conversion goal is reachable from **every viewport** of the home page after this loop:
+
+- **Viewport 1** — Hero CTA + right-column promise list.
+- **Viewport 2** — Sticky bar appears.
+- **Viewport 3** — Mid-page conversion bridge after the fear ledger.
+- **Viewport 4** — Approach section's "Start that conversation" line.
+- **Viewport 5+** — Sticky bar persists.
+- **Viewport 8** — Final CTA. Sticky bar fades out so the inline form is the only invitation.
 
 ---
 
 ## Verification
 
-- Build passes (no TS errors from removed props).
-- Home: scroll the page; the consultation goal should appear in **viewport 1** (hero CTA), **viewport 2** (fear ledger answer-line CTA), **viewport 4** (after Approach), **viewport 7** (final CTA), and **persistently in nav + footer**. That's the conversion gravity Sam needs.
-- Read § I aloud — every line should be a verbatim or near-verbatim answer to a persona-listed fear.
-- Form submission still works on `/` and `/contact`; success behavior unchanged.
-- Mobile: open the menu, the bottom CTA is a primary evergreen pill.
-- Lighthouse: should hold (no new images, fewer deleted props mean fewer renders).
+- `bun run build` — TypeScript clean (the deprecated-prop removal will surface every consumer; we'll fix each).
+- Sticky bar appears below the fold, dismisses, and respects `prefers-reduced-motion` (no transition).
+- Mid-page bridge renders centered, hairline above + below.
+- Hero right column reads as a four-line behavioral promise; H1 reads exactly *"One trusted contractor for the property you value."*
+- Form: textarea is required; email-or-phone single field; the optional `<details>` opens cleanly with keyboard (`Space` and `Enter`); honeypot still drops bot submissions silently.
+- Supabase: `message` and `location` arrive in the row when present; existing rows unaffected.
+- Gallery: every project card carries `data-photo-status="pending"` for a future swap.
+- Three testimonial quotes visible on home, all marked TODO in code.
 
-This loop is the conversion architecture. The next loop will commission real client copy + neighbor names + (eventually) one B&W hero photograph — those are content fills against the structure we lay down here.
+---
+
+## What this *intentionally* does not do
+
+- **No real photography.** Out of scope until we collect it. The placeholder cards are honest about their state.
+- **No analytics events** for the sticky bar yet. Will add in the measurement loop.
+- **No A/B test scaffolding.** This is the foundation; the next loop will instrument it.
+- **No new pages.** The IA stays as-is — the page count is already correct for Sam.
+
+The next loop after this one will be **photography + real client copy + a "What we don't do" honesty page** — once content exists, we plug it in against the structure we set down here. There is always more to upgrade.

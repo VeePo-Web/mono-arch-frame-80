@@ -16,38 +16,44 @@ export type Database = {
     Tables: {
       consultations: {
         Row: {
-          budget: string
+          budget: string | null
           created_at: string
           email: string
           id: string
+          location: string | null
+          message: string | null
           name: string
           notes: string | null
           preferred_time: string | null
-          project_type: string
+          project_type: string | null
           source: string
           updated_at: string
         }
         Insert: {
-          budget: string
+          budget?: string | null
           created_at?: string
           email: string
           id?: string
+          location?: string | null
+          message?: string | null
           name: string
           notes?: string | null
           preferred_time?: string | null
-          project_type: string
+          project_type?: string | null
           source?: string
           updated_at?: string
         }
         Update: {
-          budget?: string
+          budget?: string | null
           created_at?: string
           email?: string
           id?: string
+          location?: string | null
+          message?: string | null
           name?: string
           notes?: string | null
           preferred_time?: string | null
-          project_type?: string
+          project_type?: string | null
           source?: string
           updated_at?: string
         }
