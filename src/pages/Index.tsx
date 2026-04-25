@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,10 @@ import { useReveal } from "@/hooks/useReveal";
 import { services } from "@/data/services";
 import { projects } from "@/data/projects";
 import { serviceAreas } from "@/data/serviceAreas";
+
+// Lazy: form pulls in react-hook-form + zod resolver — fetched only when the
+// final CTA enters the viewport, keeping the home-page initial JS lean.
+const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
 const SECTION_PADDING = "py-28 md:py-40";
 
@@ -488,34 +493,44 @@ const Index = () => {
             >
               <div className="bezel-shell bezel-shell-evergreen bezel-shell-closing">
                 <div className="bezel-core h-full">
-                  <div className="p-7 md:p-8">
-                    <Link
-                      to="/contact"
-                      className="group/btn flex items-center justify-between gap-4 bg-evergreen text-evergreen-foreground rounded-full pl-7 pr-1.5 py-1.5 min-h-[56px] text-minimal transition-all duration-500 ease-swift hover:bg-evergreen-hover active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
+                  <div className="p-7 md:p-9">
+                    {/* Form heading — drift-coupled for kinetic continuity */}
+                    <p
+                      data-drift
+                      className="font-serif text-foreground text-[1.25rem] md:text-[1.4rem] leading-snug"
                     >
-                      <span>Request a Consultation</span>
-                      <span className="icon-chip icon-chip-light bg-background/15">
-                        <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                      </span>
-                    </Link>
+                      Tell us about the project.
+                    </p>
+                    <p className="mt-2 text-minimal text-muted-foreground">
+                      A few details so we can come prepared.
+                    </p>
 
-                    <div className="my-5 flex items-center gap-3">
-                      <span className="h-px flex-1 bg-foreground/10" />
-                      <span className="text-minimal text-muted-foreground">Or</span>
+                    <div className="mt-7 mb-6 flex items-center gap-3">
                       <span className="h-px flex-1 bg-foreground/10" />
                     </div>
 
-                    <Link
-                      to="/work"
-                      className="group/ghost flex items-center justify-between gap-3 text-minimal text-foreground/85 hover:text-evergreen transition-colors duration-500"
+                    <Suspense
+                      fallback={
+                        <div
+                          aria-hidden="true"
+                          className="h-[460px] rounded-md bg-foreground/[0.03] animate-pulse"
+                        />
+                      }
                     >
-                      <span>Talk Through Your Project</span>
-                      <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
-                    </Link>
+                      <ConsultationForm source="home_final_cta" />
+                    </Suspense>
 
-                    <p className="mt-6 text-minimal text-muted-foreground leading-relaxed">
-                      Custom quotes based on your property, scope, and timeline.
-                    </p>
+                    {/* Quiet escape hatch — full contact page for those who'd rather */}
+                    <div className="mt-8 pt-6 border-t border-foreground/10 flex items-center gap-3">
+                      <span className="text-minimal text-muted-foreground">Or</span>
+                      <Link
+                        to="/contact"
+                        className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/85 hover:text-evergreen transition-colors duration-500"
+                      >
+                        <span>Open the full contact page</span>
+                        <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
