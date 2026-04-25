@@ -464,7 +464,10 @@
     to { opacity: 1; }
   }
 
-  /* Dissolve — translate + blur resolves to crisp; the signature reveal. */
+  /* Dissolve — translate + blur resolves to crisp; the signature reveal.
+     Two trigger patterns supported:
+     1. data-reveal + data-revealed on the same element
+     2. data-reveal on a child of an element with data-revealed (cascade) */
   [data-reveal] {
     opacity: 0;
     transform: translateY(28px);
@@ -476,7 +479,8 @@
     transition-delay: var(--reveal-delay, 0ms);
     will-change: transform, opacity, filter;
   }
-  [data-reveal][data-revealed="true"] {
+  [data-reveal][data-revealed="true"],
+  [data-revealed="true"] [data-reveal] {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
@@ -488,7 +492,8 @@
     transition: clip-path 1100ms var(--ease-weighted);
     transition-delay: var(--reveal-delay, 0ms);
   }
-  [data-reveal-mask][data-revealed="true"] {
+  [data-reveal-mask][data-revealed="true"],
+  [data-revealed="true"] [data-reveal-mask] {
     clip-path: inset(0 0 0 0);
   }
 
@@ -497,8 +502,10 @@
     transform-origin: top;
     transform: scaleY(0);
     transition: transform 1400ms var(--ease-weighted);
+    transition-delay: var(--reveal-delay, 200ms);
   }
-  [data-line-draw][data-revealed="true"] {
+  [data-line-draw][data-revealed="true"],
+  [data-revealed="true"] [data-line-draw] {
     transform: scaleY(1);
   }
 
