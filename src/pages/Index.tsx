@@ -449,7 +449,7 @@ const Index = () => {
             >
               <div className="flex items-start justify-between gap-6">
                 <Eyebrow tone="light" numeral="VI" label="NEXT STEP" />
-                <span className="coord-mark hidden md:inline-flex text-background/55 before:bg-background/30">Resolution</span>
+                <span className="coord-mark coord-mark-light hidden md:inline-flex">Resolution</span>
               </div>
               <h2
                 id="final-cta-heading"
