@@ -15,7 +15,9 @@ import { serviceAreas } from "@/data/serviceAreas";
  * Hand-drawn property scene (inline SVG, ~2 KB) replaces the watermark logo.
  * Each headline line draws in via clip-path mask. Reveals stagger via reveal-up.
  */
-const Hero = () => (
+const Hero = () => {
+  const headlineRef = useDrift<HTMLHeadingElement>(4);
+  return (
   <section
     aria-labelledby="hero-heading"
     className="relative pt-36 md:pt-44 pb-24 md:pb-32 overflow-hidden"
@@ -40,7 +42,9 @@ const Hero = () => (
 
           {/* Headline — three mask-revealing lines for the editorial draw effect */}
           <h1
+            ref={headlineRef}
             id="hero-heading"
+            data-drift
             className="text-display text-foreground mt-8 leading-[1.02]"
           >
             <span className="block overflow-hidden">
