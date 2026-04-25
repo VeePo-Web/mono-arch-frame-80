@@ -490,6 +490,15 @@
     background-repeat: repeat-x;
     background-position: bottom;
   }
+  /* TOC-style leader appears under hovered service rows in the Hero proof panel */
+  .group\/disc:hover .leader-target {
+    background-image: radial-gradient(circle, hsl(var(--evergreen) / 0.30) 1px, transparent 1px);
+    background-size: 5px 1px;
+    background-repeat: repeat-x;
+    background-position: bottom 0 left 0;
+    padding-bottom: 4px;
+  }
+  .leader-target { transition: padding-bottom 400ms var(--ease-swift); }
 
   /* Surveyor corner brackets — wraps the Approach ordered list. */
   .surveyor-frame {
