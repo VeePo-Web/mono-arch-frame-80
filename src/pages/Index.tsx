@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
@@ -7,12 +8,15 @@ import Hero from "@/components/Hero";
 import PremiumCard from "@/components/PremiumCard";
 import { ProjectVignette, type VignetteCategory } from "@/components/ProjectVignette";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
-import ConsultationForm from "@/components/ConsultationForm";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useReveal } from "@/hooks/useReveal";
 import { services } from "@/data/services";
 import { projects } from "@/data/projects";
 import { serviceAreas } from "@/data/serviceAreas";
+
+// Lazy: form pulls in react-hook-form + zod resolver — fetched only when the
+// final CTA enters the viewport, keeping the home-page initial JS lean.
+const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
 const SECTION_PADDING = "py-28 md:py-40";
 
