@@ -447,9 +447,13 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <Eyebrow tone="light" numeral="VI" label="NEXT STEP" />
+              <div className="flex items-start justify-between gap-6">
+                <Eyebrow tone="light" numeral="VI" label="NEXT STEP" />
+                <span className="coord-mark hidden md:inline-flex text-background/55 before:bg-background/30">Resolution</span>
+              </div>
               <h2
                 id="final-cta-heading"
+                data-drift
                 className="text-headline text-background mt-6 max-w-[18ch]"
               >
                 Ready to talk through your next property improvement?
