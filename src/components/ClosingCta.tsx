@@ -58,10 +58,7 @@ const ClosingCta = ({
     <Container size="wide">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
         <div className="lg:col-span-8" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-          <div className="flex items-start justify-between gap-6">
-            <Eyebrow tone="light" numeral={numeral} label={eyebrow} />
-            <span className="coord-mark coord-mark-light hidden md:inline-flex">Resolution</span>
-          </div>
+          <Eyebrow tone="light" label={eyebrow} />
           <h2
             id="closing-cta-heading"
             className="text-headline text-background mt-6 max-w-[22ch]"

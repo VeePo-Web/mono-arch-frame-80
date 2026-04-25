@@ -131,37 +131,22 @@
     position: relative;
   }
 
-  /* Plaster grain overlay — fixed, pointer-events-none, whisper-quiet (~0.025).
-     Inline SVG noise (~600 bytes), GPU-cheap because it's fixed and tiny. */
+  /* Top-of-page warm wash — fades by 600px. Single layer, no fixed grain.
+     Replaces the dual fixed grain + thermal-arc system from earlier. */
   body::before {
     content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    opacity: 0.025;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    background-size: 160px 160px;
-  }
-
-  /* Thermal arc — dawn (cool) at top, dusk (warm) at bottom.
-     Sits above the grain, below content; tints the page across the scroll. */
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 600px;
     z-index: 0;
     pointer-events: none;
     background: linear-gradient(
       180deg,
-      hsl(210 28% 78% / 0.10) 0%,
-      hsl(36 25% 97% / 0)     32%,
-      hsl(36 25% 97% / 0)     62%,
-      hsl(25 38% 78% / 0.14)  100%
+      hsl(36 30% 96% / 0.55) 0%,
+      hsl(36 25% 97% / 0) 100%
     );
   }
-  #root { position: relative; z-index: 2; }
+  #root { position: relative; z-index: 1; }
 
   * {
     @apply border-border;
@@ -188,9 +173,9 @@
 @layer components {
   .text-display {
     font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
-    font-size: clamp(2.75rem, 5vw + 1rem, 5.75rem);
-    line-height: 1.02;
-    letter-spacing: -0.025em;
+    font-size: clamp(3.25rem, 6vw + 1rem, 6.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
     font-weight: 400;
     text-wrap: balance;
   }
@@ -267,57 +252,51 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Double-Bezel architecture — every premium card uses this pattern.
-     Outer shell carries the ambient shadow + ring; inner core carries
-     the solid surface + inset top highlight. Concentric radii via tokens.
+     Surface card — the single editorial card treatment.
+     One paper-soft shadow, one hairline border. No double-bezel.
      ────────────────────────────────────────────────────────────────────── */
+  .surface-card {
+    position: relative;
+    border-radius: var(--r-shell);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: border-color 500ms var(--ease-silk), box-shadow 500ms var(--ease-silk), transform 500ms var(--ease-silk);
+  }
+  .surface-card:hover {
+    border-color: hsl(var(--evergreen) / 0.30);
+    box-shadow: var(--shadow-elegant);
+  }
+  .surface-card-featured {
+    border-color: hsl(var(--evergreen) / 0.25);
+  }
+
+  /* Legacy bezel classes — neutralized to surface-card behavior so any
+     remaining markup renders cleanly without a second look. */
   .bezel-shell {
     position: relative;
     border-radius: var(--r-shell);
-    background: hsl(var(--card) / 0.55);
-    box-shadow:
-      0 0 0 1px hsl(var(--foreground) / 0.06),
-      var(--shadow-haptic);
-    padding: 0.375rem;
-    transition: box-shadow 700ms var(--ease-weighted), transform 700ms var(--ease-silk);
-  }
-  .bezel-shell::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background: linear-gradient(180deg,
-      hsl(36 25% 99% / 0.45) 0%,
-      hsl(36 25% 99% / 0) 28%);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    padding: 0;
+    transition: border-color 500ms var(--ease-silk), box-shadow 500ms var(--ease-silk);
   }
   .bezel-core {
     position: relative;
-    border-radius: var(--r-core);
-    background: hsl(var(--card));
-    box-shadow:
-      inset 0 1px 0 hsl(36 25% 99% / 0.7),
-      inset 0 0 0 1px hsl(var(--foreground) / 0.04);
+    border-radius: var(--r-shell);
+    background: transparent;
     overflow: hidden;
   }
   .bezel-shell:hover {
-    box-shadow:
-      0 0 0 1px hsl(var(--evergreen) / 0.22),
-      var(--shadow-haptic-strong);
+    border-color: hsl(var(--evergreen) / 0.30);
+    box-shadow: var(--shadow-elegant);
   }
-
-  /* Evergreen-toned variant for the final CTA panel */
-  .bezel-shell-evergreen {
-    background: hsl(145 22% 38% / 0.18);
-    box-shadow:
-      0 0 0 1px hsl(36 25% 99% / 0.12),
-      var(--shadow-haptic-evergreen);
-  }
-  .bezel-shell-evergreen .bezel-core {
-    background: hsl(var(--background));
-    box-shadow:
-      inset 0 1px 0 hsl(36 25% 99% / 0.9),
-      inset 0 0 0 1px hsl(var(--foreground) / 0.04);
+  .bezel-shell-evergreen,
+  .bezel-shell-closing {
+    background: hsl(var(--card));
+    box-shadow: var(--shadow-elegant);
   }
 
   /* Legacy soft card kept for back-compat but unused on Home now. */
@@ -357,7 +336,7 @@
     line-height: 1.4;
   }
 
-  /* Numeral disc — outlined circular chip used in Steps + Hero proof rows. */
+  /* Numeral disc — flat outlined chip used in step lists + service cards. */
   .numeral-disc {
     display: inline-flex;
     align-items: center;
@@ -365,22 +344,18 @@
     height: 2rem;
     width: 2rem;
     border-radius: 9999px;
-    background: hsl(var(--background));
-    box-shadow:
-      inset 0 0 0 1px hsl(var(--evergreen) / 0.30),
-      0 1px 0 hsl(var(--foreground) / 0.04);
+    background: transparent;
+    border: 1px solid hsl(var(--evergreen) / 0.40);
     font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
     font-size: 0.7rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: hsl(var(--evergreen));
     font-feature-settings: "tnum";
-    transition: box-shadow 600ms var(--ease-silk), background 600ms var(--ease-silk);
+    transition: border-color 400ms var(--ease-silk), background 400ms var(--ease-silk);
   }
   .group:hover .numeral-disc,
   .group\/disc:hover .numeral-disc {
-    box-shadow:
-      inset 0 0 0 1px hsl(var(--evergreen) / 0.55),
-      0 6px 16px -8px hsl(var(--evergreen) / 0.4);
+    border-color: hsl(var(--evergreen) / 0.65);
     background: hsl(var(--evergreen-soft));
   }
 
@@ -423,31 +398,15 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Card monogram watermark — Fraunces italic "HC" anchored bottom-right.
-     Compositional anchor for service cards; rises subtly on hover.
+     RETIRED ornaments (declutter pass) — hidden, kept as no-op selectors so
+     legacy markup renders cleanly without further refactor.
      ────────────────────────────────────────────────────────────────────── */
-  .card-monogram {
-    position: absolute;
-    right: -0.25rem;
-    bottom: -1.25rem;
-    font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 14rem;
-    line-height: 1;
-    color: hsl(var(--evergreen) / 0.04);
-    pointer-events: none;
-    user-select: none;
-    transition: color 700ms var(--ease-silk);
-    letter-spacing: -0.04em;
-  }
-  .group:hover .card-monogram {
-    color: hsl(var(--evergreen) / 0.08);
-  }
+  .card-monogram { display: none !important; }
+  .figure-footnote { display: none !important; }
+  .colophon-signoff { display: none !important; }
+  .bezel-shell-closing { padding: 0; box-shadow: var(--shadow-elegant); }
 
-  /* ──────────────────────────────────────────────────────────────────────
-     Area roster row — left→right hairline draws under on hover.
-     ────────────────────────────────────────────────────────────────────── */
+  /* Area roster row — left→right hairline draws under on hover. */
   .area-row {
     position: relative;
   }
@@ -465,50 +424,12 @@
     width: 100%;
   }
 
-  /* ──────────────────────────────────────────────────────────────────────
-     Triple-Bezel — closing variant for the Final CTA panel.
-     Adds a third concentric ring for visual weight at the page's resolution.
-     ────────────────────────────────────────────────────────────────────── */
-  .bezel-shell-closing {
-    padding: 0.75rem;
-    box-shadow:
-      0 0 0 1px hsl(36 25% 99% / 0.18),
-      0 0 0 7px hsl(145 22% 38% / 0.12),
-      0 0 0 8px hsl(36 25% 99% / 0.08),
-      var(--shadow-haptic-evergreen);
-  }
 
 
-
-  /* ──────────────────────────────────────────────────────────────────────
-     Section coordinates — top-right marginalia per section heading.
-     ────────────────────────────────────────────────────────────────────── */
-  .coord-mark {
-    font-family: 'Inter', 'Inter Fallback', system-ui, sans-serif;
-    font-size: 0.625rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    font-weight: 500;
-    color: hsl(var(--evergreen) / 0.55);
-    font-variant-numeric: tabular-nums;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.625rem;
-    white-space: nowrap;
-  }
-  .coord-mark::before {
-    content: "";
-    display: block;
-    width: 1.25rem;
-    height: 1px;
-    background: hsl(var(--evergreen) / 0.30);
-  }
-  .coord-mark-light {
-    color: hsl(var(--background) / 0.6);
-  }
-  .coord-mark-light::before {
-    background: hsl(var(--background) / 0.30);
-  }
+  /* Section coordinates — RETIRED. Kept as a no-op for legacy markup. */
+  .coord-mark { display: none !important; }
+  .coord-mark-light { display: none !important; }
+  .numeral-mark { display: none !important; }
 
   /* Dotted leader — table-of-contents row, used on Hero proof rows. */
   .leader-dotted {
@@ -527,69 +448,15 @@
   }
   .leader-target { transition: padding-bottom 400ms var(--ease-swift); }
 
-  /* Surveyor corner brackets — wraps the Approach ordered list. */
-  .surveyor-frame {
-    position: relative;
-  }
+  /* Surveyor corner brackets — RETIRED. Hidden so legacy markup is invisible. */
   .surveyor-frame::before,
-  .surveyor-frame::after {
-    content: "";
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border-color: hsl(var(--evergreen) / 0.32);
-    border-style: solid;
-    border-width: 0;
-  }
-  .surveyor-frame::before {
-    top: -10px;
-    left: -10px;
-    border-top-width: 1px;
-    border-left-width: 1px;
-  }
-  .surveyor-frame::after {
-    bottom: -10px;
-    right: -10px;
-    border-bottom-width: 1px;
-    border-right-width: 1px;
-  }
+  .surveyor-frame::after,
   .surveyor-frame > .surveyor-tr,
-  .surveyor-frame > .surveyor-bl {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border-color: hsl(var(--evergreen) / 0.32);
-    border-style: solid;
-    border-width: 0;
-    pointer-events: none;
-  }
-  .surveyor-frame > .surveyor-tr {
-    top: -10px;
-    right: -10px;
-    border-top-width: 1px;
-    border-right-width: 1px;
-  }
-  .surveyor-frame > .surveyor-bl {
-    bottom: -10px;
-    left: -10px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-  }
+  .surveyor-frame > .surveyor-bl { display: none !important; }
 
-  /* Numeral disc surveyor ticks — small horizontal strokes at 12 + 6 o'clock. */
+  /* Numeral disc surveyor ticks — RETIRED. */
   .numeral-disc.numeral-disc-survey::before,
-  .numeral-disc.numeral-disc-survey::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 5px;
-    height: 1px;
-    background: hsl(var(--evergreen) / 0.40);
-  }
-  .numeral-disc.numeral-disc-survey { position: relative; }
-  .numeral-disc.numeral-disc-survey::before { top: -4px; }
-  .numeral-disc.numeral-disc-survey::after { bottom: -4px; }
+  .numeral-disc.numeral-disc-survey::after { display: none !important; }
 
   /* Hero kinetic — slow breathing for the hand-drawn vignette. */
   @keyframes vignette-breathe {
@@ -617,40 +484,7 @@
     will-change: transform;
   }
 
-  /* Figure footnote — Pentagram-style hairline + caption beneath plates. */
-  .figure-footnote {
-    font-family: 'Inter', 'Inter Fallback', system-ui, sans-serif;
-    font-size: 0.6875rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: hsl(var(--evergreen) / 0.65);
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-    padding-top: 0.625rem;
-    border-top: 1px solid hsl(var(--evergreen) / 0.18);
-  }
-  .figure-footnote .footnote-figmark {
-    font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    text-transform: none;
-    letter-spacing: 0;
-    color: hsl(var(--evergreen) / 0.85);
-    font-size: 0.8rem;
-  }
-
-  /* Colophon sign-off — oversized italic at the foot of the colophon. */
-  .colophon-signoff {
-    font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: clamp(2rem, 4vw + 0.5rem, 3.25rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    color: hsl(var(--foreground) / 0.78);
-    text-wrap: balance;
-  }
+  /* Figure footnote + colophon sign-off — RETIRED (overrides earlier !important). */
 
   /* Chapter mark hung from the spine — used per section. */
   .spine-chapter {

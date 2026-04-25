@@ -93,9 +93,6 @@ const Work = () => {
                       : "bg-transparent text-foreground/75 border-border hover:border-evergreen/40 hover:text-foreground",
                   )}
                 >
-                  {f.group === "area" && (
-                    <span aria-hidden="true" className={cn("h-1.5 w-1.5 rounded-full", active ? "bg-background/70" : "bg-evergreen/50")} />
-                  )}
                   {f.label}
                 </button>
               );
@@ -115,10 +112,7 @@ const Work = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <div className="figure-footnote justify-center mb-5">
-                <span className="footnote-figmark">Fig. —.</span>
-                <span>NO PLATES YET</span>
-              </div>
+              <p className="text-minimal text-evergreen/80 mb-5">No plates yet</p>
               <p className="text-body text-muted-foreground">
                 No plates in this category yet. We're adding work as it's photographed.
               </p>
@@ -139,35 +133,21 @@ const Work = () => {
                           vignetteKey={p.vignetteKey}
                           className="absolute inset-0 w-full h-full transition-transform duration-700 ease-weighted group-hover:scale-[1.015]"
                         />
-                        <span
-                          className="absolute top-4 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
-                          aria-hidden="true"
-                        >
-                          Plate {p.romanNumeral}
-                        </span>
                       </div>
 
-                      <div className="px-7 lg:px-8 pt-5">
-                        <div className="figure-footnote">
-                          <span className="footnote-figmark">Fig. {p.figmark}.</span>
-                          <span className="flex-1">{p.category.toUpperCase()}</span>
-                          <span className="text-evergreen/55 tabular-nums normal-case tracking-[0.18em]">{p.area}</span>
-                        </div>
-                      </div>
-
-                      <div className="p-7 lg:p-8 pt-4 flex flex-col flex-1">
-                        <h3 className="text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
+                      <div className="p-7 lg:p-8 flex flex-col flex-1">
+                        <p className="text-minimal text-evergreen/80">
+                          {p.category} · {p.area}
+                        </p>
+                        <h3 className="mt-4 text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
                           {p.title}
                         </h3>
                         <p className="mt-4 text-body text-foreground/80 text-[0.95rem] leading-relaxed flex-1">
                           {p.scope}
                         </p>
-                        <div className="mt-5 pl-4 border-l-2 border-evergreen/35">
-                          <p className="text-minimal text-evergreen mb-1.5">Why it mattered</p>
-                          <p className="text-body text-muted-foreground italic text-[0.95rem]">
-                            {p.whyItMattered}
-                          </p>
-                        </div>
+                        <p className="mt-5 text-body text-muted-foreground italic text-[0.95rem] border-l-2 border-evergreen/35 pl-4">
+                          {p.whyItMattered}
+                        </p>
                       </div>
                     </div>
                   </PremiumCard>

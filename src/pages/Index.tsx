@@ -86,10 +86,7 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="I" label="THE PROMISE" />
-                <span className="coord-mark hidden md:inline-flex">51.0252°N</span>
-              </div>
+              <Eyebrow label="The promise" />
               <h2 id="trust-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
                 One contractor. One relationship. A clearer path from idea to completion.
               </h2>
@@ -128,10 +125,7 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-16 md:mb-24">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="II" label="WHAT WE BUILD" />
-                <span className="coord-mark hidden md:inline-flex">No. 03 · Services</span>
-              </div>
+              <Eyebrow label="What we build" />
               <h2 id="services-heading" data-drift className="text-headline text-foreground mt-6 max-w-[20ch]">
                 Three services, held to one standard.
               </h2>
@@ -160,11 +154,8 @@ const Index = () => {
                 aria-label={`${s.title} — ${s.promise}`}
               >
                 <PremiumCard featured={i === 0} className="h-full">
-                  {/* Monogram watermark — bottom-right, brand anchor */}
-                  <span className="card-monogram" aria-hidden="true">HC</span>
-
-                  <div className="relative p-8 lg:p-10 flex flex-col h-full">
-                    <div className="flex items-center gap-4 mb-9">
+                  <div className="relative p-9 lg:p-11 flex flex-col h-full">
+                    <div className="flex items-center gap-4 mb-10">
                       <span className="numeral-disc">{s.numeral}</span>
                       <span className="h-px w-8 bg-evergreen/30 group-hover:w-20 transition-all duration-700 ease-weighted" />
                     </div>
@@ -173,20 +164,11 @@ const Index = () => {
                       {s.title}
                     </h3>
 
-                    <p className="mt-3 text-subhead text-foreground/70 text-[1.05rem]">
-                      {s.promise}
-                    </p>
-
-                    <p className="mt-5 text-body text-muted-foreground text-[0.95rem] leading-relaxed flex-1">
+                    <p className="mt-4 text-body text-muted-foreground text-[0.98rem] leading-relaxed flex-1">
                       {s.cardBody}
                     </p>
 
-                    {/* Micro-caption — area availability */}
-                    <p className="mt-7 text-minimal text-muted-foreground/85 leading-relaxed">
-                      Available in · Bragg Creek · Bearspaw · Rocky View · Water Valley
-                    </p>
-
-                    <div className="mt-5 inline-flex items-center gap-3 text-minimal text-evergreen">
+                    <div className="mt-8 inline-flex items-center gap-3 text-minimal text-evergreen">
                       <span>See the work</span>
                       <span className="icon-chip bg-evergreen/[0.06]">
                         <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
@@ -214,69 +196,39 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="III" label="THE APPROACH" />
-                <span className="coord-mark hidden md:inline-flex">Field Notes</span>
-              </div>
+              <Eyebrow label="The approach" />
               <h2 id="approach-heading" data-drift className="text-headline text-foreground mt-6">
                 A path you can see from the start.
               </h2>
               <p className="mt-6 text-body text-muted-foreground max-w-md">
                 Three quiet steps. No hand-offs in between. The same person who plans
-                the work walks the site with you when it's finished.
+                the work walks the site with you when it&apos;s finished.
               </p>
             </div>
 
-            <div className="lg:col-span-7 lg:pl-8 relative">
-              {/* Surveyor's frame — corner brackets wrap the entire field-notes block */}
-              <div className="surveyor-frame relative">
-                <span className="surveyor-tr" aria-hidden="true" />
-                <span className="surveyor-bl" aria-hidden="true" />
-
-                {/* Drawing path-line — animates top→bottom, dashed for surveyor read */}
-                <div
-                  aria-hidden="true"
-                  className="absolute left-[15px] top-3 bottom-3 w-px path-line"
-                  data-line-draw
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(to bottom, hsl(var(--evergreen) / 0.45) 0 3px, transparent 3px 7px)",
-                    background: "transparent",
-                  }}
-                />
-                <ol className="space-y-12 lg:space-y-14">
-                  {[
-                    { n: "01", title: "Conversation", body: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan." },
-                    { n: "02", title: "Planning", body: "Scope, materials, design considerations, and the practical realities of working on a rural property — clarified before we lift a tool." },
-                    { n: "03", title: "Hands-On Completion", body: "The work is completed with attention to fit, finish, durability, and the small details that decide whether a renovation reads as finished." },
-                  ].map((step, i) => (
-                    <li
-                      key={step.n}
-                      className="group/disc relative pl-12"
-                      data-reveal
-                      style={{ ["--reveal-delay" as string]: `${300 + i * 220}ms` }}
-                    >
-                      <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey" aria-hidden="true">
-                        {step.n}
-                      </span>
-                      <h3 className="text-title text-foreground">{step.title}</h3>
-                      <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">
-                        {step.body}
-                      </p>
-                    </li>
-                  ))}
-                  {/* Finish marker — fades in after step 03 */}
+            <div className="lg:col-span-7 lg:pl-8">
+              <ol className="space-y-14 lg:space-y-16">
+                {[
+                  { n: "01", title: "Conversation", body: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan." },
+                  { n: "02", title: "Planning", body: "Scope, materials, design considerations, and the practical realities of working on a rural property — clarified before we lift a tool." },
+                  { n: "03", title: "Hands-On Completion", body: "The work is completed with attention to fit, finish, durability, and the small details that decide whether a renovation reads as finished." },
+                ].map((step, i) => (
                   <li
-                    className="relative pl-12"
+                    key={step.n}
+                    className="group/disc relative pl-14"
                     data-reveal
-                    style={{ ["--reveal-delay" as string]: "1100ms" }}
-                    aria-hidden="true"
+                    style={{ ["--reveal-delay" as string]: `${300 + i * 200}ms` }}
                   >
-                    <span className="absolute left-[10px] top-2 h-[10px] w-[10px] rounded-full bg-evergreen shadow-[0_0_0_4px_hsl(var(--evergreen)/0.12)]" />
-                    <p className="text-minimal text-evergreen">Done.</p>
+                    <span className="absolute left-0 top-1 numeral-disc" aria-hidden="true">
+                      {step.n}
+                    </span>
+                    <h3 className="text-title text-foreground">{step.title}</h3>
+                    <p className="mt-3 text-body text-muted-foreground max-w-[58ch]">
+                      {step.body}
+                    </p>
                   </li>
-                </ol>
-              </div>
+                ))}
+              </ol>
             </div>
           </div>
         </Container>
@@ -292,10 +244,7 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-16 md:mb-24">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="IV" label="THE WORK" />
-                <span className="coord-mark hidden md:inline-flex">Plates I–III</span>
-              </div>
+              <Eyebrow label="The work" />
               <h2 id="work-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
                 Real properties. Real outcomes. Worth a closer look.
               </h2>
@@ -325,43 +274,23 @@ const Index = () => {
               >
                 <PremiumCard className="h-full transition-transform duration-700 ease-weighted group-hover:-translate-y-1">
                   <div className="flex flex-col h-full">
-                    {/* Vignette top — with plate number overlay */}
-                    <div className="relative aspect-[4/3] overflow-hidden border-b border-evergreen/10">
+                    <div className="relative aspect-[4/3] overflow-hidden border-b border-border">
                       <ProjectVignette
                         category={p.category as VignetteCategory}
                         className="absolute inset-0 w-full h-full transition-transform duration-700 ease-weighted group-hover:scale-[1.015]"
                       />
-                      <span
-                        className="absolute top-4 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic transition-transform duration-700 ease-weighted group-hover:translate-y-0.5"
-                        aria-hidden="true"
-                      >
-                        Plate {["I", "II", "III"][i]}
-                      </span>
                     </div>
 
-                    {/* Figure footnote — Pentagram-style figmark + caption + region */}
-                    <div className="px-8 lg:px-9 pt-6">
-                      <div className="figure-footnote">
-                        <span className="footnote-figmark">Fig. {["i", "ii", "iii"][i]}.</span>
-                        <span className="flex-1">{p.category.toUpperCase()}</span>
-                        <span className="text-evergreen/55 tabular-nums normal-case tracking-[0.18em]">{p.area}</span>
-                      </div>
-                    </div>
-
-                    <div className="p-8 lg:p-9 pt-5 flex flex-col flex-1">
-                      <h3 className="text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
+                    <div className="p-8 lg:p-9 flex flex-col flex-1">
+                      <p className="text-minimal text-evergreen/80">
+                        {p.category} · {p.area}
+                      </p>
+                      <h3 className="mt-4 text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
                         {p.title}
                       </h3>
-                      <p className="mt-2 text-minimal text-muted-foreground">{p.area}</p>
-                      <p className="mt-5 text-body text-foreground/80 text-[0.95rem] leading-relaxed flex-1">
+                      <p className="mt-4 text-body text-muted-foreground text-[0.95rem] leading-relaxed flex-1">
                         {p.scope}
                       </p>
-                      <div className="mt-6 pl-4 border-l-2 border-evergreen/35">
-                        <p className="text-minimal text-evergreen mb-1.5">Why it mattered</p>
-                        <p className="text-body text-muted-foreground italic text-[0.95rem]">
-                          {p.whyItMattered}
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </PremiumCard>
@@ -398,10 +327,7 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="V" label="WHERE WE WORK" />
-                <span className="coord-mark hidden md:inline-flex">4 Localities</span>
-              </div>
+              <Eyebrow label="Where we work" />
               <h2 id="areas-heading" data-drift className="text-headline text-foreground mt-6">
                 Local, by choice.
               </h2>
@@ -489,10 +415,7 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow tone="light" numeral="VI" label="NEXT STEP" />
-                <span className="coord-mark coord-mark-light hidden md:inline-flex">Resolution</span>
-              </div>
+              <Eyebrow tone="light" label="Next step" />
               <h2
                 id="final-cta-heading"
                 data-drift
@@ -522,52 +445,45 @@ const Index = () => {
               </ul>
             </div>
 
-            {/* Triple-Bezel CTA stack on the right */}
             <div
               className="lg:col-span-5"
               data-reveal
               style={{ ["--reveal-delay" as string]: "180ms" }}
             >
-              <div className="bezel-shell bezel-shell-evergreen bezel-shell-closing">
-                <div className="bezel-core h-full">
-                  <div className="p-7 md:p-9">
-                    {/* Form heading — drift-coupled for kinetic continuity */}
-                    <p
-                      data-drift
-                      className="font-serif text-foreground text-[1.25rem] md:text-[1.4rem] leading-snug"
+              <div className="surface-card">
+                <div className="p-7 md:p-9">
+                  <p
+                    data-drift
+                    className="font-serif text-foreground text-[1.25rem] md:text-[1.4rem] leading-snug"
+                  >
+                    Tell us about the project.
+                  </p>
+                  <p className="mt-2 text-minimal text-muted-foreground">
+                    A few details so we can come prepared.
+                  </p>
+
+                  <div className="mt-7 mb-6 h-px bg-foreground/10" />
+
+                  <Suspense
+                    fallback={
+                      <div
+                        aria-hidden="true"
+                        className="h-[460px] rounded-md bg-foreground/[0.03] animate-pulse"
+                      />
+                    }
+                  >
+                    <ConsultationForm source="home_final_cta" />
+                  </Suspense>
+
+                  <div className="mt-8 pt-6 border-t border-foreground/10 flex items-center gap-3">
+                    <span className="text-minimal text-muted-foreground">Or</span>
+                    <Link
+                      to="/contact"
+                      className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/85 hover:text-evergreen transition-colors duration-500"
                     >
-                      Tell us about the project.
-                    </p>
-                    <p className="mt-2 text-minimal text-muted-foreground">
-                      A few details so we can come prepared.
-                    </p>
-
-                    <div className="mt-7 mb-6 flex items-center gap-3">
-                      <span className="h-px flex-1 bg-foreground/10" />
-                    </div>
-
-                    <Suspense
-                      fallback={
-                        <div
-                          aria-hidden="true"
-                          className="h-[460px] rounded-md bg-foreground/[0.03] animate-pulse"
-                        />
-                      }
-                    >
-                      <ConsultationForm source="home_final_cta" />
-                    </Suspense>
-
-                    {/* Quiet escape hatch — full contact page for those who'd rather */}
-                    <div className="mt-8 pt-6 border-t border-foreground/10 flex items-center gap-3">
-                      <span className="text-minimal text-muted-foreground">Or</span>
-                      <Link
-                        to="/contact"
-                        className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/85 hover:text-evergreen transition-colors duration-500"
-                      >
-                        <span>Open the full contact page</span>
-                        <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
-                      </Link>
-                    </div>
+                      <span>Open the full contact page</span>
+                      <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
+                    </Link>
                   </div>
                 </div>
               </div>
