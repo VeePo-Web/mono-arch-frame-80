@@ -57,10 +57,10 @@ const About = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-6" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="WORKING PHILOSOPHY" />
+              <Eyebrow label="Working philosophy" />
               <h2 id="philosophy-heading" className="sr-only">Working philosophy</h2>
               <p className="pull-quote text-[1.5rem] md:text-[1.85rem] mt-7 leading-snug max-w-[22ch]">
-                "The experience of quality. The quality of experience."
+                &ldquo;The experience of quality. The quality of experience.&rdquo;
               </p>
               <p className="mt-6 text-minimal text-evergreen/70">— The work, in one line.</p>
             </div>
@@ -86,44 +86,31 @@ const About = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="II" label="PROPERTY RESPECT" />
+              <Eyebrow label="Property respect" />
               <h2 id="respect-heading" className="text-headline text-foreground mt-6">
                 The property is part of the deliverable.
               </h2>
               <p className="mt-6 text-body text-muted-foreground max-w-md">
                 Rural homeowners care about who is on their property — and how. The
-                trust isn't separate from the work. It is the work.
+                trust isn&apos;t separate from the work. It is the work.
               </p>
             </div>
 
-            <div className="lg:col-span-7 lg:pl-8 relative">
-              <div className="surveyor-frame relative">
-                <span className="surveyor-tr" aria-hidden="true" />
-                <span className="surveyor-bl" aria-hidden="true" />
-                <div
-                  aria-hidden="true"
-                  className="absolute left-[15px] top-3 bottom-3 w-px"
-                  data-line-draw
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(to bottom, hsl(var(--evergreen) / 0.45) 0 3px, transparent 3px 7px)",
-                  }}
-                />
-                <ol className="space-y-10 lg:space-y-12">
-                  {RESPECT.map((step, i) => (
-                    <li
-                      key={step.n}
-                      className="relative pl-12"
-                      data-reveal
-                      style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
-                    >
-                      <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey">{step.n}</span>
-                      <h3 className="text-title text-foreground">{step.title}</h3>
-                      <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">{step.body}</p>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+            <div className="lg:col-span-7 lg:pl-8">
+              <ol className="space-y-12 lg:space-y-14">
+                {RESPECT.map((step, i) => (
+                  <li
+                    key={step.n}
+                    className="relative pl-14"
+                    data-reveal
+                    style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
+                  >
+                    <span className="absolute left-0 top-1 numeral-disc">{step.n}</span>
+                    <h3 className="text-title text-foreground">{step.title}</h3>
+                    <p className="mt-3 text-body text-muted-foreground max-w-[58ch]">{step.body}</p>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
         </Container>
@@ -134,10 +121,7 @@ const About = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="III" label="HANDS-ON CONTINUITY" />
-                <span className="coord-mark hidden md:inline-flex">One contractor</span>
-              </div>
+              <Eyebrow label="Hands-on continuity" />
               <h2 id="continuity-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
                 The same person, from first walk-through to final.
               </h2>
@@ -152,11 +136,10 @@ const About = () => {
                 style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
                 className="h-full"
               >
-                <div className="relative p-8 lg:p-10 flex flex-col h-full">
-                  <span className="card-monogram" aria-hidden="true">HC</span>
+                <div className="relative p-9 lg:p-11 flex flex-col h-full">
                   <span className="numeral-disc">{c.n}</span>
-                  <h3 className="text-title text-foreground mt-7">{c.title}</h3>
-                  <p className="mt-4 text-body text-muted-foreground text-[0.95rem] leading-relaxed flex-1">
+                  <h3 className="text-title text-foreground mt-8">{c.title}</h3>
+                  <p className="mt-4 text-body text-muted-foreground text-[0.98rem] leading-relaxed flex-1">
                     {c.body}
                   </p>
                 </div>
@@ -170,7 +153,7 @@ const About = () => {
       <RevealSection aria-labelledby="longterm-heading" className={cn(SECTION, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow align="center" numeral="IV" label="A LONGER HORIZON" />
+            <Eyebrow align="center" label="A longer horizon" />
             <h2 id="longterm-heading" className="text-headline text-foreground mt-6 max-w-[24ch] mx-auto">
               Most rural properties are improved a stage at a time.
             </h2>
