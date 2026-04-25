@@ -90,16 +90,24 @@ const Navigation = () => {
             }}
           />
 
-          {/* Brand chip — left */}
+          {/* Brand chip — left, with meridian dot when scrolled */}
           <Link
             to="/"
             aria-label="Haven Creek Renovations — home"
             className={cn(
-              "relative z-10 flex items-center rounded-full",
+              "relative z-10 flex items-center gap-2 rounded-full",
               "transition-all duration-700 ease-weighted",
               scrolled ? "px-2.5 py-1.5" : "px-3 py-2",
             )}
           >
+            <span
+              aria-hidden="true"
+              className={cn(
+                "block h-[5px] w-[5px] rounded-full bg-evergreen",
+                "transition-all duration-700 ease-weighted",
+                scrolled ? "opacity-100 scale-100" : "opacity-0 scale-50 -ml-2",
+              )}
+            />
             <img
               src={scrolled ? logoMark : logo}
               alt="Haven Creek Renovations"
