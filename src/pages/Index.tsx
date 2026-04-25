@@ -454,6 +454,8 @@ const Index = () => {
         aria-labelledby="final-cta-heading"
         className="relative py-32 md:py-44 overflow-hidden bg-evergreen-deep"
         style={{
+          contentVisibility: "auto",
+          containIntrinsicSize: "1200px 1200px",
           backgroundImage:
             "radial-gradient(120% 80% at 15% 0%, hsl(145 22% 22%) 0%, hsl(var(--evergreen-deep)) 70%)",
         }}
