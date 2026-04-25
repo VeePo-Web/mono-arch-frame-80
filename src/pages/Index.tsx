@@ -244,10 +244,7 @@ const Index = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-16 md:mb-24">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="IV" label="THE WORK" />
-                <span className="coord-mark hidden md:inline-flex">Plates I–III</span>
-              </div>
+              <Eyebrow label="The work" />
               <h2 id="work-heading" data-drift className="text-headline text-foreground mt-6 max-w-[18ch]">
                 Real properties. Real outcomes. Worth a closer look.
               </h2>
@@ -277,43 +274,23 @@ const Index = () => {
               >
                 <PremiumCard className="h-full transition-transform duration-700 ease-weighted group-hover:-translate-y-1">
                   <div className="flex flex-col h-full">
-                    {/* Vignette top — with plate number overlay */}
-                    <div className="relative aspect-[4/3] overflow-hidden border-b border-evergreen/10">
+                    <div className="relative aspect-[4/3] overflow-hidden border-b border-border">
                       <ProjectVignette
                         category={p.category as VignetteCategory}
                         className="absolute inset-0 w-full h-full transition-transform duration-700 ease-weighted group-hover:scale-[1.015]"
                       />
-                      <span
-                        className="absolute top-4 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic transition-transform duration-700 ease-weighted group-hover:translate-y-0.5"
-                        aria-hidden="true"
-                      >
-                        Plate {["I", "II", "III"][i]}
-                      </span>
                     </div>
 
-                    {/* Figure footnote — Pentagram-style figmark + caption + region */}
-                    <div className="px-8 lg:px-9 pt-6">
-                      <div className="figure-footnote">
-                        <span className="footnote-figmark">Fig. {["i", "ii", "iii"][i]}.</span>
-                        <span className="flex-1">{p.category.toUpperCase()}</span>
-                        <span className="text-evergreen/55 tabular-nums normal-case tracking-[0.18em]">{p.area}</span>
-                      </div>
-                    </div>
-
-                    <div className="p-8 lg:p-9 pt-5 flex flex-col flex-1">
-                      <h3 className="text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
+                    <div className="p-8 lg:p-9 flex flex-col flex-1">
+                      <p className="text-minimal text-evergreen/80">
+                        {p.category} · {p.area}
+                      </p>
+                      <h3 className="mt-4 text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
                         {p.title}
                       </h3>
-                      <p className="mt-2 text-minimal text-muted-foreground">{p.area}</p>
-                      <p className="mt-5 text-body text-foreground/80 text-[0.95rem] leading-relaxed flex-1">
+                      <p className="mt-4 text-body text-muted-foreground text-[0.95rem] leading-relaxed flex-1">
                         {p.scope}
                       </p>
-                      <div className="mt-6 pl-4 border-l-2 border-evergreen/35">
-                        <p className="text-minimal text-evergreen mb-1.5">Why it mattered</p>
-                        <p className="text-body text-muted-foreground italic text-[0.95rem]">
-                          {p.whyItMattered}
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </PremiumCard>
