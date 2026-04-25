@@ -389,6 +389,7 @@ const Index = () => {
         id="areas"
         aria-labelledby="areas-heading"
         className={SECTION_PADDING}
+        style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 1400px" }}
       >
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
