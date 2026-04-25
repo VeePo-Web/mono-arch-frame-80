@@ -1,4 +1,24 @@
-/* Fonts loaded via index.html for optimal render performance */
+/* Fonts are self-hosted via @fontsource (imported from src/main.tsx).
+   Fallback @font-face blocks below tune Georgia/Arial metrics to match the
+   web fonts so the swap-in causes near-zero layout shift (CLS). */
+
+@font-face {
+  font-family: 'Fraunces Fallback';
+  src: local('Georgia');
+  size-adjust: 105%;
+  ascent-override: 92%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
 
 @tailwind base;
 @tailwind components;

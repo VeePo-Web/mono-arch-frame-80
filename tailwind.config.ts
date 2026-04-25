@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["'Inter'", "system-ui", "sans-serif"],
-        serif: ["'Fraunces'", "Georgia", "serif"],
+        sans: ["'Inter'", "'Inter Fallback'", "system-ui", "sans-serif"],
+        serif: ["'Fraunces Variable'", "'Fraunces'", "'Fraunces Fallback'", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
