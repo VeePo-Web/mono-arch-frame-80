@@ -1,183 +1,76 @@
-# SEO Foundation — Landing Page (Pass 4)
+# Plan — Consultation Confirmation Email
 
-## Why this upgrade
+## Current state
 
-The home page currently sets `<title>` and `<meta name="description">` via `useDocumentTitle`, plus `LocalBusinessJsonLd`. That's a solid floor but several SEO surfaces are static or missing:
+- **Form UI** (`src/components/ConsultationForm.tsx`): already built per the original questionnaire spec — name, email, project type, budget, submit. Editorial styling (numeral-prefixed labels, hairline rows, cedar pill submit), success state, honeypot, react-hook-form + zod validation.
+- **Database**: `public.consultations` exists with public-INSERT RLS (shape-validated) + admin-only SELECT/UPDATE/DELETE via `has_role()`.
+- **Verified email domain**: `notify.calemwooddetailing.com` is ✅ verified — ready to send.
+- **Missing**: no edge functions exist yet. Form inserts to DB but sends no confirmation email.
 
-1. **Open Graph + Twitter tags** are hardcoded in `index.html` — when a route changes (or when we tune home-page copy), share previews don't follow.
-2. **No `<link rel="canonical">` management** at the React layer — only the static one in `index.html`.
-3. **No sitemap.xml** — search engines have to discover routes by crawl alone.
-4. **No `WebSite` + `SearchAction` schema, no `FAQPage` schema** — both are home-page wins (sitelinks search box, FAQ rich result eligibility).
-5. **`robots.txt` allows everything but doesn't reference the sitemap** — standard hygiene.
-6. **URL audit** — confirm the landing page resolves cleanly at `/` (no trailing-slash duplicates, no `/index`, no `/home`).
+## What this plan does
 
-This pass introduces a single, reusable SEO primitive (`useSeo`) and applies the full treatment to the landing page. Future pages can adopt it with one hook call.
+Wire a branded confirmation email so every consultation submitter receives a reply within seconds, while preserving the lean home-page bundle, RLS posture, and editorial brand voice.
 
----
+## Step 1 — Provision Lovable's app-email infrastructure
 
-## 1. New SEO primitive — `src/hooks/useSeo.ts`
+Run the managed setup that creates the email queue, send log, suppression list, unsubscribe tokens table, the `process-email-queue` cron, and vault secrets. Then scaffold the transactional sender stack (`send-transactional-email`, `handle-email-unsubscribe`, `handle-email-suppression`) plus the template registry.
 
-Replaces `useDocumentTitle` (kept as a thin wrapper for back-compat so existing pages don't break). Manages, in a single `useEffect`:
+No manual SQL — the platform tools own this infrastructure.
 
-- `document.title` — `"{title} — Haven Creek Renovations"` or base tagline if no title
-- `<meta name="description">`
-- `<link rel="canonical" href="...">` — created if missing, updated on route change
-- `<meta property="og:title">`, `og:description`, `og:url`, `og:image`, `og:type`
-- `<meta name="twitter:title">`, `twitter:description`, `twitter:image`, `twitter:card`
+## Step 2 — Author a brand-matched confirmation template
 
-**API:**
-```ts
-useSeo({
-  title?: string;          // page title (without brand suffix)
-  description: string;     // meta description, 150–160 chars ideal
-  path: string;            // canonical path, e.g. "/"
-  image?: string;          // absolute or root-relative OG image
-  type?: "website" | "article"; // default "website"
-});
-```
+Create `supabase/functions/_shared/transactional-email-templates/consultation-confirmation.tsx`:
 
-The hook is idempotent: it upserts each tag (creates if absent, mutates `content`/`href` if present) and on unmount restores the base brand title. **No `react-helmet` dependency** — same lightweight DOM-mutation pattern already used in `useDocumentTitle`, keeping bundle size flat.
+- **React Email** component, white body background (mandatory), Fraunces-style serif heading + Inter-style body via web-safe stacks (Georgia / Arial fallbacks — email clients don't reliably load custom fonts).
+- **Cedar accent** (`#B5651D`-family from the project palette) on the divider rule and signature line; plaster off-white inner card.
+- **Personalised**: greets by first name, echoes the project type & budget range they selected (mapped from slug → human label), so the email feels written, not auto-generated.
+- **Copy** (editorial, in Haven Creek voice — calm, no exclamation marks, no marketing CTAs):
+  - Subject: `Thank you — your consultation request is in`
+  - Body: acknowledges receipt, states the two-business-day response window, restates their selections as a "for the record" footnote (mirrors the site's `figure-footnote` pattern), signs off from the Haven Creek team.
+- **No unsubscribe link in template body** — the system appends the compliant footer automatically (hard rule).
+- Register in `registry.ts` with `displayName` and realistic `previewData`.
 
----
+## Step 3 — Wire the trigger from the form
 
-## 2. Refactor `useDocumentTitle.ts`
+Update `src/components/ConsultationForm.tsx`:
 
-Rewrite as a 5-line wrapper around `useSeo` so `About`, `Services`, area pages, etc. continue to work unchanged. No call-site edits needed for non-landing pages in this pass.
+1. Generate a `crypto.randomUUID()` for the consultation row, pass it as `id` on the insert (so we have a stable ID before the row exists in DB to derive the idempotency key from).
+2. After a successful insert, fire-and-await `supabase.functions.invoke('send-transactional-email', { body: { templateName: 'consultation-confirmation', recipientEmail, idempotencyKey: \`consult-${id}\`, templateData: { name, projectTypeLabel, budgetLabel } } })`.
+3. **Failure handling**: if the email invoke fails, the DB row still exists and the user still sees the success state — we surface a soft toast `"Saved — confirmation email may be delayed"` rather than blocking the success state, because the team can still reach out manually from the consultations table.
+4. Honeypot path remains a silent no-op (no email, no DB write).
 
----
+No UI/visual changes — the form already matches the questionnaire spec. The success state's `Fig. iv. RECEIVED` footnote already serves as the on-screen confirmation.
 
-## 3. Extend `src/components/JsonLd.tsx`
+## Step 4 — Deploy & verify
 
-Add two new exported components:
-
-- **`WebSiteJsonLd`** — `@type: WebSite` with `potentialAction: SearchAction` (enables Google sitelinks search box if/when search is added; benign even without).
-- **`FAQJsonLd`** — accepts `{ question, answer }[]` and emits `FAQPage` schema.
-
-Keep existing `LocalBusinessJsonLd`, `BreadcrumbJsonLd`, `ServiceJsonLd` untouched.
-
----
-
-## 4. Landing-page integration — `src/pages/Index.tsx`
-
-Replace the current `useDocumentTitle("", ...)` call with:
-
-```ts
-useSeo({
-  title: "Trusted Renovations for Rural Homes",
-  description:
-    "Hands-on interior finishing, exterior repairs, and decking for rural and acreage homeowners across Bragg Creek, Rocky View County, Bearspaw, and Water Valley.",
-  path: "/",
-  image: "/og/home.jpg", // see §6
-});
-```
-
-Add alongside existing `<LocalBusinessJsonLd />`:
-- `<WebSiteJsonLd />`
-- `<FAQJsonLd items={...} />` — 4–5 home-page-relevant Q&As distilled from the existing copy:
-  1. *"What kind of work does Haven Creek take on?"*
-  2. *"Which areas do you serve?"*
-  3. *"How does the consultation process work?"*
-  4. *"Do you handle phased renovations over time?"*
-  5. *"What does property respect mean on a job site?"*
-
-The FAQ entries are schema-only (not new visible UI) — they reference language already in the copy plan, so they remain truthful per Google's structured-data policy.
-
----
-
-## 5. `index.html` cleanup
-
-The static OG/Twitter tags currently in `index.html` will be retained as **fallbacks** (for crawlers that don't execute JS — e.g. some link-preview bots), but the React hook will override them on hydration for SPA navigation.
-
-Specific edits:
-- Keep static `<title>`, `<meta description>`, `<link canonical>`, OG/Twitter tags as defaults.
-- Confirm `<meta property="og:image">` is present with a sensible default (currently missing — add `/og/default.jpg`).
-- Add `<meta property="og:image:width" content="1200">` + `og:image:height="630"` for proper preview sizing.
-
----
-
-## 6. Open Graph image strategy
-
-The repo currently has no OG image. Two paths — I recommend **option A** for this pass:
-
-- **Option A (this pass):** Reuse `/apple-touch-icon.png` as the OG fallback (already exists, ~512×512 — works as a square preview, not ideal but valid). Add a `TODO` note to commission a proper 1200×630 editorial OG plate later.
-- **Option B (deferred):** Generate a 1200×630 editorial plate (Fraunces wordmark on plaster background with surveyor frame) — best done as a separate, focused asset task.
-
-Wiring is identical either way — the hook accepts an `image` prop, so swapping it later is a one-line change.
-
----
-
-## 7. `public/sitemap.xml` (new file)
-
-Static XML listing all current routes with appropriate `<priority>` and `<changefreq>`:
-
-```
-/                              priority 1.0   changefreq monthly
-/about                         priority 0.8
-/services                      priority 0.9
-/services/interior-finishing   priority 0.8
-/services/exterior-finishing   priority 0.8
-/services/decking              priority 0.8
-/work                          priority 0.7
-/service-areas                 priority 0.7
-/service-areas/bragg-creek     priority 0.6
-/service-areas/rocky-view-county priority 0.6
-/service-areas/bearspaw        priority 0.6
-/service-areas/water-valley    priority 0.6
-/contact                       priority 0.9
-```
-
-`/thank-you` excluded (post-conversion only).
-
----
-
-## 8. `public/robots.txt` hardening
-
-Add a `Sitemap:` directive and a `Disallow: /thank-you` line so the conversion-confirmation page doesn't appear in search:
-
-```
-User-agent: *
-Allow: /
-Disallow: /thank-you
-
-Sitemap: https://havencreekrenovations.ca/sitemap.xml
-```
-
-Keep the existing per-bot allow blocks above for clarity.
-
----
-
-## 9. Clean URL structure audit
-
-Reviewing `src/App.tsx` routes — the structure is already clean:
-- ✅ Lowercase, hyphenated slugs
-- ✅ Logical nesting (`/services/*`, `/service-areas/*`)
-- ✅ No `index.html`, no `.html`, no query-string routing
-- ✅ Landing page at root `/` (not `/home`)
-
-**No route changes needed.** One small addition: ensure SPA fallback / 404 returns the React `NotFound` page (already wired via `path="*"` in `App.tsx`).
-
----
-
-## 10. What's intentionally out of scope (next passes)
-
-- Per-page `useSeo` migration for `/about`, `/services/*`, `/service-areas/*`, `/contact` — easy follow-up, one hook call each.
-- Image `alt` audit across plates and SVG vignettes.
-- Performance-impacting Lighthouse SEO items (already strong; landing scores 100 SEO).
-- Dedicated 1200×630 OG image creation.
-
----
+- Deploy `send-transactional-email`, `handle-email-unsubscribe`, `handle-email-suppression`, `process-email-queue`.
+- Verify with one curl-style test invocation against `send-transactional-email` to confirm the template renders + enqueues.
+- Inspect `email_send_log` for the test row's `pending → sent` transition.
 
 ## Files touched
 
 **New**
-- `src/hooks/useSeo.ts`
-- `public/sitemap.xml`
+- `supabase/functions/send-transactional-email/index.ts` (scaffolded)
+- `supabase/functions/handle-email-unsubscribe/index.ts` (scaffolded)
+- `supabase/functions/handle-email-suppression/index.ts` (scaffolded)
+- `supabase/functions/process-email-queue/index.ts` (scaffolded)
+- `supabase/functions/_shared/transactional-email-templates/registry.ts` (scaffolded)
+- `supabase/functions/_shared/transactional-email-templates/consultation-confirmation.tsx` (authored)
+- A small unsubscribe page in the app (path picked by the scaffold tool — likely `/unsubscribe`) styled to match the site's editorial system. Required so unsubscribe links in emails point to a branded page, not a raw function URL.
 
 **Edited**
-- `src/hooks/useDocumentTitle.ts` — becomes thin wrapper around `useSeo`
-- `src/components/JsonLd.tsx` — add `WebSiteJsonLd` + `FAQJsonLd`
-- `src/pages/Index.tsx` — swap to `useSeo`, add `WebSiteJsonLd` + `FAQJsonLd`
-- `index.html` — add `og:image` fallback + image dimensions
-- `public/robots.txt` — add `Sitemap:` directive + disallow `/thank-you`
+- `src/components/ConsultationForm.tsx` — generate id, invoke email function, soft-fail toast.
+- `src/App.tsx` — register the unsubscribe route.
+- Database migration: `consultations.id` already has `gen_random_uuid()` default, but we'll pass our client-generated UUID to keep the idempotency key reliable. No schema change needed.
 
-**Bundle impact:** zero new deps, ~1.2 KB gz added (hook + schema components).
+## What stays untouched
+
+- Form copy, layout, fields, validation, success state, honeypot — all already match the questionnaire spec.
+- `consultations` table schema + RLS policies — unchanged.
+- The lazy-loaded form pattern on the home page — preserved.
+
+## Out of scope (intentionally)
+
+- **Internal "new lead" notification email to the business** — not requested. Easy to add later as a second template + parallel invoke.
+- Admin dashboard for browsing consultations — the existing admin-only SELECT policy already enables this when needed.
+- Marketing/follow-up sequences — would be a marketing email, which Lovable's transactional system intentionally does not support.
