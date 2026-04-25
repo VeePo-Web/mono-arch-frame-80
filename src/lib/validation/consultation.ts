@@ -20,8 +20,15 @@ export const BUDGET_RANGES = [
   { value: "prefer-discuss", label: "Prefer to discuss" },
 ] as const;
 
+export const PREFERRED_TIMES = [
+  { value: "morning", label: "Morning" },
+  { value: "afternoon", label: "Afternoon" },
+  { value: "either", label: "Either works" },
+] as const;
+
 const projectTypeValues = PROJECT_TYPES.map((p) => p.value) as [string, ...string[]];
 const budgetValues = BUDGET_RANGES.map((b) => b.value) as [string, ...string[]];
+const preferredTimeValues = PREFERRED_TIMES.map((p) => p.value) as [string, ...string[]];
 
 export const consultationSchema = z.object({
   name: z
@@ -40,8 +47,22 @@ export const consultationSchema = z.object({
   budget: z.enum(budgetValues, {
     errorMap: () => ({ message: "Please choose a budget range" }),
   }),
+  // Optional — when we should ideally walk the property
+  preferredTime: z
+    .enum(preferredTimeValues, {
+      errorMap: () => ({ message: "Please choose a preferred time" }),
+    })
+    .optional(),
   // Honeypot — must be empty
   company: z.string().max(0).optional(),
 });
 
 export type ConsultationFormValues = z.infer<typeof consultationSchema>;
+
+/** Map a `?service=` URL slug to a valid PROJECT_TYPES value (or undefined). */
+export function projectTypeFromQuery(value: string | null | undefined): typeof PROJECT_TYPES[number]["value"] | undefined {
+  if (!value) return undefined;
+  const v = value.toLowerCase();
+  const allowed = PROJECT_TYPES.map((p) => p.value) as readonly string[];
+  return (allowed.includes(v) ? (v as typeof PROJECT_TYPES[number]["value"]) : undefined);
+}
