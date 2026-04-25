@@ -222,11 +222,9 @@ const Index = () => {
                       {s.cardBody}
                     </p>
 
-                    <div className="mt-8 inline-flex items-center gap-3 text-minimal text-evergreen">
-                      <span>See the work</span>
-                      <span className="icon-chip bg-evergreen/[0.06]">
-                        <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
-                      </span>
+                    <div className="mt-8 inline-flex items-center gap-3 text-minimal text-foreground/70 group-hover:text-evergreen transition-colors duration-500">
+                      <span>Read the service</span>
+                      <span className="block w-6 h-px bg-evergreen/50 group-hover:w-12 transition-all duration-500 ease-swift" />
                     </div>
                   </div>
                 </PremiumCard>
@@ -283,6 +281,22 @@ const Index = () => {
                   </li>
                 ))}
               </ol>
+
+              <div
+                className="mt-16 pt-10 border-t border-border/60 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "1100ms" }}
+              >
+                <p className="font-serif italic font-light text-foreground/85 text-[1.1rem] leading-snug max-w-md">
+                  From conversation to completion, you talk to one person.
+                </p>
+                <Link to="/contact" className="cta-anchor group/btn shrink-0">
+                  <span>Start that conversation</span>
+                  <span className="icon-chip icon-chip-light bg-background/15">
+                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                  </span>
+                </Link>
+              </div>
             </div>
           </div>
         </Container>
