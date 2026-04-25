@@ -1,76 +1,159 @@
-# Plan — Consultation Confirmation Email
+## Goal
 
-## Current state
+Replace the 13 stub pages ("Coming soon.") with fully-composed, world-class editorial bodies that match the home page's visual language — Double-Bezel cards, Eyebrow numerals, surveyor coordinates, plaster wash sections, hand-drawn vignettes, reveal cascades — and the calm, rural, trust-first voice from `knowledge/2.2`.
 
-- **Form UI** (`src/components/ConsultationForm.tsx`): already built per the original questionnaire spec — name, email, project type, budget, submit. Editorial styling (numeral-prefixed labels, hairline rows, cedar pill submit), success state, honeypot, react-hook-form + zod validation.
-- **Database**: `public.consultations` exists with public-INSERT RLS (shape-validated) + admin-only SELECT/UPDATE/DELETE via `has_role()`.
-- **Verified email domain**: `notify.calemwooddetailing.com` is ✅ verified — ready to send.
-- **Missing**: no edge functions exist yet. Form inserts to DB but sends no confirmation email.
+Every page will share one consistent skeleton:
 
-## What this plan does
+1. **SubPageHero** — fixed pattern: Eyebrow numeral · coord-mark · headline (`text-display`/`text-headline`) · supporting paragraph · primary + ghost CTA pair · Page-Slug update via `useSeo`. Uses the existing radial-bloom + reveal-up scaffolding from `Hero.tsx`.
+2. **Editorial body sections** wrapped in a local `RevealSection` (lifted pattern from `Index.tsx`) using `Container`, `Eyebrow`, `PremiumCard`, `coord-mark`, `figure-footnote`, `numeral-mark`, `area-row`, `path-line`/`surveyor-frame` where appropriate.
+3. **Closing CTA band** — quiet evergreen-deep panel mirroring §VI on Home, with a `<Link>` to `/contact` (and on the `/` flow, a lazy-loaded `ConsultationForm` only on `/contact` itself, not every page).
+4. **`useSeo` + JSON-LD** — every route gets a unique title, 150–160 char description, canonical, OG tags, and an appropriate schema (`Service`, `BreadcrumbList`, area-scoped LocalBusiness).
 
-Wire a branded confirmation email so every consultation submitter receives a reply within seconds, while preserving the lean home-page bundle, RLS posture, and editorial brand voice.
+No new dependencies. No new design tokens. Reuses every utility class already in `src/index.css`.
 
-## Step 1 — Provision Lovable's app-email infrastructure
+---
 
-Run the managed setup that creates the email queue, send log, suppression list, unsubscribe tokens table, the `process-email-queue` cron, and vault secrets. Then scaffold the transactional sender stack (`send-transactional-email`, `handle-email-unsubscribe`, `handle-email-suppression`) plus the template registry.
+## Shared scaffolding (one new file)
 
-No manual SQL — the platform tools own this infrastructure.
+### `src/components/SubPageHero.tsx` — NEW
+A small, reusable hero strip used by every non-home page. Props: `eyebrowNumeral`, `eyebrowLabel`, `coordMark`, `headline` (string with optional `<em>` italic accent), `subhead`, `primaryCta` (`{ to, label }`), `secondaryCta?` (`{ to, label }`), `vignette?` (slot for a side-vignette on Service detail pages). Internally:
+- `pt-36 md:pt-44 pb-20 md:pb-28` to clear the floating Nav island
+- Soft top-right radial bloom (copied from `Hero.tsx`)
+- Editorial 7/5 grid where a `vignette` is provided; else single-column with `max-w-3xl` headline
+- Reveal-up cascade with the same delays as the home Hero (0/120/240/380/500ms)
+- The headline supports a `decorated` flag that draws the `vignette-stroke` underline beneath one italicized word, matching the home Hero's "Trusted" treatment
 
-## Step 2 — Author a brand-matched confirmation template
+This component is the single visual anchor that makes all 13 pages feel like chapters of the same monograph.
 
-Create `supabase/functions/_shared/transactional-email-templates/consultation-confirmation.tsx`:
+---
 
-- **React Email** component, white body background (mandatory), Fraunces-style serif heading + Inter-style body via web-safe stacks (Georgia / Arial fallbacks — email clients don't reliably load custom fonts).
-- **Cedar accent** (`#B5651D`-family from the project palette) on the divider rule and signature line; plaster off-white inner card.
-- **Personalised**: greets by first name, echoes the project type & budget range they selected (mapped from slug → human label), so the email feels written, not auto-generated.
-- **Copy** (editorial, in Haven Creek voice — calm, no exclamation marks, no marketing CTAs):
-  - Subject: `Thank you — your consultation request is in`
-  - Body: acknowledges receipt, states the two-business-day response window, restates their selections as a "for the record" footnote (mirrors the site's `figure-footnote` pattern), signs off from the Haven Creek team.
-- **No unsubscribe link in template body** — the system appends the compliant footer automatically (hard rule).
-- Register in `registry.ts` with `displayName` and realistic `previewData`.
+## Per-page builds
 
-## Step 3 — Wire the trigger from the form
+All pages follow this template:
 
-Update `src/components/ConsultationForm.tsx`:
+```tsx
+const Page = () => {
+  useSeo({ title, description, path });
+  return (
+    <main id="main">
+      <ServiceJsonLd … /* or BreadcrumbJsonLd */ />
+      <SubPageHero … />
+      <RevealSection …>…</RevealSection>
+      …
+      <ClosingCta />
+    </main>
+  );
+};
+```
 
-1. Generate a `crypto.randomUUID()` for the consultation row, pass it as `id` on the insert (so we have a stable ID before the row exists in DB to derive the idempotency key from).
-2. After a successful insert, fire-and-await `supabase.functions.invoke('send-transactional-email', { body: { templateName: 'consultation-confirmation', recipientEmail, idempotencyKey: \`consult-${id}\`, templateData: { name, projectTypeLabel, budgetLabel } } })`.
-3. **Failure handling**: if the email invoke fails, the DB row still exists and the user still sees the success state — we surface a soft toast `"Saved — confirmation email may be delayed"` rather than blocking the success state, because the team can still reach out manually from the consultations table.
-4. Honeypot path remains a silent no-op (no email, no DB write).
+`RevealSection` and `ClosingCta` are tiny page-local helpers (kept in the file or co-located in `src/components/`) that re-implement the patterns already proven on `Index.tsx`. I'll lift `RevealSection` into `src/components/RevealSection.tsx` so the home page can also import it (mild refactor, zero behavior change).
 
-No UI/visual changes — the form already matches the questionnaire spec. The success state's `Fig. iv. RECEIVED` footnote already serves as the on-screen confirmation.
+### 1. `src/pages/About.tsx`
+- **SubPageHero** — Eyebrow `I · ABOUT` · headline "A *hands-on* renovation partner for rural properties." · subhead about working style · CTAs: "Talk Through Your Project" → /contact, "See the work" → /work
+- **§ I — Working Philosophy** — split-grid: pull-quote `"The experience of quality. The quality of experience."` on the left; right column unpacks the meaning in 2 short paragraphs
+- **§ II — Property Respect** — `surveyor-frame` block listing four respect commitments (access, animals/family routines, equipment management, leave-it-better) as numbered field-notes (uses `numeral-disc-survey` and `path-line`, exactly as the Home approach section does)
+- **§ III — Hands-On Continuity** — three-column `PremiumCard` row: "Personal involvement", "Fewer handoffs", "Long-term relationship" — each with `numeral-disc` + `card-monogram`
+- **§ IV — Long-Term Relationship** — single wide quote-style block on plaster wash explaining phased improvements
+- **Closing CTA band**
 
-## Step 4 — Deploy & verify
+### 2. `src/pages/Services.tsx`
+- **SubPageHero** — Eyebrow `II · SERVICES` · headline "Three services, *held* to one standard." · subhead about focus over breadth
+- **§ I — The hierarchy** — three full-width `PremiumCard` rows (not the 3-up grid used on Home — bigger, more editorial here): each card is a 5/7 split with the existing `ProjectVignette` on one side and `numeral-disc` + title + `promise` + extended body + `figure-footnote` on the other. Source data: `src/data/services.ts`
+- **§ II — Full-Circle Support** — same `surveyor-frame`/`path-line` treatment as Home §III but with: "One conversation. One contractor. One relationship." as the heading and three labeled steps describing planning, structural/finishing handoff prevention, and walk-through
+- **§ III — Custom Quote Explanation** — two-column block: left explains why no fixed pricing (calm, thoughtful tone); right is a `figure-footnote`-style proof line
+- **Closing CTA band**
 
-- Deploy `send-transactional-email`, `handle-email-unsubscribe`, `handle-email-suppression`, `process-email-queue`.
-- Verify with one curl-style test invocation against `send-transactional-email` to confirm the template renders + enqueues.
-- Inspect `email_send_log` for the test row's `pending → sent` transition.
+### 3. `src/pages/InteriorFinishing.tsx`
+- **SubPageHero** with vignette slot using `<InteriorVignette>` from `ProjectVignette.tsx` inside a `bezel-shell` panel on the right (matches Hero's right-column Bezel)
+- **§ I — What interior finishing means** — 7/5 split: heading + one paragraph defining the work; right column is a `figure-footnote` "DETAILS WE OBSESS OVER" + bulleted list (trim, casings, transitions, hardware, baseboard return, edge fit)
+- **§ II — Why it matters** — pull-quote: *"This is the part you see and feel every day."*
+- **§ III — Craft & detail (close-up captions)** — 3-up `PremiumCard` grid; each card uses `<InteriorVignette>` as the top plate plus `figure-footnote` + 2-sentence detail caption (transitions / edges / fit)
+- **§ IV — Project proof** — pulls the one Interior Finishing project from `src/data/projects.ts` rendered as a wide `PremiumCard` with scope/challenge/result/whyItMattered (mirrors home gallery card structure)
+- **Closing CTA** with copy "Discuss interior finishing needs."
+- `<ServiceJsonLd name="Interior Finishing" description=… />`
 
-## Files touched
+### 4. `src/pages/ExteriorFinishing.tsx`
+- Same structural template as Interior, with `<ExteriorVignette>`, copy from 2.2 §Page 5: durable improvements / common needs / rural considerations / property respect / project proof.
+- "Why property respect matters" rendered as a `surveyor-frame` of bullets: land · driveway · equipment · landscaping · animals · family routines · privacy.
 
-**New**
-- `supabase/functions/send-transactional-email/index.ts` (scaffolded)
-- `supabase/functions/handle-email-unsubscribe/index.ts` (scaffolded)
-- `supabase/functions/handle-email-suppression/index.ts` (scaffolded)
-- `supabase/functions/process-email-queue/index.ts` (scaffolded)
-- `supabase/functions/_shared/transactional-email-templates/registry.ts` (scaffolded)
-- `supabase/functions/_shared/transactional-email-templates/consultation-confirmation.tsx` (authored)
-- A small unsubscribe page in the app (path picked by the scaffold tool — likely `/unsubscribe`) styled to match the site's editorial system. Required so unsubscribe links in emails point to a branded page, not a raw function URL.
+### 5. `src/pages/Decking.tsx`
+- Same template, `<DeckingVignette>`, copy from 2.2 §Page 6: practical spaces / planning considerations / rural lifestyle value / materials & scope / project proof.
+- Materials & Scope rendered as a 3-up `PremiumCard` grid: "Use & layout", "Site & exposure", "Materials & longevity".
 
-**Edited**
-- `src/components/ConsultationForm.tsx` — generate id, invoke email function, soft-fail toast.
-- `src/App.tsx` — register the unsubscribe route.
-- Database migration: `consultations.id` already has `gen_random_uuid()` default, but we'll pass our client-generated UUID to keep the idempotency key reliable. No schema change needed.
+### 6. `src/pages/Work.tsx`
+- **SubPageHero** — Eyebrow `IV · THE WORK` · headline "Real properties. Real outcomes. *Worth* a closer look."
+- **§ I — Filter rail** — quiet horizontal pill row: All · Interior Finishing · Exterior Repairs · Decking · Locations. **Pure client-side `useState` filter** over `galleryPlates` from `src/data/galleryPlates.ts` plus the three projects from `src/data/projects.ts` merged into one unified array. No URL state, no router params — just a calm filter (matches "no urgency gimmicks" voice).
+- **§ II — Plate grid** — full-width 3-up grid of `PremiumCard`s, identical visual structure to Home §IV (Plate roman numeral overlay + `figure-footnote` + scope + "Why it mattered" pull-quote)
+- **§ III — Empty state** — when a filter returns 0, a quiet `figure-footnote`-style note: "No plates in this category yet. We're adding work as it's photographed."
+- **Closing CTA**
 
-## What stays untouched
+### 7. `src/pages/ServiceAreas.tsx`
+- **SubPageHero** — Eyebrow `V · WHERE WE WORK` · headline "Local, *by* choice." · subhead about four communities
+- **§ I — Roster** — reuse the exact `area-row` divide-y list pattern from Home §V (with the `coord-mark` and `icon-chip`), iterating over `serviceAreas`. Each row links to the area's detail page.
+- **§ II — Rural Fit** — split-grid: heading "Built for rural service" + body about access, weather windows, distance; right column is a 4-row `figure-footnote` list describing how we plan around: drive time · seasonal weather · property access · wildlife/animals
+- **Closing CTA**
 
-- Form copy, layout, fields, validation, success state, honeypot — all already match the questionnaire spec.
-- `consultations` table schema + RLS policies — unchanged.
-- The lazy-loaded form pattern on the home page — preserved.
+### 8–11. Area pages — `BraggCreek.tsx`, `RockyView.tsx`, `Bearspaw.tsx`, `WaterValley.tsx`
+Single shared layout, copy varies per `serviceAreas[slug].page`:
+- **SubPageHero** — Eyebrow `V.{n} · {AREA NAME}` · headline (per-area, drawn from `serviceAreas` + small per-page additions matching 2.2 §Page 10 tone notes — Bearspaw most refined, Water Valley most practical) · `coord-mark` shows the area postal prefix (T0L / T4A / T3R / T0M)
+- **§ I — Local context** — wide pull-quote of `serviceAreas[slug].context`, framed in a `surveyor-frame` block
+- **§ II — How we serve here** — 3-up `PremiumCard` grid using the three services from `services.ts`, but with area-specific micro-copy lines layered underneath each (e.g. for Bragg Creek interior: "For homes that have been quietly cared for, finishing that holds up to that standard.")
+- **§ III — Other nearby areas** — quiet 3-row `area-row` divide-y list of the other three areas (so visitors can hop laterally)
+- **Closing CTA** with area-aware copy ("Talk through your Bragg Creek property.")
+- Each page emits a `BreadcrumbJsonLd` + a focused `LocalBusinessJsonLd`-style script with `areaServed` narrowed to that single locality.
 
-## Out of scope (intentionally)
+### 12. `src/pages/Contact.tsx`
+- **SubPageHero** — Eyebrow `VI · CONTACT` · headline "Let's *talk through* your property." · subhead that mirrors 2.2 §Page 11 ("This is the beginning of a relationship, not a sales trap.")
+- **§ I — Two-column layout**:
+  - Left (5/12): "What happens next" numbered list (01 you write · 02 we reply within two business days · 03 we walk the property or talk by phone · 04 we put together a thoughtful quote) with `numeral-mark` and `border-l-2 border-evergreen/35` left rules
+  - Right (7/12): a wider `bezel-shell-evergreen` `PremiumCard` containing the existing `<ConsultationForm source="contact_page" />` — same component already on Home, no duplication
+- **§ II — Custom quote reassurance** — calm two-paragraph block on plaster wash explaining why pricing is custom (no urgency, no "free quote" energy)
+- **§ III — Service-area trust line** — same `divide-y` mini-list of areas served, with postal-prefix `coord-mark`s
+- No closing CTA band on this page (the form *is* the CTA — avoids feeling like a funnel).
 
-- **Internal "new lead" notification email to the business** — not requested. Easy to add later as a second template + parallel invoke.
-- Admin dashboard for browsing consultations — the existing admin-only SELECT policy already enables this when needed.
-- Marketing/follow-up sequences — would be a marketing email, which Lovable's transactional system intentionally does not support.
+### 13. `src/pages/ThankYou.tsx`
+- **SubPageHero** with reduced top padding — Eyebrow `VII · RECEIVED` (mirrors the "Fig. iv. RECEIVED" footnote pattern in `ConsultationForm`'s success state) · headline "Thank you. *We've got* your note." · subhead with the two-business-day expectation
+- **§ I — What happens next** — 3 calm steps as a `surveyor-frame` field-note list
+- **§ II — While you wait** — 4 `PremiumCard` tiles linking to /work, /services, /service-areas, /about — each with its `ProjectVignette` or a small `numeral-disc` + label
+- **§ III — Quiet sign-off** — single italic Fraunces line on the plaster wash: *"No need to refresh — we'll come to you."*
+- No closing CTA (don't restart the funnel after a successful submit). Add `<meta name="robots" content="noindex" />` via `useSeo` extension (small additive change to the hook to support `noindex?: boolean`).
+
+### 14. `src/pages/NotFound.tsx`
+- Replace minimal stub with a full editorial 404:
+- **SubPageHero** — Eyebrow `· OFF MAP` · oversize "404" tabular-nums numeral as a quiet hero badge · headline "*This* page seems to have wandered off." · subhead about the page being moved or renamed
+- **§ I — Where to go** — 3-up `PremiumCard` grid: Home, Services, Work
+- **§ II — Or talk to us** — single-row CTA strip with a ghost link to /contact
+- Subtle reuse of the home Hero's hand-drawn underline beneath the "404" for visual continuity.
+
+---
+
+## Small supporting changes
+
+1. **`src/hooks/useSeo.ts`** — add optional `noindex?: boolean` parameter that upserts `<meta name="robots" content="noindex,nofollow">` when true (used by ThankYou and NotFound). Backward compatible.
+2. **`src/components/JsonLd.tsx`** — no changes needed (all existing components — `LocalBusinessJsonLd`, `BreadcrumbJsonLd`, `ServiceJsonLd`, `WebSiteJsonLd`, `FAQJsonLd` — already cover the required schemas).
+3. **Lift `RevealSection`** out of `Index.tsx` into `src/components/RevealSection.tsx` and import it back in Home + every new page. Behavior identical.
+4. **`src/components/SubPageHero.tsx`** — new, ~120 lines, uses only existing utility classes.
+5. **`public/sitemap.xml`** — already maps all 13 routes from the previous SEO pass; no change needed.
+
+---
+
+## What I will explicitly NOT do
+
+- No new images, photographs, or stock — keeps faith with `1.5 §Dealbreakers` ("no fake luxury stock"). Plate illustration coverage stays on `ProjectVignette` + `GalleryVignette`.
+- No new fonts, dependencies, or animation libraries.
+- No backend changes. The Contact page reuses the already-wired `ConsultationForm`; no duplicate insert logic.
+- No filter URL state on `/work` — pure local React state to keep bundle small and the experience calm.
+- No price ranges, "free quote," or urgency language anywhere.
+- No carousel/auto-rotating components — every reveal is on viewport intersection only.
+
+---
+
+## Quality bar
+
+- Every page uses `useSeo`, has a unique 150–160 char description, a canonical, and at least one JSON-LD block.
+- Every page passes the home page's visual rhyme: `Eyebrow` + `coord-mark` opener; `data-reveal` cascade with `--reveal-delay`; at least one `PremiumCard` and one `figure-footnote`; a single closing CTA band on plaster or evergreen-deep.
+- Mobile pass: every grid collapses to single-column at `<md`; CTAs stay 44px+ tall; no horizontal scroll.
+- Accessibility: every section has an `aria-labelledby`; the `SubPageHero`'s decorative SVG underline is `aria-hidden`; ConsultationForm reuse keeps existing `noValidate`/`role="status"` patterns.
+- Bundle: zero new third-party imports. Estimated added JS: ~14 KB gz across all 13 pages combined (lazy-loaded routes, so home page bundle is unchanged).
+
+After approval, I'll implement in this order: (1) shared `SubPageHero` + `RevealSection` extraction, (2) Service detail trio (Interior/Exterior/Decking), (3) Services overview + About, (4) Work + ServiceAreas hub + four area pages, (5) Contact + ThankYou + NotFound, (6) verify build.
