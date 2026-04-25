@@ -46,6 +46,7 @@ export default {
           foreground: "hsl(var(--evergreen-foreground))",
           hover: "hsl(var(--evergreen-hover))",
           soft: "hsl(var(--evergreen-soft))",
+          deep: "hsl(var(--evergreen-deep))",
         },
         bark: "hsl(var(--bark))",
         sand: "hsl(var(--sand))",
