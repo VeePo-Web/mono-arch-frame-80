@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import Phone from "lucide-react/dist/esm/icons/phone";
@@ -14,21 +14,32 @@ import logo from "@/assets/logo/haven-creek-horizontal.webp";
 const STUDIO_PHONE_TEL = "+14035550100";
 const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
 
+// Routes whose primary entry-point lives inside the drawer (not in the
+// section rail). When the user is on one of these, the hamburger gets a
+// small evergreen dot — a "you are here" hint without opening the menu.
+const DRAWER_ROUTE_PREFIXES = [
+  "/services/",
+  "/service-areas/",
+  "/about",
+  "/work",
+];
+
 /**
- * Navigation — Round 3 "Grandma-Grade" cleanup.
+ * Navigation — Round 4 "Grandpa-Grade" cleanup.
  *
- * Solid full-width bar (not a floating glass island). Three-zone grid:
+ * Solid full-width bar. Three-zone grid:
  *   [ Logo ]  [ SectionRail (md+) ]  [ Phone · Quote · Menu ]
  *
- * Rules applied:
- * - Persistent full horizontal logo (no crossfade to mark on scroll).
- * - Phone visible from sm+ (icon-only sm→md, full number lg+).
- * - "Get a Quote" CTA always shows the word at every breakpoint.
- * - Hamburger labeled "Menu" at md+, three-line glyph (the universal one).
+ * Round 4 changes vs round 3:
+ * - Phone link visible from xs (icon always; number from md+).
+ * - Quote CTA is the visually heaviest control — h-12 mobile / h-11 desktop,
+ *   15px semibold. Icon chip from md+.
+ * - Hamburger lines bumped to 1.5px. Tiny evergreen dot when current route
+ *   lives inside the drawer.
+ * - Bar height: h-15 mobile / h-16 desktop for full 48px tap zones.
  *
- * Drawer (MenuDrawer):
- *   Fullscreen overlay for cross-page navigation. The single persistent
- *   secondary CTA lives in its bottom rail — no sticky bar, no FAB.
+ * Drawer: fullscreen overlay with the only persistent secondary CTA at its
+ * bottom rail. No FAB, no sticky bar (constraint).
  */
 const Navigation = () => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -37,6 +48,11 @@ const Navigation = () => {
   const { pathname } = useLocation();
   const isMobile = useIsMobile();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
+
+  const currentLivesInDrawer = useMemo(
+    () => DRAWER_ROUTE_PREFIXES.some((p) => pathname.startsWith(p)),
+    [pathname],
+  );
 
   // IntersectionObserver on a 1px sentinel — adds shadow on scroll, no scroll handler.
   useEffect(() => {
@@ -54,8 +70,6 @@ const Navigation = () => {
   useEffect(() => setDrawerOpen(false), [pathname]);
 
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // On touch viewports, prefer the in-place sheet so cautious leads
-    // don't lose their scroll position. Skip when we're already on /contact.
     if (isMobile && !onContactRoute) {
       e.preventDefault();
       openQuickContact({ source: "quick_contact_sheet" });
@@ -72,7 +86,6 @@ const Navigation = () => {
         Skip to content
       </a>
 
-      {/* Sentinel: when this scrolls out of view, the bar gets its scroll-shadow. */}
       <div ref={sentinelRef} aria-hidden="true" className="absolute top-0 left-0 h-px w-px" />
 
       <header
@@ -80,18 +93,18 @@ const Navigation = () => {
         data-scrolled={scrolled}
         className={cn(
           "havencreek-nav fixed inset-x-0 top-0 z-50",
-          "h-14 sm:h-16",
+          "h-[60px] sm:h-16",
           "bg-background/95 backdrop-blur-sm",
           "border-b border-border/60",
           "transition-shadow duration-300",
-          scrolled && "shadow-[0_2px_12px_-6px_hsl(20_8%_14%/0.10)]",
+          scrolled && "shadow-[0_2px_12px_-6px_hsl(20_8%_14%/0.12)]",
         )}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <Container size="wide" className="h-full">
           <nav
             aria-label="Primary"
-            className="grid grid-cols-[auto_1fr_auto] items-center h-full gap-3"
+            className="grid grid-cols-[auto_1fr_auto] items-center h-full gap-2 sm:gap-3"
           >
             {/* Brand — left. Persistent full horizontal logo. */}
             <Link
@@ -121,24 +134,24 @@ const Navigation = () => {
             <div className="md:hidden" aria-hidden="true" />
 
             {/* Right cluster — Phone · Quote · Menu */}
-            <div className="flex items-center gap-1 sm:gap-2 justify-end">
-              {/* Phone — sm+ icon-only, lg+ icon + number */}
+            <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
+              {/* Phone — always-visible icon (xs), full number from md+ */}
               <a
                 href={`tel:${STUDIO_PHONE_TEL}`}
                 aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                 className={cn(
-                  "hidden sm:inline-flex items-center justify-center gap-2 rounded-full shrink-0",
-                  "h-11 min-w-[44px] px-2.5 lg:px-3",
-                  "text-sm font-medium text-foreground/75 hover:text-evergreen hover:bg-foreground/[0.04]",
+                  "inline-flex items-center justify-center gap-2 rounded-full shrink-0",
+                  "h-12 min-w-[48px] px-2.5 md:px-3",
+                  "text-sm font-medium text-foreground/80 hover:text-evergreen hover:bg-foreground/[0.05]",
                   "transition-colors duration-300",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
               >
-                <Phone className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
-                <span className="hidden lg:inline">{STUDIO_PHONE_DISPLAY}</span>
+                <Phone className="h-[18px] w-[18px] md:h-4 md:w-4" strokeWidth={1.85} aria-hidden="true" />
+                <span className="hidden md:inline">{STUDIO_PHONE_DISPLAY}</span>
               </a>
 
-              {/* Quote CTA — always shows a word */}
+              {/* Quote CTA — heaviest control on the page */}
               <Link
                 to="/contact"
                 onClick={handleQuoteClick}
@@ -147,8 +160,8 @@ const Navigation = () => {
                   "nav-pill group/btn shrink-0",
                   "inline-flex items-center justify-center gap-2 rounded-full",
                   "bg-evergreen text-evergreen-foreground",
-                  "text-sm font-medium",
-                  "h-11 sm:h-10 px-4 sm:px-5 lg:pl-5 lg:pr-1.5",
+                  "text-[15px] font-semibold",
+                  "h-12 sm:h-11 px-5 sm:px-5 md:pl-5 md:pr-1.5",
                   "transition-colors duration-300",
                   "hover:bg-evergreen-hover active:scale-[0.98]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
@@ -156,16 +169,17 @@ const Navigation = () => {
               >
                 <span className="sm:hidden">Quote</span>
                 <span className="hidden sm:inline">Get a Quote</span>
-                <span className="hidden lg:inline-flex icon-chip icon-chip-light bg-background/15">
-                  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.75} />
+                <span className="hidden md:inline-flex icon-chip icon-chip-light bg-background/15">
+                  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={2} />
                 </span>
               </Link>
 
-              {/* Menu hamburger — labeled "Menu" md+ */}
+              {/* Menu hamburger — labeled "Menu" md+, dot if current route lives inside */}
               <HamburgerButton
                 open={drawerOpen}
                 onClick={() => setDrawerOpen(true)}
                 showLabel
+                currentDot={currentLivesInDrawer}
               />
             </div>
           </nav>
@@ -173,7 +187,7 @@ const Navigation = () => {
       </header>
 
       {/* Spacer so page content doesn't slide under the fixed bar. */}
-      <div aria-hidden="true" className="h-14 sm:h-16" />
+      <div aria-hidden="true" className="h-[60px] sm:h-16" />
 
       <MenuDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
     </>
