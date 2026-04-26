@@ -160,7 +160,7 @@ const Hero = () => {
                   <li key={note.title} className="flex gap-4">
                     <span
                       aria-hidden="true"
-                      className="text-minimal text-evergreen/55 tabular-nums pt-1 w-6 shrink-0"
+                      className="text-minimal text-evergreen/80 tabular-nums pt-1 w-6 shrink-0"
                     >
                       {String(i + 1).padStart(2, "0")}
                     </span>
@@ -211,7 +211,7 @@ const Hero = () => {
               <li key={note.title} className="flex gap-3">
                 <span
                   aria-hidden="true"
-                  className="text-minimal text-evergreen/55 tabular-nums pt-0.5 w-6 shrink-0"
+                  className="text-minimal text-evergreen/80 tabular-nums pt-0.5 w-6 shrink-0"
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>

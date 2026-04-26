@@ -96,7 +96,7 @@ const Services = () => {
                       <div className="figure-footnote mb-5">
                         <span className="footnote-figmark">Fig. {s.numeral.toLowerCase()}.</span>
                         <span className="flex-1">{s.title.toUpperCase()}</span>
-                        <span className="text-evergreen/55 normal-case tracking-[0.18em]">Service No. {s.numeral}</span>
+                        <span className="text-evergreen/80 normal-case tracking-[0.18em]">Service No. {s.numeral}</span>
                       </div>
                       <div className="flex items-center gap-4 mb-6">
                         <span className="numeral-disc">{s.numeral}</span>

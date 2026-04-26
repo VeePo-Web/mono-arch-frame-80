@@ -240,7 +240,7 @@ const ConsultationForm = ({
                   {...field}
                   placeholder="Jane Doe"
                   autoComplete="name"
-                  className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen/50"
+                  className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                 />
               </FormControl>
               <FormMessage className="text-xs" />
@@ -265,7 +265,7 @@ const ConsultationForm = ({
                   spellCheck={false}
                   placeholder="you@example.com  ·  or  ·  (403) 555-0100"
                   autoComplete="email"
-                  className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen/50"
+                  className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                 />
               </FormControl>
               <p className="text-[0.7rem] text-muted-foreground/80 leading-relaxed">
@@ -289,7 +289,7 @@ const ConsultationForm = ({
                   {...field}
                   rows={4}
                   placeholder="A sentence is plenty. e.g. &ldquo;Replacing a deck on a 1990s walkout, looking to start in spring.&rdquo;"
-                  className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen/50 resize-y"
+                  className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
                 />
               </FormControl>
               <FormMessage className="text-xs" />
@@ -324,7 +324,7 @@ const ConsultationForm = ({
                   <FormLabel className="text-minimal text-foreground/70">Project type</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value ?? ""}>
                     <FormControl>
-                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
+                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen">
                         <SelectValue placeholder="If you'd like to flag one" />
                       </SelectTrigger>
                     </FormControl>
@@ -349,7 +349,7 @@ const ConsultationForm = ({
                   <FormLabel className="text-minimal text-foreground/70">Budget range</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value ?? ""}>
                     <FormControl>
-                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
+                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen">
                         <SelectValue placeholder="Not sure yet — we'll discuss" />
                       </SelectTrigger>
                     </FormControl>
@@ -374,7 +374,7 @@ const ConsultationForm = ({
                   <FormLabel className="text-minimal text-foreground/70">Best time to walk the property</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value ?? ""}>
                     <FormControl>
-                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
+                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen">
                         <SelectValue placeholder="Anytime" />
                       </SelectTrigger>
                     </FormControl>
@@ -402,7 +402,7 @@ const ConsultationForm = ({
                       {...field}
                       placeholder="e.g. Bragg Creek · acreage near Water Valley"
                       autoComplete="address-level2"
-                      className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen/50"
+                      className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                     />
                   </FormControl>
                   <FormMessage className="text-xs" />
