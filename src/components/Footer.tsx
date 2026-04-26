@@ -16,12 +16,13 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-32 border-t border-border/70 bg-card">
+    <footer className="relative mt-20 md:mt-32 border-t border-border/70 bg-card">
       <Container size="wide">
-        {/* Three editorial columns */}
-        <div className="pt-20 grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-10">
-          {/* Brand mark — left */}
-          <div className="md:col-span-3">
+        {/* Mobile: 2-col grid (brand + contact full-width, services + areas paired).
+            Desktop: identical 12-col layout to before. */}
+        <div className="pt-12 md:pt-20 grid grid-cols-2 md:grid-cols-12 gap-10 md:gap-10">
+          {/* Brand mark — full width on mobile, 3-col on desktop */}
+          <div className="col-span-2 md:col-span-3">
             <Link to="/" aria-label="Haven Creek Renovations — home" className="inline-flex items-center gap-3">
               <img
                 src={logo}
@@ -41,14 +42,14 @@ const Footer = () => {
             </p>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="col-span-1 md:col-span-3">
             <p className="text-minimal text-evergreen/80 mb-5">Services</p>
             <ul className="space-y-3">
               {services.map((s) => (
                 <li key={s.slug}>
                   <Link
                     to={s.href}
-                    className="text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-[0.95rem]"
+                    className="inline-flex min-h-[44px] items-center text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-[0.95rem]"
                   >
                     {s.shortName}
                   </Link>
@@ -57,14 +58,14 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="col-span-1 md:col-span-3">
             <p className="text-minimal text-evergreen/80 mb-5">Service areas</p>
             <ul className="space-y-3">
               {serviceAreas.map((a) => (
                 <li key={a.slug}>
                   <Link
                     to={a.href}
-                    className="text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-[0.95rem]"
+                    className="inline-flex min-h-[44px] items-center text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-[0.95rem]"
                   >
                     {a.name}
                   </Link>
@@ -73,14 +74,14 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="col-span-2 md:col-span-3">
             <p className="text-minimal text-evergreen/80 mb-5">Contact</p>
             <p className="text-body text-foreground/75 text-[0.95rem] leading-relaxed max-w-xs">
               Reach out and we&apos;ll respond within two business days.
             </p>
             <Link
               to="/contact"
-              className="group/btn mt-5 inline-flex items-center gap-3 text-minimal text-foreground hover:text-evergreen transition-colors duration-300"
+              className="group/btn mt-5 inline-flex items-center gap-3 min-h-[44px] text-minimal text-foreground hover:text-evergreen transition-colors duration-300"
             >
               <span>Request a Consultation</span>
               <span className="icon-chip bg-evergreen/[0.06]">
@@ -90,8 +91,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Single quiet copyright row */}
-        <div className="mt-20 border-t border-border/60 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        {/* Single quiet copyright row — safe-area aware on iOS */}
+        <div className="footer-bottom-row mt-12 md:mt-20 border-t border-border/60 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <p className="text-minimal text-muted-foreground">
             © {year} Haven Creek Renovations
           </p>
