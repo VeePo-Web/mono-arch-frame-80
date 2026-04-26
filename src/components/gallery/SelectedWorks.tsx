@@ -243,19 +243,25 @@ const SelectedWorks = () => {
                               : "border-l-transparent hover:bg-foreground/[0.03]",
                           )}
                         >
-                          {/* Thumb */}
+                          {/* Thumb — typographic chip (no synthetic illustration) */}
                           <span
                             aria-hidden="true"
                             className={cn(
                               "shrink-0 h-14 w-14 md:h-16 md:w-16 rounded-sm overflow-hidden",
                               "ring-1 ring-evergreen/15 transition-all duration-500 ease-swift",
-                              isActive && "ring-evergreen/40",
+                              "flex items-center justify-center",
+                              "bg-gradient-to-br from-card to-evergreen/[0.05]",
+                              isActive && "ring-evergreen/40 from-evergreen/[0.04] to-evergreen/[0.10]",
                             )}
                           >
-                            <GalleryVignette
-                              vignetteKey={plate.vignetteKey}
-                              className="w-full h-full"
-                            />
+                            <span
+                              className={cn(
+                                "font-serif italic text-[1.05rem] tabular-nums transition-colors duration-500",
+                                isActive ? "text-evergreen" : "text-evergreen/65",
+                              )}
+                            >
+                              {plate.romanNumeral}
+                            </span>
                           </span>
 
                           {/* Body */}
