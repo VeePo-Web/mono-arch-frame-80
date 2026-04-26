@@ -239,8 +239,8 @@ const Index = () => {
                 aria-label={`${s.title} — ${s.promise}`}
               >
                 <PremiumCard featured={i === 0} className="h-full">
-                  <div className="relative p-9 lg:p-11 flex flex-col h-full">
-                    <div className="flex items-center gap-4 mb-10">
+                  <div className="relative p-6 sm:p-8 lg:p-11 flex flex-col h-full">
+                    <div className="flex items-center gap-4 mb-6 md:mb-10">
                       <span className="numeral-disc">{s.numeral}</span>
                       <span className="h-px w-8 bg-evergreen/30 group-hover:w-20 transition-all duration-700 ease-weighted" />
                     </div>
@@ -367,7 +367,7 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 lg:gap-9">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-9">
             {projects.map((p, i) => (
               <article
                 key={p.slug}
@@ -379,7 +379,7 @@ const Index = () => {
                   <div className="flex flex-col h-full">
                     <ProjectPlaceholder project={p} index={i} />
 
-                    <div className="p-8 lg:p-9 flex flex-col flex-1">
+                    <div className="p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col flex-1">
                       <p className="text-minimal text-evergreen/80">
                         {p.category} · {p.area}
                       </p>
@@ -418,7 +418,7 @@ const Index = () => {
       >
         <Container size="wide">
           <h2 id="trust-panel-heading" className="sr-only">Why homeowners choose Haven Creek</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12 lg:gap-14">
             {[
               {
                 n: "01",
@@ -442,7 +442,7 @@ const Index = () => {
                 data-reveal
                 style={{ ["--reveal-delay" as string]: `${i * 120}ms` }}
               >
-                <span className="numeral-disc mb-6" aria-hidden="true">
+                <span className="numeral-disc mb-4 md:mb-6" aria-hidden="true">
                   {c.n}
                 </span>
                 <h3 className="mt-6 text-title text-foreground">{c.title}</h3>
