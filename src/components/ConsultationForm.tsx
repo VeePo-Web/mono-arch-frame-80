@@ -211,7 +211,7 @@ const ConsultationForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("space-y-5", className)}
+        className={cn("consult-form space-y-5", className)}
         noValidate
         aria-busy={isSubmitting}
       >
