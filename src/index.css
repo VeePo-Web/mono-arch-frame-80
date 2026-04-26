@@ -1256,6 +1256,33 @@
     .footer-bottom-row {
       padding-bottom: max(0.5rem, calc(var(--safe-bottom) + 0.5rem));
     }
+
+    /* ConsultationForm mobile polish — bigger inputs, softer corners,
+       drop the hairline separators (too busy on a narrow column),
+       beefier submit pill. Scoped to .consult-form so /thank-you and
+       any future inline forms aren't accidentally restyled. */
+    .consult-form > div > .space-y-1\.5 { /* no-op anchor */ }
+    .consult-form .space-y-5 > * + * { margin-top: 1.5rem; }
+    .consult-form input,
+    .consult-form textarea,
+    .consult-form [role="combobox"],
+    .consult-form button[type="submit"] {
+      border-radius: 0.5rem;
+    }
+    .consult-form input:not([type="hidden"]),
+    .consult-form [role="combobox"] {
+      height: 3rem; /* 48px floor */
+      font-size: 1rem;
+    }
+    .consult-form button[type="submit"] {
+      min-height: 3.75rem; /* 60px */
+      border-radius: 9999px;
+    }
+    /* Drop the per-field hairline separators on mobile — replace with breathing space. */
+    .consult-form > div[class*="border-b"] {
+      border-bottom-width: 0;
+      padding-bottom: 0;
+    }
   }
 
   /* ──────────────────────────────────────────────────────────────────────
