@@ -1,107 +1,97 @@
-## Round 4 — "Grandpa-Grade" Navigation Cleanup
+# Round 5 — Ruthless Simplification (RoyalMechanical-grade)
 
-### Why this round
-Round 3 already swapped the floating glass island for a solid bar, added the centered SectionRail, and rewrote the drawer. Reviewing it through a 70-year-old's eyes, four issues remain:
+After studying RoyalMechanical.com's Header + MobileNav side-by-side with our current Round 4 nav, the diagnosis is clear: **we have too many controls, too much weight, and too many ideas competing for attention.** Round 5 strips it back to what a 70-year-old grandpa needs: read it, find it, tap it.
 
-1. **Section labels are abstract** — words like "Promise", "Approach", "Why", "Land" don't mean anything to a homeowner scanning a header.
-2. **Active "you are here" indicator is too quiet** — a 2px hairline below 14px text disappears on a bright laptop screen.
-3. **Quote pill is small and skinny** (h-10 / 14px text) for a primary CTA on a renovation site. Older eyes need fatter targets and more weight.
-4. **Drawer bottom-rail CTA is shape-confusing** — `flex justify-between` with no max-width and a floating arrow chip on the right reads as "two buttons stuck together" instead of "one big button."
-5. **Hamburger glyph is faint** (1px hairlines on cream). Looks like a smudge, not a control.
-6. **Phone link is hidden until `lg`** — anyone on a tablet who wants to call has to open the drawer first.
-7. **Section rail has no overflow story** — when a page hits 6 entries on a narrow desktop (1024–1100px), the right-most label gets clipped silently.
+## Diagnosis — what's making it feel "complicated"
 
-Round 4 fixes those seven and nothing else. No re-architecture, no new surfaces.
+1. **Three loud controls in the right cluster** (Phone pill + Quote pill + labelled Menu pill). RoyalMechanical has one icon, one button, one hamburger — visually 1-2-3. Ours reads as 1-1-1 because all three are pill-shaped.
+2. **Quote pill is doing too much work** — gradient state + arrow chip + responsive labels + mobile sheet hijack. It looks like a toolbar, not a button.
+3. **Hamburger has a "Menu" word AND an evergreen pulse dot AND a 3-line glyph** — three signals where one would do.
+4. **Section rail tabs have both a chip background AND a 3px underline AND a font-weight bump** — colour-blind safety doesn't need three layers; two is enough and reads cleaner.
+5. **Drawer top has a duplicate row** (horizontal "Home/About/Selected Work/Contact") on top of a 3-column grid that already contains the same destinations. RoyalMechanical solves this with a single big "Home" primary link, then the columns.
+6. **Drawer bottom rail crams 5 things in one strip** (trust dot, phone, dot separator, email, CTA + "or call" sub-link). RoyalMechanical's bottom is one trust line + one CTA. That's it.
+7. **Performance**: SectionRail mounts a ResizeObserver + a scroll listener + a `scrollIntoView` effect on every route. The `useActiveSection` hook re-binds an IntersectionObserver + scroll/resize listeners whenever the section list changes. Both can be cheaper.
 
----
+## Round 5 plan
 
-### Changes
+### A. Header right cluster — visual hierarchy 1 / 2 / 3
 
-#### 1. `src/lib/pageSections.ts` — rewrite labels in plainspoken English
-Every label becomes something a stranger could match to a section heading at a glance. Cap stays at 14 chars; most will be 4–10.
+Re-rank by visual weight, matching RoyalMechanical:
+- **Phone**: icon-only on mobile, icon + number on `lg+` (was `md+`). **Ghost button**, no background chip — tertiary weight.
+- **Quote**: solid evergreen pill, **no arrow chip, no responsive label split, no `nav-pill group/btn` wrapper class**. Just `Get a Quote` (sm+) / `Quote` (xs). Primary weight.
+- **Menu**: icon-only hamburger (drop the visible "Menu" word — universal glyph + aria-label is enough at md+ where the word adds visual noise next to the Quote pill). Drop the evergreen pulse dot — it never tested as understandable; replace with a static 2px evergreen underline below the bars **only when current route is in drawer** (calmer signal). Tertiary weight.
 
-| Route | Old → New |
-|---|---|
-| `/` | `Promise → Trust`, `Approach → How We Work`, keep others |
-| `/services` | `Process → How It Works`, `Quote → Get a Quote` |
-| `/services/interior-finishing` | `Overview → What It Is`, `Why → Why It Matters`, `Craft → How We Build It`, `Recent Work → Our Work` |
-| `/services/exterior-finishing` | `Overview → What It Is`, `Rural → Rural Homes`, `Stewardship → Care for the Land`, `Recent Work → Our Work` |
-| `/services/decking` | `Planning → Planning a Deck`, `Outside → Outdoor Living`, `Materials → Materials`, `Recent Work → Our Work` |
-| `/service-areas` | `Areas → Where We Work`, `Coverage → Is My Home In Range?` (truncate to "Coverage Area") |
-| `/about` | `Philosophy → Our Approach`, `Land → Care for the Land`, `Continuity → Long Relationships`, `Long View → Built to Last` |
-| `/contact` | keep `Get in Touch`; rename `Process → How It Works`; `Areas → Where We Work` |
+Net effect: eye lands on the green Quote pill first (intended), phone is the calm always-there secondary, menu is the obvious "more" affordance.
 
-Several of these run > 14 chars. We'll also relax the cap comment to **18 chars** and verify visually that the rail still fits at `md` (768px) for every page after applying changes.
+### B. SectionRail — one cue, not three
 
-#### 2. `src/components/nav/SectionRail.tsx` — louder "you are here" + safe overflow
-- Active state now uses **both** the underline (thickened to 3px, color `--evergreen`) **and** a subtle `bg-foreground/[0.04]` chip behind the label. Inactive labels stay plain; hover gets the same chip at 50% opacity. This gives a tactile "tab" feel grandpa can spot from across the room.
-- Active label weight bumps from `font-medium` → `font-semibold`.
-- Add an **edge-fade mask** (`mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent)`) so when a long label list approaches the right edge of the rail container, it fades instead of hard-clipping. (This is reintroducing the gradient that was removed in round 3, but only as a visual safety net — `overflow-x` stays `hidden`, no scroll behavior.)
-- Tap target floor: bump padding from `px-3 py-2` → `px-3.5 py-2.5` so each tab is ≥ 40px tall. (The header at 56/64px gives us room.)
-- Underline animation origin shifts from `left` → `center` so it grows symmetrically — feels less "line is drawing" and more "tab snaps in."
-- Promote the rail visibility from `md+` → keep `md+` (no change), but the bar now also reserves a **`hidden md:lg+ scroll-snap fallback`**: if the rail's measured scrollWidth > container clientWidth, we silently switch to `overflow-x: auto` with the scroll-snap behaviour from round 2. Implementation: detect on mount + resize using ResizeObserver; toggle a `data-overflow="true"` attr the CSS keys off.
+In `src/components/nav/SectionRail.tsx`:
+- Drop the background chip on the active tab.
+- Keep the 2px (down from 3px) evergreen underline + the `font-semibold` weight bump. Two cues, both colour-blind safe.
+- Inactive tabs: bump contrast slightly (`text-foreground/70` → `text-foreground/75`) for grandpa-grade legibility on cream.
+- Tab padding: `px-3.5 py-2.5` → `px-3 py-2` so 6 home-page sections fit at `md` (currently overflows there and falls into scroll mode prematurely).
+- **Perf**: replace the ResizeObserver-driven overflow detection with a CSS-only solution — always render in `overflow-x: auto` mode with edge-mask gradient, but hide scrollbar. The mask is harmless when content fits. Removes one observer per mount.
 
-#### 3. `src/components/Navigation.tsx` — phone earlier, fatter Quote CTA, clearer hamburger
-- **Phone link**: visible from `xs` (always-on icon button at 44×44, label appears at `md+` not `lg+`). Older homeowners reach for the phone first; we should never gate it behind the menu.
-- **Quote CTA sizing**:
-  - Mobile: `h-12 px-5 text-[15px]` (was h-11 px-4 text-sm).
-  - Desktop: `h-11 px-6 text-[15px]` (was h-10 px-5 text-sm) with the icon chip from `md+` (was `lg+`).
-  - Increases primary-CTA visual weight by ~20% and pushes it past Phone in the visual hierarchy without color change.
-- **Hamburger lines**: bump from `h-px` → `h-[1.5px]` (still hairline on retina, no longer a smudge on 1× displays). Color shifts to `bg-foreground` (was `foreground/85` — wasn't applied but the parent `text-foreground/85` cascaded). The "Menu" word at `md+` gets a `tracking-wide` and stays at `text-sm font-medium`.
-- **Active route hint on hamburger**: when the current path matches a primary-drawer section (Services / Service Areas / Company subpages), add a tiny `bg-evergreen` 6px dot in the top-right corner of the hamburger button. Tells grandpa "the page you're on lives inside this menu."
-- Bar height bumps mobile-only: `h-14 → h-15` (60px). Tiny but gives every right-cluster button a true 48px tap zone with vertical breathing room. Spacer below the header updates to match.
+### C. useActiveSection — cheaper
 
-#### 4. `src/components/nav/HamburgerButton.tsx` — implement the dot + thicker lines
-Add an optional `currentDot?: boolean` prop. When true, render an absolutely-positioned 6px evergreen dot at top-right (`-top-0.5 -right-0.5`). Update line height per #3.
+In `src/hooks/useActiveSection.ts`:
+- Drop the `scroll` + `resize` window listeners. The IntersectionObserver alone (with the existing `rootMargin`) gives correct results; the listeners were defensive against scroll-restore edge cases that no longer apply now that we have `ScrollToTop` resetting on every route.
+- Keep the rAF debouncing.
+- Add early-return when `document.hidden` to skip background-tab work.
 
-#### 5. `src/components/nav/MenuDrawer.tsx` — fix the bottom-rail CTA shape
-The current mobile branch uses `flex items-center justify-between` with no width — this stretches the button to the parent flex column's full width *and* shoves the arrow chip to the far right, looking like two controls. Fix:
-- Both mobile + desktop CTA collapse to one identical layout: `inline-flex items-center justify-center gap-3` with a single `min-w-[260px]` (so it never shrinks below pill-shape) and `w-full md:w-auto` (full width on stacked mobile rail, natural width on the desktop horizontal rail).
-- Bump font to `text-[15px] font-semibold` and height to `min-h-[56px]` mobile / `min-h-[48px]` desktop.
-- The arrow chip stays inline next to the label, never floats to the edge.
-- Add a **secondary "Call" line** beneath the CTA on mobile only: a plain text link `Or call (403) 555-0100` in `text-foreground/65 text-sm` — gives the phone-first user an explicit second path without making it a competing button.
+### D. Drawer — two zones, not four
 
-Also in the drawer:
-- **Primary horizontal row** ("Home · About · Selected Work · Contact"): bump from `text-base md:text-lg` → `text-lg md:text-xl` and `font-medium → font-semibold`. Add a 1.5px evergreen underline on the active item (replacing the color-only "is current" cue, which a colourblind grandpa misses). Min-height 52px.
-- **Column header chips**: the small uppercase "Services / Service Areas / Company" labels gain a tiny evergreen left bar (3px wide, full label-height) — visual scanning anchor that says "this is a section header, not a link."
-- **Drawer link rows**: bump `text-[1.0625rem] md:text-[1.125rem]` → `text-[1.125rem] md:text-[1.1875rem]` (18→19px). Min height stays 52px. Active link gets an evergreen dot to the left of the label (`•` glyph), not just colour.
+In `src/components/nav/MenuDrawer.tsx`:
+1. **Remove the horizontal PRIMARY row entirely.** The 3 columns + a single oversized "Home" link (RoyalMechanical pattern) covers it. About / Selected Work / Contact appear in their natural columns instead of duplicating.
+2. Keep the **3-column grid** (Services / Service Areas / Company) but:
+   - Drop the evergreen left-bar on column headers (`menu-col-bar`). Use uppercase 11px tracking-widest evergreen text — already enough differentiation from the link rows.
+   - Drop the `•` leading dot on active links. Just colour + `font-semibold` (matches RoyalMechanical, two cues, still colour-blind safe via weight).
+   - Drop "muted" sub-rows ("All Services", "All Areas") — they're redundant when the column header itself is the index. If user wants the index, the column header becomes a link.
+   - Standardize row height to `min-h-[48px]` (was `52px`) — feels less padded, fits more on a phone screen without scroll.
+3. **Bottom rail simplified**: trust line on the left, single CTA pill on the right. Move phone + email into a tiny secondary row *below* the columns (left-aligned, 14px), not in the bottom rail. This eliminates the cramped strip and the "Or call…" extra link on mobile (the phone is in the secondary row already).
+4. **Add a single big "Home" link** at the top of the body (24px display serif, evergreen on hover). Matches RoyalMechanical's primary anchor pattern.
+5. Remove the plaster-grain SVG overlay (10ms paint cost on open, no perceptible visual benefit on a near-opaque background).
 
-#### 6. `src/index.css` — supporting styles
-- Update `.nav-tab-rule` to 3px thick, `transform-origin: center`, evergreen.
-- New `.nav-tab-chip` for the active-tab background chip.
-- New `.section-rail-mask` for the edge fade (only applies when `data-overflow="true"`).
-- New `.section-rail-scroll` (re-introduced from round 2 but inert until `data-overflow="true"`).
-- Hamburger dot pulse: `@keyframes nav-current-dot { 0%,100% { opacity: 0.85 } 50% { opacity: 1 } }` — 2.4s ease-in-out infinite, paused under `prefers-reduced-motion`.
-- Drawer column-header bar utility `.menu-col-bar`.
+### E. HamburgerButton
 
-#### 7. Memory updates
-- Update `mem://features/two-tier-navigation` to record the round 4 specifics (active-tab chip, current-section dot, plainspoken labels, larger CTA, Phone-from-xs).
-- Update `mem://index.md` Core line: append "Section rail labels use plain English ('Trust', 'How We Work') — never abstract single-word nouns ('Promise', 'Approach')."
+In `src/components/nav/HamburgerButton.tsx`:
+- Drop `showLabel`, `currentDot` props (no longer used).
+- Add a `data-current="true"` attribute the parent passes when the route lives in the drawer; CSS shows a static 2px evergreen bar 4px below the icon.
+- Reduce button width from `min-w-[48px]` + label to a flat `h-12 w-12` square — visually calmer next to the Quote pill.
 
----
+### F. Section labels — keep the round 4 plain English; add 2 fixes
 
-### Files touched
-- `src/lib/pageSections.ts` (label rewrite + cap comment)
-- `src/components/nav/SectionRail.tsx` (active chip, overflow detection, weight bump)
-- `src/components/nav/HamburgerButton.tsx` (currentDot prop, line thickness)
-- `src/components/Navigation.tsx` (phone breakpoint, CTA sizing, bar height, currentDot wiring)
-- `src/components/nav/MenuDrawer.tsx` (CTA shape fix, primary row weight, column bars, active dots, "Or call" line)
-- `src/index.css` (rail chip + mask, hamburger dot keyframes, column bar)
-- `mem://features/two-tier-navigation`, `mem://index.md`
+In `src/lib/pageSections.ts`:
+- "/" — drop "Trust" (homeowners don't navigate to "trust"; it's a feeling, not a destination). Replace with "Why Us". Total 6 → 6 labels still, but more clickable.
+- "/about" — "Long Relationships" is 17 chars and crowds the rail. Shorten to "Relationships".
 
-### Files explicitly NOT touched
-- `src/hooks/useActiveSection.ts` — works as designed.
-- `src/components/QuickContactSheet.tsx` — out of scope.
-- `src/App.tsx` — DeferredOverlays already correct.
-- Any page files — section ids stay; only the labels in `pageSections.ts` change.
+### G. Performance pass (matches the user's "extremely performance optimized" ask)
 
-### Out of scope (intentional)
-- No new routes, no new pages, no logo redesign, no nav colour change, no FAB / sticky-bar reintroduction (constraint enforced).
-- Hover/active animations stay under 320ms — no new motion language.
+1. **Lazy-load MenuDrawer**: `const MenuDrawer = lazy(() => import('./nav/MenuDrawer'))` in `Navigation.tsx`. Only loads when the user opens the menu — saves ~6KB from the LCP-critical bundle. Wrap in `<Suspense fallback={null}>` and only render when `drawerOpen || hasOpenedOnce`.
+2. **Drop the `IntersectionObserver` scroll-shadow sentinel** in `Navigation.tsx`. Replace with a CSS-only approach: the bar already has a border-bottom; the shadow on scroll added ~no value and the observer is a 1-time cost per page load. Saves a hook + a DOM node.
+3. **Remove `useIsMobile` from MenuDrawer** — pick the CTA flavour with a CSS media query (`md:hidden` / `hidden md:inline-flex`) instead of mounting two button variants based on JS state. Saves a re-render and removes a hydration mismatch surface.
+4. **Memoize SectionRail's section list**: pass it through `useMemo` keyed on `pathname` to avoid recreating the array on every header re-render (header re-renders on scroll currently).
+5. **Throttle `useActiveSection` recompute** with the rAF gate (already present) and pin the `headerOffset` arg as a primitive — already done.
 
-### Acceptance — what grandpa should be able to do
-1. From any page, tap **Phone** in ≤ 1 second without scrolling, hunting, or opening a menu.
-2. Spot **which section of the page he's on** without leaning into the screen.
-3. Spot **which page of the site he's on** by the dot on the hamburger before opening it.
-4. Tap **Get a Quote** without missing — CTA is the visually heaviest control on the page.
-5. Inside the drawer, recognise **"this is a section header, not a tappable link"** at a glance via the evergreen left bar, and the **bottom CTA reads as one button**, not two.
+Net expected: ~6KB saved off the LCP-critical bundle, one fewer ResizeObserver per page, one fewer IntersectionObserver, two fewer scroll listeners.
+
+### H. Files touched
+
+- `src/components/Navigation.tsx` — right-cluster refactor, lazy MenuDrawer, drop sentinel.
+- `src/components/nav/HamburgerButton.tsx` — square 48px, drop label/dot props, add `data-current` underline.
+- `src/components/nav/SectionRail.tsx` — drop background chip, CSS-only overflow mask, smaller tab padding.
+- `src/components/nav/MenuDrawer.tsx` — single Home link, drop primary row, drop `•` dots, drop muted rows, simpler bottom rail, drop plaster grain, drop `useIsMobile`.
+- `src/hooks/useActiveSection.ts` — drop scroll/resize listeners, add `document.hidden` guard.
+- `src/lib/pageSections.ts` — "Trust" → "Why Us"; "Long Relationships" → "Relationships".
+- `src/index.css` — strip `.menu-col-bar`, `.menu-primary--active`, `.nav-current-dot` (no longer used); add `.hamburger-current-bar`; tighten `.section-rail-mask` so it's always-on safe.
+
+### I. Verify
+
+- `bunx tsc --noEmit` clean.
+- Browse to `/`, `/services`, `/about`, `/contact` and confirm: 1 evergreen pill, 1 ghost phone, 1 square hamburger; section rail underline only; drawer opens with a Home link + 3 columns + tiny secondary phone/email row + 1 CTA in the bottom rail.
+
+### J. Memory updates
+
+- Update `mem://features/two-tier-navigation` with the round 5 spec.
+- Add core rule: "Hamburger is icon-only at all breakpoints — no visible 'Menu' label." (Reverses round 4 core rule.)
+- Add core rule: "Drawer has no horizontal primary row — single 'Home' link + 3 columns is the canonical structure."
