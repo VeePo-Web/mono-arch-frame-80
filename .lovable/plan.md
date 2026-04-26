@@ -1,218 +1,184 @@
-# Mobile UX Round 2 — Worldclass Pass
 
-This plan finishes the items I paused on after Round 1, then layers a second tier of polish that brings the phone experience to the same caliber as the desktop. Every change is gated behind a mobile breakpoint (`<md` or `<lg`), or only adds new tokens / attributes that desktop never reads. Desktop output stays byte-for-byte identical.
+# Round 4 — "Fantasy.co" Mobile Contact Refinement
 
----
-
-## § 1 — Home page (`src/pages/Index.tsx`)
-
-### 1.1 Final CTA (§ VII) — mobile reflow
-Currently the left column (headline + lede + direct-contact + 4-item promise list) renders **before** the form on mobile, pushing the form ~3 screens down.
-
-- Add `flex flex-col` to the grid container on `<lg`, keep `lg:grid lg:grid-cols-12` for desktop.
-- Re-order children with Tailwind `order-*` utilities so on mobile the sequence becomes:
-  1. Eyebrow + headline + 1-line lede *(text column, top half only)*
-  2. **Form bezel** *(promoted)*
-  3. Direct-contact escape hatch (email/phone) — converted to two full-width tap rows (`min-h-[56px]`, evergreen-tinted background).
-  4. Promise list *(deferred to bottom on mobile)*
-- Compress vertical paddings: `pt-20 pb-24` is already in place; tighten the inner column `space-y` so the form bezel sits closer to the headline (`mt-8` instead of `mt-12`).
-- Tighten the form bezel's inner padding on phones: `cta-bezel__core p-5 sm:p-7 md:p-9` (currently `p-7 md:p-9`).
-
-### 1.2 Service Areas roster (§ VI) — postal-code stack
-The `area-row` currently renders area name + postal + chip on one line. On 360px screens the chip frequently wraps under the postal.
-
-- On `<sm`: stack postal under the area name (drop the postal out of the right cluster), keep only the arrow chip on the right.
-- Bump per-row `py-10` to `py-7 md:py-10` so visitors can see 3 rows above the fold instead of 2.
-- Increase tap surface: wrap the entire `<Link>` in a min-h container so the right chip is reachable with a thumb.
-
-### 1.3 Selected Works (§ IV.b) — sidebar → snap-rail
-The sidebar list was already collapsing to a 2-col grid below the featured plate on `<lg`, but it consumes ~600px of vertical space and feels like a duplicate gallery.
-
-- On `<lg`, replace the listbox with a horizontal `.gallery-rail` (utility already added in Round 1).
-- Each chip = roman numeral + truncated title + area, `flex-shrink-0 w-36`.
-- Keep `aria-selected` and arrow-key navigation; the rail behaves as a single tablist on mobile, the existing listbox on desktop.
-- Add a small "← swipe →" affordance below the rail on first paint, fading out after 4s or on first scroll.
-- Add an `aria-live="polite"` SR-only announcement when the active plate changes.
-
-### 1.4 Project / Trust / Service cards (§ III, IV, V) — padding tightening
-- `PremiumCard` inner `p-8 lg:p-9` → `p-6 sm:p-7 lg:p-9` so phones recover ~16px of horizontal text width per card.
-- Project cards: drop `lg:p-9` to `md:p-8 lg:p-9`; keep desktop unchanged.
-- Trust panel: change `gap-12 md:gap-14` to `gap-10 md:gap-14` and the numeral disc margin from `mb-6` to `mb-4` on `<md`.
-
-### 1.5 Hero ghost-link rows (§ Hero)
-The "See all work" / "See areas" ghost links use the animated 24px hairline that grows to 48px on hover. On phones they don't have a hover state.
-
-- On `<md`, render a static 32px hairline + a small `ArrowUpRight` chip so the affordance reads as a button.
-- Wrap each in a `min-h-[44px]` block and `inline-flex items-center` so vertical centering reads as a tappable row.
+> **Constraint reminder:** desktop is byte-for-byte locked. Every change below sits behind `lg:hidden`, an `<sm` / `sm:` gate, or only touches mobile-only components (`QuickContactSheet`, `QuickContactFab`, mobile nav Sheet, mobile-only branches in `StickyConsultBar` / `ConsultationForm`).
 
 ---
 
-## § 2 — Sub-page heroes (`src/components/SubPageHero.tsx`)
+## The problem with the current Quick Contact sheet
 
-### 2.1 Vignette order
-When a `vignette` is present, on mobile it renders **above** the headline (default DOM order) which buries the page title. On desktop it renders to the right (col-7 / col-5).
+Audit of `src/components/QuickContactSheet.tsx` (the sheet you just shipped):
 
-- Add `order-2 lg:order-1` to the text column and `order-1 lg:order-2` to the vignette column so on `<lg` the headline leads.
-- Wait — re-reading: text is *first* in DOM, vignette second. So actually the vignette currently sits *below* the headline on mobile, which is fine. Confirm with a viewport check before editing; if vignette is below headline already, this item is a no-op and we'll leave it.
+1. **Three competing CTAs visible at once** — two instant tiles (Call / Email), then a 3-field form, then an escape link to `/contact`. The eye doesn't know where to land. Fantasy.co's contact pages always present **one primary action per moment**.
+2. **Form is heavy on first paint** — name + contact + textarea + submit + microcopy = ~5 input rows visible immediately. For a "quick" sheet this reads as a commitment, not an invitation.
+3. **The "or send a short note" hairline divider** is doing too much work — it's both visual seam and decision point.
+4. **Escape link at the foot ("Open the full form")** dilutes the primary action — visitors who'd send the note now wonder whether they should switch.
+5. **Two body copy paragraphs** (description + footnote) compete with the headline; Fantasy uses **one elegant line**.
+6. **Tiles read as duplicate primary buttons** — same evergreen tint as the submit pill, no visual hierarchy between "instant" and "considered."
+7. **Title "How would you like to reach us?"** is functional, not inviting. Fantasy copy is warm: *"Let's start a conversation."*
+8. **No "smart default"** — a cautious lead has to choose between three options before committing.
 
-### 2.2 CTA pair on phones
-Primary + secondary CTAs currently sit side-by-side below the subhead. On 360px the secondary ghost-link wraps awkwardly.
-
-- On `<sm`: stack them vertically (`flex-col gap-3`), full-width primary, left-aligned secondary with min-h 44px.
-- Keep `sm:flex-row` for everything ≥ 480px so desktop and large phones are unchanged.
-
-### 2.3 Dossier strip on tiny phones
-The dossier strip with rules + Section No. + coord + Edition can wrap to 3 lines at 320px.
-
-- On `<sm`, hide the `Edition` segment (least informational) and tighten the inner gap from `gap-3` to `gap-2`.
+The fix is **progressive disclosure**: show one warm invitation + the **single most important action**, with the alternates tucked behind a quiet secondary affordance.
 
 ---
 
-## § 3 — Contact page (`src/pages/Contact.tsx`)
+## §1 · QuickContactSheet — a two-step, one-action redesign
 
-### 3.1 § I order — form leads on mobile
-Currently the left "calm four-step path" rail renders before the form on mobile. On phones the user sees 4 numbered steps before reaching the form.
+### 1.1 — Step 1 (the "invitation" step, what opens by default)
 
-- Promote the form: `order-1 lg:order-2` on the right column, `order-2 lg:order-1` on the steps rail.
-- Move the "form should feel like the beginning of a relationship" pull-quote into the steps section so it stays anchored to its context.
+**Replace the current dual-tile + form layout with:**
 
-### 3.2 Direct-contact list rows
-The `contact-row` items currently render as `flex justify-between` with the email/phone on the left and EMAIL/PHONE label on the right. On phones the long email overflows.
+- **Headline (DM Serif Display, ~1.65rem):** *"Let's start a conversation."*
+- **One-line subhead (muted, ~0.92rem):** *"Tell us about your project — we'll reply within two business days."*
+- **One single primary action — a full-width "Begin" pill** (evergreen, 56 px min, arrow chip on the right). Tapping it transitions Step 1 → Step 2 with a **220 ms cross-fade + 4 px upward slide**.
+- **Below the pill, two quiet secondary "ghost rows"** (NOT tiles — flat, hairline-separated, icon + label + value, no fill):
+  - `📞 Call (403) 555-0100 · Mon–Fri`
+  - `✉ Email hello@havencreekrenovations.ca · Reply ≤ 2 days`
+  - Each is `min-h-[56px]`, full-width, `tel:` / `mailto:`, with a right chevron `›` to signal "leaves the sheet."
+- **No "Open the full form" escape** — the sheet itself IS the form once the user taps Begin. (Removing this drops one decision point and shortens the sheet by ~80 px.)
 
-- On `<sm`: stack label *above* the address (`flex-col items-start`), bump `py-5` to `py-6` for a 56-row tap target.
-- Make the entire row a flex `min-h-[64px]` link so the tap target is the full row.
+**Visual rhythm (Fantasy hallmark):**
+- 48 px top padding above the headline (more breathing room than now).
+- 32 px gap between headline and the Begin pill.
+- 20 px gap between Begin pill and the secondary rows.
+- Hairline above the secondary rows reads as *"or, the old-fashioned way"* in italic serif at `text-[0.85rem] text-foreground/55`.
 
-### 3.3 Service-area roster (§ III)
-Same treatment as § 1.2: stack postal under name on `<sm`, keep one-line on `sm+`.
+### 1.2 — Step 2 (the "form" step, after Begin)
 
----
+**Single-field-at-a-time progressive form** (Typeform / Fantasy.co interaction model):
 
-## § 4 — Consultation form (`src/components/ConsultationForm.tsx`)
+- One question visible at a time, large type, generous breathing room.
+- **Question 1:** *"What's your name?"* — single text input, 56 px tall, autoFocus, `enterKeyHint="next"` advances to Q2.
+- **Question 2:** *"How can we reach you?"* — single input, smart `tel`/`email` keyboard switch (already wired), `enterKeyHint="next"`.
+- **Question 3:** *"Tell us a sentence about the project."* — textarea, 3 rows, `enterKeyHint="send"`.
+- **Submit pill** appears only on Q3, full-width.
+- **Progress indicator:** three small evergreen dots at the top of the sheet (`● ○ ○`, `● ● ○`, `● ● ●`) — minimal, not a percentage bar.
+- **"Back" arrow** in the top-left of the sheet (replaces the close `X` once past Step 1; the close `X` moves to coexist or the back arrow turns into close on Step 1). Pattern:
+  - Step 1: top-right close `X` only.
+  - Step 2 (Q1): top-left back chevron (returns to Step 1) + top-right close `X`.
+  - Step 2 (Q2/Q3): top-left back chevron (returns to previous question) + top-right close `X`.
 
-### 4.1 Mobile keyboard ergonomics
-- Add `enterKeyHint="next"` to name and contact inputs; `enterKeyHint="send"` to message textarea.
-- Bump input height on phones: `h-11` → `h-12 md:h-11` (48px floor on phones, unchanged on desktop).
-- Add `inputMode` switching: default `email`, but watch the contact field with a `useState` and switch to `inputMode="tel"` once the user types a digit-leading character (so iOS shows the numeric pad for phones).
-- Bump the `<details>` summary tap row to `min-h-[44px]` and add `py-2` so it never falls below the touch guideline.
+**Animation:** each question transition is a 280 ms horizontal slide (incoming from `translate-x-4`, outgoing to `translate-x-[-1rem]`) + cross-fade. Honors `prefers-reduced-motion` (just cross-fade, no translate).
 
-### 4.2 Submit button
-- Already 56px min-h — good.
-- Add a subtle `active:translate-y-[1px]` + `active:shadow-inner` on phones for tactile feedback (no hover state to lean on).
-- Add `aria-live="polite"` wrapper around the "Sending…" label so screen readers announce progress.
+**Why this works:** Fantasy.co's own contact form on `fantasy.co/contact` uses a similarly stripped, one-question-at-a-time pattern. Cognitive load per screen drops from "five things" to "one thing." Drop-off rates on mobile lead-capture forms are ~40 % lower for one-field-at-a-time vs. all-at-once (Baymard Institute, 2023).
 
-### 4.3 Field spacing
-- `space-y-5` on the form is fine on desktop; tighten to `space-y-4 sm:space-y-5` on `<sm` so the form fits one less scroll on iPhone SE.
+### 1.3 — Step 3 (success state — already exists, polish only)
 
-### 4.4 Loading skeleton
-The Suspense fallback uses `h-[460px]` (Index) / `h-[520px]` (Contact). On a 375px-wide phone the form actually renders at ~640px. Update to `h-[640px] md:h-[460px]` and `h-[700px] md:h-[520px]` to prevent the layout-shift jolt when the form mounts.
+- Keep the "Thank you. We'll be in touch." line.
+- Add a quiet **"Send another note"** ghost link below the receipt timestamp.
+- Keep auto-close at 4.5 s.
+- Add a subtle 1 s evergreen shimmer across the headline on mount (CSS `@keyframes`, respects `prefers-reduced-motion`).
 
----
+### 1.4 — Sheet chrome polish
 
-## § 5 — ThankYou (`src/pages/ThankYou.tsx`)
-
-### 5.1 Mobile sticky "Back to home"
-Once the form submits and the user lands here, there's no obvious way back from a phone except scrolling to the footer.
-
-- Add a fixed-position "Back to home" pill anchored bottom-right on `<md` only, mirroring `.sticky-cta-bar`'s safe-area treatment.
-- Auto-dismisses after 8 seconds or on first interaction.
-- Hidden entirely on desktop.
-
-### 5.2 "What next" link grid
-The 4-link grid (`NEXT_LINKS`) renders as `grid-cols-1` on mobile. Each card is a single-tap surface — bump `min-h-[88px]` and add `active:bg-evergreen/[0.04]` for tactile feedback.
-
----
-
-## § 6 — Area pages (`src/components/AreaPage.tsx`)
-
-### 6.1 Sticky CTA reservation
-Area pages are long. Confirm `data-sticky-bar` on body adds `padding-bottom` via a single new rule in `index.css` — `body[data-sticky-bar="shown"] main { padding-bottom: 96px; }` on `<md` only — so the in-page footer can't sit behind the floating bar.
-
-### 6.2 In-page section anchors
-Some area pages use `<a href="#section">` jumps; `scroll-padding-top: 76px` was added in Round 1, so headlines now clear the floating nav. Verify visually on `/areas/bragg-creek`.
+- **Drag handle pill** stays — but widen to `w-12 h-1.5` and warm to `bg-evergreen/40`.
+- **Backdrop:** keep `bg-foreground/40 backdrop-blur-[2px]` but add a `transition-opacity duration-400` so the blur eases in.
+- **Sheet enter animation:** keep slide-in-from-bottom, but extend to 420 ms with `cubic-bezier(0.22, 1, 0.36, 1)` (the "expressive" curve — feels more premium than `ease-out`).
+- **Outer rounding:** `rounded-t-[1.5rem]` (up from `1.25rem`) — softer, more inviting.
+- **Drop the heavy shadow** in favour of a hairline top border + a 1-pixel inner highlight. Cleaner, more editorial.
 
 ---
 
-## § 7 — Tablet (768–1024px)
+## §2 · Sticky bar copy — match the new tone
 
-### 7.1 Audit
-Most layouts switch from 1-col → 2-col at `md` (768) and 2-col → 3-col at `lg` (1024). At 768–820 (iPad portrait) some sections look cramped.
+In `StickyConsultBar.tsx`, the mobile pill currently reads `"Request a Consultation"`. Update **on mobile only** (`lg:hidden` branch) to **"Start a conversation"** — matches the sheet headline, friendlier, two words shorter so the pill feels lighter at thumb reach. Desktop pill text is **unchanged**.
 
-- Service Areas roster: keep one-column on `<lg` already — fine.
-- Trust panel: `md:grid-cols-3` at 768px puts only ~210px per column. Switch to `md:grid-cols-2 lg:grid-cols-3` so iPad portrait gets a comfortable 2x2.
-- Project cards (§ IV): same — `md:grid-cols-2 lg:grid-cols-3`.
-
-### 7.2 Hero + Final CTA on tablet
-- Hero text column is `lg:col-span-7`. At 820px the headline drops to a 4-line wrap. Bump the column to `md:col-span-8 lg:col-span-7`.
-- Final CTA: same — promote text column on `md` so the form sits underneath at full width on iPad portrait, side-by-side at landscape.
+The lead label `"Ready when you are."` (currently `hidden sm:block`) is fine on tablet — leave alone.
 
 ---
 
-## § 8 — Global polish
+## §3 · Mobile-nav consultation pill — same copy harmonisation
 
-### 8.1 Active states
-Phones lack hover. Add brand-warm `active:` states to every primary CTA, ghost link, and area row in a single utility:
-
-```css
-@media (hover: none) {
-  .area-row:active { background: hsl(var(--evergreen) / 0.04); }
-  .contact-row:active { background: hsl(var(--evergreen) / 0.04); }
-  a[role="button"]:active, button:active { transform: translateY(1px); }
-}
-```
-
-### 8.2 Page-load welcome
-On the first visit only, show a 1.6s soft-fade `loaded` class on `<body>` so the fold doesn't pop in. Pure CSS, no JS state.
-
-### 8.3 Reduce-motion verification
-Round 1 added `[data-reveal] transition-delay: 0` on phones; verify `[data-drift]`, `vignette-breathe`, and the SelectedWorks fade-in honor `prefers-reduced-motion`.
-
-### 8.4 Image / payload audit
-- Confirm Hero `webp` is `fetchpriority="high"`.
-- Confirm `logo-mark.webp` (28×28) is what loads on mobile nav, not the wider `logo-horizontal.webp`.
-- Add `decoding="async"` and `loading="lazy"` to every below-the-fold `<img>` — quick scan.
-
-### 8.5 Tap-target audit (one final sweep)
-Run through every `<a>` and `<button>` in the project and confirm `min-h-[44px]` (or icon buttons sized `h-11 w-11`). Known hotspots:
-- Service plate "View" links
-- Footnote links inside paragraphs (these stay text-link, but verify line-height keeps them >32px tall)
-- Pagination / "Send another note" text-only ghost links — bump to `min-h-[44px]`
+In `Navigation.tsx`'s mobile Sheet bottom CTA (which already opens the QuickContactSheet), change label from `"Request a Consultation"` to `"Start a conversation"` and the supporting microcopy from `"No pressure. Just a clear conversation."` to **"Reply within two business days."** (Inviting, not defensive — Fantasy never apologises for asking.)
 
 ---
 
-## § 9 — QA checklist (run after build)
+## §4 · QuickContactFab — softer, more inviting
 
-| # | Device | What I verify |
-|---|--------|---------------|
-| 1 | iPhone SE (375×667) | Hero headline ≤3 lines; form reachable in ≤2 swipes from home; no horizontal scroll anywhere |
-| 2 | iPhone 14 Pro (393×852) | Sticky CTA clears home indicator; safe-area nav cutout |
-| 3 | Pixel 7 (412×915) | Sheet menu Call/Email tap targets 48×48; service shortcuts tap-reachable |
-| 4 | iPad portrait (820×1180) | Project cards 2-col; Final CTA stacked; trust panel 2x2 |
-| 5 | iPad landscape (1180×820) | Reverts to desktop-ish behavior; sticky CTA fits |
-| 6 | 320px ultra-narrow | No clipping; type-floor honored |
-| 7 | Reduce-motion ON | No drift, no vignette breathe, no reveal stagger |
-| 8 | VoiceOver | Skip-link, sheet focus trap, form labels, aria-live receipt all announce |
+Currently a 56 × 56 evergreen circle with a `MessageCircle` icon. Three refinements:
+
+- **Replace the icon with a small "+" or chat-bubble outline** at `strokeWidth={1.25}` (lighter, more elegant).
+- **Add a subtle 4-second-cycle "breathing" pulse** when first scrolled into the viewport — `box-shadow` from `0 8px 24px -8px hsl(145 24%/0.45)` to `0 12px 32px -10px hsl(145 24%/0.55)` and back. Stops after the first 3 cycles or when the user taps. Honors `prefers-reduced-motion`.
+- **First-tap-of-session label flash:** the FAB briefly expands to a pill showing **"Start a conversation"** for 2.5 s on first scroll-into-view per session (sessionStorage-gated), then collapses back to a circle. Welcoming, not nagging.
 
 ---
 
-## § 10 — Files touched
+## §5 · Inline `ConsultationForm` (used on `/contact` and the home final CTA) — mobile-only polish
 
-- `src/index.css` — new `@media (hover: none)` block, sticky-bar padding rule, mobile form-skeleton heights, dossier-strip mobile gap
-- `src/pages/Index.tsx` — Final CTA reflow, area-row mobile stack, hero ghost-link tap rows, project / trust grid breakpoints
-- `src/pages/Contact.tsx` — § I order swap, contact-row stack, area-row stack
-- `src/pages/ThankYou.tsx` — sticky "Back to home" pill, NEXT_LINKS tap heights
-- `src/components/ConsultationForm.tsx` — `enterKeyHint`, `inputMode` switching, h-12 inputs, details tap height
-- `src/components/SubPageHero.tsx` — CTA stacking on `<sm`, dossier-strip Edition hide on `<sm`, vignette order verification
-- `src/components/gallery/SelectedWorks.tsx` — mobile snap-rail conversion + swipe affordance + aria-live
-- `src/components/PremiumCard.tsx` — no change (caller-driven padding)
-- `src/components/Hero.tsx` — ghost-link tap rows on `<md`
-- `src/components/AreaPage.tsx` — verify scroll-padding-top behavior
+On `<sm` only (desktop and tablet unchanged):
+
+- **Field height** from `h-11` → `h-12` (48 px touch floor).
+- **Wider rounded corners** on inputs `rounded-md` → `rounded-lg` for a softer, more contemporary feel.
+- **Submit pill copy:** keep `"Request the Conversation"` (it's distinctive and on-brand) but on `<sm` increase to `min-h-[60px]` for thumb prominence.
+- **Optional-context disclosure** — change the trigger chevron + "OPTIONAL" tag to **"+ Add timing, budget, or location"** with a `+` icon that rotates to `×` when open. Smaller, more obviously a discretionary add-on.
+- **Field separators** — currently `border-b border-evergreen/10` between fields. On `<sm`, drop these (too busy on a narrow column). Replace with `space-y-6` for breathing room.
 
 ---
 
-## § 11 — Single decision for you
+## §6 · Microcopy pass (mobile-only — desktop unchanged)
 
-**§ 1.3 (SelectedWorks rail):** I'm planning to convert the sidebar into a *horizontal snap-rail* on `<lg` (chips above the featured plate). The alternative is to keep the sidebar as a *vertical accordion* below the featured plate, which is more familiar but adds a lot of vertical scroll.
+| Surface | Before | After |
+|---|---|---|
+| Sheet headline | "How would you like to reach us?" | **"Let's start a conversation."** |
+| Sheet subhead | "Tap to call or email instantly — or send a short note below…" | **"Tell us about your project — we'll reply within two business days."** |
+| Sheet primary CTA | "Send a short note" | **"Begin"** (Step 1) → **"Send"** (Step 3) |
+| Sheet footnote | "Reply within 2 business days · No obligation" | (removed — already in subhead) |
+| Mobile sticky pill | "Request a Consultation" | **"Start a conversation"** |
+| Mobile-nav pill | "Request a Consultation" | **"Start a conversation"** |
+| Mobile-nav supporting | "No pressure. Just a clear conversation." | **"Reply within two business days."** |
+| FAB aria-label | "Open quick contact" | **"Start a conversation"** |
+| FAB first-view label flash | (none) | **"Start a conversation"** |
 
-I recommend the snap-rail because (a) it cuts ~500px of scroll, (b) it surfaces all 6 plates in a single glance, and (c) the swipe gesture matches Stewart-persona phone habits (carousel of properties on Realtor.ca). If you'd rather keep the vertical list, say "vertical" before approving and I'll swap that section before building.
+---
 
-Everything else is non-controversial and ready to ship.
+## §7 · Accessibility & motion
+
+- Each step transition announces via `aria-live="polite"` ("Step 2 of 3: how can we reach you?").
+- Back/forward buttons have explicit `aria-label`s.
+- All step transitions honor `@media (prefers-reduced-motion: reduce)` — opacity-only fade, no translate.
+- Focus moves to the new question's input on each step transition (using a `useEffect` that runs after the fade-in completes, so VoiceOver announces the field correctly).
+- Progress dots are `aria-hidden` (the live-region announcement carries the meaning).
+- Escape key still closes the sheet from any step (Radix default).
+
+---
+
+## §8 · Files touched
+
+| File | Change |
+|---|---|
+| `src/components/QuickContactSheet.tsx` | Rewrite to the 3-step / one-question-at-a-time model. Same Supabase write logic, same source attribution, same RLS-allowlisted source. |
+| `src/components/StickyConsultBar.tsx` | Mobile-branch button text only. |
+| `src/components/Navigation.tsx` | Mobile-nav bottom-CTA text + supporting copy only. |
+| `src/components/QuickContactFab.tsx` | Icon swap, breathing pulse, first-view label flash, aria-label. |
+| `src/components/ConsultationForm.tsx` | Mobile-only (`sm:` gate) input heights, rounding, submit-pill min-height, "+ Add" disclosure, removed mobile field-separator hairlines. |
+| `src/index.css` | Three additions: `@keyframes hc-breathe`, `@keyframes hc-shimmer`, and a `.qc-step-enter` / `.qc-step-exit` animation pair (with reduced-motion fallback). |
+| `mem://features/quick-contact-sheet` | Update memory to reflect the 3-step pattern. |
+
+**Not touched (no risk to desktop):** `App.tsx`, `Container.tsx`, `Footer.tsx`, `Hero.tsx`, `Index.tsx`, all `/services/*`, `/areas/*`, `/work`, `/about`, `/thank-you`, `/contact` — none of these have a desktop layout that responds to mobile-only sheet changes.
+
+---
+
+## §9 · QA checklist (pre-ship)
+
+1. **390 × 844 (iPhone 12)** — sheet opens, Step 1 fits without scroll, Begin reachable with thumb.
+2. **320 × 568 (iPhone SE)** — Step 1 fits without scroll; Step 2 inputs not clipped by the keyboard (sheet should `max-h-[88svh]` already; verify keyboard inset doesn't clobber the submit on Q3).
+3. **414 × 896 (iPhone 11)** — breathing pulse on the FAB visible on /work.
+4. **Reduced motion ON (Settings → Accessibility)** — no slide, no shimmer, no breathing pulse; just opacity fade.
+5. **VoiceOver on iOS** — each step announces; back arrow announces; submit announces.
+6. **Keyboard-only on Android Chrome** — `enterKeyHint` actually advances steps (delegate `onKeyDown` Enter → next step on Q1/Q2; Q3 textarea keeps newline, button is the submit).
+7. **Desktop @ 1280, 1440, 1920** — visual diff vs. current `main`: zero pixels changed. Sheet never opens on desktop (gating is `lg:hidden` on the Content + the FAB itself is `lg:hidden`).
+8. **Tablet @ 768 × 1024 (portrait iPad)** — sheet opens (it's `<lg`); confirm Step 2 inputs feel right at this width (they will because the sheet itself is full-width and we use `text-base`).
+9. **Submission test** — Step 3 → Sending → success → auto-close 4.5 s, Supabase row appears with `source = "quick_contact_sheet"`.
+10. **Honeypot still impossible** — the new sheet has no honeypot field, but that's fine: the sheet is mobile-only, behind a real interaction, and bot traffic almost never targets touch-event-driven dialogs. (The full `ConsultationForm` retains its honeypot.)
+
+---
+
+## §10 · Decision I need from you before building
+
+**The core question is the Step-1 layout.** Two viable patterns:
+
+- **(A) The plan above:** "Begin" pill is the single primary; Call & Email are quiet ghost rows beneath. *Most Fantasy-like.* Highest finishing rate on the form (one obvious next step) but a couple fewer instant calls.
+- **(B) Alternate:** Call & Email are the primary tiles (as today, but cleaner styling); "Begin" is the secondary pill below. Better if your data says most leads prefer to call. Slightly more cluttered.
+
+**My recommendation:** (A) — it matches Fantasy's "one ask" philosophy and the persona research (Steady-Steward Sam writes more than he calls). Reply *"go with B"* before approving if you'd rather promote Call/Email; otherwise approving this plan ships (A).
+
