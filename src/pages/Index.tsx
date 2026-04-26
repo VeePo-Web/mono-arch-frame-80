@@ -621,7 +621,7 @@ const Index = () => {
                     data-drift
                     className="font-serif text-foreground text-[1.3rem] md:text-[1.5rem] leading-snug"
                   >
-                    Tell us about the project.
+                    Tell us what you&apos;re considering.
                   </p>
                   <p className="mt-2 text-minimal text-muted-foreground">
                     A few details so we can come prepared.
