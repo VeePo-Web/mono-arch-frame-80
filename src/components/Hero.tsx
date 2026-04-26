@@ -6,28 +6,44 @@ import { useDrift } from "@/hooks/useDrift";
 import { serviceAreas } from "@/data/serviceAreas";
 
 /**
- * Hero — single editorial open with a built-in trust frame.
+ * Hero — five-second trust answer.
  *
- * Structure (lg+):
- *   Cols 1–9: Eyebrow → oversized H1 → subhead → primary CTA + ghost link
- *             → trust-microcopy (Reply within two business days · No
- *             obligation · No pressure)
- *   Cols 10–12: A quiet "Trusted across rural Alberta" panel listing the
- *               four communities, plus a single italic client line.
+ * The persona's verbatim primary hook is the H1:
+ *   "One trusted contractor for the property you value."
  *
- * The right column was previously a colophon vanity ("No. 001" /
- * locality stack). Sam doesn't care about an issue number; he cares
- * whether real people in his region trust this contractor. We give him
- * proof in 5 seconds.
+ * The right column is no longer a colophon vanity; it is a *behavioural*
+ * promise list answering four of Sam's seven named fears in the first
+ * viewport, capped with a single "Trusted in" line that names the four
+ * communities. No fake imagery — typography is the proof here.
  */
+
+const FIELD_NOTES = [
+  {
+    title: "One person on site",
+    body: "Plans the work, does the work, walks the finish with you.",
+  },
+  {
+    title: "Property left as found",
+    body: "Access, animals, and clean-up are part of the deliverable.",
+  },
+  {
+    title: "Real reply within two business days",
+    body: "From a person, not a funnel.",
+  },
+  {
+    title: "No template quote",
+    body: "Built around your site, your scope, your materials.",
+  },
+];
+
 const Hero = () => {
   const headlineRef = useDrift<HTMLHeadingElement>(4);
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative pt-40 md:pt-52 pb-28 md:pb-40 overflow-hidden"
+      className="relative pt-40 md:pt-52 pb-24 md:pb-36 overflow-hidden"
     >
-      {/* Soft radial bloom from upper-right — invisible until you look for it */}
+      {/* Soft radial bloom — invisible until you look for it */}
       <div
         aria-hidden="true"
         className="absolute -top-40 -right-40 w-[640px] h-[640px] rounded-full -z-10"
@@ -38,9 +54,9 @@ const Hero = () => {
       />
 
       <Container size="wide">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-end">
-          {/* Headline column — owns the spread */}
-          <div className="lg:col-span-9">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          {/* Headline column */}
+          <div className="lg:col-span-8">
             <div className="reveal-up" style={{ animationDelay: "0ms" }}>
               <Eyebrow label="Haven Creek · Rural Alberta" />
             </div>
@@ -49,15 +65,13 @@ const Hero = () => {
               ref={headlineRef}
               id="hero-heading"
               data-drift
-              className="text-display text-foreground mt-10 max-w-[16ch]"
+              className="text-display text-foreground mt-10 max-w-[18ch] text-balance"
             >
               <span className="block overflow-hidden">
-                <span
-                  className="block reveal-up"
-                  style={{ animationDelay: "120ms" }}
-                >
+                <span className="block reveal-up" style={{ animationDelay: "120ms" }}>
+                  One{" "}
                   <span className="relative inline-block text-display-italic text-evergreen">
-                    Trusted
+                    trusted
                     <svg
                       aria-hidden="true"
                       viewBox="0 0 200 12"
@@ -74,25 +88,23 @@ const Hero = () => {
                       />
                     </svg>
                   </span>{" "}
-                  renovations
+                  contractor
                 </span>
               </span>
               <span className="block overflow-hidden">
-                <span
-                  className="block reveal-up"
-                  style={{ animationDelay: "240ms" }}
-                >
-                  for rural homes.
+                <span className="block reveal-up" style={{ animationDelay: "240ms" }}>
+                  for the property you value.
                 </span>
               </span>
             </h1>
 
             <p
-              className="text-subhead text-muted-foreground mt-10 max-w-[48ch] reveal-up"
+              className="text-subhead text-muted-foreground mt-10 max-w-[52ch] reveal-up"
               style={{ animationDelay: "380ms" }}
             >
-              Hands-on finishing, repairs, and decks — from planning through completion.
-              One contractor, one relationship, no rotating trades.
+              Hands-on finishing, repairs, and decks across rural Alberta. One
+              person plans the work, does the work, and walks the finish with you.
+              No rotating trades.
             </p>
 
             <div
@@ -130,62 +142,106 @@ const Hero = () => {
             </p>
           </div>
 
-          {/* Quiet right proof column — pure type, no panel */}
-          <div className="hidden lg:block lg:col-span-3">
+          {/* Right "Field notes" promise column */}
+          <aside
+            className="hidden lg:block lg:col-span-4"
+            aria-label="What this means in practice"
+          >
             <div
-              className="reveal-up"
+              className="reveal-up border-l border-evergreen/20 pl-7"
               style={{ animationDelay: "740ms" }}
             >
-              <p className="text-minimal text-evergreen/80 mb-4">
-                Trusted across
+              <p className="text-minimal text-evergreen/80 mb-7">
+                What this means in practice
               </p>
-              <ul className="space-y-2 mb-8">
-                {serviceAreas.map((area) => (
-                  <li key={area.slug}>
-                    <Link
-                      to={area.href}
-                      className="font-serif italic font-light text-foreground/75 hover:text-evergreen text-[1.05rem] leading-snug transition-colors duration-300"
+
+              <ul className="space-y-6">
+                {FIELD_NOTES.map((note, i) => (
+                  <li key={note.title} className="flex gap-4">
+                    <span
+                      aria-hidden="true"
+                      className="text-minimal text-evergreen/55 tabular-nums pt-1 w-6 shrink-0"
                     >
-                      {area.name}
-                    </Link>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="flex-1">
+                      <p className="font-serif text-foreground/90 text-[1.02rem] leading-snug">
+                        {note.title}
+                      </p>
+                      <p className="mt-1.5 text-minimal text-muted-foreground leading-relaxed normal-case tracking-normal">
+                        {note.body}
+                      </p>
+                    </div>
                   </li>
                 ))}
               </ul>
 
-              <div className="pt-6 border-t border-border/70">
-                <p className="font-serif italic font-light text-foreground/85 text-[0.98rem] leading-relaxed text-balance">
-                  &ldquo;Walked the project with us start to finish. The site
-                  was the way they found it — better.&rdquo;
-                </p>
-                <p className="mt-3 text-minimal text-muted-foreground/80">
-                  Acreage owner · Bragg Creek
+              <div className="mt-9 pt-6 border-t border-evergreen/15">
+                <p className="text-minimal text-evergreen/80 mb-3">Trusted in</p>
+                <p className="font-serif italic text-foreground/85 text-[1rem] leading-relaxed">
+                  {serviceAreas.map((a, i) => (
+                    <span key={a.slug}>
+                      <Link
+                        to={a.href}
+                        className="hover:text-evergreen transition-colors duration-300"
+                      >
+                        {a.name}
+                      </Link>
+                      {i < serviceAreas.length - 1 && (
+                        <span className="text-evergreen/35" aria-hidden="true">{" · "}</span>
+                      )}
+                    </span>
+                  ))}
                 </p>
               </div>
             </div>
-          </div>
+          </aside>
         </div>
 
-        {/* Service-area trust line — mobile fallback */}
+        {/* Mobile fallback — Trusted-in line + the promise list collapsed to a single grid */}
         <div
-          className="lg:hidden mt-16 pt-8 border-t border-border/60 reveal-up"
+          className="lg:hidden mt-14 pt-8 border-t border-border/60 reveal-up"
           style={{ animationDelay: "740ms" }}
         >
-          <p className="text-minimal text-muted-foreground mb-4">Trusted across</p>
-          <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            {serviceAreas.map((area, i) => (
-              <li key={area.slug} className="flex items-center gap-5">
-                <Link
-                  to={area.href}
-                  className="font-serif italic text-foreground/80 hover:text-evergreen transition-colors duration-300 text-[1.05rem]"
+          <p className="text-minimal text-evergreen/80 mb-5">
+            What this means in practice
+          </p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {FIELD_NOTES.map((note, i) => (
+              <li key={note.title} className="flex gap-3">
+                <span
+                  aria-hidden="true"
+                  className="text-minimal text-evergreen/55 tabular-nums pt-0.5 w-6 shrink-0"
                 >
-                  {area.name}
-                </Link>
-                {i < serviceAreas.length - 1 && (
-                  <span className="text-evergreen/40" aria-hidden="true">·</span>
-                )}
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <p className="font-serif text-foreground/90 text-[1rem] leading-snug">
+                    {note.title}
+                  </p>
+                  <p className="mt-1 text-minimal text-muted-foreground leading-relaxed normal-case tracking-normal">
+                    {note.body}
+                  </p>
+                </div>
               </li>
             ))}
           </ul>
+
+          <p className="mt-8 pt-6 border-t border-evergreen/15 text-minimal text-evergreen/80 mb-3">
+            Trusted in
+          </p>
+          <p className="font-serif italic text-foreground/85 text-[1rem] leading-relaxed">
+            {serviceAreas.map((a, i) => (
+              <span key={a.slug}>
+                <Link to={a.href} className="hover:text-evergreen transition-colors duration-300">
+                  {a.name}
+                </Link>
+                {i < serviceAreas.length - 1 && (
+                  <span className="text-evergreen/35" aria-hidden="true">{" · "}</span>
+                )}
+              </span>
+            ))}
+          </p>
         </div>
       </Container>
     </section>
