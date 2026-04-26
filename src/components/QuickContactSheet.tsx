@@ -301,17 +301,15 @@ const QuickContactSheet = () => {
             {/* ── STEP: invite ─────────────────────────────────────────── */}
             {step === "invite" && (
               <div key="invite" className="qc-step">
-                <p className="text-[0.7rem] tracking-[0.22em] uppercase text-evergreen/80 font-medium">
-                  Quick Contact
-                </p>
                 <DialogPrimitive.Title
                   id={titleId}
-                  className="mt-3 font-serif text-foreground text-[1.7rem] leading-[1.15] max-w-[18ch]"
+                  className="font-serif text-foreground leading-[1.12] max-w-[18ch]"
+                  style={{ fontSize: "clamp(1.55rem, 6.5vw, 1.85rem)" }}
                 >
                   Let&rsquo;s start a conversation.
                 </DialogPrimitive.Title>
                 <p className="mt-3 text-[0.95rem] text-muted-foreground leading-relaxed max-w-[36ch]">
-                  Tell us about your project — we&rsquo;ll reply within two business days.
+                  Tell us about the project. We reply within two business days.
                 </p>
 
                 <button
@@ -333,16 +331,16 @@ const QuickContactSheet = () => {
                   </span>
                 </button>
 
-                {/* Hairline divider with italic seam */}
+                {/* Hairline seam — softer copy than before. */}
                 <div className="mt-7 flex items-center gap-3" aria-hidden="true">
                   <span className="flex-1 h-px bg-border" />
                   <span className="font-serif italic text-foreground/55 text-[0.85rem]">
-                    or, the old-fashioned way
+                    or reach us directly
                   </span>
                   <span className="flex-1 h-px bg-border" />
                 </div>
 
-                {/* Ghost rows — call + email */}
+                {/* Ghost rows — single line each, no duplicate eyebrows. */}
                 <ul className="mt-3 -mx-1">
                   <li>
                     <a
@@ -357,11 +355,8 @@ const QuickContactSheet = () => {
                       aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                     >
                       <Phone className="h-4 w-4 text-evergreen/80 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                      <span className="flex-1 flex flex-col gap-0.5">
-                        <span className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75">Call</span>
-                        <span className="font-serif text-[1rem] tabular-nums text-foreground/90">
-                          {STUDIO_PHONE_DISPLAY}
-                        </span>
+                      <span className="flex-1 font-serif text-[1.05rem] tabular-nums text-foreground/90">
+                        {STUDIO_PHONE_DISPLAY}
                       </span>
                       <ChevronRight
                         className="h-4 w-4 text-foreground/40 transition-transform duration-300 group-hover/row:translate-x-0.5"
@@ -383,11 +378,8 @@ const QuickContactSheet = () => {
                       aria-label={`Email ${STUDIO_EMAIL}`}
                     >
                       <Mail className="h-4 w-4 text-evergreen/80 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                      <span className="flex-1 flex flex-col gap-0.5">
-                        <span className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75">Email</span>
-                        <span className="font-serif text-[1rem] text-foreground/90 truncate">
-                          hello@havencreek…
-                        </span>
+                      <span className="flex-1 font-serif text-[1.05rem] text-foreground/90 truncate">
+                        hello@havencreek…
                       </span>
                       <ChevronRight
                         className="h-4 w-4 text-foreground/40 transition-transform duration-300 group-hover/row:translate-x-0.5"
