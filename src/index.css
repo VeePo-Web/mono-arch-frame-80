@@ -752,7 +752,8 @@
   .sticky-cta-bar {
     position: fixed;
     inset-inline: 0.75rem;
-    bottom: 0.75rem;
+    /* Lift above the iOS home indicator without touching Android's flush bottom. */
+    bottom: max(0.75rem, calc(var(--safe-bottom) + 0.5rem));
     z-index: 40;
     margin-inline: auto;
     max-width: min(720px, calc(100vw - 1.5rem));
