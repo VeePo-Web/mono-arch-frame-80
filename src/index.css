@@ -248,6 +248,14 @@
 
   .text-balance { text-wrap: balance; }
 
+  /* Tiny-phone floor — only ≤360px gets a smaller H1 ceiling so the
+     existing clamp() math is otherwise untouched. Avoids 4-line H1s
+     on iPhone SE and small Androids. */
+  @media (max-width: 360px) {
+    .text-display  { font-size: 2.65rem; line-height: 1.02; }
+    .text-headline { font-size: 1.65rem; line-height: 1.12; }
+  }
+
   .eyebrow {
     @apply text-minimal text-muted-foreground;
   }
