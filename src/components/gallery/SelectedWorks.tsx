@@ -302,9 +302,10 @@ const SelectedWorks = () => {
             </PremiumCard>
           </div>
 
-          {/* ── Sidebar list (right, 5/12) ─────────────────────────────── */}
+          {/* ── Sidebar list (right, 5/12) — desktop only.
+              Mobile uses the snap-rail above. */}
           <div
-            className="lg:col-span-5"
+            className="hidden lg:block lg:col-span-5"
             data-reveal
             style={{ ["--reveal-delay" as string]: "320ms" }}
           >
