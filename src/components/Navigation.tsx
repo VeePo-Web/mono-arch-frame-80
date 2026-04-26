@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
+import Phone from "lucide-react/dist/esm/icons/phone";
+import Mail from "lucide-react/dist/esm/icons/mail";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import logo from "@/assets/logo/haven-creek-horizontal.webp";
@@ -13,6 +15,18 @@ const NAV_LINKS = [
   { label: "About", to: "/about" },
   { label: "Contact", to: "/contact" },
 ];
+
+// Three service shortcuts surfaced in the mobile sheet so mid-funnel
+// visitors can skip the Services index page.
+const SERVICE_SHORTCUTS = [
+  { label: "Interior finishing", to: "/services/interior-finishing" },
+  { label: "Exterior repairs", to: "/services/exterior-finishing" },
+  { label: "Decking", to: "/services/decking" },
+];
+
+const STUDIO_PHONE_TEL = "+14035550100";
+const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
+const STUDIO_EMAIL = "hello@havencreekrenovations.ca";
 
 /**
  * Navigation — Floating Glass Island.
@@ -181,7 +195,7 @@ const Navigation = () => {
             aria-label="Open menu"
             aria-expanded={open}
             aria-controls="mobile-menu"
-            className="md:hidden relative z-10 inline-flex items-center justify-center h-10 w-10 rounded-full hover:bg-foreground/[0.04] transition-colors"
+            className="md:hidden relative z-10 inline-flex items-center justify-center h-11 w-11 rounded-full hover:bg-foreground/[0.04] transition-colors"
           >
             <span className="relative block h-3 w-4">
               <span className="absolute left-0 right-0 top-0 h-px bg-foreground" />
@@ -202,6 +216,10 @@ const Navigation = () => {
             "bg-background/92 backdrop-blur-2xl",
             "border-l border-border/60",
             "p-0",
+            // Honour iOS safe-area insets (notched landscape, home indicator).
+            "[--sheet-pt:max(1.25rem,calc(var(--safe-top)+0.75rem))]",
+            "[--sheet-pb:max(2rem,calc(var(--safe-bottom)+1rem))]",
+            "[--sheet-pr:max(1.5rem,var(--safe-right))]",
           )}
         >
           {/* Accessible label (visually hidden) */}
