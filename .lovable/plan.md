@@ -1,97 +1,139 @@
-# Round 5 — Ruthless Simplification (RoyalMechanical-grade)
+# Round 7 — Buttery Smooth Nav
 
-After studying RoyalMechanical.com's Header + MobileNav side-by-side with our current Round 4 nav, the diagnosis is clear: **we have too many controls, too much weight, and too many ideas competing for attention.** Round 5 strips it back to what a 70-year-old grandpa needs: read it, find it, tap it.
+## Honest diagnosis (what still feels rough after Round 6)
 
-## Diagnosis — what's making it feel "complicated"
+Round 6 fixed *structure* (shape hierarchy, lg-gated rail, one-X drawer). But re-running the nav side-by-side with RoyalMechanical's `Header.tsx` + `MobileNav.tsx`, **eight things still cause the "almost-smooth" feeling** a 70-year-old senses as "this site is slow":
 
-1. **Three loud controls in the right cluster** (Phone pill + Quote pill + labelled Menu pill). RoyalMechanical has one icon, one button, one hamburger — visually 1-2-3. Ours reads as 1-1-1 because all three are pill-shaped.
-2. **Quote pill is doing too much work** — gradient state + arrow chip + responsive labels + mobile sheet hijack. It looks like a toolbar, not a button.
-3. **Hamburger has a "Menu" word AND an evergreen pulse dot AND a 3-line glyph** — three signals where one would do.
-4. **Section rail tabs have both a chip background AND a 3px underline AND a font-weight bump** — colour-blind safety doesn't need three layers; two is enough and reads cleaner.
-5. **Drawer top has a duplicate row** (horizontal "Home/About/Selected Work/Contact") on top of a 3-column grid that already contains the same destinations. RoyalMechanical solves this with a single big "Home" primary link, then the columns.
-6. **Drawer bottom rail crams 5 things in one strip** (trust dot, phone, dot separator, email, CTA + "or call" sub-link). RoyalMechanical's bottom is one trust line + one CTA. That's it.
-7. **Performance**: SectionRail mounts a ResizeObserver + a scroll listener + a `scrollIntoView` effect on every route. The `useActiveSection` hook re-binds an IntersectionObserver + scroll/resize listeners whenever the section list changes. Both can be cheaper.
+1. **Quote button has no spring.** `transition-colors` + `active:scale-[0.98]` only — no transform-spring on hover. Royal's CTA uses a soft 500ms hover lift. Ours feels flat.
 
-## Round 5 plan
+2. **Hamburger morph animates `width`/`top`/`bottom`** — those are **layout-triggering** properties, causing reflow every frame. On low-end Android this is the difference between 60fps and 30fps. Should be pure `transform`.
 
-### A. Header right cluster — visual hierarchy 1 / 2 / 3
+3. **Drawer enter has TWO stacked motion layers** — the panel rises 8px AND every item rises 6px. RoyalMechanical does ONE layer. Stacked motion reads as "heavy."
 
-Re-rank by visual weight, matching RoyalMechanical:
-- **Phone**: icon-only on mobile, icon + number on `lg+` (was `md+`). **Ghost button**, no background chip — tertiary weight.
-- **Quote**: solid evergreen pill, **no arrow chip, no responsive label split, no `nav-pill group/btn` wrapper class**. Just `Get a Quote` (sm+) / `Quote` (xs). Primary weight.
-- **Menu**: icon-only hamburger (drop the visible "Menu" word — universal glyph + aria-label is enough at md+ where the word adds visual noise next to the Quote pill). Drop the evergreen pulse dot — it never tested as understandable; replace with a static 2px evergreen underline below the bars **only when current route is in drawer** (calmer signal). Tertiary weight.
+4. **Item stagger uses inline `animation-delay` per child** (~12 inline style objects per open). Should be CSS `:nth-of-type`.
 
-Net effect: eye lands on the green Quote pill first (intended), phone is the calm always-there secondary, menu is the obvious "more" affordance.
+5. **Section rail tap = scroll-jump with no visual link to the click.** Underline disappears under the old tab and reappears under the new one. Royal-grade move: ONE shared underline that *slides* between tabs (FLIP-style).
 
-### B. SectionRail — one cue, not three
+6. **Route transitions blank-flash.** Lazy chunks show `RouteFallback` (blank bg) for 100-300ms. Feels like "loading." Need (a) prefetch on `pointerdown` and (b) a 140ms opacity crossfade so the page fades in instead of cutting in.
 
-In `src/components/nav/SectionRail.tsx`:
-- Drop the background chip on the active tab.
-- Keep the 2px (down from 3px) evergreen underline + the `font-semibold` weight bump. Two cues, both colour-blind safe.
-- Inactive tabs: bump contrast slightly (`text-foreground/70` → `text-foreground/75`) for grandpa-grade legibility on cream.
-- Tab padding: `px-3.5 py-2.5` → `px-3 py-2` so 6 home-page sections fit at `md` (currently overflows there and falls into scroll mode prematurely).
-- **Perf**: replace the ResizeObserver-driven overflow detection with a CSS-only solution — always render in `overflow-x: auto` mode with edge-mask gradient, but hide scrollbar. The mask is harmless when content fits. Removes one observer per mount.
+7. **Drawer has TWO stacked backdrop-filters** — overlay blur(4px) AND panel backdrop-blur-2xl. Overlay blur is invisible behind the opaque panel anyway. Drop it; saves a GPU compositing pass.
 
-### C. useActiveSection — cheaper
+8. **Phone hit area is variable-width**, sitting next to the fixed-width Quote and 44px square hamburger. Lock it to a 44×44 square at <lg.
 
-In `src/hooks/useActiveSection.ts`:
-- Drop the `scroll` + `resize` window listeners. The IntersectionObserver alone (with the existing `rootMargin`) gives correct results; the listeners were defensive against scroll-restore edge cases that no longer apply now that we have `ScrollToTop` resetting on every route.
-- Keep the rAF debouncing.
-- Add early-return when `document.hidden` to skip background-tab work.
+## Round 7 plan
 
-### D. Drawer — two zones, not four
+### A. Hamburger — pure-transform morph (zero layout)
+**Files:** `src/components/nav/HamburgerButton.tsx`, `src/index.css`
 
-In `src/components/nav/MenuDrawer.tsx`:
-1. **Remove the horizontal PRIMARY row entirely.** The 3 columns + a single oversized "Home" link (RoyalMechanical pattern) covers it. About / Selected Work / Contact appear in their natural columns instead of duplicating.
-2. Keep the **3-column grid** (Services / Service Areas / Company) but:
-   - Drop the evergreen left-bar on column headers (`menu-col-bar`). Use uppercase 11px tracking-widest evergreen text — already enough differentiation from the link rows.
-   - Drop the `•` leading dot on active links. Just colour + `font-semibold` (matches RoyalMechanical, two cues, still colour-blind safe via weight).
-   - Drop "muted" sub-rows ("All Services", "All Areas") — they're redundant when the column header itself is the index. If user wants the index, the column header becomes a link.
-   - Standardize row height to `min-h-[48px]` (was `52px`) — feels less padded, fits more on a phone screen without scroll.
-3. **Bottom rail simplified**: trust line on the left, single CTA pill on the right. Move phone + email into a tiny secondary row *below* the columns (left-aligned, 14px), not in the bottom rail. This eliminates the cramped strip and the "Or call…" extra link on mobile (the phone is in the secondary row already).
-4. **Add a single big "Home" link** at the top of the body (24px display serif, evergreen on hover). Matches RoyalMechanical's primary anchor pattern.
-5. Remove the plaster-grain SVG overlay (10ms paint cost on open, no perceptible visual benefit on a near-opaque background).
+Three lines stay 100% width, fixed at top:0 / 50% / 100%. Animated property is **only** `transform`. X = top translateY+rotate(45°), bottom translateY+rotate(-45°), middle scaleX(0)+opacity 0. Drop `width/top/bottom` from transition. Drop `will-change` (permanent on 44px = wasted GPU memory).
 
-### E. HamburgerButton
+### B. Quote CTA — hover lift + spring press
+**File:** `src/components/Navigation.tsx`
 
-In `src/components/nav/HamburgerButton.tsx`:
-- Drop `showLabel`, `currentDot` props (no longer used).
-- Add a `data-current="true"` attribute the parent passes when the route lives in the drawer; CSS shows a static 2px evergreen bar 4px below the icon.
-- Reduce button width from `min-w-[48px]` + label to a flat `h-12 w-12` square — visually calmer next to the Quote pill.
+```ts
+"transition-[background-color,transform,box-shadow] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
+"hover:bg-evergreen-hover hover:-translate-y-px hover:shadow-[0_4px_12px_-2px_hsl(var(--evergreen)/0.35)]",
+"active:scale-[0.97] active:translate-y-0 active:shadow-none",
+```
 
-### F. Section labels — keep the round 4 plain English; add 2 fixes
+The single biggest "feels expensive" tell. Buttons that lift register as alive.
 
-In `src/lib/pageSections.ts`:
-- "/" — drop "Trust" (homeowners don't navigate to "trust"; it's a feeling, not a destination). Replace with "Why Us". Total 6 → 6 labels still, but more clickable.
-- "/about" — "Long Relationships" is 17 chars and crowds the rail. Shorten to "Relationships".
+### C. Drawer — one motion layer
+**File:** `src/index.css`
 
-### G. Performance pass (matches the user's "extremely performance optimized" ask)
+- Drop `translateY(8px)` on `.menu-drawer` enter — panel just opacity-fades 220ms.
+- Items keep rise but shorten 480→360ms.
+- Replace inline `animation-delay` with CSS `:nth-of-type(n)` selectors (flat 100/140/180… ladder).
+- Drop overlay `backdrop-filter: blur(4px)` — invisible behind opaque panel.
+- Shorten exits: panel-out 200→140ms, overlay-out 180→120ms. Exits feel instant; entries feel intentional.
 
-1. **Lazy-load MenuDrawer**: `const MenuDrawer = lazy(() => import('./nav/MenuDrawer'))` in `Navigation.tsx`. Only loads when the user opens the menu — saves ~6KB from the LCP-critical bundle. Wrap in `<Suspense fallback={null}>` and only render when `drawerOpen || hasOpenedOnce`.
-2. **Drop the `IntersectionObserver` scroll-shadow sentinel** in `Navigation.tsx`. Replace with a CSS-only approach: the bar already has a border-bottom; the shadow on scroll added ~no value and the observer is a 1-time cost per page load. Saves a hook + a DOM node.
-3. **Remove `useIsMobile` from MenuDrawer** — pick the CTA flavour with a CSS media query (`md:hidden` / `hidden md:inline-flex`) instead of mounting two button variants based on JS state. Saves a re-render and removes a hydration mismatch surface.
-4. **Memoize SectionRail's section list**: pass it through `useMemo` keyed on `pathname` to avoid recreating the array on every header re-render (header re-renders on scroll currently).
-5. **Throttle `useActiveSection` recompute** with the rAF gate (already present) and pin the `headerOffset` arg as a primitive — already done.
+### D. Drawer items — drop inline animation-delay
+**File:** `src/components/nav/MenuDrawer.tsx`
 
-Net expected: ~6KB saved off the LCP-critical bundle, one fewer ResizeObserver per page, one fewer IntersectionObserver, two fewer scroll listeners.
+Remove every `style={{ animationDelay: ... }}` (Home, 3 column labels, secondary contact row). Remove `delay` prop on `DrawerColumn`. CSS handles staggering via `:nth-of-type`.
 
-### H. Files touched
+### E. SectionRail — shared sliding underline (FLIP)
+**File:** `src/components/nav/SectionRail.tsx`
 
-- `src/components/Navigation.tsx` — right-cluster refactor, lazy MenuDrawer, drop sentinel.
-- `src/components/nav/HamburgerButton.tsx` — square 48px, drop label/dot props, add `data-current` underline.
-- `src/components/nav/SectionRail.tsx` — drop background chip, CSS-only overflow mask, smaller tab padding.
-- `src/components/nav/MenuDrawer.tsx` — single Home link, drop primary row, drop `•` dots, drop muted rows, simpler bottom rail, drop plaster grain, drop `useIsMobile`.
-- `src/hooks/useActiveSection.ts` — drop scroll/resize listeners, add `document.hidden` guard.
-- `src/lib/pageSections.ts` — "Trust" → "Why Us"; "Long Relationships" → "Relationships".
-- `src/index.css` — strip `.menu-col-bar`, `.menu-primary--active`, `.nav-current-dot` (no longer used); add `.hamburger-current-bar`; tighten `.section-rail-mask` so it's always-on safe.
+Today: each `<a>` has its own `<span class="nav-tab-rule">` toggling scaleX(0/1). The underline disappears between tabs.
 
-### I. Verify
+New:
+1. ONE absolutely-positioned `<span class="nav-tab-indicator">` inside the rail container.
+2. `useLayoutEffect` reads active tab's `offsetLeft`/`offsetWidth`, writes to CSS vars `--ind-x`, `--ind-w`.
+3. CSS: `transform: translateX(var(--ind-x)); width: var(--ind-w); transition: transform 380ms var(--ease-swift), width 380ms var(--ease-swift);`
+4. Drop per-tab `<span class="nav-tab-rule">`.
+
+User *sees* the underline glide between labels — the most "expensive-feeling" enhancement in the whole pass.
+
+### F. Route prefetch on pointerdown + focus
+**Files:** `src/components/nav/MenuDrawer.tsx`, `src/components/nav/SectionRail.tsx`, `src/components/RoutePrefetcher.tsx`
+
+Audit `RoutePrefetcher`. Extend so drawer + rail links call `import('@/pages/...')` on `onPointerDown`/`onFocus`. Save 80-150ms on 4G — feels "instant" instead of "loading."
+
+### G. Route fade — 140ms crossfade on `<Routes>`
+**Files:** `src/App.tsx`, `src/index.css`
+
+Wrap `<Suspense>` content in a `key={pathname}` div with `.route-fade` class. CSS:
+```css
+.route-fade { animation: route-in 140ms var(--ease-swift) both; }
+@keyframes route-in { from { opacity: 0.6 } to { opacity: 1 } }
+```
+Start opacity 0.6 (not 0) so page never appears blank.
+
+### H. Phone — locked 44×44 hit zone
+**File:** `src/components/Navigation.tsx`
+
+`h-11 w-11 lg:w-auto lg:px-2.5`. At mobile, perfect square aligned with hamburger silhouette. At lg+, expands to fit the number.
+
+### I. Drawer body — overscroll-contain + scroll-smooth
+**File:** `src/components/nav/MenuDrawer.tsx`
+
+Add `overscroll-contain scroll-smooth` to scrollable body. iOS Safari rubber-band no longer bleeds to the page underneath. Reads as "polished."
+
+### J. SectionRail — auto-center active tab
+**File:** `src/components/nav/SectionRail.tsx`
+
+When active anchor changes, `activeTabRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })` so the rail itself slides to keep the active label visible behind the edge-fade mask.
+
+### K. Reduce-motion — full coverage
+**File:** `src/index.css`
+
+Add overrides for `.nav-tab-indicator { transition: none }` and `.route-fade { animation: none }` under `@media (prefers-reduced-motion: reduce)`.
+
+### L. Files touched
+
+1. `src/components/nav/HamburgerButton.tsx` — minor (drop will-change).
+2. `src/components/nav/MenuDrawer.tsx` — drop inline animation-delay, add overscroll-contain, optional pointerdown prefetch.
+3. `src/components/nav/SectionRail.tsx` — shared sliding indicator, auto-center active tab.
+4. `src/components/Navigation.tsx` — Quote hover-lift + spring press, Phone w-11 lock.
+5. `src/components/RoutePrefetcher.tsx` — extend to drawer/rail pointerdown if needed.
+6. `src/App.tsx` — route-fade wrapper.
+7. `src/index.css` — pure-transform hamburger, single-layer drawer motion, nth-of-type stagger, drop overlay blur, shorten exits, indicator transition, route-fade keyframe, reduced-motion overrides.
+
+### M. Verify
 
 - `bunx tsc --noEmit` clean.
-- Browse to `/`, `/services`, `/about`, `/contact` and confirm: 1 evergreen pill, 1 ghost phone, 1 square hamburger; section rail underline only; drawer opens with a Home link + 3 columns + tiny secondary phone/email row + 1 CTA in the bottom rail.
+- Hamburger morph: Chrome DevTools Performance shows 0 layout events (paint-only).
+- Section rail tap: underline glides between labels in 380ms, no flicker.
+- Drawer link click: page swap is a soft fade, not a hard cut.
+- Quote hover: lifts 1px with soft evergreen shadow halo. Press: 0.97 scale.
+- iPhone Safari: drawer body scroll doesn't bleed to page underneath.
 
-### J. Memory updates
+### N. Memory updates
 
-- Update `mem://features/two-tier-navigation` with the round 5 spec.
-- Add core rule: "Hamburger is icon-only at all breakpoints — no visible 'Menu' label." (Reverses round 4 core rule.)
-- Add core rule: "Drawer has no horizontal primary row — single 'Home' link + 3 columns is the canonical structure."
+Add to `mem://index.md` Core:
+- "Hamburger morph uses pure CSS transforms (translate + rotate). Never animate width/top/bottom — they layout."
+- "Drawer enter = ONE motion layer: panel opacity-fades, items rise. Never stack panel-rise + item-rise."
+- "Section rail uses ONE shared sliding underline (FLIP indicator), never per-tab toggles."
+- "Route transitions: 140ms opacity-from-0.6 fade. Never blank-flash between chunks."
+- "Drawer item stagger via CSS `:nth-of-type`, never inline `animation-delay` styles."
+
+Update `mem://features/two-tier-navigation` with the motion-layer rules and the indicator pattern.
+
+## What this fixes for the owner
+
+- **"Feels slow" → "feels instant"**: pointerdown prefetch + 140ms crossfade kills the blank-flash that reads as load latency.
+- **"Hamburger feels janky" → "buttery"**: pure-transform morph hits 60fps on a Galaxy A20 instead of 30.
+- **"Underline jumps" → "underline glides"**: shared FLIP indicator turns the rail into a wayfinding *animation*. Most premium-feeling change in this round.
+- **"Drawer feels heavy" → "drawer feels light"**: removing the panel-rise layer + overlay blur cuts perceived open time ~80ms; faster exit makes closes feel instant.
+- **"Quote is just a green box" → "Quote is alive"**: hover-lift + soft halo + spring press is the single tell that says "this is a serious site."
