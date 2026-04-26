@@ -7,6 +7,7 @@ import PremiumCard from "@/components/PremiumCard";
 import { useReveal } from "@/hooks/useReveal";
 import ProjectPlaceholder from "./ProjectPlaceholder";
 import { galleryPlates } from "@/data/galleryPlates";
+import { workPhotos } from "@/assets/photography";
 
 const SECTION_PADDING = "py-20 md:py-40";
 
@@ -216,6 +217,7 @@ const SelectedWorks = () => {
                       romanNumeral: active.romanNumeral,
                     }}
                     index={activeIndex}
+                    photoSrc={workPhotos[active.slug]}
                     className="border-b-0"
                   />
                   <span

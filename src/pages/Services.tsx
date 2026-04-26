@@ -11,6 +11,7 @@ import ServicePlate from "@/components/gallery/ServicePlate";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
+import { servicePhotos } from "@/assets/photography";
 
 const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
@@ -83,6 +84,7 @@ const Services = () => {
                     <div className="lg:col-span-5 relative border-b lg:border-b-0 lg:border-r border-evergreen/10 overflow-hidden">
                       <ServicePlate
                         service={s}
+                        photoSrc={servicePhotos[s.slug]}
                         className="h-full border-b-0 transition-transform duration-700 ease-weighted group-hover:scale-[1.005]"
                       />
                       <span

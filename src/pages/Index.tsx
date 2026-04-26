@@ -11,6 +11,7 @@ import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import TestimonialSpine from "@/components/TestimonialSpine";
 import ProjectPlaceholder from "@/components/gallery/ProjectPlaceholder";
+import { previewPhotos } from "@/assets/photography";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
@@ -379,7 +380,7 @@ const Index = () => {
               >
                 <PremiumCard className="h-full transition-transform duration-700 ease-weighted group-hover:-translate-y-1">
                   <div className="flex flex-col h-full">
-                    <ProjectPlaceholder project={p} index={i} />
+                    <ProjectPlaceholder project={p} index={i} photoSrc={previewPhotos[p.slug]} />
 
                     <div className="p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col flex-1">
                       <p className="text-minimal text-evergreen/80">
