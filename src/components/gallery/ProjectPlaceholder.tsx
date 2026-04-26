@@ -1,25 +1,52 @@
 import { cn } from "@/lib/utils";
 import type { Project } from "@/data/projects";
 
+/**
+ * Generic plate shape — used by Work-page cards (driven by GalleryPlate)
+ * and by anywhere else that wants the typographic "photo-pending" treatment.
+ */
+export interface PlateLike {
+  slug: string;
+  title: string;
+  area: string;
+  category?: string;
+  /** Optional roman numeral — overrides the index-derived "01" if present. */
+  romanNumeral?: string;
+}
+
 interface ProjectPlaceholderProps {
-  project: Project;
+  /** Either a full Project (preview cards) or any PlateLike. */
+  project: Project | PlateLike;
   index: number;
+  /** Compact variant — smaller numeral, single-line meta, used in sidebars. */
+  compact?: boolean;
   className?: string;
 }
 
 /**
- * ProjectPlaceholder — honest, photo-pending project card.
+ * ProjectPlaceholder — honest, photo-pending plate.
  *
- * Per Sam's persona: photographs are the trust asset; synthetic illustrations
- * read as stand-ins and undermine trust. Until real photography is supplied,
- * this card tells the truth: numbered project, "Photograph in progress",
- * a hairline rule, then the project's location/year and category chip.
+ * Per Sam's persona: photographs are the primary trust asset; synthetic
+ * line-drawings read as stand-ins on second glance. Until real photography
+ * arrives, this card tells the truth: a numbered figure, "Photograph in
+ * progress", a hairline, then the property's locality.
  *
- * Carries data-photo-status="pending" so a future loop can swap in a real
- * <img> element by replacing this slot — no other changes required.
+ * Accepts a full Project or any plate-like object so it can drive Work-page
+ * cards and Selected-Works sidebar rows from the same component.
+ *
+ * Carries `data-photo-status="pending"` so a future loop can swap in a
+ * real `<img>` element by replacing this slot — no other changes needed.
  */
-const ProjectPlaceholder = ({ project, index, className }: ProjectPlaceholderProps) => {
-  const number = String(index + 1).padStart(2, "0");
+const ProjectPlaceholder = ({
+  project,
+  index,
+  compact = false,
+  className,
+}: ProjectPlaceholderProps) => {
+  const figureMark =
+    "romanNumeral" in project && project.romanNumeral
+      ? project.romanNumeral
+      : String(index + 1).padStart(2, "0");
 
   return (
     <div
@@ -27,16 +54,28 @@ const ProjectPlaceholder = ({ project, index, className }: ProjectPlaceholderPro
       data-project-slug={project.slug}
       className={cn(
         "photo-pending border-b border-border",
+        compact && "photo-pending--compact",
         className,
       )}
       role="img"
       aria-label={`${project.title} — photograph in progress`}
     >
-      <span className="numeral-disc relative z-10" aria-hidden="true">
-        {number}
+      <span
+        className={cn(
+          "numeral-disc relative z-10",
+          compact && "scale-[0.78] origin-top-left",
+        )}
+        aria-hidden="true"
+      >
+        {figureMark}
       </span>
 
-      <p className="relative z-10 font-serif italic font-light text-foreground/70 text-[1.05rem] leading-snug max-w-[24ch] text-balance">
+      <p
+        className={cn(
+          "relative z-10 font-serif italic font-light text-foreground/70 leading-snug max-w-[24ch] text-balance",
+          compact ? "text-[0.92rem]" : "text-[1.05rem]",
+        )}
+      >
         Photograph in&nbsp;progress.
       </p>
 
