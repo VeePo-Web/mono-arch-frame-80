@@ -171,7 +171,37 @@ const Index = () => {
         </Container>
       </RevealSection>
 
-      {/* ─── § II — Services Preview ─────────────────────────────────────── */}
+      {/* ─── § I.b — Mid-page conversion bridge ───────────────────────── */}
+      <RevealSection aria-label="Quick consultation invitation" className="py-14 md:py-20">
+        <Container size="wide">
+          <div className="conversion-bridge flex flex-col md:flex-row md:items-center md:justify-between gap-7 md:gap-10 py-10 md:py-12">
+            <p
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "0ms" }}
+              className="font-serif italic font-light text-foreground/85 text-[1.35rem] md:text-[1.55rem] leading-snug max-w-[36ch] text-balance"
+            >
+              Already nodding? Let&apos;s start a quiet conversation.
+            </p>
+            <div
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "180ms" }}
+              className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7 shrink-0"
+            >
+              <Link to="/contact" className="cta-anchor group/btn">
+                <span>Request a Consultation</span>
+                <span className="icon-chip icon-chip-light bg-background/15">
+                  <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                </span>
+              </Link>
+              <p className="trust-microcopy">
+                <span>2-business-day reply</span>
+                <span>No obligation</span>
+              </p>
+            </div>
+          </div>
+        </Container>
+      </RevealSection>
+
       <RevealSection
         id="services-preview"
         aria-labelledby="services-heading"
