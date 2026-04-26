@@ -20,7 +20,7 @@ const STUDIO_EMAIL = "hello@havencreekrenovations.ca";
  * QuickContactSheet — mobile-only bottom-sheet contact escape hatch.
  *
  * Mounted once at the App layer; listens for a window CustomEvent
- * (`quickcontact:open`) raised by any trigger (StickyConsultBar pill on
+ * (`quickcontact:open`) raised by any trigger (the drawer or mobile triggers on
  * mobile, mobile-nav consultation pill, page-level FAB).
  *
  * Three escape hatches in one tap:
