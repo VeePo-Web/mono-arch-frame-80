@@ -596,6 +596,49 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
+     Section rail — overflow-x scroll-snap with masked edges so long
+     section lists fade at the boundaries instead of hard-cutting. The
+     rail itself is scroll-snap-x mandatory; SectionRail auto-centers
+     the active label via scrollIntoView.
+     ────────────────────────────────────────────────────────────────────── */
+  .section-rail-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 16px,
+      #000 calc(100% - 16px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 16px,
+      #000 calc(100% - 16px),
+      transparent 100%
+    );
+  }
+  .section-rail-scroll::-webkit-scrollbar { display: none; }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Menu drawer — single primary "Home" link. Italic display weight,
+     restrained vs the previous numbered ladder so the columns below
+     carry the structural weight.
+     ────────────────────────────────────────────────────────────────────── */
+  .menu-primary-text {
+    font-family: "Fraunces", "Fraunces Fallback", Georgia, serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(2rem, 4.5vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
      Section wash — two-tone vertical gradient replaces flat bg-card/40.
      Adds depth without paint cost.
      ────────────────────────────────────────────────────────────────────── */
