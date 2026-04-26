@@ -1,4 +1,4 @@
-import { useCallback, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
@@ -24,9 +24,12 @@ const SelectedWorks = () => {
   const { ref, revealed } = useReveal<HTMLElement>({ threshold: 0.1 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [hintVisible, setHintVisible] = useState(true);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
   const headingId = useId();
   const expansionId = useId();
+  const liveId = useId();
 
   const active = galleryPlates[activeIndex];
 
@@ -35,20 +38,44 @@ const SelectedWorks = () => {
     setExpanded(false);
   }, []);
 
-  // Arrow-key navigation across the sidebar list
+  // Auto-dismiss the "Swipe to explore" hint after 4 s, or when the user
+  // first interacts with the rail.
+  useEffect(() => {
+    const t = setTimeout(() => setHintVisible(false), 4000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Scroll the active rail chip into view whenever the active plate changes
+  // (so keyboard ←/→ navigation drags the rail along).
+  useEffect(() => {
+    const node = railRef.current?.querySelector<HTMLButtonElement>(
+      `[data-rail-chip="${activeIndex}"]`,
+    );
+    node?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [activeIndex]);
+
+  // Arrow-key navigation across the sidebar list (desktop) and rail (mobile).
+  // Both ArrowUp/Down and ArrowLeft/Right are supported so keyboards on
+  // either layout work without context.
   const handleSidebarKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    const isVertical = e.key === "ArrowDown" || e.key === "ArrowUp";
+    const isHorizontal = e.key === "ArrowRight" || e.key === "ArrowLeft";
+    if (!isVertical && !isHorizontal) return;
     e.preventDefault();
-    const direction = e.key === "ArrowDown" ? 1 : -1;
+    const direction = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : -1;
     const next =
       (activeIndex + direction + galleryPlates.length) % galleryPlates.length;
     handlePromote(next);
-    // Move focus to the newly active row's button
+    // Move focus to the newly active row's button (desktop sidebar) or chip (mobile rail).
     requestAnimationFrame(() => {
-      const buttons = sidebarRef.current?.querySelectorAll<HTMLButtonElement>(
+      const sidebarBtn = sidebarRef.current?.querySelectorAll<HTMLButtonElement>(
         "button[data-plate-row]",
+      )?.[next];
+      const railBtn = railRef.current?.querySelector<HTMLButtonElement>(
+        `[data-rail-chip="${next}"]`,
       );
-      buttons?.[next]?.focus();
+      // Prefer whichever surface initiated the keypress.
+      (sidebarBtn ?? railBtn)?.focus();
     });
   };
 
