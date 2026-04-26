@@ -1,148 +1,142 @@
-# Round 6 — RoyalMechanical "Shape Hierarchy" Match
 
-## Honest diagnosis (what's still cluttered after Round 5)
+# Round 8 — "Grandpa-Grade Legibility" + Live Style Guide
 
-I re-studied RoyalMechanical's `Header.tsx` and `MobileNav.tsx` side-by-side with our current files. Round 5 fixed the cognitive load, but **three things still read as "designed" instead of "obvious"** to a 70-year-old:
+The owner's complaint is real: parts of the site read **too small**, several sections feel like **dense walls of editorial copy** with no card scaffolding, and there is **no single source of truth** a developer (or future AI) can reference. We will fix all three at once — modeled on `RoyalMechanical.com`'s tokenized design system and bento layout — while preserving the warm-evergreen Haven Creek brand.
 
-1. **The right cluster is still 1-1-1, not 1-2-3.** Phone is `rounded-full h-12`, Quote is `rounded-full h-11`, Hamburger is `rounded-full h-12`. Three rounded shapes of nearly identical height = no hierarchy. RoyalMechanical wins because phone is a *flat icon (no chip at all)*, CTA is a *square sharp-cornered button*, hamburger is a *square button*. Three different shapes, instant 1-2-3.
+---
 
-2. **Section rail shows from `md` (768px).** That's an iPad portrait, where the homepage's 6 tabs ("Why Us · Services · How We Work · Our Work · Where We Work · Contact") fight the right cluster for space and trigger the edge-fade mask immediately. RoyalMechanical only shows their section rail from `lg` (1024px+), and even then it's hidden whenever it'd compete. That's the right call.
+## Three guiding rules (filtered through the brief)
 
-3. **The drawer has two close affordances** — backdrop tap *and* a "Close" pill in the top-right. Most users use the backdrop; the pill is a 12-character "Close" label that takes up real estate at exactly the spot where users expect just an X. RoyalMechanical uses an icon-only X.
+1. **Nothing under 16px on body, nothing under 12px on labels.** A 70-year-old should never have to lean in.
+2. **If it's a list of 3+ similar things, it lives in a card or bento tile.** No more naked paragraph stacks pretending to be sections.
+3. **One source of truth at `/style-guide`.** Tokens live in code, get rendered live, and every page consumes them.
 
-4. **`useIsMobile` is still mounted** in `Navigation.tsx` *just* to decide whether tapping Quote opens the QuickContact sheet vs routes to /contact. That's a window resize listener subscribed at the very top of the React tree to make ONE branching decision. It can be a one-shot `window.matchMedia` check inside the click handler — zero subscribers, zero re-renders.
+---
 
-5. **Section rail anchors are clickable but the labels duplicate page H2s.** Not wrong, but on the homepage we have 6 anchors competing with section H2s on scroll, which feels redundant. The fix: **trim the rail to 4 anchors max per page** — the page-spanning ones, not every section. (e.g. drop "Contact" — there's a Contact button in the right cluster already; drop "Why Us" — it's the first thing they see.)
+## A — Typography token system (`src/lib/typography.ts` — NEW)
 
-## Round 6 plan
+Mirrors RoyalMechanical's structure but tuned to Haven Creek's Fraunces + Inter stack. Exports `HEADLINE`, `BODY`, `EYEBROW`, `QUOTE`, `STAT`, `UI`.
 
-### A. Right cluster — 1-2-3 by SHAPE, not weight (the big one)
+| Role | New min size | Old (where small) | Fix |
+|---|---|---|---|
+| Body large | **18px** (`text-lg`) leading-relaxed | `text-[0.95rem]` / `[0.98rem]` (≈15px) | Bumped, paired with `max-w-[62ch]` |
+| Body standard | **16px** (`text-base`) | mixed | New default |
+| Eyebrow | **12px** (`text-xs`) `tracking-[0.18em]` semibold | `text-[11px]` | One step up |
+| Caption | **13px** (`text-[13px]`) | `text-xs` (12px) on captions | Up-rounded |
+| Form error | **13px** | `text-xs` on `FormMessage` | Up-rounded |
+| H1 hero | clamp `2.75rem → 5rem` | text-6xl → text-8xl | Same ceiling, smoother fluid scale |
+| H2 section | clamp `2rem → 3.25rem` | mixed | Tokenized |
+| H3 card | **20–22px** semibold | mixed | Tokenized |
 
-**File: `src/components/Navigation.tsx`**
+Hard rule baked into the lib JSDoc: **"Body never goes below text-base. Labels never go below 12px. Never apply `text-muted-foreground` to a paragraph longer than 2 lines — switch to `text-foreground/85`."**
 
-Re-shape each control so they read 1-2-3 at a glance:
+## B — Spacing tokens (`src/lib/spacing.ts` — NEW)
 
-- **Phone (tertiary)** → flat ghost icon, NO background chip ever, NO pill. Just a 48×48 hit area with a `Phone` icon centered. Number text appears from `lg+` next to the icon (no wrapper styling).
-  - Remove `rounded-full hover:bg-foreground/[0.05]`. Hover state: `text-evergreen` color shift only.
-  - This makes the phone look like an *affordance*, not a button.
+8-pt grid, semantic names (`SECTION_PADDING.standard`, `SECTION_PADDING.compact`, `SECTION_PADDING.terminal`, `CONTENT_GAP.cardGrid`, `CONTENT_GAP.bento`, `MAX_WIDTH.prose = 62ch`, `MAX_WIDTH.measure = 72ch`). Replaces the scattered `py-20 md:py-40` magic constant in `Index.tsx`.
 
-- **Quote (primary)** → solid evergreen, **square with 8px radius** (not pill), 15px semibold, `h-10 px-5` desktop / `h-11 px-4` mobile. Sharp corners read as a "submit/action" button universally; pills read as "tag/chip".
-  - Drop the `sm:hidden / sm:inline` "Quote" / "Get a Quote" responsive split. Just always say **"Get a Quote"**. At 320px there's room — we measured.
+## C — Component primitives (declutter via cards)
 
-- **Menu (secondary)** → 44×44 **square** with 8px radius, no rounded-full. Sits visually between the flat phone icon and the square CTA. The hamburger glyph stays canonical 3-line.
-  - Drop the `data-current` evergreen tick under the icon. It's a third cue nobody reads. The drawer itself shows the active route in green when opened — that's enough.
+Three reusable surfaces — a 70-year-old's eye should always have a clear box to land in.
 
-Net: phone (flat) → quote (square solid) → menu (square ghost). Three distinct shapes. A grandpa instantly knows: **green box = action, square box with bars = more, phone = call**.
+1. **`StatCard`** — bold serif number, eyebrow label, one-line caption. Used to replace inline trust copy.
+2. **`InfoCard`** — title + 2-line desc + optional "Learn more" affordance. Replaces 6+ unboxed `<p>` blocks across home + About.
+3. **`BentoGrid` + `BentoTile`** — asymmetric 2/3-up grid (1 large + 2 small on desktop, stacked on mobile). Used on Services and Areas previews so users *scan* instead of *read*.
 
-### B. Section rail — raise breakpoint, trim labels
+All built on existing `PremiumCard` + `surface-card` so we keep the paper-soft shadow language. No new shadow primitives.
 
-**File: `src/components/Navigation.tsx` + `src/components/nav/SectionRail.tsx`**
+## D — Page-by-page declutter pass
 
-- Hide section rail until `lg` (1024px+). At `md` (768–1023px) it crowds the bar. Mobile/tablet users get the section anchors via the drawer's column links + by scrolling.
-- The rail container in Navigation: `hidden lg:flex` instead of `hidden md:flex`.
+### Home (`src/pages/Index.tsx`)
+- **Hero subhead**: bump from current size to `text-lg md:text-xl text-foreground/85` and shorten to ≤22 words.
+- **Trust strip** (under hero): convert the prose paragraph to a `StatCard` row of 3 (Years served · Areas covered · Rural-spec focus).
+- **Services preview**: replace the 3 vertical paragraph blocks with a **3-up `InfoCard` grid** — eyebrow, 18px title, 16px 2-line desc, arrow link. Cap each desc at ~22 words; cut anything over.
+- **"Approach" section**: convert the long narrative into a **4-tile bento** (Plan · Build · Finish · Stand behind) with one sentence each. Delete the ~120 words of bridging prose.
+- **Service Areas**: replace the long list+postal-code paragraph with a **2×2 bento** of the four areas, each tile = name (serif), postal prefix as eyebrow, one 12-word descriptor. Drop the inline FSA explainer.
+- **Testimonial spine**: keep but enforce `text-xl` minimum on the quote and `text-base` on attribution (currently some attribution drops to ~13px effective).
+- **FAQ**: collapse from 5 items to 4 (merge the two near-duplicates about consultation and process). Each answer capped at 35 words.
 
-**File: `src/lib/pageSections.ts`** — trim each route to 3-4 anchors max:
+### About (`src/pages/About.tsx`)
+- Cut the 3rd story paragraph (redundant with Hero). 
+- Convert "How we work" into a **3-step `InfoCard` row** with numbered eyebrows.
+- All body copy → `text-lg leading-relaxed text-foreground/85`.
 
-- `/`: 4 anchors → "Services", "How We Work", "Our Work", "Where We Work" (drop "Why Us" — it's above-the-fold, scrolling up is the gesture; drop "Contact" — green CTA in nav already does this).
-- `/services`: keep 3 (already good).
-- `/services/*` deep pages: keep 3-4.
-- `/service-areas`: 2 (already good).
-- `/about`: 4 (already good).
-- `/contact`: 3 (already good).
+### Services pages (Interior / Exterior / Decking)
+- Top section: hero stat row using `StatCard`.
+- "What's included" lists → **2-column bento tiles** (icon optional, title + 1 line). Cuts ~40% of vertical real estate.
+- Remove the long "Process" prose; replace with a 4-step horizontal stepper card.
 
-Net: rail is calmer, only appears where it's clearly useful.
+### Work (`src/pages/Work.tsx`)
+- Project descriptions: drop from current paragraph length to **one headline + one 18-word caption** per project. The image carries the story.
 
-### C. Drawer — one close affordance, tighter spacing
+### Service Area pages
+- Same bento treatment as the home preview, plus a single 2-sentence "Why we serve here" card. Delete the duplicate FSA paragraph.
 
-**File: `src/components/nav/MenuDrawer.tsx`**
+## E — Live style guide route (`/style-guide`)
 
-- Replace the `[X icon] + "Close"` pill with an **icon-only 44×44 square X** in the top-right. Same square shape as the new hamburger and Quote pill — the user closes with the same shape they opened with. Visual continuity.
-- Drop the wrapping `min-h-[48px] px-3 rounded-full` chip styling.
-- Tighten the Home link: `mb-6 md:mb-8` → `mb-4 md:mb-6`. Drop `min-h-[56px]` (the text itself is already 24-30px line-height; min-h is doing nothing).
-- Tighten column links: `min-h-[48px] py-1.5` → `min-h-[44px] py-1` so 8 area links + 3 service + 3 company all fit on a 6.1" iPhone above the fold.
-- Drop the staggered animation delays on all `DrawerLink` items. Computing 18+ inline `animation-delay` styles per open is wasted work — the columns animate in as a unit (via `.menu-drawer__label` parent stagger) which is enough warmth.
-- Keep the bottom rail (trust line + CTA) unchanged — it's already RoyalMechanical-grade.
+New page `src/pages/StyleGuide.tsx`, lazy-loaded, **excluded from sitemap & robots** (matches RoyalMechanical's pattern). Renders:
 
-### D. Drop `useIsMobile` from `Navigation.tsx`
+1. **Color tokens** — every CSS var swatch, contrast ratio vs background printed beside it.
+2. **Type scale** — every `HEADLINE`/`BODY`/`EYEBROW` token rendered with copy-to-clipboard chip.
+3. **Spacing scale** — visual ruler.
+4. **Surface library** — `PremiumCard`, `StatCard`, `InfoCard`, `BentoGrid` rendered live.
+5. **Motion timing** — the four cubic-beziers with hoverable demos.
+6. **Don'ts panel** — 6 hard rules with red-bordered fail examples (tiny body, muted long paragraph, naked stacked text, etc.) so a future contributor can't claim ignorance.
 
-**File: `src/components/Navigation.tsx`**
+## F — STYLE_GUIDE.md rewrite
 
-Replace the `useIsMobile()` subscription with a one-shot check inside the click handler:
+Replace the current 717-line markdown (still says "B&P Sauna" in the title) with a Haven Creek-correct version that:
+- Documents the new typography + spacing tokens
+- Lists the **legibility hard rules** (body ≥16, label ≥12, no muted long-form, line-length 62ch, contrast ≥4.5:1)
+- Documents `StatCard` / `InfoCard` / `BentoGrid` usage
+- Points to the live `/style-guide` as the canonical reference
 
-```ts
-const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-  if (onContactRoute) return;
-  // One-shot match — no subscription, no re-renders.
-  if (window.matchMedia("(max-width: 767px)").matches) {
-    e.preventDefault();
-    openQuickContact({ source: "quick_contact_sheet" });
-  }
-};
-```
+## G — Performance & a11y guardrails
 
-Removes one window-resize listener mounted at the top of the React tree.
+- New components are tree-shakable, no new icon packages, no new fonts.
+- `/style-guide` is **lazy** + carries `<meta name="robots" content="noindex">` and is added to `Disallow:` in `public/robots.txt`.
+- Bento + InfoCard images use `loading="lazy"` + `decoding="async"` and respect existing `content-visibility` standard.
+- Run a quick contrast pass: any `text-muted-foreground` used on `bg-card` is auto-promoted to `text-foreground/75` (passes 4.5:1).
 
-### E. Drop `useIsMobile` from anywhere else in the nav stack
+## H — Memory updates
 
-Audit and remove if unused after the Navigation change. The drawer already uses CSS `md:hidden`/`hidden md:inline-flex` for its CTA flavour.
+- Add `mem://standards/legibility-floor`: "Body ≥ text-base (16px). Labels ≥ 12px. Never apply `text-muted-foreground` to multi-line paragraphs."
+- Add `mem://architecture/typography-spacing-tokens`: pointer to `src/lib/typography.ts` + `src/lib/spacing.ts` as the only sources of type/spacing classes.
+- Add `mem://features/bento-layout`: when a section lists 3+ peer items, default to `BentoGrid` or `InfoCard` row, not stacked paragraphs.
+- Add to Core: "Live style guide lives at /style-guide — noindex, never linked from primary nav."
 
-### F. Performance — memo header, eliminate one re-render
+---
 
-**File: `src/components/Navigation.tsx`**
+## Files to create
 
-- Wrap the header JSX in `React.memo` since its only prop-relevant input is `pathname` (already from `useLocation`). Currently it re-renders on every parent re-render even when pathname is stable. (Caveat: the `drawerOpen` state is local, so `memo` is fine — internal state still triggers re-renders.)
-- Actually, since `Navigation` is mounted once at the App root, `memo` doesn't help. Better win: replace the `useEffect(() => setDrawerOpen(false), [pathname])` close-on-route-change with the `Dialog.Root`'s `onOpenChange` already handling it via the Link's onClick chain. We already manually close in every drawer link's `onClick`. Drop the effect.
+- `src/lib/typography.ts`
+- `src/lib/spacing.ts`
+- `src/components/ui/StatCard.tsx`
+- `src/components/ui/InfoCard.tsx`
+- `src/components/ui/BentoGrid.tsx` (+ `BentoTile`)
+- `src/pages/StyleGuide.tsx`
 
-### G. Hamburger button — square, drop `current` prop
+## Files to edit
 
-**File: `src/components/nav/HamburgerButton.tsx`**
+- `src/pages/Index.tsx` (declutter + bento conversion)
+- `src/pages/About.tsx`
+- `src/pages/Services.tsx` + `Interior/Exterior/Decking`
+- `src/pages/Work.tsx`
+- `src/pages/areas/*` (4 files — bento + caption tightening)
+- `src/components/ConsultationForm.tsx` (form-error size bump)
+- `src/App.tsx` (add `/style-guide` lazy route)
+- `public/robots.txt` (Disallow: /style-guide)
+- `public/sitemap.xml` (ensure not included)
+- `STYLE_GUIDE.md` (full rewrite for Haven Creek)
+- `.lovable/memory/index.md` + new memory files
 
-- `h-12 w-12 rounded-full` → `h-11 w-11 rounded-md` (44×44, 6-8px corners). 44px is iOS HIG min tap target; 48px was over-spec.
-- Drop the `current?: boolean` prop and the `data-current` underline. Remove the corresponding CSS in `index.css`.
-- Keep the canonical 3-line glyph and the X morph on open.
+## What we are explicitly NOT doing
 
-### H. CSS cleanup
+- Not touching the navigation chrome (Round 7 is locked in).
+- Not adding new colors, new fonts, or a dark mode.
+- Not adding heavy bento animation — entrance reveal only, reuses existing `RevealSection`.
+- Not introducing a UI library or icon pack.
 
-**File: `src/index.css`**
+---
 
-- Remove `.hamburger-btn[data-current="true"]::after` block and supporting transitions.
-- Section rail mask: keep, but update the comment block dated "round 5" → "round 6: rail only visible at lg+".
-- Update the prefers-reduced-motion block to drop `nav-current-dot` references (already gone, just stale comments).
+**Outcome**: Every page becomes scannable within 5 seconds. Body copy is 16–18px everywhere. Long lists become bento tiles. A live `/style-guide` enforces consistency for every future change.
 
-### I. Files touched
-
-1. `src/components/Navigation.tsx` — right cluster reshape, drop `useIsMobile`, drop close-on-pathname effect, raise rail to `lg+`.
-2. `src/components/nav/HamburgerButton.tsx` — square 44×44, drop `current` prop.
-3. `src/components/nav/SectionRail.tsx` — no logic change; just confirm it lives under a `lg+` parent (no edits needed if Navigation.tsx already gates).
-4. `src/components/nav/MenuDrawer.tsx` — icon-only X, tighter spacing, drop per-link animation-delay.
-5. `src/lib/pageSections.ts` — trim homepage rail to 4 anchors.
-6. `src/index.css` — drop `.hamburger-btn[data-current]` rule, update comments.
-
-### J. Verify
-
-- `bunx tsc --noEmit` clean.
-- Visual sweep at 360px / 414px / 768px / 1024px / 1440px:
-  - 360px: phone-icon + green "Get a Quote" + square hamburger. Three different shapes.
-  - 768px: same — section rail still hidden (now lg-gated).
-  - 1024px+: section rail appears with 4 anchors max on /, evenly spaced.
-- Drawer opens, only one X (top-right) closes it, all primary destinations fit above the fold on a 6.1" phone.
-- No `useIsMobile` import anywhere in the nav stack (`rg "useIsMobile" src/components/nav src/components/Navigation.tsx` returns nothing).
-
-### K. Memory updates
-
-- Update `mem://features/two-tier-navigation`:
-  - Header right cluster: "Phone (flat icon, no chip) · Quote (square solid evergreen, 8px radius) · Menu (square ghost, 44×44, 8px radius). Three distinct shapes — never three rounded-full pills in a row."
-  - "Section rail visible from `lg+` only (1024px). Below that, drawer columns provide section navigation."
-  - "Drawer has ONE close affordance: icon-only X top-right. Backdrop tap also closes."
-  - "No `useIsMobile` in nav components — use `window.matchMedia` one-shot in click handlers when branching."
-- Add to `mem://index.md` Core:
-  - "Nav right cluster: 3 distinct SHAPES (flat icon · square solid · square ghost). Never 3 rounded pills in a row."
-  - "Section rail visible from lg+ (1024px) only."
-- Trim homepage anchor list rule already covered by 18-char cap; add: "Section rail anchors capped at 4 per route — pick page-spanning ones, drop ones already covered by header CTAs."
-
-## What this fixes for the owner
-
-- **Visual noise at a glance**: was 3 round pills, now 1 flat icon + 1 green box + 1 square. Eye lands on green.
-- **Mobile crowding**: section rail no longer competes for space at iPad portrait; only appears on actual desktop sizes where there's room.
-- **Drawer feels obvious**: opens with a tap on a square, closes with an X — no second "Close" word competing for attention.
-- **Faster**: -1 window resize subscription, -1 useEffect on every route change, -18 inline animation-delay styles per drawer open, no JS observer for the rail (already removed in round 5).
