@@ -1141,6 +1141,69 @@
     to { stroke-dashoffset: 0; }
   }
 
+  /* ──────────────────────────────────────────────────────────────────────
+     Quick Contact sheet — step transitions, FAB breathing, success shimmer.
+     Mobile-only surfaces (sheet + FAB are gated `lg:hidden` in JSX), so
+     these styles never affect desktop layout.
+     ────────────────────────────────────────────────────────────────────── */
+
+  /* Each step body fades in + slides up 6px. Driven by React's `key` on
+     the wrapper so a fresh element mounts per step. */
+  .qc-step {
+    animation: qc-step-in 320ms var(--ease-weighted) both;
+  }
+  @keyframes qc-step-in {
+    0%   { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* FAB — subtle breathing pulse, three cycles then quiet. */
+  .qc-fab[data-breathe="true"] {
+    animation: qc-fab-breathe 4s var(--ease-weighted) 0s 3;
+  }
+  @keyframes qc-fab-breathe {
+    0%, 100% {
+      box-shadow:
+        0 8px 24px -8px hsl(145 24% 8% / 0.45),
+        inset 0 1px 0 hsl(145 22% 38% / 0.5);
+    }
+    50% {
+      box-shadow:
+        0 14px 36px -10px hsl(145 24% 8% / 0.55),
+        0 0 0 6px hsl(var(--evergreen) / 0.10),
+        inset 0 1px 0 hsl(145 22% 38% / 0.5);
+    }
+  }
+  .qc-fab-label {
+    animation: qc-fab-label-in 360ms var(--ease-weighted) both;
+  }
+  @keyframes qc-fab-label-in {
+    0%   { opacity: 0; transform: translateX(-4px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Success-state shimmer — single 1.2s sweep across the headline. */
+  .qc-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      transparent 0%,
+      transparent 30%,
+      hsl(var(--evergreen) / 0.20) 50%,
+      transparent 70%,
+      transparent 100%
+    );
+    background-size: 220% 100%;
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: qc-shimmer-sweep 1200ms var(--ease-swift) 200ms 1 both;
+  }
+  @keyframes qc-shimmer-sweep {
+    0%   { background-position: 100% 0; }
+    100% { background-position: -20% 0; }
+  }
+
   /* Honor reduced motion — collapse all entry animations to instant. */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
