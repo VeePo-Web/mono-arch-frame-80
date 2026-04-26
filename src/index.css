@@ -830,50 +830,6 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Sticky CTA bar — persistent, dismissible consultation handle that
-     reveals once the visitor has scrolled past the hero. Mounted once
-     in App.tsx; styled here so the StickyConsultBar component is purely
-     behavioural. Honors prefers-reduced-motion.
-     ────────────────────────────────────────────────────────────────────── */
-  .sticky-cta-bar {
-    position: fixed;
-    inset-inline: 0.75rem;
-    /* Lift above the iOS home indicator without touching Android's flush bottom. */
-    bottom: max(0.75rem, calc(var(--safe-bottom) + 0.5rem));
-    z-index: 40;
-    margin-inline: auto;
-    max-width: min(720px, calc(100vw - 1.5rem));
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.375rem 0.375rem 0.375rem 1.25rem;
-    border-radius: 9999px;
-    background: hsl(var(--background) / 0.86);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
-    backdrop-filter: blur(14px) saturate(140%);
-    box-shadow:
-      0 1px 0 hsl(var(--background) / 0.8) inset,
-      0 1px 2px hsl(20 8% 14% / 0.06),
-      0 18px 40px -16px hsl(20 8% 14% / 0.22);
-    border: 1px solid hsl(var(--evergreen) / 0.12);
-    transform: translateY(calc(100% + 1.25rem));
-    opacity: 0;
-    transition:
-      transform 600ms var(--ease-swift),
-      opacity 600ms var(--ease-swift);
-  }
-  .sticky-cta-bar[data-show="true"] {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .sticky-cta-bar { transition: opacity 300ms linear; transform: none; }
-    .sticky-cta-bar[data-show="false"],
-    .sticky-cta-bar[aria-hidden="true"] { transform: none; }
-  }
-
-  /* ──────────────────────────────────────────────────────────────────────
      Conversion bridge — single-line invitation between long content
      blocks. Hairline above + below; italic prompt left, pill right.
      Used after the Fear Ledger.
@@ -1282,18 +1238,6 @@
     .footer-bottom-row {
       padding-bottom: max(0.5rem, calc(var(--safe-bottom) + 0.5rem));
     }
-  }
-
-  /* ──────────────────────────────────────────────────────────────────────
-     Sticky-bar inset reservation — when the floating consultation bar is
-     showing, leave room at the bottom of the document so it doesn't sit
-     atop the footer copyright row on phones. Only applies <sm.
-     ────────────────────────────────────────────────────────────────────── */
-  body[data-sticky-bar="shown"] {
-    padding-bottom: max(4.5rem, calc(var(--safe-bottom) + 4rem));
-  }
-  @media (min-width: 640px) {
-    body[data-sticky-bar="shown"] { padding-bottom: 0; }
   }
 
   /* ──────────────────────────────────────────────────────────────────────
