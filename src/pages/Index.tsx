@@ -632,11 +632,11 @@ const Index = () => {
                 second item in the text column on desktop. Mobile renders as
                 full-width tap rows with leading icons. */}
             <div
-              className="order-3 lg:order-3 lg:col-span-6"
+              className="order-3 lg:order-3 lg:col-span-6 lg:mt-10"
               data-reveal
               style={{ ["--reveal-delay" as string]: "260ms" }}
             >
-              <div className="pt-8 border-t border-background/20 max-w-[46ch]">
+              <div className="pt-6 lg:pt-8 border-t border-background/20 max-w-[46ch]">
                 <p className="text-minimal text-background/65">
                   Or reach us directly
                 </p>
