@@ -1225,6 +1225,16 @@
     [data-drift] { transform: none !important; }
     .receipt-check-svg path,
     .receipt-check-svg circle { stroke-dashoffset: 0 !important; animation: none !important; }
+    /* Quick Contact — strip motion, keep opacity-only fades intact via the universal rule above. */
+    .qc-step { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .qc-fab[data-breathe="true"] { animation: none !important; }
+    .qc-fab-label { animation: none !important; }
+    .qc-shimmer {
+      background-image: none !important;
+      animation: none !important;
+      -webkit-background-clip: border-box !important;
+      background-clip: border-box !important;
+    }
   }
 
   /* ──────────────────────────────────────────────────────────────────────
