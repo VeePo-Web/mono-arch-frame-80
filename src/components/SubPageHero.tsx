@@ -10,12 +10,17 @@ interface CtaSpec {
   label: string;
 }
 
+interface DossierMeta {
+  /** Section number, usually a Roman numeral or "·". */
+  sectionNo: string;
+  /** Coordinate / locator phrase rendered to the right of the section number. */
+  coord: string;
+  /** Optional edition tag rendered at the far right (e.g. "Edition I"). */
+  edition?: string;
+}
+
 interface SubPageHeroProps {
-  /** @deprecated retained for back-compat; no longer rendered. */
-  eyebrowNumeral?: string;
   eyebrowLabel: string;
-  /** @deprecated retained for back-compat; no longer rendered. */
-  coordMark?: string;
   /** Plain headline. Use `accentWord` to italicize+underline a single word. */
   headline: string;
   /** Optional accent word — italicized in evergreen with hand-drawn underline. */
@@ -27,6 +32,8 @@ interface SubPageHeroProps {
   vignette?: ReactNode;
   /** Optional folio/locator text shown above the headline (e.g. "T0L · Bragg Creek"). */
   folio?: string;
+  /** Optional editorial dossier strip rendered between eyebrow and headline. */
+  dossier?: DossierMeta;
   /** Compact variant — used by ThankYou + 404 to reduce vertical weight. */
   compact?: boolean;
 }
@@ -44,6 +51,7 @@ const SubPageHero = ({
   secondaryCta,
   vignette,
   folio,
+  dossier,
   compact = false,
 }: SubPageHeroProps) => {
   // Split the headline around accentWord (first occurrence) so we can render
