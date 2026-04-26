@@ -68,7 +68,7 @@ const Decking = () => {
       />
 
       {/* § I — Planning considerations */}
-      <RevealSection aria-labelledby="planning-heading" className={SECTION}>
+      <RevealSection id="planning" aria-labelledby="planning-heading" className={SECTION}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -110,7 +110,7 @@ const Decking = () => {
       </RevealSection>
 
       {/* § II — Rural lifestyle pull-quote */}
-      <RevealSection aria-labelledby="lifestyle-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection id="lifestyle" aria-labelledby="lifestyle-heading" className={cn(SECTION, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
             <Eyebrow align="center" numeral="II" label="WHY IT MATTERS" />
@@ -124,7 +124,7 @@ const Decking = () => {
       </RevealSection>
 
       {/* § III — Materials note */}
-      <RevealSection aria-labelledby="materials-heading" className={SECTION}>
+      <RevealSection id="materials" aria-labelledby="materials-heading" className={SECTION}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -167,7 +167,7 @@ const Decking = () => {
 
       {/* § IV — Project proof */}
       {proof && (
-        <RevealSection aria-labelledby="proof-heading" className={cn(SECTION, "section-wash cv-auto")}>
+        <RevealSection id="proof" aria-labelledby="proof-heading" className={cn(SECTION, "section-wash cv-auto")}>
           <Container size="wide">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
               <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>

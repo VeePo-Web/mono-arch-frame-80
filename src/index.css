@@ -508,6 +508,92 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
+     Hamburger — three lines morph to an X. Top + bottom only (no middle):
+     keeps the form quieter and the morph cleaner.
+     ────────────────────────────────────────────────────────────────────── */
+  .hamburger-stage {
+    /* The two lines sit at the top and bottom of the stage at rest. */
+  }
+  .hamburger-line {
+    transition:
+      transform 320ms var(--ease-swift),
+      top 320ms var(--ease-swift),
+      bottom 320ms var(--ease-swift);
+    will-change: transform;
+  }
+  .hamburger-line--top { top: 0; }
+  .hamburger-line--bottom { bottom: 0; }
+  .hamburger-stage[data-open="true"] .hamburger-line--top {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .hamburger-stage[data-open="true"] .hamburger-line--bottom {
+    bottom: 50%;
+    transform: translateY(50%) rotate(-45deg);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Menu drawer — fullscreen editorial Site Map.
+     Backdrop: soft plaster wash (not a flat black scrim).
+     Panel: opacity + 8px lift on enter; 200ms exit.
+     Items: staggered fade-up via per-item animation-delay.
+     ────────────────────────────────────────────────────────────────────── */
+  .menu-drawer__overlay {
+    background: hsl(var(--background) / 0.6);
+    backdrop-filter: blur(4px);
+    animation: drawer-overlay-in 240ms var(--ease-weighted) both;
+  }
+  .menu-drawer__overlay[data-state="closed"] {
+    animation: drawer-overlay-out 180ms var(--ease-swift) both;
+  }
+  .menu-drawer {
+    animation: drawer-panel-in 320ms var(--ease-weighted) both;
+  }
+  .menu-drawer[data-state="closed"] {
+    animation: drawer-panel-out 200ms var(--ease-swift) both;
+  }
+  @keyframes drawer-overlay-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes drawer-overlay-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+  @keyframes drawer-panel-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes drawer-panel-out {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(4px); }
+  }
+  .menu-drawer__primary,
+  .menu-drawer__label,
+  .menu-drawer__link,
+  .menu-drawer__cta {
+    opacity: 0;
+    animation: drawer-item-rise 480ms var(--ease-weighted) forwards;
+  }
+  @keyframes drawer-item-rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .menu-drawer__overlay,
+    .menu-drawer,
+    .menu-drawer__primary,
+    .menu-drawer__label,
+    .menu-drawer__link,
+    .menu-drawer__cta,
+    .hamburger-line {
+      animation-duration: 1ms !important;
+      transition-duration: 1ms !important;
+      transform: none !important;
+    }
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
      Section wash — two-tone vertical gradient replaces flat bg-card/40.
      Adds depth without paint cost.
      ────────────────────────────────────────────────────────────────────── */

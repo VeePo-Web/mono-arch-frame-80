@@ -67,7 +67,7 @@ const Contact = () => {
       />
 
       {/* § I — What happens + form + direct-contact panel */}
-      <RevealSection aria-labelledby="form-heading" className="pb-24 md:pb-32">
+      <RevealSection id="form" aria-labelledby="form-heading" className="pb-24 md:pb-32">
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
             {/* Sticky left rail — stays visible as the form is filled */}
@@ -186,7 +186,7 @@ const Contact = () => {
       </RevealSection>
 
       {/* § II — Custom quote reassurance */}
-      <RevealSection aria-labelledby="quote-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection id="quote" aria-labelledby="quote-heading" className={cn(SECTION, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
             <Eyebrow align="center" numeral="II" label="ABOUT THE QUOTE" />
@@ -206,7 +206,7 @@ const Contact = () => {
       </RevealSection>
 
       {/* § III — Service-area trust line */}
-      <RevealSection aria-labelledby="areas-heading" className={cn(SECTION, "cv-auto")}>
+      <RevealSection id="areas" aria-labelledby="areas-heading" className={cn(SECTION, "cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
