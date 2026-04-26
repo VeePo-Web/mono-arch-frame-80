@@ -8,6 +8,8 @@ import ChapterSpine from "./components/ChapterSpine";
 import PageSlug from "./components/PageSlug";
 import RoutePrefetcher from "./components/RoutePrefetcher";
 import StickyConsultBar from "./components/StickyConsultBar";
+import QuickContactSheet from "./components/QuickContactSheet";
+import QuickContactFab from "./components/QuickContactFab";
 
 // Eager: home (LCP-critical) + 404 (tiny, instant fallback)
 import Index from "./pages/Index";
@@ -102,6 +104,8 @@ const App = () => (
         </Suspense>
         <Footer />
         <StickyConsultBar />
+        <QuickContactFab />
+        <QuickContactSheet />
         <DeferredToasters />
       </BrowserRouter>
     </TooltipProvider>
