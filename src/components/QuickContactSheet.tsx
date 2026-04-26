@@ -43,11 +43,13 @@ const QuickContactSheet = () => {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; contact?: string; message?: string }>({});
+  const [dragY, setDragY] = useState(0);
   const titleId = useId();
   const liveId = useId();
   const beginRef = useRef<HTMLButtonElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const textRef = useRef<HTMLTextAreaElement | null>(null);
+  const dragStateRef = useRef<{ y: number; t: number; active: boolean } | null>(null);
 
   // Subscribe to global open events
   useEffect(() => {
@@ -63,16 +65,49 @@ const QuickContactSheet = () => {
   const looksLikePhone = /^[+\d(]/.test(contact.trim());
 
   // Focus management — move focus to the new question's primary input
-  // after each step transition, deferred so the slide animation completes.
+  // after each step transition, deferred so the slide animation completes
+  // *before* the keyboard rises. (260ms > 220ms qc-step-in.)
   useEffect(() => {
     if (!open) return;
     const t = setTimeout(() => {
       if (step === "invite") beginRef.current?.focus();
       else if (step === "name" || step === "contact") inputRef.current?.focus();
       else if (step === "message") textRef.current?.focus();
-    }, 280);
+    }, 260);
     return () => clearTimeout(t);
   }, [step, open]);
+
+  // Swipe-to-dismiss — pointer drag from the top ~90px of the sheet
+  // (handle + top bar zone). >120px or velocity >0.5 px/ms closes.
+  // Scoped to that strip so textarea scroll on the message step is unaffected.
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+    const localY = e.clientY - rect.top;
+    if (localY > 90) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    dragStateRef.current = { y: e.clientY, t: performance.now(), active: true };
+    target.setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const s = dragStateRef.current;
+    if (!s?.active) return;
+    const dy = Math.max(0, e.clientY - s.y);
+    setDragY(dy);
+  };
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const s = dragStateRef.current;
+    if (!s?.active) {
+      setDragY(0);
+      return;
+    }
+    const dy = Math.max(0, e.clientY - s.y);
+    const dt = Math.max(1, performance.now() - s.t);
+    const v = dy / dt; // px per ms
+    dragStateRef.current = null;
+    setDragY(0);
+    if (dy > 120 || v > 0.5) setOpen(false);
+  };
 
   const reset = () => {
     setStep("invite");
@@ -138,11 +173,11 @@ const QuickContactSheet = () => {
     }
 
     setStep("done");
-    toast.success("Thank you. We'll be in touch.");
+    toast.success("Thank you. We'll be in touch shortly.");
     setTimeout(() => {
       setOpen(false);
       setTimeout(reset, 280);
-    }, 4500);
+    }, 3800);
   };
 
   // Live-region announcements for step transitions
@@ -189,6 +224,10 @@ const QuickContactSheet = () => {
             // Manual focus so the close button isn't the initial target
             beginRef.current?.focus();
           }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
           className={cn(
             "lg:hidden",
             "fixed inset-x-0 bottom-0 z-50 max-h-[88svh] overflow-y-auto",
@@ -198,18 +237,29 @@ const QuickContactSheet = () => {
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
             "data-[state=closed]:duration-300 data-[state=open]:duration-[420ms]",
-            "qc-sheet",
+            "qc-sheet touch-pan-y",
           )}
           style={{
             paddingBottom: "max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem))",
+            transform: dragY > 0 ? `translateY(${dragY}px)` : undefined,
+            transition: dragY > 0 ? "none" : undefined,
           }}
         >
-          {/* Drag handle pill */}
-          <div className="pt-3 pb-1 flex items-center justify-center" aria-hidden="true">
-            <span className="block h-1.5 w-12 rounded-full bg-evergreen/40" />
-          </div>
+          {/* Drag handle pill — also a tap-to-dismiss target. */}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close"
+            className={cn(
+              "block w-full pt-3 pb-1.5 flex items-center justify-center",
+              "focus-visible:outline-none focus-visible:bg-foreground/[0.02]",
+            )}
+          >
+            <span aria-hidden="true" className="block h-1.5 w-12 rounded-full bg-evergreen/40" />
+          </button>
 
-          {/* Top bar — back arrow (when past invite) + close */}
+          {/* Top bar — back arrow (when past invite) + close. Progress moved
+              under the question, so this row is clean on form steps. */}
           <div className="relative h-12 px-2">
             {step !== "invite" && step !== "done" && (
               <button
@@ -226,28 +276,6 @@ const QuickContactSheet = () => {
               >
                 <ArrowLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
               </button>
-            )}
-
-            {/* Progress dots — only on form steps */}
-            {stepIndex >= 0 && (
-              <div
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5"
-                aria-hidden="true"
-              >
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className={cn(
-                      "block h-1.5 rounded-full transition-all duration-400",
-                      i === stepIndex
-                        ? "w-5 bg-evergreen"
-                        : i < stepIndex
-                          ? "w-1.5 bg-evergreen/70"
-                          : "w-1.5 bg-evergreen/20",
-                    )}
-                  />
-                ))}
-              </div>
             )}
 
             <DialogPrimitive.Close
@@ -273,17 +301,15 @@ const QuickContactSheet = () => {
             {/* ── STEP: invite ─────────────────────────────────────────── */}
             {step === "invite" && (
               <div key="invite" className="qc-step">
-                <p className="text-[0.7rem] tracking-[0.22em] uppercase text-evergreen/80 font-medium">
-                  Quick Contact
-                </p>
                 <DialogPrimitive.Title
                   id={titleId}
-                  className="mt-3 font-serif text-foreground text-[1.7rem] leading-[1.15] max-w-[18ch]"
+                  className="font-serif text-foreground leading-[1.12] max-w-[18ch]"
+                  style={{ fontSize: "clamp(1.55rem, 6.5vw, 1.85rem)" }}
                 >
                   Let&rsquo;s start a conversation.
                 </DialogPrimitive.Title>
                 <p className="mt-3 text-[0.95rem] text-muted-foreground leading-relaxed max-w-[36ch]">
-                  Tell us about your project — we&rsquo;ll reply within two business days.
+                  Tell us about the project. We reply within two business days.
                 </p>
 
                 <button
@@ -305,16 +331,16 @@ const QuickContactSheet = () => {
                   </span>
                 </button>
 
-                {/* Hairline divider with italic seam */}
+                {/* Hairline seam — softer copy than before. */}
                 <div className="mt-7 flex items-center gap-3" aria-hidden="true">
                   <span className="flex-1 h-px bg-border" />
                   <span className="font-serif italic text-foreground/55 text-[0.85rem]">
-                    or, the old-fashioned way
+                    or reach us directly
                   </span>
                   <span className="flex-1 h-px bg-border" />
                 </div>
 
-                {/* Ghost rows — call + email */}
+                {/* Ghost rows — single line each, no duplicate eyebrows. */}
                 <ul className="mt-3 -mx-1">
                   <li>
                     <a
@@ -329,11 +355,8 @@ const QuickContactSheet = () => {
                       aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                     >
                       <Phone className="h-4 w-4 text-evergreen/80 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                      <span className="flex-1 flex flex-col gap-0.5">
-                        <span className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75">Call</span>
-                        <span className="font-serif text-[1rem] tabular-nums text-foreground/90">
-                          {STUDIO_PHONE_DISPLAY}
-                        </span>
+                      <span className="flex-1 font-serif text-[1.05rem] tabular-nums text-foreground/90">
+                        {STUDIO_PHONE_DISPLAY}
                       </span>
                       <ChevronRight
                         className="h-4 w-4 text-foreground/40 transition-transform duration-300 group-hover/row:translate-x-0.5"
@@ -355,11 +378,8 @@ const QuickContactSheet = () => {
                       aria-label={`Email ${STUDIO_EMAIL}`}
                     >
                       <Mail className="h-4 w-4 text-evergreen/80 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                      <span className="flex-1 flex flex-col gap-0.5">
-                        <span className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75">Email</span>
-                        <span className="font-serif text-[1rem] text-foreground/90 truncate">
-                          hello@havencreek…
-                        </span>
+                      <span className="flex-1 font-serif text-[1.05rem] text-foreground/90 truncate">
+                        hello@havencreek…
                       </span>
                       <ChevronRight
                         className="h-4 w-4 text-foreground/40 transition-transform duration-300 group-hover/row:translate-x-0.5"
@@ -375,9 +395,11 @@ const QuickContactSheet = () => {
             {/* ── STEP: name ─────────────────────────────────────────── */}
             {step === "name" && (
               <div key="name" className="qc-step">
-                <p className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75 font-medium">
-                  Step 1 of 3
-                </p>
+                <div className="qc-progress" aria-hidden="true">
+                  <span data-state="active" />
+                  <span />
+                  <span />
+                </div>
                 <h2
                   id={titleId}
                   className="mt-3 font-serif text-foreground text-[1.65rem] leading-[1.15] max-w-[18ch]"
@@ -442,9 +464,11 @@ const QuickContactSheet = () => {
             {/* ── STEP: contact ──────────────────────────────────────── */}
             {step === "contact" && (
               <div key="contact" className="qc-step">
-                <p className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75 font-medium">
-                  Step 2 of 3
-                </p>
+                <div className="qc-progress" aria-hidden="true">
+                  <span data-state="done" />
+                  <span data-state="active" />
+                  <span />
+                </div>
                 <h2 className="mt-3 font-serif text-foreground text-[1.65rem] leading-[1.15] max-w-[18ch]">
                   How can we reach you?
                 </h2>
@@ -512,9 +536,11 @@ const QuickContactSheet = () => {
             {/* ── STEP: message ──────────────────────────────────────── */}
             {step === "message" && (
               <div key="message" className="qc-step">
-                <p className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75 font-medium">
-                  Step 3 of 3
-                </p>
+                <div className="qc-progress" aria-hidden="true">
+                  <span data-state="done" />
+                  <span data-state="done" />
+                  <span data-state="active" />
+                </div>
                 <h2 className="mt-3 font-serif text-foreground text-[1.65rem] leading-[1.15] max-w-[20ch]">
                   Tell us a sentence about the project.
                 </h2>
@@ -529,6 +555,7 @@ const QuickContactSheet = () => {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="A sentence is plenty."
+                    maxLength={2000}
                     className={cn(
                       "flex min-h-[120px] w-full rounded-lg border bg-background/60 px-4 py-3",
                       "text-[1.05rem] text-foreground resize-y",
@@ -540,9 +567,19 @@ const QuickContactSheet = () => {
                     aria-invalid={Boolean(errors.message)}
                     aria-describedby={errors.message ? "qc-message-err" : undefined}
                   />
-                  {errors.message && (
-                    <p id="qc-message-err" className="mt-2 text-sm text-destructive">{errors.message}</p>
-                  )}
+                  <div className="mt-2 flex items-start justify-between gap-3 min-h-[1.25rem]">
+                    {errors.message ? (
+                      <p id="qc-message-err" className="text-sm text-destructive">{errors.message}</p>
+                    ) : (
+                      <span aria-hidden="true" />
+                    )}
+                    {/* Quiet character counter — only after 200 chars. */}
+                    {message.length >= 200 && (
+                      <span className="ml-auto text-[0.7rem] tabular-nums text-muted-foreground/60 shrink-0">
+                        {message.length}/2000
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <button
@@ -559,15 +596,39 @@ const QuickContactSheet = () => {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   )}
                 >
-                  <span>{submitting ? "Sending…" : "Send"}</span>
+                  <span>{submitting ? "Sending…" : "Send note"}</span>
                   <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-background/15">
                     <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                   </span>
                 </button>
 
-                <p className="mt-3 text-[0.7rem] tracking-[0.18em] uppercase text-muted-foreground/85 leading-relaxed">
-                  Reply within 2 business days · No obligation
+                <p className="mt-4 font-serif italic text-foreground/65 text-[0.9rem] leading-relaxed">
+                  No obligation. Reply within two business days.
                 </p>
+              </div>
+            )}
+
+            {/* ── STEP: done ─────────────────────────────────────────── */}
+            {step === "done" && (
+              <div key="done" className="qc-step py-2" role="status" aria-live="polite">
+                <p className="font-serif italic font-light text-foreground text-[1.55rem] leading-snug qc-shimmer">
+                  Thank you. We&rsquo;ll be in touch shortly.
+                </p>
+                <p className="mt-3 text-[0.95rem] text-muted-foreground leading-relaxed">
+                  We respond within two business days.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "mt-5 inline-flex items-center text-[0.85rem] text-evergreen/85 hover:text-evergreen",
+                    "underline underline-offset-4 decoration-evergreen/30 hover:decoration-evergreen",
+                    "transition-colors duration-300",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm",
+                  )}
+                >
+                  Close
+                </button>
               </div>
             )}
 

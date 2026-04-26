@@ -1,184 +1,100 @@
+## Round 4 — Mobile Contact UX Polish
 
-# Round 4 — "Fantasy.co" Mobile Contact Refinement
-
-> **Constraint reminder:** desktop is byte-for-byte locked. Every change below sits behind `lg:hidden`, an `<sm` / `sm:` gate, or only touches mobile-only components (`QuickContactSheet`, `QuickContactFab`, mobile nav Sheet, mobile-only branches in `StickyConsultBar` / `ConsultationForm`).
-
----
-
-## The problem with the current Quick Contact sheet
-
-Audit of `src/components/QuickContactSheet.tsx` (the sheet you just shipped):
-
-1. **Three competing CTAs visible at once** — two instant tiles (Call / Email), then a 3-field form, then an escape link to `/contact`. The eye doesn't know where to land. Fantasy.co's contact pages always present **one primary action per moment**.
-2. **Form is heavy on first paint** — name + contact + textarea + submit + microcopy = ~5 input rows visible immediately. For a "quick" sheet this reads as a commitment, not an invitation.
-3. **The "or send a short note" hairline divider** is doing too much work — it's both visual seam and decision point.
-4. **Escape link at the foot ("Open the full form")** dilutes the primary action — visitors who'd send the note now wonder whether they should switch.
-5. **Two body copy paragraphs** (description + footnote) compete with the headline; Fantasy uses **one elegant line**.
-6. **Tiles read as duplicate primary buttons** — same evergreen tint as the submit pill, no visual hierarchy between "instant" and "considered."
-7. **Title "How would you like to reach us?"** is functional, not inviting. Fantasy copy is warm: *"Let's start a conversation."*
-8. **No "smart default"** — a cautious lead has to choose between three options before committing.
-
-The fix is **progressive disclosure**: show one warm invitation + the **single most important action**, with the alternates tucked behind a quiet secondary affordance.
+**Constraint:** every change is gated `lg:hidden` or `@media (max-width: 1023px)`. Desktop renders byte-for-byte unchanged.
 
 ---
 
-## §1 · QuickContactSheet — a two-step, one-action redesign
+### 1. `QuickContactSheet.tsx` — quieter invite, faster path
 
-### 1.1 — Step 1 (the "invitation" step, what opens by default)
+**Problem today:** the invite step shows *four* stacked elements (eyebrow "Quick Contact" + headline + body + Begin pill), then a divider, then two ghost rows. Six discrete things on first reveal. Fantasy.co's signature is fewer, larger, calmer.
 
-**Replace the current dual-tile + form layout with:**
+**Changes (mobile-only — this whole file is `lg:hidden`):**
 
-- **Headline (DM Serif Display, ~1.65rem):** *"Let's start a conversation."*
-- **One-line subhead (muted, ~0.92rem):** *"Tell us about your project — we'll reply within two business days."*
-- **One single primary action — a full-width "Begin" pill** (evergreen, 56 px min, arrow chip on the right). Tapping it transitions Step 1 → Step 2 with a **220 ms cross-fade + 4 px upward slide**.
-- **Below the pill, two quiet secondary "ghost rows"** (NOT tiles — flat, hairline-separated, icon + label + value, no fill):
-  - `📞 Call (403) 555-0100 · Mon–Fri`
-  - `✉ Email hello@havencreekrenovations.ca · Reply ≤ 2 days`
-  - Each is `min-h-[56px]`, full-width, `tel:` / `mailto:`, with a right chevron `›` to signal "leaves the sheet."
-- **No "Open the full form" escape** — the sheet itself IS the form once the user taps Begin. (Removing this drops one decision point and shortens the sheet by ~80 px.)
+- **Drop the "Quick Contact" eyebrow** on the invite step. The sheet itself *is* the eyebrow. This removes one item from the visual stack.
+- **Soften the headline** from `text-[1.7rem]` to `clamp(1.55rem, 6.5vw, 1.85rem)` and let it breathe (`leading-[1.12]`).
+- **Body copy compression:** "Tell us about your project — we'll reply within two business days." → "Tell us about the project. We reply within two business days." Period instead of em-dash; one less visual hop.
+- **Single primary action stays "Begin"** (per your prior pick). Pill height stays 60px.
+- **Italic seam refinement:** "or, the old-fashioned way" is charming but reads slightly fussy. Replace with simpler "or reach us directly" in the same italic serif. Keep the hairline rule.
+- **Ghost rows:** drop the eyebrow caps ("CALL"/"EMAIL") inside each row — they duplicate the icon's meaning. Keep the icon, single line of value, chevron. Visual weight drops ~30%.
+- **Swipe-to-dismiss:** add a `pointerdown`/`pointermove`/`pointerup` handler on the sheet root that tracks vertical drag from the top 80px (handle + top bar zone). >120px or >0.5 px/ms velocity → close. Provides the iOS-native gesture every visitor reaches for first.
+- **Drag-handle pill:** make it the actual hit target for dismiss-on-tap (currently decorative). 28px tall hit zone, visually still 1.5px.
+- **Keyboard step transitions:** today each step uses `key={step}` causing remount + 320ms `qc-step-in`. On the smallest phones the keyboard popping over the new field while it's still animating feels janky. Reduce step animation duration to 220ms and stagger the focus call to `260ms` so the keyboard rises *after* the slide settles.
 
-**Visual rhythm (Fantasy hallmark):**
-- 48 px top padding above the headline (more breathing room than now).
-- 32 px gap between headline and the Begin pill.
-- 20 px gap between Begin pill and the secondary rows.
-- Hairline above the secondary rows reads as *"or, the old-fashioned way"* in italic serif at `text-[0.85rem] text-foreground/55`.
+### 2. `QuickContactSheet.tsx` — back/forward affordance refinement
 
-### 1.2 — Step 2 (the "form" step, after Begin)
+**Problem today:** progress dots are centered, back arrow is left, close X is right — three independent affordances on one row. Cluttered for a "single field" screen.
 
-**Single-field-at-a-time progressive form** (Typeform / Fantasy.co interaction model):
+**Changes:**
+- Move progress dots to **directly under the question**, not in the top bar. They become a hairline-thin progress bar (3 segments, 2px tall, `bg-evergreen/15` → fill `bg-evergreen` for completed) above the question heading. This makes the top bar clean: only back-arrow (left) and close-X (right) on form steps.
+- Add a hairline divider at sheet bottom edge while keyboard is open so the page edge doesn't feel cut off.
 
-- One question visible at a time, large type, generous breathing room.
-- **Question 1:** *"What's your name?"* — single text input, 56 px tall, autoFocus, `enterKeyHint="next"` advances to Q2.
-- **Question 2:** *"How can we reach you?"* — single input, smart `tel`/`email` keyboard switch (already wired), `enterKeyHint="next"`.
-- **Question 3:** *"Tell us a sentence about the project."* — textarea, 3 rows, `enterKeyHint="send"`.
-- **Submit pill** appears only on Q3, full-width.
-- **Progress indicator:** three small evergreen dots at the top of the sheet (`● ○ ○`, `● ● ○`, `● ● ●`) — minimal, not a percentage bar.
-- **"Back" arrow** in the top-left of the sheet (replaces the close `X` once past Step 1; the close `X` moves to coexist or the back arrow turns into close on Step 1). Pattern:
-  - Step 1: top-right close `X` only.
-  - Step 2 (Q1): top-left back chevron (returns to Step 1) + top-right close `X`.
-  - Step 2 (Q2/Q3): top-left back chevron (returns to previous question) + top-right close `X`.
+### 3. `QuickContactSheet.tsx` — message step polish
 
-**Animation:** each question transition is a 280 ms horizontal slide (incoming from `translate-x-4`, outgoing to `translate-x-[-1rem]`) + cross-fade. Honors `prefers-reduced-motion` (just cross-fade, no translate).
+- Add a quiet character counter beneath the textarea: `{n}/2000` in `text-[0.7rem] text-muted-foreground/60 tabular-nums`, right-aligned. Only appears once user types ≥ 200 chars (no anxiety for short notes).
+- Replace the trailing strip "Reply within 2 business days · No obligation" with a softer "No obligation. Reply within two business days." (single sentence, less admin-form feel).
+- Submit pill copy: "Send" → "Send note" (Fantasy-tone — verb + noun feels intentional, not transactional).
 
-**Why this works:** Fantasy.co's own contact form on `fantasy.co/contact` uses a similarly stripped, one-question-at-a-time pattern. Cognitive load per screen drops from "five things" to "one thing." Drop-off rates on mobile lead-capture forms are ~40 % lower for one-field-at-a-time vs. all-at-once (Baymard Institute, 2023).
+### 4. `QuickContactSheet.tsx` — success step refinement
 
-### 1.3 — Step 3 (success state — already exists, polish only)
+- Currently auto-closes after 4.5s. Some users want to read it. Reduce to 3.8s but add a tiny "Close" link beneath the body text so impatient users can dismiss instantly.
+- Headline copy: "Thank you. We'll be in touch." → "Thank you. We'll be in touch shortly." (the *shortly* is the warmth multiplier; Fantasy-style copy lives in those small additions).
 
-- Keep the "Thank you. We'll be in touch." line.
-- Add a quiet **"Send another note"** ghost link below the receipt timestamp.
-- Keep auto-close at 4.5 s.
-- Add a subtle 1 s evergreen shimmer across the headline on mount (CSS `@keyframes`, respects `prefers-reduced-motion`).
+### 5. `QuickContactFab.tsx` — calmer presence
 
-### 1.4 — Sheet chrome polish
+**Problem today:** 3-cycle 4s breathing pulse can feel insistent on a quiet editorial page. The session-flash pill ("Start a conversation") is good but appears once and never returns.
 
-- **Drag handle pill** stays — but widen to `w-12 h-1.5` and warm to `bg-evergreen/40`.
-- **Backdrop:** keep `bg-foreground/40 backdrop-blur-[2px]` but add a `transition-opacity duration-400` so the blur eases in.
-- **Sheet enter animation:** keep slide-in-from-bottom, but extend to 420 ms with `cubic-bezier(0.22, 1, 0.36, 1)` (the "expressive" curve — feels more premium than `ease-out`).
-- **Outer rounding:** `rounded-t-[1.5rem]` (up from `1.25rem`) — softer, more inviting.
-- **Drop the heavy shadow** in favour of a hairline top border + a 1-pixel inner highlight. Cleaner, more editorial.
+**Changes:**
+- **Reduce breathing to 2 cycles** (8s total) and lower amplitude — the outer ring opacity drops from `0.10` to `0.07`.
+- **Add a "after long idle" gentle re-flash:** if the user is on a FAB-eligible page for >45s and has scrolled >50% of the page without interacting with the FAB, do *one* additional 2.5s label flash. Capped at one per session via the existing `hc:fab:flashed-late` key.
+- **Slightly larger FAB:** 56px → 60px for clearer thumb target on 360px-wide phones. Bottom offset bumped to `max(1.5rem, env(safe-area-inset-bottom)+1.25rem)` so it sits clear of the StickyConsultBar when both render.
+- **Z-index audit:** FAB is `z-40`, sticky bar is `z-40`, sheet overlay is `z-50`. Today they can overlap visually on /work. Bump FAB to `z-30` so the sticky bar always wins, and offset FAB upward by `--sticky-bar-h` (a CSS variable the bar sets on `:root`) when sticky bar is mounted.
 
----
+### 6. `StickyConsultBar.tsx` — copy + height harmony
 
-## §2 · Sticky bar copy — match the new tone
+- Mobile pill copy "Start a conversation" is good. Keep.
+- Add `--sticky-bar-h: 64px` CSS var to `:root` while the bar is mounted (and clear it on unmount) so the FAB can offset against it.
+- Body padding reservation: today we add `pb-[64px]` on mobile globally. That's right when the bar is visible; redundant when dismissed. Drive it from `--sticky-bar-h` so dismissal recovers the space.
 
-In `StickyConsultBar.tsx`, the mobile pill currently reads `"Request a Consultation"`. Update **on mobile only** (`lg:hidden` branch) to **"Start a conversation"** — matches the sheet headline, friendlier, two words shorter so the pill feels lighter at thumb reach. Desktop pill text is **unchanged**.
+### 7. `Navigation.tsx` mobile sheet — clearer thumb-zone CTA
 
-The lead label `"Ready when you are."` (currently `hidden sm:block`) is fine on tablet — leave alone.
+- The bottom CTA pill works but the supporting micro-line ("Reply within two business days.") sits under the pill. Move it *above* the pill in italic serif `text-[0.85rem] text-foreground/65` — same pattern as Fantasy.co's nav drawer where the warmth is the lead-in, the action is the close.
+- Add a hairline-quiet "Call studio" + "Email studio" pair *above* the divider, so the mobile nav also offers instant non-form contact. Two ghost rows, identical styling to the sheet's ghost rows for design-system consistency.
 
----
+### 8. `index.css` — system-level polish
 
-## §3 · Mobile-nav consultation pill — same copy harmonisation
+- Add `.qc-progress` styles (the new under-question hairline progress bar) with smooth-fill transitions.
+- Add `.qc-fab[data-late-flash="true"]` modifier for the long-idle re-flash animation.
+- Reduced-motion: progress bar fills instantly; FAB late-flash disabled.
+- Add `:root { --sticky-bar-h: 0px; }` default and `[data-sticky-bar="visible"] { --sticky-bar-h: 64px; }` toggled by the bar.
 
-In `Navigation.tsx`'s mobile Sheet bottom CTA (which already opens the QuickContactSheet), change label from `"Request a Consultation"` to `"Start a conversation"` and the supporting microcopy from `"No pressure. Just a clear conversation."` to **"Reply within two business days."** (Inviting, not defensive — Fantasy never apologises for asking.)
+### 9. Memory update
 
----
-
-## §4 · QuickContactFab — softer, more inviting
-
-Currently a 56 × 56 evergreen circle with a `MessageCircle` icon. Three refinements:
-
-- **Replace the icon with a small "+" or chat-bubble outline** at `strokeWidth={1.25}` (lighter, more elegant).
-- **Add a subtle 4-second-cycle "breathing" pulse** when first scrolled into the viewport — `box-shadow` from `0 8px 24px -8px hsl(145 24%/0.45)` to `0 12px 32px -10px hsl(145 24%/0.55)` and back. Stops after the first 3 cycles or when the user taps. Honors `prefers-reduced-motion`.
-- **First-tap-of-session label flash:** the FAB briefly expands to a pill showing **"Start a conversation"** for 2.5 s on first scroll-into-view per session (sessionStorage-gated), then collapses back to a circle. Welcoming, not nagging.
+Refresh `mem://features/quick-contact-sheet` to reflect:
+- Reduced visual weight on invite step
+- New under-question progress bar location
+- Swipe-to-dismiss gesture
+- FAB late-flash + sticky-bar offset coordination
 
 ---
 
-## §5 · Inline `ConsultationForm` (used on `/contact` and the home final CTA) — mobile-only polish
+### What I am **not** changing this round
+- Submission flow / Supabase shape — already correct.
+- Desktop `/contact` page, hero, and inline form — locked.
+- Brand tokens (cedar/evergreen/cream) — locked.
+- Any non-mobile component file.
 
-On `<sm` only (desktop and tablet unchanged):
+### Files touched
+1. `src/components/QuickContactSheet.tsx` — invite refinement, swipe-to-dismiss, progress bar relocation, message + success polish
+2. `src/components/QuickContactFab.tsx` — calmer pulse, late re-flash, sticky-bar offset
+3. `src/components/StickyConsultBar.tsx` — `--sticky-bar-h` CSS var publishing
+4. `src/components/Navigation.tsx` — bottom CTA reflow + ghost call/email rows
+5. `src/index.css` — `.qc-progress`, late-flash keyframe, root sticky-bar-h var, reduced-motion overrides
+6. `mem://features/quick-contact-sheet` — refresh
 
-- **Field height** from `h-11` → `h-12` (48 px touch floor).
-- **Wider rounded corners** on inputs `rounded-md` → `rounded-lg` for a softer, more contemporary feel.
-- **Submit pill copy:** keep `"Request the Conversation"` (it's distinctive and on-brand) but on `<sm` increase to `min-h-[60px]` for thumb prominence.
-- **Optional-context disclosure** — change the trigger chevron + "OPTIONAL" tag to **"+ Add timing, budget, or location"** with a `+` icon that rotates to `×` when open. Smaller, more obviously a discretionary add-on.
-- **Field separators** — currently `border-b border-evergreen/10` between fields. On `<sm`, drop these (too busy on a narrow column). Replace with `space-y-6` for breathing room.
+### Open question for you (one only)
 
----
+**Swipe-to-dismiss scope (§ 1):**
+- **(A) Recommended:** drag from the top ~80px (handle + top bar) only. Predictable, doesn't conflict with form scrolling.
+- **(B) Anywhere on the sheet.** More iOS-native but conflicts with textarea scroll on the message step.
 
-## §6 · Microcopy pass (mobile-only — desktop unchanged)
-
-| Surface | Before | After |
-|---|---|---|
-| Sheet headline | "How would you like to reach us?" | **"Let's start a conversation."** |
-| Sheet subhead | "Tap to call or email instantly — or send a short note below…" | **"Tell us about your project — we'll reply within two business days."** |
-| Sheet primary CTA | "Send a short note" | **"Begin"** (Step 1) → **"Send"** (Step 3) |
-| Sheet footnote | "Reply within 2 business days · No obligation" | (removed — already in subhead) |
-| Mobile sticky pill | "Request a Consultation" | **"Start a conversation"** |
-| Mobile-nav pill | "Request a Consultation" | **"Start a conversation"** |
-| Mobile-nav supporting | "No pressure. Just a clear conversation." | **"Reply within two business days."** |
-| FAB aria-label | "Open quick contact" | **"Start a conversation"** |
-| FAB first-view label flash | (none) | **"Start a conversation"** |
-
----
-
-## §7 · Accessibility & motion
-
-- Each step transition announces via `aria-live="polite"` ("Step 2 of 3: how can we reach you?").
-- Back/forward buttons have explicit `aria-label`s.
-- All step transitions honor `@media (prefers-reduced-motion: reduce)` — opacity-only fade, no translate.
-- Focus moves to the new question's input on each step transition (using a `useEffect` that runs after the fade-in completes, so VoiceOver announces the field correctly).
-- Progress dots are `aria-hidden` (the live-region announcement carries the meaning).
-- Escape key still closes the sheet from any step (Radix default).
-
----
-
-## §8 · Files touched
-
-| File | Change |
-|---|---|
-| `src/components/QuickContactSheet.tsx` | Rewrite to the 3-step / one-question-at-a-time model. Same Supabase write logic, same source attribution, same RLS-allowlisted source. |
-| `src/components/StickyConsultBar.tsx` | Mobile-branch button text only. |
-| `src/components/Navigation.tsx` | Mobile-nav bottom-CTA text + supporting copy only. |
-| `src/components/QuickContactFab.tsx` | Icon swap, breathing pulse, first-view label flash, aria-label. |
-| `src/components/ConsultationForm.tsx` | Mobile-only (`sm:` gate) input heights, rounding, submit-pill min-height, "+ Add" disclosure, removed mobile field-separator hairlines. |
-| `src/index.css` | Three additions: `@keyframes hc-breathe`, `@keyframes hc-shimmer`, and a `.qc-step-enter` / `.qc-step-exit` animation pair (with reduced-motion fallback). |
-| `mem://features/quick-contact-sheet` | Update memory to reflect the 3-step pattern. |
-
-**Not touched (no risk to desktop):** `App.tsx`, `Container.tsx`, `Footer.tsx`, `Hero.tsx`, `Index.tsx`, all `/services/*`, `/areas/*`, `/work`, `/about`, `/thank-you`, `/contact` — none of these have a desktop layout that responds to mobile-only sheet changes.
-
----
-
-## §9 · QA checklist (pre-ship)
-
-1. **390 × 844 (iPhone 12)** — sheet opens, Step 1 fits without scroll, Begin reachable with thumb.
-2. **320 × 568 (iPhone SE)** — Step 1 fits without scroll; Step 2 inputs not clipped by the keyboard (sheet should `max-h-[88svh]` already; verify keyboard inset doesn't clobber the submit on Q3).
-3. **414 × 896 (iPhone 11)** — breathing pulse on the FAB visible on /work.
-4. **Reduced motion ON (Settings → Accessibility)** — no slide, no shimmer, no breathing pulse; just opacity fade.
-5. **VoiceOver on iOS** — each step announces; back arrow announces; submit announces.
-6. **Keyboard-only on Android Chrome** — `enterKeyHint` actually advances steps (delegate `onKeyDown` Enter → next step on Q1/Q2; Q3 textarea keeps newline, button is the submit).
-7. **Desktop @ 1280, 1440, 1920** — visual diff vs. current `main`: zero pixels changed. Sheet never opens on desktop (gating is `lg:hidden` on the Content + the FAB itself is `lg:hidden`).
-8. **Tablet @ 768 × 1024 (portrait iPad)** — sheet opens (it's `<lg`); confirm Step 2 inputs feel right at this width (they will because the sheet itself is full-width and we use `text-base`).
-9. **Submission test** — Step 3 → Sending → success → auto-close 4.5 s, Supabase row appears with `source = "quick_contact_sheet"`.
-10. **Honeypot still impossible** — the new sheet has no honeypot field, but that's fine: the sheet is mobile-only, behind a real interaction, and bot traffic almost never targets touch-event-driven dialogs. (The full `ConsultationForm` retains its honeypot.)
-
----
-
-## §10 · Decision I need from you before building
-
-**The core question is the Step-1 layout.** Two viable patterns:
-
-- **(A) The plan above:** "Begin" pill is the single primary; Call & Email are quiet ghost rows beneath. *Most Fantasy-like.* Highest finishing rate on the form (one obvious next step) but a couple fewer instant calls.
-- **(B) Alternate:** Call & Email are the primary tiles (as today, but cleaner styling); "Begin" is the secondary pill below. Better if your data says most leads prefer to call. Slightly more cluttered.
-
-**My recommendation:** (A) — it matches Fantasy's "one ask" philosophy and the persona research (Steady-Steward Sam writes more than he calls). Reply *"go with B"* before approving if you'd rather promote Call/Email; otherwise approving this plan ships (A).
-
+I'll proceed with **(A)** unless you say "swipe anywhere" before approving.

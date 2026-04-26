@@ -1148,18 +1148,37 @@
      ────────────────────────────────────────────────────────────────────── */
 
   /* Each step body fades in + slides up 6px. Driven by React's `key` on
-     the wrapper so a fresh element mounts per step. */
+     the wrapper so a fresh element mounts per step. Round 4: shorter
+     220ms duration so the keyboard rises *after* the slide settles. */
   .qc-step {
-    animation: qc-step-in 320ms var(--ease-weighted) both;
+    animation: qc-step-in 220ms var(--ease-weighted) both;
   }
   @keyframes qc-step-in {
     0%   { opacity: 0; transform: translateY(6px); }
     100% { opacity: 1; transform: translateY(0); }
   }
 
-  /* FAB — subtle breathing pulse, three cycles then quiet. */
+  /* Step progress — hairline-thin 3-segment bar that lives directly above
+     the question on form steps. Replaces the top-bar progress dots. */
+  .qc-progress {
+    display: flex;
+    gap: 4px;
+    height: 2px;
+    width: 100%;
+  }
+  .qc-progress span {
+    flex: 1;
+    background: hsl(var(--evergreen) / 0.15);
+    transition: background-color 360ms var(--ease-weighted);
+  }
+  .qc-progress span[data-state="done"],
+  .qc-progress span[data-state="active"] {
+    background: hsl(var(--evergreen));
+  }
+
+  /* FAB — calmer breathing pulse: 2 cycles, lower-amplitude ring. */
   .qc-fab[data-breathe="true"] {
-    animation: qc-fab-breathe 4s var(--ease-weighted) 0s 3;
+    animation: qc-fab-breathe 4s var(--ease-weighted) 0s 2;
   }
   @keyframes qc-fab-breathe {
     0%, 100% {
@@ -1170,7 +1189,7 @@
     50% {
       box-shadow:
         0 14px 36px -10px hsl(145 24% 8% / 0.55),
-        0 0 0 6px hsl(var(--evergreen) / 0.10),
+        0 0 0 5px hsl(var(--evergreen) / 0.07),
         inset 0 1px 0 hsl(145 22% 38% / 0.5);
     }
   }
@@ -1180,6 +1199,13 @@
   @keyframes qc-fab-label-in {
     0%   { opacity: 0; transform: translateX(-4px); }
     100% { opacity: 1; transform: translateX(0); }
+  }
+
+  /* When the StickyConsultBar is visible, lift the FAB ~70px so the two
+     pills never share the same horizontal band. The variable is consumed
+     by .qc-fab's inline `bottom` calc(). */
+  body[data-sticky-bar="shown"] {
+    --qc-fab-extra-bottom: 64px;
   }
 
   /* Success-state shimmer — single 1.2s sweep across the headline. */
@@ -1229,6 +1255,7 @@
     .qc-step { animation: none !important; opacity: 1 !important; transform: none !important; }
     .qc-fab[data-breathe="true"] { animation: none !important; }
     .qc-fab-label { animation: none !important; }
+    .qc-progress span { transition: none !important; }
     .qc-shimmer {
       background-image: none !important;
       animation: none !important;
