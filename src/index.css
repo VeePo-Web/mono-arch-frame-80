@@ -859,6 +859,19 @@
       hsl(var(--evergreen) / 0.06) 13px 14px
     );
   }
+  /* Photographed variant — once a real image is present, suppress the
+     diagonal hatch pattern and the gradient wash so the photo reads cleanly,
+     and apply a slow, gentle scale on group-hover for editorial warmth. */
+  .photo-pending--photographed {
+    background-image: none;
+    padding: 0;
+  }
+  .photo-pending--photographed::before {
+    display: none;
+  }
+  .group:hover .photo-pending--photographed > img {
+    transform: scale(1.025);
+  }
 
   /* ──────────────────────────────────────────────────────────────────────
      Testimonial card — quiet attributed quote tile. Used in the
