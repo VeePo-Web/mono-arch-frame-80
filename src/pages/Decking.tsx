@@ -45,14 +45,13 @@ const Decking = () => {
       />
 
       <SubPageHero
-        eyebrowNumeral="III"
         eyebrowLabel="DECKING"
         headline="Outdoor space that earns its place."
         accentWord="earns"
         subhead="A deck is a way to live better on the property. We plan it around how you actually use the back of your home — and build it to stay there."
         primaryCta={{ to: "/contact", label: "Talk through your decking project" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        coordMark="Service No. III · Outdoor living"
+        dossier={{ sectionNo: "VI", coord: "Decking · Outdoor living", edition: "Edition I" }}
         vignette={
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">

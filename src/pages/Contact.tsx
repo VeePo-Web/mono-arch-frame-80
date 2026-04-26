@@ -59,12 +59,11 @@ const Contact = () => {
       />
 
       <SubPageHero
-        eyebrowNumeral="·"
         eyebrowLabel="CONTACT"
         headline="Let's talk through your property."
         accentWord="talk"
         subhead="This is the beginning of a relationship, not a sales trap. Share a few details and we'll come prepared."
-        coordMark="Reply within two business days"
+        dossier={{ sectionNo: "XI", coord: "Reply within two business days" }}
       />
 
       {/* § I — What happens + form + direct-contact panel */}

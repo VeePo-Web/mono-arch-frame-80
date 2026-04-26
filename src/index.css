@@ -424,6 +424,65 @@
     width: 100%;
   }
 
+  /* ──────────────────────────────────────────────────────────────────────
+     Dossier strip — editorial folio bar shown under the Eyebrow on
+     sub-page heroes. Hairline rule on either side, tracked locator
+     metadata in the centre. Reads like a printed page header.
+     ────────────────────────────────────────────────────────────────────── */
+  .dossier-strip {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    width: 100%;
+    max-width: 56rem;
+  }
+  .dossier-strip__rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      hsl(var(--evergreen) / 0.28) 30%,
+      hsl(var(--evergreen) / 0.28) 70%,
+      transparent
+    );
+  }
+  .dossier-strip__inner {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.7rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: hsl(var(--evergreen) / 0.75);
+    white-space: nowrap;
+  }
+  .dossier-strip__no {
+    color: hsl(var(--foreground) / 0.7);
+  }
+  .dossier-strip__dot {
+    color: hsl(var(--evergreen) / 0.4);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .dossier-strip__coord {
+    color: hsl(var(--evergreen) / 0.85);
+  }
+  .dossier-strip__edition {
+    color: hsl(var(--foreground) / 0.55);
+  }
+  @media (max-width: 640px) {
+    .dossier-strip {
+      gap: 0.5rem;
+    }
+    .dossier-strip__inner {
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+    }
+  }
 
 
   /* Section coordinates — RETIRED. Kept as a no-op for legacy markup. */
@@ -638,6 +697,36 @@
       135deg,
       transparent 0 11px,
       hsl(var(--evergreen) / 0.045) 11px 12px
+    );
+  }
+  /* Compact variant — used in sidebar lists and dense grids. */
+  .photo-pending--compact {
+    padding: 1rem 1rem 0.875rem;
+    gap: 0.625rem;
+    aspect-ratio: 1 / 1;
+  }
+  .photo-pending--compact::before {
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 7px,
+      hsl(var(--evergreen) / 0.045) 7px 8px
+    );
+  }
+  /* Service variant — slightly warmer wash, taller plate (services overview). */
+  .photo-pending--service {
+    aspect-ratio: 4 / 5;
+    background-image: linear-gradient(
+      155deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--evergreen-soft) / 0.55) 100%
+    );
+  }
+  .photo-pending--service::before {
+    opacity: 0.55;
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 13px,
+      hsl(var(--evergreen) / 0.06) 13px 14px
     );
   }
 

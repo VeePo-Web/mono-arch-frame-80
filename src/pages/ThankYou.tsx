@@ -70,12 +70,11 @@ const ThankYou = () => {
     <main id="main">
       <SubPageHero
         compact
-        eyebrowNumeral="·"
         eyebrowLabel="RECEIVED"
         headline={headline}
         accentWord={accent}
         subhead="We respond within two business days. If your project is time-sensitive, mention it when we reach out."
-        coordMark="Fig. iv. RECEIVED"
+        dossier={{ sectionNo: "XII", coord: "Fig. iv. RECEIVED" }}
       />
 
       {/* Receipt stamp — only when arriving from a successful submission */}

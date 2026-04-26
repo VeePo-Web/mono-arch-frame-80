@@ -56,14 +56,13 @@ const ExteriorFinishing = () => {
       />
 
       <SubPageHero
-        eyebrowNumeral="II"
         eyebrowLabel="EXTERIOR FINISHING & REPAIRS"
         headline="Practical protection for the property you keep."
         accentWord="protection"
         subhead="Repairs, finishing, and weather-facing detail work that respects the home and the land around it. Built for prairie exposure and a long horizon."
         primaryCta={{ to: "/contact", label: "Request a Consultation" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        coordMark="Service No. II · Stewardship"
+        dossier={{ sectionNo: "V", coord: "Exterior · Stewardship", edition: "Edition I" }}
         vignette={
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">

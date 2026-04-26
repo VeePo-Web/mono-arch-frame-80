@@ -7,7 +7,7 @@ import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import ClosingCta from "@/components/ClosingCta";
-import { ProjectVignette, type VignetteCategory } from "@/components/ProjectVignette";
+import ServicePlate from "@/components/gallery/ServicePlate";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
@@ -15,11 +15,7 @@ import { services } from "@/data/services";
 const SECTION = "py-24 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
-const SERVICE_CATEGORY: Record<string, VignetteCategory> = {
-  "interior-finishing": "Interior Finishing",
-  "exterior-finishing": "Exterior Repairs",
-  decking: "Decking",
-};
+// (Service plates are typographic — no category-to-vignette map needed.)
 
 const SERVICE_DETAIL: Record<string, string> = {
   "interior-finishing":
@@ -48,14 +44,13 @@ const Services = () => {
       />
 
       <SubPageHero
-        eyebrowNumeral="·"
         eyebrowLabel="SERVICES"
         headline="Three services, held to one standard."
         accentWord="held"
         subhead="We chose focus over breadth on purpose. Interior finishing leads — that's where the craft is felt most clearly. Exterior repairs and decking carry the same care, scaled to what the weather and the land require."
         primaryCta={{ to: "/contact", label: "Discuss your project" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        coordMark="Section · Services"
+        dossier={{ sectionNo: "III", coord: "Services · Three, one standard", edition: "Edition I" }}
       />
 
       {/* § I — Service hierarchy */}
@@ -85,13 +80,13 @@ const Services = () => {
               >
                 <PremiumCard featured={i === 0} className="h-full">
                   <div className="grid grid-cols-1 lg:grid-cols-12">
-                    <div className="lg:col-span-5 relative aspect-[5/3] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-evergreen/10 overflow-hidden">
-                      <ProjectVignette
-                        category={SERVICE_CATEGORY[s.slug]}
-                        className="absolute inset-0 w-full h-full transition-transform duration-700 ease-weighted group-hover:scale-[1.015]"
+                    <div className="lg:col-span-5 relative border-b lg:border-b-0 lg:border-r border-evergreen/10 overflow-hidden">
+                      <ServicePlate
+                        service={s}
+                        className="h-full border-b-0 transition-transform duration-700 ease-weighted group-hover:scale-[1.005]"
                       />
                       <span
-                        className="absolute top-4 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
+                        className="absolute top-4 right-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
                         aria-hidden="true"
                       >
                         Plate {s.numeral}
