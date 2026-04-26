@@ -859,6 +859,19 @@
       hsl(var(--evergreen) / 0.06) 13px 14px
     );
   }
+  /* Photographed variant — once a real image is present, suppress the
+     diagonal hatch pattern and the gradient wash so the photo reads cleanly,
+     and apply a slow, gentle scale on group-hover for editorial warmth. */
+  .photo-pending--photographed {
+    background-image: none;
+    padding: 0;
+  }
+  .photo-pending--photographed::before {
+    display: none;
+  }
+  .group:hover .photo-pending--photographed > img {
+    transform: scale(1.025);
+  }
 
   /* ──────────────────────────────────────────────────────────────────────
      Testimonial card — quiet attributed quote tile. Used in the
@@ -1141,95 +1154,6 @@
     to { stroke-dashoffset: 0; }
   }
 
-  /* ──────────────────────────────────────────────────────────────────────
-     Quick Contact sheet — step transitions, FAB breathing, success shimmer.
-     Mobile-only surfaces (sheet + FAB are gated `lg:hidden` in JSX), so
-     these styles never affect desktop layout.
-     ────────────────────────────────────────────────────────────────────── */
-
-  /* Each step body fades in + slides up 6px. Driven by React's `key` on
-     the wrapper so a fresh element mounts per step. Round 4: shorter
-     220ms duration so the keyboard rises *after* the slide settles. */
-  .qc-step {
-    animation: qc-step-in 220ms var(--ease-weighted) both;
-  }
-  @keyframes qc-step-in {
-    0%   { opacity: 0; transform: translateY(6px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Step progress — hairline-thin 3-segment bar that lives directly above
-     the question on form steps. Replaces the top-bar progress dots. */
-  .qc-progress {
-    display: flex;
-    gap: 4px;
-    height: 2px;
-    width: 100%;
-  }
-  .qc-progress span {
-    flex: 1;
-    background: hsl(var(--evergreen) / 0.15);
-    transition: background-color 360ms var(--ease-weighted);
-  }
-  .qc-progress span[data-state="done"],
-  .qc-progress span[data-state="active"] {
-    background: hsl(var(--evergreen));
-  }
-
-  /* FAB — calmer breathing pulse: 2 cycles, lower-amplitude ring. */
-  .qc-fab[data-breathe="true"] {
-    animation: qc-fab-breathe 4s var(--ease-weighted) 0s 2;
-  }
-  @keyframes qc-fab-breathe {
-    0%, 100% {
-      box-shadow:
-        0 8px 24px -8px hsl(145 24% 8% / 0.45),
-        inset 0 1px 0 hsl(145 22% 38% / 0.5);
-    }
-    50% {
-      box-shadow:
-        0 14px 36px -10px hsl(145 24% 8% / 0.55),
-        0 0 0 5px hsl(var(--evergreen) / 0.07),
-        inset 0 1px 0 hsl(145 22% 38% / 0.5);
-    }
-  }
-  .qc-fab-label {
-    animation: qc-fab-label-in 360ms var(--ease-weighted) both;
-  }
-  @keyframes qc-fab-label-in {
-    0%   { opacity: 0; transform: translateX(-4px); }
-    100% { opacity: 1; transform: translateX(0); }
-  }
-
-  /* When the StickyConsultBar is visible, lift the FAB ~70px so the two
-     pills never share the same horizontal band. The variable is consumed
-     by .qc-fab's inline `bottom` calc(). */
-  body[data-sticky-bar="shown"] {
-    --qc-fab-extra-bottom: 64px;
-  }
-
-  /* Success-state shimmer — single 1.2s sweep across the headline. */
-  .qc-shimmer {
-    background-image: linear-gradient(
-      100deg,
-      transparent 0%,
-      transparent 30%,
-      hsl(var(--evergreen) / 0.20) 50%,
-      transparent 70%,
-      transparent 100%
-    );
-    background-size: 220% 100%;
-    background-position: 100% 0;
-    background-repeat: no-repeat;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: qc-shimmer-sweep 1200ms var(--ease-swift) 200ms 1 both;
-  }
-  @keyframes qc-shimmer-sweep {
-    0%   { background-position: 100% 0; }
-    100% { background-position: -20% 0; }
-  }
-
   /* Honor reduced motion — collapse all entry animations to instant. */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -1251,17 +1175,6 @@
     [data-drift] { transform: none !important; }
     .receipt-check-svg path,
     .receipt-check-svg circle { stroke-dashoffset: 0 !important; animation: none !important; }
-    /* Quick Contact — strip motion, keep opacity-only fades intact via the universal rule above. */
-    .qc-step { animation: none !important; opacity: 1 !important; transform: none !important; }
-    .qc-fab[data-breathe="true"] { animation: none !important; }
-    .qc-fab-label { animation: none !important; }
-    .qc-progress span { transition: none !important; }
-    .qc-shimmer {
-      background-image: none !important;
-      animation: none !important;
-      -webkit-background-clip: border-box !important;
-      background-clip: border-box !important;
-    }
   }
 
   /* ──────────────────────────────────────────────────────────────────────
@@ -1283,32 +1196,37 @@
     .footer-bottom-row {
       padding-bottom: max(0.5rem, calc(var(--safe-bottom) + 0.5rem));
     }
+  }
 
-    /* ConsultationForm mobile polish — bigger inputs, softer corners,
-       drop the hairline separators (too busy on a narrow column),
-       beefier submit pill. Scoped to .consult-form so /thank-you and
-       any future inline forms aren't accidentally restyled. */
-    .consult-form > div > .space-y-1\.5 { /* no-op anchor */ }
-    .consult-form .space-y-5 > * + * { margin-top: 1.5rem; }
-    .consult-form input,
-    .consult-form textarea,
-    .consult-form [role="combobox"],
-    .consult-form button[type="submit"] {
-      border-radius: 0.5rem;
+  /* ──────────────────────────────────────────────────────────────────────
+     Sticky-bar inset reservation — when the floating consultation bar is
+     showing, leave room at the bottom of the document so it doesn't sit
+     atop the footer copyright row on phones. Only applies <sm.
+     ────────────────────────────────────────────────────────────────────── */
+  body[data-sticky-bar="shown"] {
+    padding-bottom: max(4.5rem, calc(var(--safe-bottom) + 4rem));
+  }
+  @media (min-width: 640px) {
+    body[data-sticky-bar="shown"] { padding-bottom: 0; }
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Touch tactile feedback — on devices without :hover, tapping any
+     pill / link / row gives a brief scale-down so the interaction reads
+     as physical instead of mute. Limited to coarse pointers via the
+     hover:none query so desktop trackpads aren't affected.
+     ────────────────────────────────────────────────────────────────────── */
+  @media (hover: none) {
+    .area-row:active,
+    .contact-row:active,
+    a[class*="rounded-full"]:active,
+    button[class*="rounded-full"]:active {
+      transform: scale(0.985);
+      transition: transform 120ms var(--ease-swift);
     }
-    .consult-form input:not([type="hidden"]),
-    .consult-form [role="combobox"] {
-      height: 3rem; /* 48px floor */
-      font-size: 1rem;
-    }
-    .consult-form button[type="submit"] {
-      min-height: 3.75rem; /* 60px */
-      border-radius: 9999px;
-    }
-    /* Drop the per-field hairline separators on mobile — replace with breathing space. */
-    .consult-form > div[class*="border-b"] {
-      border-bottom-width: 0;
-      padding-bottom: 0;
+    .group:active .icon-chip,
+    .group\/btn:active .icon-chip {
+      background-color: hsl(var(--evergreen) / 0.12);
     }
   }
 

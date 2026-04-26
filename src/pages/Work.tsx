@@ -10,6 +10,7 @@ import ProjectPlaceholder from "@/components/gallery/ProjectPlaceholder";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { galleryPlates, type PlateCategory } from "@/data/galleryPlates";
+import { workPhotos } from "@/assets/photography";
 
 const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
@@ -136,6 +137,8 @@ const Work = () => {
                           romanNumeral: p.romanNumeral,
                         }}
                         index={i}
+                        photoSrc={workPhotos[p.slug]}
+                        priority={i === 0}
                         className="border-b border-evergreen/10 transition-transform duration-700 ease-weighted group-hover:scale-[1.005]"
                       />
 

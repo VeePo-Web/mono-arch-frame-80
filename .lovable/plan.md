@@ -1,100 +1,161 @@
-## Round 4 — Mobile Contact UX Polish
+# Plan — World-class AI photography for Haven Creek
 
-**Constraint:** every change is gated `lg:hidden` or `@media (max-width: 1023px)`. Desktop renders byte-for-byte unchanged.
+## 0 · Decisions logged from your answers
+- **Intent:** Full replacement — every photo-pending surface gets a real image.
+- **Aesthetic:** Realistic worksite documentary. **No people, no faces, no hands.** Materials, tools mid-task, finished details, weathered exteriors, framed deck structures, prairie context.
+- **Model + storage:** `google/gemini-3-pro-image-preview` (Nano Banana Pro), written to `src/assets/photography/` so Vite hashes/optimizes them.
 
----
-
-### 1. `QuickContactSheet.tsx` — quieter invite, faster path
-
-**Problem today:** the invite step shows *four* stacked elements (eyebrow "Quick Contact" + headline + body + Begin pill), then a divider, then two ghost rows. Six discrete things on first reveal. Fantasy.co's signature is fewer, larger, calmer.
-
-**Changes (mobile-only — this whole file is `lg:hidden`):**
-
-- **Drop the "Quick Contact" eyebrow** on the invite step. The sheet itself *is* the eyebrow. This removes one item from the visual stack.
-- **Soften the headline** from `text-[1.7rem]` to `clamp(1.55rem, 6.5vw, 1.85rem)` and let it breathe (`leading-[1.12]`).
-- **Body copy compression:** "Tell us about your project — we'll reply within two business days." → "Tell us about the project. We reply within two business days." Period instead of em-dash; one less visual hop.
-- **Single primary action stays "Begin"** (per your prior pick). Pill height stays 60px.
-- **Italic seam refinement:** "or, the old-fashioned way" is charming but reads slightly fussy. Replace with simpler "or reach us directly" in the same italic serif. Keep the hairline rule.
-- **Ghost rows:** drop the eyebrow caps ("CALL"/"EMAIL") inside each row — they duplicate the icon's meaning. Keep the icon, single line of value, chevron. Visual weight drops ~30%.
-- **Swipe-to-dismiss:** add a `pointerdown`/`pointermove`/`pointerup` handler on the sheet root that tracks vertical drag from the top 80px (handle + top bar zone). >120px or >0.5 px/ms velocity → close. Provides the iOS-native gesture every visitor reaches for first.
-- **Drag-handle pill:** make it the actual hit target for dismiss-on-tap (currently decorative). 28px tall hit zone, visually still 1.5px.
-- **Keyboard step transitions:** today each step uses `key={step}` causing remount + 320ms `qc-step-in`. On the smallest phones the keyboard popping over the new field while it's still animating feels janky. Reduce step animation duration to 220ms and stagger the focus call to `260ms` so the keyboard rises *after* the slide settles.
-
-### 2. `QuickContactSheet.tsx` — back/forward affordance refinement
-
-**Problem today:** progress dots are centered, back arrow is left, close X is right — three independent affordances on one row. Cluttered for a "single field" screen.
-
-**Changes:**
-- Move progress dots to **directly under the question**, not in the top bar. They become a hairline-thin progress bar (3 segments, 2px tall, `bg-evergreen/15` → fill `bg-evergreen` for completed) above the question heading. This makes the top bar clean: only back-arrow (left) and close-X (right) on form steps.
-- Add a hairline divider at sheet bottom edge while keyboard is open so the page edge doesn't feel cut off.
-
-### 3. `QuickContactSheet.tsx` — message step polish
-
-- Add a quiet character counter beneath the textarea: `{n}/2000` in `text-[0.7rem] text-muted-foreground/60 tabular-nums`, right-aligned. Only appears once user types ≥ 200 chars (no anxiety for short notes).
-- Replace the trailing strip "Reply within 2 business days · No obligation" with a softer "No obligation. Reply within two business days." (single sentence, less admin-form feel).
-- Submit pill copy: "Send" → "Send note" (Fantasy-tone — verb + noun feels intentional, not transactional).
-
-### 4. `QuickContactSheet.tsx` — success step refinement
-
-- Currently auto-closes after 4.5s. Some users want to read it. Reduce to 3.8s but add a tiny "Close" link beneath the body text so impatient users can dismiss instantly.
-- Headline copy: "Thank you. We'll be in touch." → "Thank you. We'll be in touch shortly." (the *shortly* is the warmth multiplier; Fantasy-style copy lives in those small additions).
-
-### 5. `QuickContactFab.tsx` — calmer presence
-
-**Problem today:** 3-cycle 4s breathing pulse can feel insistent on a quiet editorial page. The session-flash pill ("Start a conversation") is good but appears once and never returns.
-
-**Changes:**
-- **Reduce breathing to 2 cycles** (8s total) and lower amplitude — the outer ring opacity drops from `0.10` to `0.07`.
-- **Add a "after long idle" gentle re-flash:** if the user is on a FAB-eligible page for >45s and has scrolled >50% of the page without interacting with the FAB, do *one* additional 2.5s label flash. Capped at one per session via the existing `hc:fab:flashed-late` key.
-- **Slightly larger FAB:** 56px → 60px for clearer thumb target on 360px-wide phones. Bottom offset bumped to `max(1.5rem, env(safe-area-inset-bottom)+1.25rem)` so it sits clear of the StickyConsultBar when both render.
-- **Z-index audit:** FAB is `z-40`, sticky bar is `z-40`, sheet overlay is `z-50`. Today they can overlap visually on /work. Bump FAB to `z-30` so the sticky bar always wins, and offset FAB upward by `--sticky-bar-h` (a CSS variable the bar sets on `:root`) when sticky bar is mounted.
-
-### 6. `StickyConsultBar.tsx` — copy + height harmony
-
-- Mobile pill copy "Start a conversation" is good. Keep.
-- Add `--sticky-bar-h: 64px` CSS var to `:root` while the bar is mounted (and clear it on unmount) so the FAB can offset against it.
-- Body padding reservation: today we add `pb-[64px]` on mobile globally. That's right when the bar is visible; redundant when dismissed. Drive it from `--sticky-bar-h` so dismissal recovers the space.
-
-### 7. `Navigation.tsx` mobile sheet — clearer thumb-zone CTA
-
-- The bottom CTA pill works but the supporting micro-line ("Reply within two business days.") sits under the pill. Move it *above* the pill in italic serif `text-[0.85rem] text-foreground/65` — same pattern as Fantasy.co's nav drawer where the warmth is the lead-in, the action is the close.
-- Add a hairline-quiet "Call studio" + "Email studio" pair *above* the divider, so the mobile nav also offers instant non-form contact. Two ghost rows, identical styling to the sheet's ghost rows for design-system consistency.
-
-### 8. `index.css` — system-level polish
-
-- Add `.qc-progress` styles (the new under-question hairline progress bar) with smooth-fill transitions.
-- Add `.qc-fab[data-late-flash="true"]` modifier for the long-idle re-flash animation.
-- Reduced-motion: progress bar fills instantly; FAB late-flash disabled.
-- Add `:root { --sticky-bar-h: 0px; }` default and `[data-sticky-bar="visible"] { --sticky-bar-h: 64px; }` toggled by the bar.
-
-### 9. Memory update
-
-Refresh `mem://features/quick-contact-sheet` to reflect:
-- Reduced visual weight on invite step
-- New under-question progress bar location
-- Swipe-to-dismiss gesture
-- FAB late-flash + sticky-bar offset coordination
+I'm also going to silently fix the runtime error you're seeing (`Cannot read properties of null (reading 'useEffect')` from `QueryClientProvider`) — that's a stale Vite dep cache, resolved by removing `node_modules/.vite`. No code change needed there.
 
 ---
 
-### What I am **not** changing this round
-- Submission flow / Supabase shape — already correct.
-- Desktop `/contact` page, hero, and inline form — locked.
-- Brand tokens (cedar/evergreen/cream) — locked.
-- Any non-mobile component file.
+## 1 · Brand-photography contract (the rules every prompt must obey)
 
-### Files touched
-1. `src/components/QuickContactSheet.tsx` — invite refinement, swipe-to-dismiss, progress bar relocation, message + success polish
-2. `src/components/QuickContactFab.tsx` — calmer pulse, late re-flash, sticky-bar offset
-3. `src/components/StickyConsultBar.tsx` — `--sticky-bar-h` CSS var publishing
-4. `src/components/Navigation.tsx` — bottom CTA reflow + ghost call/email rows
-5. `src/index.css` — `.qc-progress`, late-flash keyframe, root sticky-bar-h var, reduced-motion overrides
-6. `mem://features/quick-contact-sheet` — refresh
+These rules come straight out of `knowledge/source-documents/brand-identity/1.5-brand-identity-north-star.md` and `1.3-client-design-preferences.md`. Every prompt I write will be derived from this contract:
 
-### Open question for you (one only)
+| Rule | Concrete prompt language |
+|------|-------------------------|
+| Rural Alberta, not urban | "rural Alberta acreage… prairie horizon… aspen / lodgepole pine in the distance… foothills haze on the west edge" |
+| Natural light, never studio | "soft overcast morning" or "low golden afternoon" — no ring lights, no rim flash |
+| No people, no faces, no hands | Hard-coded *negative*: "no people, no faces, no hands, no figures, no portraits" in every prompt |
+| Honest worksite, not luxury | "tools in mid-task, sawdust on the sill, a level resting on the trim, drop sheet folded" — the *evidence* of work, not staging |
+| Calm palette aligned to the site | Dominant cedar / evergreen / warm off-white. *Negative*: "no neon, no chrome, no glossy plastic, no high-saturation accent colors" |
+| Lens & framing | 35mm or 50mm equivalent, eye-level, no tilt-shift fisheye, no drone unless the shot is explicitly aerial |
+| Aspect & resolution | 3:2 horizontal for hero / area / about (1536×1024), 4:5 vertical for gallery plate cards (1024×1280), 16:9 ultrawide for closing band (1536×864) |
 
-**Swipe-to-dismiss scope (§ 1):**
-- **(A) Recommended:** drag from the top ~80px (handle + top bar) only. Predictable, doesn't conflict with form scrolling.
-- **(B) Anywhere on the sheet.** More iOS-native but conflicts with textarea scroll on the message step.
+**Negative prompt baseline (re-used everywhere):** *"no people, no faces, no hands, no figures, no signage with brand logos, no urban backdrop, no high-rise, no neon, no chrome, no luxury hotel staging, no real-estate stock look, no over-saturation, no HDR halos, no fisheye, no watermark, no text overlay."*
 
-I'll proceed with **(A)** unless you say "swipe anywhere" before approving.
+---
+
+## 2 · The image catalogue (14 frames, every one accounted for)
+
+Each entry is the **filename → surface → prompt seed**. I'll feed each through the `lovable_ai.py --image --model google/gemini-3-pro-image-preview` skill script, one at a time, and visually QA each before moving on.
+
+### Group A — Hero & site-wide (3 images)
+1. **`hero-acreage-morning.jpg`** *(1536×1024, replaces `HeroVignette` watermark in `Hero.tsx`)* — A dark cedar-clad acreage home seen across a frosted late-autumn field at low golden hour, soft Alberta foothills behind, single chimney, no people, no signage. Restrained. The photograph the brand has been waiting for.
+2. **`hero-detail-trim.jpg`** *(1024×1280, secondary hero accent / fallback)* — Macro detail of a hand-fitted door casing meeting baseboard, the joint perfectly tight, faint sawdust on the sill, cool north light through an unframed window edge.
+3. **`closing-prairie-light.jpg`** *(1536×864, drop into `ClosingCta` section as ambient backdrop on the home page only)* — Wide horizontal plate of an aspen line at the property edge under late afternoon prairie light. Used at very low opacity.
+
+### Group B — Service cards & service pages (3 images)
+4. **`service-interior-finishing.jpg`** *(1024×1280)* — Replaces `ServicePlate` for **Interior Finishing**. A nearly-finished interior corner: stained cedar trim meeting white drywall, a small carpenter's level resting on the casing, soft window light from the right, painter's tape rolled off to the side.
+5. **`service-exterior-finishing.jpg`** *(1024×1280)* — For **Exterior Repairs**. Weather-side cedar siding mid-repair on an acreage gable: a panel newly replaced, the older boards visibly weathered grey, soffit detail visible at the top, foothill light raking from the left.
+6. **`service-decking.jpg`** *(1024×1280)* — For **Decking**. A wraparound cedar deck framed but not yet boarded, joists casting clean shadow lines, prairie horizon visible through the framing, golden hour.
+
+### Group C — Selected works gallery plates (6 images, one per `galleryPlates` entry)
+These replace every `ProjectPlaceholder` on the Work page and inside `SelectedWorks` on the home page. Filenames mirror the slugs so the swap is mechanical:
+
+7. **`work-bragg-creek-trim-transitions.jpg`** — A mitred trim transition between two rooms, framed at eye-level, the fit-up clean, soft north light.
+8. **`work-water-valley-builtin-shelving.jpg`** — Wall-spanning built-in shelving photographed at a slight angle so you can read the depth, a single linen-bound book on the middle shelf for scale, no styling clutter.
+9. **`work-rocky-view-siding-repair.jpg`** — Mid-repair shot of a south-exposure cedar wall: the new boards a touch lighter than the weathered originals, ladder leaning out of frame, no hands.
+10. **`work-bearspaw-soffit-fascia.jpg`** — Low-angle shot of new soffit and fascia meeting a gable, vent placement clean, late afternoon shadow on the wall.
+11. **`work-bearspaw-wraparound-deck.jpg`** — Finished wraparound cedar deck wrapping a corner of the home, two empty Adirondack chairs at the far end, prairie beyond, no people.
+12. **`work-water-valley-stepdown-platform.jpg`** — Two-tier deck stepping down a slope toward an aspen line, natural-grade follow visible, framing reads as inevitable.
+
+### Group D — Area / About atmosphere (2 images)
+13. **`area-foothills-evening.jpg`** *(1536×1024)* — Long-exposure-feel foothill horizon at dusk, used as the SubPageHero secondary accent on the four area pages. Brand-true context, not a project.
+14. **`about-tools-bench.jpg`** *(1024×1280)* — Worn workbench with a chalk line, square, planer-shaving curls, and a thermos. Tools-of-the-trade still life. Drops into About as the right-column atmosphere.
+
+That's the entire catalogue. Nothing else on the site is currently photo-pending.
+
+---
+
+## 3 · Generation pipeline
+
+I'll run the `ai-gateway` skill (`/tmp/lovable_ai.py`) in a deliberate loop, **not** in parallel, so I can:
+1. Generate one image at the right aspect.
+2. View it with `code--view` (the skill writes raw PNG to /tmp).
+3. Visually QA it against the contract above. If a face, hand, fisheye warp, watermark, neon accent, or staged-luxury vibe slipped in, I regenerate with a tightened negative prompt before moving on.
+4. Convert PNG → optimized JPEG (q=82, mozjpeg-style) using ImageMagick via `nix run nixpkgs#imagemagick` so the asset bundle stays light.
+5. Write the final JPEG into `src/assets/photography/<filename>`.
+
+Expected wall time: ~3–5 minutes per image with the Pro model + QA, so ~50–70 minutes of generation total. I'll keep you posted as each group completes.
+
+---
+
+## 4 · Code integration (desktop-pixel-stable)
+
+### 4a · One typed manifest
+**New file: `src/assets/photography/index.ts`** — a single `import` surface so every component pulls from the same source of truth and Vite emits hashed, optimized URLs.
+
+```ts
+import heroAcreage from "./hero-acreage-morning.jpg";
+import heroDetail from "./hero-detail-trim.jpg";
+// …14 imports total
+export const photography = {
+  heroAcreage, heroDetail, closingPrairie,
+  serviceInterior, serviceExterior, serviceDecking,
+  works: {
+    "bragg-creek-trim-transitions": workBraggCreekTrim,
+    "water-valley-builtin-shelving": workWaterValleyShelving,
+    // …
+  },
+  areaFoothills, aboutToolsBench,
+} as const;
+```
+
+### 4b · `ProjectPlaceholder` → real `<img>`, falls back gracefully
+Add a `src?: string` prop. When supplied, render a **real photograph** layered into the same `photo-pending` shell so the desktop card sizing is byte-identical:
+- `<img src srcset sizes loading="lazy" decoding="async" alt={`${title} — ${area}`} />` filling the plate area, with the existing numeral pill kept as a small overlay in the corner (continues the editorial "plate" language).
+- The italic "Photograph in progress" line + hairline rule are removed *only when* `src` is provided.
+- All Tailwind classes preserved; the `<img>` uses `object-cover w-full h-full aspect-[4/5]` so the card height doesn't shift.
+- When `src` is absent (e.g. an unphotographed future project), the existing typographic plate still renders. No regression.
+
+### 4c · `ServicePlate` → real `<img>` with the same pattern
+Identical treatment. The numeral pill stays as a small bottom-left badge over the photograph so the editorial signature survives.
+
+### 4d · `Hero.tsx` — replace `HeroVignette` with a real photograph
+- `HeroVignette` is currently a watermark in the soft right-side bloom. Swap that node for an `<img src={photography.heroAcreage} alt="" aria-hidden="true" loading="eager" fetchpriority="high">` masked by the existing radial bloom (kept as an overlay) so the LCP element is the real photo, not the SVG. The watermark drift effect (clip-path + opacity) is preserved as a wrapper class.
+- Headline column, drift hook, eyebrow, field notes — **untouched.** Desktop stays pixel-identical apart from "the SVG behind has become a real photo."
+- I'll mark the hero image with `fetchpriority="high"` and add `<link rel="preload" as="image" imagesrcset>` in `index.html` so LCP improves rather than regresses.
+
+### 4e · `Index.tsx` (home gallery + closing band)
+- Pass the matching `photography.works[slug]` into each `<ProjectPlaceholder>`.
+- `SelectedWorks` (lazy chunk) gets the same prop — its sidebar rows already use `ProjectPlaceholder` in compact mode, so they get the photograph too at the smaller crop.
+- The `closing-prairie-light.jpg` becomes the ambient backdrop of the existing `ClosingCta` on home only, layered at `opacity-[0.08]` behind the existing radial bloom. Optional — call out below.
+
+### 4f · `Work.tsx` and service pages
+- `Work.tsx` simply forwards `photography.works[p.slug]` into `ProjectPlaceholder`. The filter rail, layout, hover transform — all unchanged.
+- `Services.tsx` forwards `photography.serviceInterior/Exterior/Decking` into `ServicePlate`.
+- The three service deep pages (`InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`) — I'll add a single hero photograph slot beneath their existing `SubPageHero` (right-column vignette becomes the matching service photograph). Desktop layout untouched because it just fills the existing `vignette` slot.
+
+### 4g · Area pages and About
+- `AreaPage.tsx` accepts an optional `vignette` slot already. Pass `photography.areaFoothills` so all four area pages share one calm context image. Could later be diversified per area; not required today.
+- `About.tsx` gets the `photography.aboutToolsBench` still life dropped into its existing right-column slot.
+
+### 4h · Performance & accessibility hygiene
+- Every `<img>` gets explicit `width` + `height` attributes (matching the source) → zero CLS impact.
+- Lazy-load everything except the Hero image (eager + preload).
+- Meaningful `alt` text on every photograph (scope + area), empty `alt=""` only on the decorative hero/closing backdrop layers, with `aria-hidden="true"`.
+- Vite will produce `.webp` automatically via the asset pipeline; no extra build config needed.
+
+### 4i · Typography overlay polish
+Where a numeral pill or italic caption now sits **on** a photograph, I'll add a 12-pixel-wide gradient scrim (`linear-gradient(to top, hsl(var(--background)/0.55), transparent 40%)`) at the bottom of the image so caption text always meets WCAG AA contrast — no matter how light or dark the image turns out.
+
+---
+
+## 5 · Runtime error fix (silent)
+- `QueryClientProvider` complaining about a null React is a stale Vite dependency cache (a known issue when many deps are added/removed in succession). I'll simply delete `node_modules/.vite` on the next exec so Vite re-pre-bundles. No source change.
+
+---
+
+## 6 · QA checklist before I hand back
+- [ ] Each generated image opened and inspected: no people / no faces / no neon / no fisheye / no watermark / no urban context.
+- [ ] Each one feels like a real photograph from a rural Alberta worksite.
+- [ ] File sizes ≤ ~250 KB (JPEG q=82) so the page weight stays sane.
+- [ ] `bunx tsc --noEmit` clean.
+- [ ] `bunx vite build` clean.
+- [ ] Spot-check the home, work, services, an area page, and about at desktop preview width — pixel layout unchanged.
+- [ ] Mobile: `<img>` lazy-loading + `sizes` attribute confirmed correct (via DevTools network tab simulation).
+- [ ] Runtime error gone after Vite cache reset.
+
+---
+
+## 7 · One choice for you before I start
+**Should the home-page `ClosingCta` get the very-low-opacity `closing-prairie-light.jpg` backdrop (item 3 in the catalogue)?** It would only render on the home page closing band, layered at ~8% opacity so it reads as ambient warmth, not a billboard.
+
+- **Recommended (default):** Yes — it gives the closing moment the same warmth as the hero. Reply *"no closing photo"* to skip it; otherwise I include it.
+- I'll proceed with all 14 images on approval; that question only changes whether image 3 is wired into the closing band or simply kept as an unused asset for future use.
+
+---
+
+**On approval I'll generate Group A first, post the Hero image to you for inline visual QA, then continue Groups B → C → D, and finally do the code integration in one focused commit at the end. Total time estimate: ~75–90 minutes wall-clock.**

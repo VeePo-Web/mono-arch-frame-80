@@ -211,7 +211,7 @@ const ConsultationForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("consult-form space-y-5", className)}
+        className={cn("space-y-5", className)}
         noValidate
         aria-busy={isSubmitting}
       >
@@ -307,13 +307,12 @@ const ConsultationForm = ({
             )}
           >
             <ChevronDown
-              className="h-3.5 w-3.5 transition-transform duration-300 group-open/details:rotate-180 sm:inline-block hidden"
+              className="h-3.5 w-3.5 transition-transform duration-300 group-open/details:rotate-180"
               strokeWidth={1.5}
               aria-hidden="true"
             />
-            <span className="sm:hidden text-[1rem] leading-none font-light text-evergreen/80 group-open/details:rotate-45 transition-transform duration-300 inline-block w-4 text-center">+</span>
-            <span><span className="sm:hidden">Add timing, budget, or location</span><span className="hidden sm:inline">Add timing, budget, or location context</span></span>
-            <span className="text-[0.7rem] tracking-[0.18em] text-muted-foreground/70 hidden sm:inline">OPTIONAL</span>
+            <span>Add timing, budget, or location context</span>
+            <span className="text-[0.7rem] tracking-[0.18em] text-muted-foreground/70">OPTIONAL</span>
           </summary>
 
           <div className="mt-5 pt-5 border-t border-evergreen/10 space-y-5">

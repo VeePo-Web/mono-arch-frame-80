@@ -4,6 +4,7 @@ import Container from "./Container";
 import Eyebrow from "./Eyebrow";
 import { useDrift } from "@/hooks/useDrift";
 import { serviceAreas } from "@/data/serviceAreas";
+import { photography } from "@/assets/photography";
 
 /**
  * Hero — five-second trust answer.
@@ -43,7 +44,32 @@ const Hero = () => {
       aria-labelledby="hero-heading"
       className="relative pt-32 md:pt-52 pb-16 md:pb-36 overflow-hidden"
     >
-      {/* Soft radial bloom — invisible until you look for it */}
+      {/* Soft photographic backdrop — the brand's first real photograph,
+          held in the right-side bloom area at low opacity so the typography
+          remains the primary signal. */}
+      <div
+        aria-hidden="true"
+        className="absolute -top-32 -right-24 w-[680px] h-[520px] -z-10 hidden md:block overflow-hidden rounded-[3rem]"
+        style={{
+          maskImage:
+            "radial-gradient(ellipse at 70% 40%, hsl(0 0% 0% / 0.85) 0%, hsl(0 0% 0% / 0.55) 45%, transparent 75%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at 70% 40%, hsl(0 0% 0% / 0.85) 0%, hsl(0 0% 0% / 0.55) 45%, transparent 75%)",
+        }}
+      >
+        <img
+          src={photography.heroAcreage}
+          alt=""
+          width={1536}
+          height={1024}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="w-full h-full object-cover opacity-[0.55]"
+        />
+      </div>
+
+      {/* Soft radial bloom — kept as the warming overlay above the photograph */}
       <div
         aria-hidden="true"
         className="absolute -top-40 -right-40 w-[640px] h-[640px] rounded-full -z-10"
