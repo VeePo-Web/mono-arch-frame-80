@@ -386,6 +386,38 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
+     Nav island — scroll-state crossfade for the brand mark + active rule.
+     The pill itself densifies on scroll via inline classes; these helpers
+     handle the brand-mark crossfade and the editorial active-route hairline.
+     ────────────────────────────────────────────────────────────────────── */
+  .nav-mark {
+    transition: opacity 500ms var(--ease-weighted);
+    will-change: opacity;
+  }
+  .nav-mark[data-state="hidden"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .nav-active-rule {
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    height: 1px;
+    width: 14px;
+    margin-left: -7px;
+    background: hsl(var(--evergreen) / 0.7);
+    transform-origin: center;
+    transition: transform 500ms var(--ease-swift);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-island,
+    .nav-mark,
+    .nav-active-rule {
+      transition-duration: 0ms !important;
+    }
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
      Section wash — two-tone vertical gradient replaces flat bg-card/40.
      Adds depth without paint cost.
      ────────────────────────────────────────────────────────────────────── */

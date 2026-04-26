@@ -1,92 +1,127 @@
-# Upgrade pass — "Editorial Chapter & Evidence" lift
+# Sticky Navigation Refinement — Editorial Polish
 
-## Why this pass, why now
+## Context
 
-The trust spine is wired up (Hero → Fear Ledger → Bridge → Services → Approach → Gallery → Selected Works → Trust Panel → Testimonials → Areas → Final CTA + Sticky bar + restructured Form). The next quality ceiling is **editorial honesty in the evidence layer** and **chapter clarity across the sub-pages** — exactly the two things the persona scans hardest before reaching out.
+The current `src/components/Navigation.tsx` is already a **floating glass island** with an `IntersectionObserver`-driven `scrolled` state and a custom full-screen mobile overlay. It's good — but three things hold it back from feeling intentional:
 
-Filtering through the three principles:
+1. **The scroll state is too subtle.** `bg-background/72 → bg-background/72` (no change). The pill should *visibly* settle into a denser, more authoritative state once you've scrolled past the hero.
+2. **The mobile menu is hand-rolled** (`open` state + body-overflow lock + manual focus trap missing). Swapping to the existing `@/components/ui/sheet` primitive gives us proper focus trap, escape-to-close, and Radix-managed scroll lock — for free, with no visual regression.
+3. **The active-route affordance is a 3px dot** that's hard to see. A short hairline underline reads as more editorial and is consistent with the dossier-strip language we just added on sub-pages.
 
-1. **Elevate the human experience.** The synthetic SVG "vignettes" in the Selected Works gallery, the Project Gallery preview, and inside the Services cards send the wrong signal to a persona who explicitly "reviews photos first." Replacing them with **typographic placeholder plates** (the same `ProjectPlaceholder` pattern we already shipped on the home preview) tells the truth and looks more confident than fake line drawings ever can.
-2. **Embody brand truth with excellence.** Eight sub-pages still pass deprecated `eyebrowNumeral` / `coordMark` props that `SubPageHero` silently ignores. That's invisible code rot, and it means we never realized the editorial dossier metadata the persona research called for. We rebuild the dossier as an in-component **folio strip** that actually renders.
-3. **Innovate responsibly for impact.** The floating-island Navigation is beautiful but loses orientation on long sub-pages. We add a **chapter-aware micro-strip** below the island (only on sub-pages, only after scroll) that reads "Section · Services · No. III · Decking" — a quiet way-finder that reinforces the editorial system without competing with the CTA.
-
----
-
-## Scope — five focused moves
-
-### 1 · Gallery & Services: replace synthetic SVG vignettes with typographic plates
-
-The `ProjectPlaceholder` we already use on the **home preview** is the model. Apply the same pattern in the two remaining gallery surfaces — Selected Works (home § IV.b) and Work page grid — and in the Services landing list cards. The persona will see truth-telling typography ("Photograph in progress · Bragg Creek · 2024") instead of fake architectural line drawings that read as cheap clipart on second glance.
-
-**Files**
-
-- `src/components/gallery/SelectedWorks.tsx` — replace the featured-plate `<GalleryVignette …/>` and the sidebar-row `<GalleryVignette …/>` calls with `<ProjectPlaceholder …/>`. Sidebar plates need a compact variant (smaller numeral, single-line meta), so add a `compact?: boolean` prop to `ProjectPlaceholder`.
-- `src/pages/Work.tsx` — replace the `<GalleryVignette …/>` inside each plate card with `<ProjectPlaceholder …/>`. Adapt the prop shape — `ProjectPlaceholder` expects `{ project, index }`; map each `GalleryPlate` into the lighter shape it needs (title, area, category, romanNumeral).
-- `src/pages/Services.tsx` — replace the `<ProjectVignette …/>` inside each service card with a **service-specific** plate. New small component `src/components/gallery/ServicePlate.tsx` mirroring `ProjectPlaceholder` but reading from `services` (numeral + service title + a single descriptor line). Same hairline-grid background, same Fraunces italic stamp.
-- `src/components/gallery/ProjectPlaceholder.tsx` — extend the type to accept either a project-shaped object **or** a generic `{ numeral, title, area, category }` so we can drive Work-page cards from `GalleryPlate` and Services from `services`.
-- (Out of scope, but flag) — `src/components/gallery/GalleryVignettes.tsx` and `src/components/ProjectVignette.tsx` become unused after this pass. Leave them in place for one revision so we don't lose the option to bring them back if the client supplies illustrations later. Mark each at the top with a one-line `@deprecated — superseded by ProjectPlaceholder` comment.
-
-### 2 · SubPageHero: a real editorial folio strip + dossier metadata
-
-`SubPageHero` already accepts `eyebrowNumeral`, `coordMark`, and `folio` — but only `folio` actually renders, and almost no page passes it. The other two are shoehorned through eight pages and silently dropped. We retire them and re-introduce a single, designed **dossier strip**: a hairline-bordered horizontal line that sits between the eyebrow and the H1 carrying `Section No. <Roman> · <coord-mark> · <Edition I>`.
-
-**Files**
-
-- `src/components/SubPageHero.tsx`:
-  - **Remove** the two deprecated props from the interface entirely (no more silent ignoring).
-  - Add a typed `dossier?: { sectionNo: string; coord: string; edition?: string }` prop.
-  - Render the dossier as a single row beneath the eyebrow: `[hairline]  Section No. III  ·  Decking · Outdoor living  ·  Edition I  [hairline]` — Inter, tracked, evergreen/65, animation-delay 100ms in the existing reveal-up cascade.
-  - Drop unused imports from this file (`useId`, no-longer-needed cn segments).
-- The eight pages that were passing the deprecated props get tidied:
-  - `src/pages/About.tsx` — drop `eyebrowNumeral` / `coordMark`. Add `dossier={{ sectionNo: "II", coord: "About · Working philosophy", edition: "Edition I" }}`.
-  - `src/pages/Contact.tsx` — drop both. Add `dossier={{ sectionNo: "XI", coord: "Reply within two business days" }}`.
-  - `src/pages/Decking.tsx` — drop both. Add `dossier={{ sectionNo: "VI", coord: "Decking · Outdoor living" }}`.
-  - `src/pages/ExteriorFinishing.tsx` — drop both. Add `dossier={{ sectionNo: "V", coord: "Exterior · Stewardship" }}`.
-  - `src/pages/InteriorFinishing.tsx` — drop both. Add `dossier={{ sectionNo: "IV", coord: "Interior · Flagship craft" }}`.
-  - `src/pages/NotFound.tsx` — drop both. Add `dossier={{ sectionNo: "·", coord: "Coordinate · Unresolved" }}`.
-  - `src/pages/ServiceAreas.tsx` — drop both. Add `dossier={{ sectionNo: "IX", coord: "Foothills · West & North of Calgary", edition: "Edition I" }}`.
-  - `src/pages/Services.tsx` — drop both. Add `dossier={{ sectionNo: "III", coord: "Services · Three, one standard", edition: "Edition I" }}`.
-  - `src/pages/ThankYou.tsx` — drop both. Add `dossier={{ sectionNo: "XII", coord: "Fig. iv. RECEIVED" }}`.
-  - `src/pages/Work.tsx` — drop both. Add `dossier={{ sectionNo: "VIII", coord: \`${galleryPlates.length} plates · Edition I\` }}`.
-
-### 3 · Navigation: chapter-aware way-finder
-
-Below the floating island, on sub-pages only and only **after** the page has scrolled past the SubPageHero (we already have the dossier label, so reuse it), reveal a single-line breadcrumb strip that reads `Home  /  Services  /  No. III` — small, tracked, evergreen-tinted, hairline-bordered top + bottom. It anchors visitors in the editorial system without competing with the navigation pill or the CTA.
-
-**Files**
-
-- `src/components/ChapterSpine.tsx` — already exists in the repo; refactor it (currently used inline inside service detail pages) to a top-level **route-aware** strip mounted in `App.tsx` next to `StickyConsultBar`. It reads route via `useLocation`, looks up the section number + label from a tiny route table, and uses an IntersectionObserver on a sentinel placed at `~30vh` to fade in. Hidden on `/` (the home is its own opening chapter — no need), on `/contact`, on `/thank-you`. Honours `prefers-reduced-motion`.
-- `src/App.tsx` — mount `<ChapterSpine />` directly above `<StickyConsultBar />`. They live at different edges (top vs. bottom) so they cannot collide.
-- `src/index.css` — add `.chapter-spine` utility: fixed top-[max(theme(spacing.20),5rem)], hairline borders top + bottom, `bg-background/72 backdrop-blur-md`, height ~36px, font-size `0.7rem`, `letter-spacing: 0.18em`, slot-friendly grid. Reveal pattern reuses the `data-show` opacity/translate trick from `.sticky-cta-bar`.
-
-### 4 · Services landing: tighten the gallery-card density
-
-After moves #1 and #2, the Services overview cards become uneven (the new `ServicePlate` aspect is taller than the old `ProjectVignette` because it carries type, not line-art). Re-tune the card layout so the plate column lands at `aspect-[4/5]` on lg and the copy column gets `lg:col-span-7`. Inter heading sizes drop one notch on the card to keep the visual weight balanced. No structural changes — only spacing pinning.
-
-**Files**
-
-- `src/pages/Services.tsx` — adjust the Card grid: `lg:grid-cols-12` → keep, plate col `lg:col-span-5` → `lg:col-span-5 aspect-[4/5] lg:aspect-auto lg:min-h-[420px]`. Copy column padding: `p-8 md:p-12` → `p-9 lg:p-12`. Title `text-title` → keep, but knock the `figure-footnote` `mb-5` to `mb-4` to recover vertical rhythm.
-
-### 5 · Cleanup pass — kill dead imports + stale comments
-
-While editing those nine sub-page files, sweep dead imports the prop removal exposes:
-
-- `src/pages/Work.tsx` — drop `import { GalleryVignette } from "@/components/gallery/GalleryVignettes"`.
-- `src/pages/Services.tsx` — drop `import { ProjectVignette, type VignetteCategory } from "@/components/ProjectVignette"`. Drop the `SERVICE_CATEGORY` map (no longer needed).
-- `src/components/gallery/SelectedWorks.tsx` — drop `import { GalleryVignette } from "./GalleryVignettes"`.
+This is a refinement pass — no architecture changes, no new components beyond pulling in `Sheet`. The brand language (warm off-white plaster, evergreen accent, Fraunces italics, ease-weighted timing) stays exactly as-is.
 
 ---
 
-## Verification
+## Filtering through the three values
 
-- `bun run build` — the implementation must compile cleanly (no unused-imports warnings).
-- Visit `/work` in preview after the change — confirm typographic plates render, Sticky CTA bar and Chapter Spine both appear after scroll.
-- Visit `/services` — confirm `ServicePlate` shows numeral + title + descriptor and the card heights are even.
-- Visit `/about`, `/decking`, `/contact` — confirm the new dossier strip renders below the eyebrow on each, and the page no longer logs unknown-prop warnings (it didn't before either, but we're tidying surface area).
-- Confirm `ChapterSpine` is hidden on `/`, `/contact`, `/thank-you`, and that it reveals only after scrolling past the hero. Confirm it does not overlap the floating navigation island.
+- **Elevate the human experience** — Reduced-motion users currently get the full island contraction animation. We'll honor `prefers-reduced-motion` and snap the scroll-state instead. Mobile menu becomes properly accessible (focus trap, escape key, return-focus on close) by leaning on the Sheet primitive.
+- **Embody brand truth** — The nav should *feel* like the rest of the site: hairline rules, Fraunces italics for the brand mark on mobile menu, evergreen-on-warm-off-white. Today the mobile overlay uses `bg-background/85` which loses the plaster grain — we'll restore it with the same noise-svg veil pattern already used elsewhere.
+- **Innovate responsibly** — No new dependencies. We use the Sheet that's already in the codebase (`src/components/ui/sheet.tsx`), already a Radix Dialog underneath. No JS animation libraries, no scroll listeners — keep the IntersectionObserver pattern.
 
-## Out of scope (next pass)
+---
 
-- Real photography swap-in (waiting on supplied imagery).
-- Service-area page individual hero refinements (Bearspaw / BraggCreek / etc.).
-- Form analytics (post-launch).
+## Changes (5 focused edits)
+
+### 1. `src/components/Navigation.tsx` — scroll-state contrast + active underline + Sheet
+
+**Scroll-state styling — make it earn its presence.**
+
+Currently both states use `bg-background/72`. Tighten the rest state and densify the scrolled state so the pill *visibly* resolves as you scroll:
+
+| State | Background | Ring | Shadow |
+|---|---|---|---|
+| **Rest** (top of page) | `bg-background/55` | `ring-foreground/[0.06]` | soft 18px shadow |
+| **Scrolled** (>80px) | `bg-background/85` | `ring-foreground/[0.10]` | tighter 14px shadow + 1px highlight |
+
+Both sit on `backdrop-blur-xl` — the difference reads as the pill *firming up*, not changing chrome.
+
+**Active-route affordance — replace dot with hairline underline.**
+
+Replace the 3×3px scaling dot with a 12px hairline that draws in via `scaleX` from center. Sits 4px below the chip, matches the dossier-strip rule on sub-pages, reads as editorial not UI.
+
+**Brand-mark transition — keep the swap, sharpen the timing.**
+
+The `scrolled ? logoMark : logo` swap is good. We'll add `will-change: opacity` and crossfade them with absolute positioning so there's no layout shimmy during the swap.
+
+**Reduced-motion respect.**
+
+Wrap the duration classes in a media query so users with `prefers-reduced-motion: reduce` get an instant snap (`duration-0`) instead of the 700ms ease.
+
+**Mobile menu — swap to `Sheet`.**
+
+Replace the hand-rolled `{open && (...)}` block with `<Sheet open={open} onOpenChange={setOpen}>` + `<SheetContent side="right">`. We get:
+
+- Proper focus trap (Radix)
+- Escape-to-close (Radix)
+- Scroll lock (Radix — drop our manual `body.style.overflow` effect)
+- Return-focus to trigger on close (Radix)
+- A11y: `aria-modal`, `role="dialog"`, labelled by SheetTitle (we'll add an `sr-only` SheetTitle)
+
+The Sheet renders from the right with `slide-in-from-right` — feels like the menu pulls out of the hamburger, more intentional than fade. Width: `w-full sm:max-w-md` so on mobile it covers the screen, on tablet it's a panel.
+
+Inside the Sheet, keep the same content (logo top-left, big serif italic links, CTA at bottom) but:
+
+- Use the same `dossier-strip` rule above the link list — visually echoes sub-page heroes
+- Add the noise-svg plaster veil (the one already in the file) so the menu surface matches the rest of the site
+- Stagger reveals via `reveal-up` with 70ms increments (already in the file, keeps it)
+
+### 2. `src/components/ui/sheet.tsx` — no changes
+
+Already in the project, already used elsewhere. We just import from it.
+
+### 3. `src/index.css` — three small additions
+
+Add to the `@layer components` block (near the existing `.icon-chip` and `.dossier-strip`):
+
+```css
+/* Nav island — scroll-state crossfade for the brand mark */
+.nav-mark { transition: opacity 500ms var(--ease-weighted); }
+.nav-mark[data-state="hidden"] { opacity: 0; pointer-events: none; }
+
+/* Active-route hairline — editorial alternative to a dot */
+.nav-active-rule {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  height: 1px;
+  width: 14px;
+  margin-left: -7px;
+  background: hsl(var(--evergreen) / 0.7);
+  transform-origin: center;
+  transition: transform 500ms var(--ease-swift);
+}
+
+/* Reduced motion — snap, don't slide */
+@media (prefers-reduced-motion: reduce) {
+  .nav-island, .nav-mark, .nav-active-rule { transition-duration: 0ms !important; }
+}
+```
+
+### 4. `src/components/Navigation.tsx` — drop the manual scroll-lock effect
+
+Once Sheet handles it, this useEffect becomes dead code:
+
+```tsx
+useEffect(() => {
+  document.body.style.overflow = open ? "hidden" : "";
+  return () => { document.body.style.overflow = ""; };
+}, [open]);
+```
+
+Remove it.
+
+### 5. Verification
+
+- `bun run build` — confirm clean build
+- Visual spot-check at top of page (rest state) and after scrolling 200px (scrolled state) — confirm the pill visibly densifies
+- Mobile menu open/close — confirm focus trap, Escape, and return-focus work
+- A11y: tab into nav, confirm the active-route underline is visible at all sizes; confirm reduced-motion snaps instantly
+
+---
+
+## Out of scope (deliberately)
+
+- **No new components.** The plan stays inside `Navigation.tsx`, the existing `Sheet`, and small CSS additions.
+- **No layout changes.** The pill keeps its center-floating position and max-width.
+- **No content changes.** Same five links, same CTA copy, same logo assets.
+- **No dependencies added.**
