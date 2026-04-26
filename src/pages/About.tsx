@@ -1,12 +1,15 @@
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
-import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import ClosingCta from "@/components/ClosingCta";
+import InfoCard from "@/components/ui/InfoCard";
+import BentoGrid, { BentoTile } from "@/components/ui/BentoGrid";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
+import { HEADLINE, BODY, MEASURE } from "@/lib/typography";
+import { SECTION_PADDING, CONTENT_GAP } from "@/lib/spacing";
 
 const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
