@@ -536,9 +536,11 @@ const QuickContactSheet = () => {
             {/* ── STEP: message ──────────────────────────────────────── */}
             {step === "message" && (
               <div key="message" className="qc-step">
-                <p className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75 font-medium">
-                  Step 3 of 3
-                </p>
+                <div className="qc-progress" aria-hidden="true">
+                  <span data-state="done" />
+                  <span data-state="done" />
+                  <span data-state="active" />
+                </div>
                 <h2 className="mt-3 font-serif text-foreground text-[1.65rem] leading-[1.15] max-w-[20ch]">
                   Tell us a sentence about the project.
                 </h2>
@@ -553,6 +555,7 @@ const QuickContactSheet = () => {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="A sentence is plenty."
+                    maxLength={2000}
                     className={cn(
                       "flex min-h-[120px] w-full rounded-lg border bg-background/60 px-4 py-3",
                       "text-[1.05rem] text-foreground resize-y",
@@ -564,9 +567,19 @@ const QuickContactSheet = () => {
                     aria-invalid={Boolean(errors.message)}
                     aria-describedby={errors.message ? "qc-message-err" : undefined}
                   />
-                  {errors.message && (
-                    <p id="qc-message-err" className="mt-2 text-sm text-destructive">{errors.message}</p>
-                  )}
+                  <div className="mt-2 flex items-start justify-between gap-3 min-h-[1.25rem]">
+                    {errors.message ? (
+                      <p id="qc-message-err" className="text-sm text-destructive">{errors.message}</p>
+                    ) : (
+                      <span aria-hidden="true" />
+                    )}
+                    {/* Quiet character counter — only after 200 chars. */}
+                    {message.length >= 200 && (
+                      <span className="ml-auto text-[0.7rem] tabular-nums text-muted-foreground/60 shrink-0">
+                        {message.length}/2000
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <button
@@ -583,15 +596,39 @@ const QuickContactSheet = () => {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   )}
                 >
-                  <span>{submitting ? "Sending…" : "Send"}</span>
+                  <span>{submitting ? "Sending…" : "Send note"}</span>
                   <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-background/15">
                     <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                   </span>
                 </button>
 
-                <p className="mt-3 text-[0.7rem] tracking-[0.18em] uppercase text-muted-foreground/85 leading-relaxed">
-                  Reply within 2 business days · No obligation
+                <p className="mt-4 font-serif italic text-foreground/65 text-[0.9rem] leading-relaxed">
+                  No obligation. Reply within two business days.
                 </p>
+              </div>
+            )}
+
+            {/* ── STEP: done ─────────────────────────────────────────── */}
+            {step === "done" && (
+              <div key="done" className="qc-step py-2" role="status" aria-live="polite">
+                <p className="font-serif italic font-light text-foreground text-[1.55rem] leading-snug qc-shimmer">
+                  Thank you. We&rsquo;ll be in touch shortly.
+                </p>
+                <p className="mt-3 text-[0.95rem] text-muted-foreground leading-relaxed">
+                  We respond within two business days.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "mt-5 inline-flex items-center text-[0.85rem] text-evergreen/85 hover:text-evergreen",
+                    "underline underline-offset-4 decoration-evergreen/30 hover:decoration-evergreen",
+                    "transition-colors duration-300",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm",
+                  )}
+                >
+                  Close
+                </button>
               </div>
             )}
 
