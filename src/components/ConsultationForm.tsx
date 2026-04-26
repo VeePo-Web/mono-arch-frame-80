@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -15,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -27,6 +29,7 @@ import {
   PREFERRED_TIMES,
   PROJECT_TYPES,
   consultationSchema,
+  detectContact,
   projectTypeFromQuery,
   type ConsultationFormValues,
 } from "@/lib/validation/consultation";
@@ -44,17 +47,21 @@ interface ConsultationFormProps {
 const RESPONSE_NOTE_ID = "consultation-response-window-note";
 
 /**
- * ConsultationForm — inline lead-capture for the Final CTA.
- * Editorial styling: numeral-prefixed labels, hairline-separated rows,
- * cedar pill submit, success state mirrors the figure-footnote pattern.
+ * ConsultationForm — cautious-lead lead capture.
+ *
+ * Field order is built around Sam's persona: minimum required friction
+ * (name, contact, a written sentence about the project), then a single
+ * collapsible "more context" group for type/budget/timing/location.
+ *
+ * The contact field accepts email OR phone — detected at submit and
+ * stored in the right column. We persist a single email value into the
+ * existing `email` column when the input parses as an email; when it's a
+ * phone number we still store it as the `email` column value (the column
+ * is the lead's primary reach-back), and the message text carries the
+ * preference signal.
  *
  * Validation: zod (client) + DB CHECK constraints + RLS shape policy.
  * Honeypot field "company" must be empty — bot submissions are dropped silently.
- *
- * Success modes:
- *  - "redirect" → navigate to /thank-you with personalization state
- *  - "inline"   → render the existing in-card "Thank you" message
- *  Default: "redirect" when this form is rendered on /contact, else "inline".
  */
 const ConsultationForm = ({
   source = "home_final_cta",
@@ -73,10 +80,11 @@ const ConsultationForm = ({
     mode: "onTouched",
     defaultValues: {
       name: "",
-      email: "",
-      projectType: (projectTypeFromQuery(initialProjectType) ??
-        (undefined as unknown as ConsultationFormValues["projectType"])),
-      budget: undefined as unknown as ConsultationFormValues["budget"],
+      contact: "",
+      message: "",
+      location: "",
+      projectType: projectTypeFromQuery(initialProjectType),
+      budget: undefined,
       preferredTime: undefined,
       company: "",
     },
@@ -86,7 +94,7 @@ const ConsultationForm = ({
   useEffect(() => {
     const next = projectTypeFromQuery(initialProjectType);
     if (next && form.getValues("projectType") !== next) {
-      form.setValue("projectType", next, { shouldValidate: true, shouldDirty: false });
+      form.setValue("projectType", next, { shouldValidate: false, shouldDirty: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialProjectType]);
@@ -100,12 +108,36 @@ const ConsultationForm = ({
       return;
     }
 
+    const detected = detectContact(values.contact);
+    if (!detected) {
+      // Defensive — schema should already block this.
+      form.setError("contact", { message: "Please enter a valid email or phone number" });
+      return;
+    }
+
+    // The DB column is `email` and is required + length-checked. When the
+    // visitor gives us a phone, we still need a value in `email` for the
+    // RLS check; we use a deterministic placeholder + record the real
+    // phone inside the message text. (A future migration can split this
+    // into proper `email NULL` + `phone` columns.)
+    const emailForDb =
+      detected.kind === "email"
+        ? detected.value
+        : `phone+${detected.value.replace(/[^\d]/g, "")}@haven-creek.lead`;
+
+    const messageWithContact =
+      detected.kind === "phone"
+        ? `[Preferred contact: phone — ${detected.value}]\n\n${values.message}`
+        : values.message;
+
     const { error } = await supabase.from("consultations").insert({
       name: values.name,
-      email: values.email,
-      project_type: values.projectType,
+      email: emailForDb,
+      project_type: values.projectType ?? null,
       budget: values.budget ?? null,
       preferred_time: values.preferredTime ?? null,
+      message: messageWithContact,
+      location: values.location?.trim() ? values.location.trim() : null,
       source,
     });
 
@@ -123,7 +155,7 @@ const ConsultationForm = ({
           replace: true,
           state: {
             name: values.name,
-            projectType: values.projectType,
+            projectType: values.projectType ?? null,
             preferredTime: values.preferredTime ?? null,
             submittedAt: stamp.toISOString(),
             source,
@@ -131,7 +163,6 @@ const ConsultationForm = ({
         });
         return;
       } catch (e) {
-        // Defensive fallback — render the inline success state.
         console.warn("Redirect to /thank-you failed; falling back to inline confirmation.", e);
       }
     }
@@ -157,13 +188,9 @@ const ConsultationForm = ({
           We respond within two business days. If your project is time-sensitive,
           mention it when we reach out.
         </p>
-        <div className="figure-footnote mt-7">
-          <span className="footnote-figmark">Fig. iv.</span>
-          <span className="flex-1">RECEIVED</span>
-          <span className="text-evergreen/55 tabular-nums normal-case tracking-[0.18em]">
-            {time}
-          </span>
-        </div>
+        <p className="mt-7 text-minimal text-evergreen/65 tabular-nums">
+          Received · {time}
+        </p>
         <button
           type="button"
           onClick={() => {
@@ -205,9 +232,8 @@ const ConsultationForm = ({
           name="name"
           render={({ field }) => (
             <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
-              <FormLabel className="flex items-baseline gap-2 text-minimal text-foreground/70">
-                <span className="numeral-mark tabular-nums">01</span>
-                <span>Your name</span>
+              <FormLabel className="text-minimal text-foreground/70">
+                Your name
               </FormLabel>
               <FormControl>
                 <Input
@@ -224,24 +250,46 @@ const ConsultationForm = ({
 
         <FormField
           control={form.control}
-          name="email"
+          name="contact"
           render={({ field }) => (
             <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
-              <FormLabel className="flex items-baseline gap-2 text-minimal text-foreground/70">
-                <span className="numeral-mark tabular-nums">02</span>
-                <span>Email</span>
+              <FormLabel className="text-minimal text-foreground/70">
+                Best way to reach you
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  type="email"
                   inputMode="email"
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  placeholder="you@example.com"
+                  placeholder="you@example.com  ·  or  ·  (403) 555-0100"
                   autoComplete="email"
                   className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen/50"
+                />
+              </FormControl>
+              <p className="text-[0.7rem] text-muted-foreground/80 leading-relaxed">
+                Email or phone — whichever you prefer.
+              </p>
+              <FormMessage className="text-xs" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem className="space-y-1.5">
+              <FormLabel className="text-minimal text-foreground/70">
+                What you&apos;re considering
+              </FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  rows={4}
+                  placeholder="A sentence is plenty. e.g. &ldquo;Replacing a deck on a 1990s walkout, looking to start in spring.&rdquo;"
+                  className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen/50 resize-y"
                 />
               </FormControl>
               <FormMessage className="text-xs" />
@@ -249,96 +297,120 @@ const ConsultationForm = ({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="projectType"
-          render={({ field }) => (
-            <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
-              <FormLabel className="flex items-baseline gap-2 text-minimal text-foreground/70">
-                <span className="numeral-mark tabular-nums">03</span>
-                <span>Project type</span>
-              </FormLabel>
-              <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                <FormControl>
-                  <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
-                    <SelectValue placeholder="Select a service" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {PROJECT_TYPES.map((p) => (
-                    <SelectItem key={p.value} value={p.value}>
-                      {p.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
+        {/* Optional context — collapsed by default to reduce form anxiety */}
+        <details className="group/details pt-1">
+          <summary
+            className={cn(
+              "list-none cursor-pointer select-none",
+              "inline-flex items-center gap-2 text-minimal text-foreground/65 hover:text-evergreen transition-colors duration-300",
+              "focus-visible:outline-none focus-visible:underline focus-visible:underline-offset-4 focus-visible:decoration-evergreen/70",
+            )}
+          >
+            <ChevronDown
+              className="h-3.5 w-3.5 transition-transform duration-300 group-open/details:rotate-180"
+              strokeWidth={1.5}
+              aria-hidden="true"
+            />
+            <span>Add timing, budget, or location context</span>
+            <span className="text-[0.7rem] tracking-[0.18em] text-muted-foreground/70">OPTIONAL</span>
+          </summary>
 
-        <FormField
-          control={form.control}
-          name="budget"
-          render={({ field }) => (
-            <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
-              <FormLabel className="flex items-baseline gap-2 text-minimal text-foreground/70">
-                <span className="numeral-mark tabular-nums">04</span>
-                <span>Budget range</span>
-                <span className="ml-1 text-[0.65rem] tracking-[0.18em] text-muted-foreground/70 normal-case">
-                  optional
-                </span>
-              </FormLabel>
-              <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                <FormControl>
-                  <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
-                    <SelectValue placeholder="Not sure yet — we'll discuss" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {BUDGET_RANGES.map((b) => (
-                    <SelectItem key={b.value} value={b.value}>
-                      {b.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
+          <div className="mt-5 pt-5 border-t border-evergreen/10 space-y-5">
+            <FormField
+              control={form.control}
+              name="projectType"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-minimal text-foreground/70">Project type</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
+                        <SelectValue placeholder="If you'd like to flag one" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {PROJECT_TYPES.map((p) => (
+                        <SelectItem key={p.value} value={p.value}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
 
-        {/* Optional — preferred property-walk window */}
-        <FormField
-          control={form.control}
-          name="preferredTime"
-          render={({ field }) => (
-            <FormItem className="space-y-1.5">
-              <FormLabel className="flex items-baseline gap-2 text-minimal text-foreground/70">
-                <span className="numeral-mark tabular-nums">05</span>
-                <span>Best time to walk the property</span>
-                <span className="ml-1 text-[0.65rem] tracking-[0.18em] text-muted-foreground/70 normal-case">
-                  optional
-                </span>
-              </FormLabel>
-              <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                <FormControl>
-                  <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
-                    <SelectValue placeholder="Anytime" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {PREFERRED_TIMES.map((p) => (
-                    <SelectItem key={p.value} value={p.value}>
-                      {p.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="budget"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-minimal text-foreground/70">Budget range</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
+                        <SelectValue placeholder="Not sure yet — we'll discuss" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {BUDGET_RANGES.map((b) => (
+                        <SelectItem key={b.value} value={b.value}>
+                          {b.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="preferredTime"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-minimal text-foreground/70">Best time to walk the property</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                    <FormControl>
+                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen/50">
+                        <SelectValue placeholder="Anytime" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {PREFERRED_TIMES.map((p) => (
+                        <SelectItem key={p.value} value={p.value}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-minimal text-foreground/70">Property location</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="e.g. Bragg Creek · acreage near Water Valley"
+                      autoComplete="address-level2"
+                      className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen/50"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+          </div>
+        </details>
 
         <button
           type="submit"
