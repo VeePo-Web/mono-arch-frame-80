@@ -101,6 +101,7 @@ const App = () => (
           </Routes>
         </Suspense>
         <Footer />
+        <StickyConsultBar />
         <DeferredToasters />
       </BrowserRouter>
     </TooltipProvider>
