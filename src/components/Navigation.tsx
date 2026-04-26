@@ -5,6 +5,7 @@ import Phone from "lucide-react/dist/esm/icons/phone";
 import Mail from "lucide-react/dist/esm/icons/mail";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { openQuickContact } from "@/lib/quickContact";
 import logo from "@/assets/logo/haven-creek-horizontal.webp";
 import logoMark from "@/assets/logo/haven-creek-mark.webp";
 
@@ -359,14 +360,22 @@ const Navigation = () => {
               </div>
             </div>
 
-            {/* Bottom-pinned consultation pill — full-bleed on the smallest phones */}
+            {/* Bottom-pinned consultation pill — opens the QuickContactSheet
+                in-place on mobile so cautious leads don't lose their scroll
+                position to a full route change. */}
             <div className="mt-auto pt-8 border-t border-border/60">
-              <Link
-                to="/contact"
-                onClick={() => setOpen(false)}
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  // Defer the sheet open so the mobile-nav close animation
+                  // doesn't fight the new sheet's enter animation.
+                  setTimeout(() => openQuickContact({ source: "quick_contact_sheet" }), 220);
+                }}
                 className={cn(
                   "group/btn flex items-center justify-between gap-3 w-full",
-                  "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-minimal min-h-[52px]",
+                  "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-minimal min-h-[56px]",
+                  "active:scale-[0.985] transition-transform duration-200",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
               >
@@ -374,7 +383,7 @@ const Navigation = () => {
                 <span className="icon-chip icon-chip-light bg-background/15">
                   <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={1.5} />
                 </span>
-              </Link>
+              </button>
               <p className="mt-3 text-minimal text-muted-foreground">
                 No pressure. Just a clear conversation.
               </p>
