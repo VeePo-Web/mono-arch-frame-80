@@ -93,6 +93,16 @@ const StickyConsultBar = () => {
 
   const show = pastHero && !atFinalCta && !dismissed;
 
+  // Toggle a body data-attribute so layout can leave room for the bar
+  // (e.g. the footer copyright row otherwise sits behind it on phones).
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.dataset.stickyBar = show ? "shown" : "hidden";
+    return () => {
+      document.body.dataset.stickyBar = "hidden";
+    };
+  }, [show]);
+
   return (
     <>
       {/* Sentinel — placed at ~85vh from the top of the document.
@@ -115,28 +125,28 @@ const StickyConsultBar = () => {
           show ? "pointer-events-auto" : "pointer-events-none",
         )}
       >
+        {/* Lead label — desktop / tablet only. On phones the consultation pill
+            takes the full width so the tap target is unmistakable. */}
         <p className="hidden sm:block text-minimal text-foreground/70 pl-1">
           Ready when you are.
         </p>
-        <p className="sm:hidden text-minimal text-foreground/80 pl-1">
-          Ready when you are.
-        </p>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex flex-1 sm:flex-initial sm:ml-auto items-center gap-2">
           <Link
             to="/contact"
             onClick={handleDismiss}
             className={cn(
-              "group/btn inline-flex items-center gap-2.5 rounded-full",
+              "group/btn flex sm:inline-flex flex-1 sm:flex-initial items-center justify-between sm:justify-start gap-2.5 rounded-full",
               "bg-evergreen text-evergreen-foreground",
-              "pl-5 pr-1.5 py-1.5 min-h-[40px] text-minimal",
+              "pl-6 pr-1.5 py-1.5 text-minimal",
+              // 48px min on phones (Apple/Google guideline), 40px on tablet+ to stay quiet.
+              "min-h-[48px] sm:min-h-[40px]",
               "transition-colors duration-300",
               "hover:bg-evergreen-hover focus-visible:outline-none",
               "focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
           >
-            <span className="hidden sm:inline">Request a Consultation</span>
-            <span className="sm:hidden">Consultation</span>
+            <span>Request a Consultation</span>
             <span className="icon-chip icon-chip-light bg-background/15">
               <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
             </span>
@@ -147,13 +157,14 @@ const StickyConsultBar = () => {
             onClick={handleDismiss}
             aria-label="Dismiss consultation shortcut"
             className={cn(
-              "inline-flex items-center justify-center h-9 w-9 rounded-full",
+              // 44×44 on phones; tighter on tablet+.
+              "inline-flex items-center justify-center h-11 w-11 sm:h-9 sm:w-9 rounded-full shrink-0",
               "text-foreground/70 hover:text-foreground hover:bg-foreground/[0.05]",
               "transition-colors duration-300",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
           >
-            <X className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
+            <X className="h-4 w-4 sm:h-3.5 sm:w-3.5" strokeWidth={1.5} aria-hidden="true" />
           </button>
         </div>
       </aside>
