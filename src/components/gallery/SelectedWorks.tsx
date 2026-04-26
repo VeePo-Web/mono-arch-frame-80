@@ -5,7 +5,7 @@ import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
 import PremiumCard from "@/components/PremiumCard";
 import { useReveal } from "@/hooks/useReveal";
-import { GalleryVignette } from "./GalleryVignettes";
+import ProjectPlaceholder from "./ProjectPlaceholder";
 import { galleryPlates } from "@/data/galleryPlates";
 
 const SECTION_PADDING = "py-28 md:py-40";
@@ -89,9 +89,9 @@ const SelectedWorks = () => {
             style={{ ["--reveal-delay" as string]: "120ms" }}
           >
             <p className="text-body text-muted-foreground">
-              Each plate is a line-drawing of the work — chosen so the detail
-              speaks, not the staging. Choose a plate from the list to bring
-              it forward.
+              Each plate is a record of the work — selected so the detail
+              speaks. Choose a plate from the list to bring it forward;
+              photographs are added as projects close.
             </p>
           </div>
         </div>
@@ -107,15 +107,21 @@ const SelectedWorks = () => {
             <PremiumCard className="h-full">
               <div className="flex flex-col h-full">
                 {/* Plate */}
-                <div className="relative aspect-[4/3] overflow-hidden border-b border-evergreen/10">
-                  <GalleryVignette
-                    key={active.slug}
-                    vignetteKey={active.vignetteKey}
-                    className="absolute inset-0 w-full h-full plate-fade"
+                <div className="relative overflow-hidden border-b border-evergreen/10 plate-fade" key={active.slug}>
+                  <ProjectPlaceholder
+                    project={{
+                      slug: active.slug,
+                      title: active.title,
+                      area: active.area,
+                      category: active.category,
+                      romanNumeral: active.romanNumeral,
+                    }}
+                    index={activeIndex}
+                    className="border-b-0"
                   />
                   <span
                     aria-hidden="true"
-                    className="absolute top-4 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
+                    className="absolute top-4 right-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
                   >
                     Plate {active.romanNumeral}
                   </span>
