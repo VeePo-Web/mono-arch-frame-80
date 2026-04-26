@@ -424,6 +424,65 @@
     width: 100%;
   }
 
+  /* ──────────────────────────────────────────────────────────────────────
+     Dossier strip — editorial folio bar shown under the Eyebrow on
+     sub-page heroes. Hairline rule on either side, tracked locator
+     metadata in the centre. Reads like a printed page header.
+     ────────────────────────────────────────────────────────────────────── */
+  .dossier-strip {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    width: 100%;
+    max-width: 56rem;
+  }
+  .dossier-strip__rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      hsl(var(--evergreen) / 0.28) 30%,
+      hsl(var(--evergreen) / 0.28) 70%,
+      transparent
+    );
+  }
+  .dossier-strip__inner {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.7rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: hsl(var(--evergreen) / 0.75);
+    white-space: nowrap;
+  }
+  .dossier-strip__no {
+    color: hsl(var(--foreground) / 0.7);
+  }
+  .dossier-strip__dot {
+    color: hsl(var(--evergreen) / 0.4);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .dossier-strip__coord {
+    color: hsl(var(--evergreen) / 0.85);
+  }
+  .dossier-strip__edition {
+    color: hsl(var(--foreground) / 0.55);
+  }
+  @media (max-width: 640px) {
+    .dossier-strip {
+      gap: 0.5rem;
+    }
+    .dossier-strip__inner {
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+    }
+  }
 
 
   /* Section coordinates — RETIRED. Kept as a no-op for legacy markup. */
