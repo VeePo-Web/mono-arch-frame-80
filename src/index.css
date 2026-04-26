@@ -476,35 +476,30 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Haven Creek nav — solid bar (round 4, "grandpa-grade").
-     Active tab gets a 3px center-anchored underline + subtle background
-     chip (set on the element). Both cues are colour-blind safe.
+     Haven Creek nav — solid bar (round 5, "ruthless simplification").
+     Active section-rail tab: 2px center-anchored evergreen underline +
+     font-semibold weight bump. Two cues, colour-blind safe, calm.
      ────────────────────────────────────────────────────────────────────── */
   .nav-tab-rule {
     position: absolute;
-    left: 0.875rem;
-    right: 0.875rem;
+    left: 0.75rem;
+    right: 0.75rem;
     bottom: 0.25rem;
-    height: 3px;
-    border-radius: 2px;
+    height: 2px;
+    border-radius: 1px;
     background: hsl(var(--evergreen));
     transform-origin: center;
-    transition: transform 360ms var(--ease-swift);
-  }
-  .nav-pill {
-    /* Hook for shared CTA polish; styling lives on the element itself
-       so callers can override per surface. */
+    transition: transform 320ms var(--ease-swift);
   }
 
-  /* Section rail overflow fallback — only active when JS sets data-overflow="true" */
-  .section-rail-scroll {
+  /* Section rail — always scroll-x with edge-fade mask. Mask is harmless
+     when content fits; allows graceful overflow with no JS observer. */
+  .section-rail {
     overflow-x: auto;
-    scroll-snap-type: x proximity;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  .section-rail-scroll::-webkit-scrollbar { display: none; }
-  .section-rail-scroll > div > a { scroll-snap-align: center; }
+  .section-rail::-webkit-scrollbar { display: none; }
   .section-rail-mask {
     -webkit-mask-image: linear-gradient(
       to right,
@@ -522,48 +517,23 @@
     );
   }
 
-  /* "You are here" dot on the hamburger when current route is in drawer */
-  .nav-current-dot {
-    box-shadow: 0 0 0 2px hsl(var(--background));
-    animation: nav-current-dot 2.4s ease-in-out infinite;
-  }
-  @keyframes nav-current-dot {
-    0%, 100% { opacity: 0.85; }
-    50%      { opacity: 1; }
-  }
-
-  /* Drawer column header — small evergreen left bar to mark "this is a header, not a link" */
-  .menu-col-bar::before {
+  /* Hamburger "you are here" bar — calm static evergreen tick beneath the icon */
+  .hamburger-btn[data-current="true"]::after {
     content: "";
     position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 0.85em;
-    background: hsl(var(--evergreen));
-    border-radius: 2px;
-  }
-
-  /* Active primary drawer link — 1.5px evergreen underline (colour-blind cue) */
-  .menu-primary--active::after {
-    content: "";
-    position: absolute;
-    left: 0.25rem;
-    right: 0.25rem;
-    bottom: 0.625rem;
-    height: 1.5px;
-    background: hsl(var(--evergreen));
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 2px;
     border-radius: 1px;
+    background: hsl(var(--evergreen));
   }
 
   @media (prefers-reduced-motion: reduce) {
     .havencreek-nav,
-    .nav-tab-rule,
-    .nav-pill,
-    .nav-current-dot {
+    .nav-tab-rule {
       transition-duration: 0ms !important;
-      animation: none !important;
     }
   }
 
