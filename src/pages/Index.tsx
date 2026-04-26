@@ -7,7 +7,8 @@ import Eyebrow from "@/components/Eyebrow";
 import Hero from "@/components/Hero";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
-import { ProjectVignette, type VignetteCategory } from "@/components/ProjectVignette";
+import TestimonialSpine from "@/components/TestimonialSpine";
+import ProjectPlaceholder from "@/components/gallery/ProjectPlaceholder";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
@@ -170,7 +171,37 @@ const Index = () => {
         </Container>
       </RevealSection>
 
-      {/* ─── § II — Services Preview ─────────────────────────────────────── */}
+      {/* ─── § I.b — Mid-page conversion bridge ───────────────────────── */}
+      <RevealSection aria-label="Quick consultation invitation" className="py-14 md:py-20">
+        <Container size="wide">
+          <div className="conversion-bridge flex flex-col md:flex-row md:items-center md:justify-between gap-7 md:gap-10 py-10 md:py-12">
+            <p
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "0ms" }}
+              className="font-serif italic font-light text-foreground/85 text-[1.35rem] md:text-[1.55rem] leading-snug max-w-[36ch] text-balance"
+            >
+              Already nodding? Let&apos;s start a quiet conversation.
+            </p>
+            <div
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "180ms" }}
+              className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7 shrink-0"
+            >
+              <Link to="/contact" className="cta-anchor group/btn">
+                <span>Request a Consultation</span>
+                <span className="icon-chip icon-chip-light bg-background/15">
+                  <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                </span>
+              </Link>
+              <p className="trust-microcopy">
+                <span>2-business-day reply</span>
+                <span>No obligation</span>
+              </p>
+            </div>
+          </div>
+        </Container>
+      </RevealSection>
+
       <RevealSection
         id="services-preview"
         aria-labelledby="services-heading"
@@ -318,10 +349,14 @@ const Index = () => {
               </h2>
             </div>
             <div
-              className="lg:col-span-5 lg:pt-8 flex lg:items-end lg:justify-end"
+              className="lg:col-span-5 lg:pt-8 flex flex-col gap-6 lg:items-end lg:justify-end lg:text-right"
               data-reveal
               style={{ ["--reveal-delay" as string]: "120ms" }}
             >
+              <p className="font-serif italic font-light text-muted-foreground text-[0.98rem] leading-snug max-w-[36ch]">
+                Photographs are added as projects close. Until then, the work
+                speaks through the case notes.
+              </p>
               <Link
                 to="/work"
                 className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
@@ -342,12 +377,7 @@ const Index = () => {
               >
                 <PremiumCard className="h-full transition-transform duration-700 ease-weighted group-hover:-translate-y-1">
                   <div className="flex flex-col h-full">
-                    <div className="relative aspect-[4/3] overflow-hidden border-b border-border">
-                      <ProjectVignette
-                        category={p.category as VignetteCategory}
-                        className="absolute inset-0 w-full h-full transition-transform duration-700 ease-weighted group-hover:scale-[1.015]"
-                      />
-                    </div>
+                    <ProjectPlaceholder project={p} index={i} />
 
                     <div className="p-8 lg:p-9 flex flex-col flex-1">
                       <p className="text-minimal text-evergreen/80">
@@ -424,6 +454,9 @@ const Index = () => {
           </div>
         </Container>
       </RevealSection>
+
+      {/* ─── § V.b — Testimonial Spine: words from clients ─────────────── */}
+      <TestimonialSpine />
 
       {/* ─── § VI — Service Areas Roster ────────────────────────────────── */}
       <RevealSection
@@ -588,7 +621,7 @@ const Index = () => {
                     data-drift
                     className="font-serif text-foreground text-[1.3rem] md:text-[1.5rem] leading-snug"
                   >
-                    Tell us about the project.
+                    Tell us what you&apos;re considering.
                   </p>
                   <p className="mt-2 text-minimal text-muted-foreground">
                     A few details so we can come prepared.
