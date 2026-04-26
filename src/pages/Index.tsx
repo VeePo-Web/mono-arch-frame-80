@@ -688,11 +688,11 @@ const Index = () => {
             {/* 4. Promise list — last on mobile (closing reassurance),
                 third item in the text column on desktop. */}
             <div
-              className="order-4 lg:order-4 lg:col-span-6"
+              className="order-4 lg:order-4 lg:col-span-6 lg:mt-12"
               data-reveal
               style={{ ["--reveal-delay" as string]: "340ms" }}
             >
-              <ul className="lg:mt-2 max-w-[46ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
+              <ul className="max-w-[46ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
                 {[
                   "Hands-on support from planning to completion.",
                   "Interior finishing, exterior repairs, and decking for rural homes.",
