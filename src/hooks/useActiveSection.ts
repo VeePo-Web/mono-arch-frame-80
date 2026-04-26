@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import type { PageSection } from "@/lib/pageSections";
 
 /**
- * Tracks which page section is currently in view.
+ * Tracks which page section is currently in view. Round 5: lean.
  *
- * Strategy: an IntersectionObserver fires on every section's enter/exit.
- * On each callback we re-query *all* observed elements and pick the one
- * whose top is closest to (but at or above) the header line — that's the
- * section the user is "on." This produces stable highlights even when
- * multiple sections are intersecting at once.
+ * - Single IntersectionObserver, no scroll/resize listeners.
+ * - rAF-debounced recompute.
+ * - Pauses work when the tab is hidden.
  *
- * `headerOffset` matches the solid nav bar height + breathing room
- * so a section is considered "active" the moment its title clears the bar.
+ * `headerOffset` matches the solid nav bar height + breathing room so a
+ * section is considered "active" the moment its title clears the bar.
  */
 export const useActiveSection = (
   sections: PageSection[],
@@ -34,10 +32,9 @@ export const useActiveSection = (
 
     let raf = 0;
     const recompute = () => {
+      if (typeof document !== "undefined" && document.hidden) return;
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        // Pick the section whose top is the largest value still ≤ headerOffset.
-        // Falls back to the first section if we're above all of them.
         let current: string | null = elements[0]?.id ?? null;
         let bestTop = -Infinity;
         for (const el of elements) {
@@ -52,22 +49,17 @@ export const useActiveSection = (
     };
 
     const observer = new IntersectionObserver(recompute, {
-      // Negative top margin pulls the trigger line down to the header.
       rootMargin: `-${headerOffset}px 0px -40% 0px`,
-      threshold: [0, 0.25, 0.5, 0.75, 1],
+      threshold: [0, 0.5, 1],
     });
     elements.forEach((el) => observer.observe(el));
 
-    // Initial paint + handle scroll-restored loads.
+    // Initial paint.
     recompute();
-    window.addEventListener("scroll", recompute, { passive: true });
-    window.addEventListener("resize", recompute);
 
     return () => {
       cancelAnimationFrame(raf);
       observer.disconnect();
-      window.removeEventListener("scroll", recompute);
-      window.removeEventListener("resize", recompute);
     };
     // sections is recreated on each render; depend on a stable signature.
     // eslint-disable-next-line react-hooks/exhaustive-deps

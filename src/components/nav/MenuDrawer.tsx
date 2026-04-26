@@ -5,25 +5,16 @@ import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import X from "lucide-react/dist/esm/icons/x";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MenuDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const PRIMARY = [
-  { label: "Home", to: "/" },
-  { label: "About", to: "/about" },
-  { label: "Selected Work", to: "/work" },
-  { label: "Contact", to: "/contact" },
-];
-
 const SERVICES = [
   { label: "Interior Finishing", to: "/services/interior-finishing" },
   { label: "Exterior Repairs", to: "/services/exterior-finishing" },
   { label: "Decking", to: "/services/decking" },
-  { label: "All Services", to: "/services", muted: true },
 ];
 
 const AREAS = [
@@ -31,13 +22,12 @@ const AREAS = [
   { label: "Rocky View County", to: "/service-areas/rocky-view-county" },
   { label: "Bearspaw", to: "/service-areas/bearspaw" },
   { label: "Water Valley", to: "/service-areas/water-valley" },
-  { label: "All Areas", to: "/service-areas", muted: true },
 ];
 
 const COMPANY = [
-  { label: "About Haven Creek", to: "/about" },
+  { label: "About", to: "/about" },
   { label: "Selected Work", to: "/work" },
-  { label: "Service Areas", to: "/service-areas" },
+  { label: "Contact", to: "/contact" },
 ];
 
 const STUDIO_PHONE_TEL = "+14035550100";
@@ -45,36 +35,28 @@ const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
 const STUDIO_EMAIL = "hello@havencreekrenovations.ca";
 
 /**
- * MenuDrawer — Round 4 "grandpa-grade" cleanup.
+ * MenuDrawer — Round 5 "ruthless simplification".
  *
- * Top: close button.
- * Body:
- *   1. Horizontal primary row: Home · About · Selected Work · Contact (19px semibold)
- *   2. Three same-shape link columns with evergreen left bars on each header
- * Bottom rail: trust line · phone · email · ONE clearly-shaped CTA pill,
- *   plus an "Or call …" tertiary line on mobile.
+ * Two zones:
+ *   1. Big "Home" link + 3 same-shape link columns.
+ *   2. Bottom rail: trust line + 1 CTA pill.
  *
- * Active links use BOTH colour and a leading `•` glyph — colour-blind safe.
+ * Phone + email live in a tiny secondary row beneath the columns.
+ * No horizontal primary row, no leading dots, no plaster-grain SVG.
+ * CSS media-queries pick the CTA flavour — no useIsMobile mount.
  */
 const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
   const { pathname } = useLocation();
-  const isMobile = useIsMobile();
 
-  // Close on route change
+  // Close on route change.
   useEffect(() => {
     if (open) onOpenChange(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  const handleQuote = () => {
+  const closeAndQuickContact = () => {
     onOpenChange(false);
-    if (isMobile) {
-      setTimeout(() => openQuickContact({ source: "quick_contact_sheet" }), 220);
-    }
-  };
-
-  const handlePhone = () => {
-    onOpenChange(false);
+    setTimeout(() => openQuickContact({ source: "quick_contact_sheet" }), 220);
   };
 
   return (
@@ -91,16 +73,6 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
           )}
         >
           <Dialog.Title className="sr-only">Site menu</Dialog.Title>
-
-          {/* Plaster-grain veil */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-multiply"
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
-            }}
-          />
 
           {/* Close button */}
           <div
@@ -126,49 +98,37 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
 
           {/* Scrollable content body */}
           <div
-            className="relative z-10 flex-1 overflow-y-auto px-6 md:px-10 lg:px-16 pt-4 md:pt-6"
+            className="relative z-10 flex-1 overflow-y-auto px-6 md:px-10 lg:px-16 pt-2 md:pt-4"
             style={{
               paddingBottom: "max(2rem, calc(env(safe-area-inset-bottom) + 1rem))",
             }}
           >
-            {/* Primary horizontal row — siblings, no soloist */}
-            <nav
-              aria-label="Main pages"
-              className="flex flex-wrap items-center gap-x-7 gap-y-2 pb-6 md:pb-8 border-b border-border/60"
+            {/* Single primary "Home" anchor — RoyalMechanical-style */}
+            <Link
+              to="/"
+              onClick={() => onOpenChange(false)}
+              aria-current={pathname === "/" ? "page" : undefined}
+              className={cn(
+                "menu-drawer__link inline-flex items-center min-h-[56px] mb-6 md:mb-8",
+                "text-2xl md:text-3xl font-semibold tracking-tight",
+                pathname === "/" ? "text-evergreen" : "text-foreground hover:text-evergreen",
+                "transition-colors duration-300",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm px-1 -mx-1",
+              )}
               style={{ animationDelay: "120ms" }}
             >
-              {PRIMARY.map((p, i) => {
-                const isActive = pathname === p.to;
-                return (
-                  <Link
-                    key={p.to}
-                    to={p.to}
-                    onClick={() => onOpenChange(false)}
-                    aria-current={isActive ? "page" : undefined}
-                    className={cn(
-                      "menu-drawer__link relative inline-flex items-center min-h-[52px]",
-                      "text-lg md:text-xl font-semibold transition-colors duration-300",
-                      isActive ? "text-evergreen menu-primary--active" : "text-foreground/90 hover:text-evergreen",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm px-1 -mx-1",
-                    )}
-                    style={{ animationDelay: `${160 + i * 40}ms` }}
-                  >
-                    {p.label}
-                  </Link>
-                );
-              })}
-            </nav>
+              Home
+            </Link>
 
             {/* Three same-shape columns: Services · Service Areas · Company */}
-            <div className="mt-8 md:mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-16 max-w-5xl">
-              <DrawerColumn label="Services" delay={300}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-16 max-w-5xl">
+              <DrawerColumn label="Services" delay={200}>
                 {SERVICES.map((s, i) => (
                   <DrawerLink
                     key={s.to}
                     to={s.to}
                     onClick={() => onOpenChange(false)}
-                    muted={s.muted}
-                    delay={340 + i * 30}
+                    delay={240 + i * 30}
                     active={pathname === s.to}
                   >
                     {s.label}
@@ -176,14 +136,13 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 ))}
               </DrawerColumn>
 
-              <DrawerColumn label="Service Areas" delay={400}>
+              <DrawerColumn label="Service Areas" delay={300}>
                 {AREAS.map((a, i) => (
                   <DrawerLink
                     key={a.to}
                     to={a.to}
                     onClick={() => onOpenChange(false)}
-                    muted={a.muted}
-                    delay={440 + i * 30}
+                    delay={340 + i * 30}
                     active={pathname === a.to}
                   >
                     {a.label}
@@ -191,13 +150,13 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 ))}
               </DrawerColumn>
 
-              <DrawerColumn label="Company" delay={520}>
+              <DrawerColumn label="Company" delay={400}>
                 {COMPANY.map((c, i) => (
                   <DrawerLink
                     key={c.to}
                     to={c.to}
                     onClick={() => onOpenChange(false)}
-                    delay={560 + i * 30}
+                    delay={440 + i * 30}
                     active={pathname === c.to}
                   >
                     {c.label}
@@ -205,88 +164,77 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 ))}
               </DrawerColumn>
             </div>
+
+            {/* Tiny secondary contact row beneath the columns */}
+            <div
+              className="menu-drawer__label mt-10 md:mt-12 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-foreground/70"
+              style={{ animationDelay: "560ms" }}
+            >
+              <a
+                href={`tel:${STUDIO_PHONE_TEL}`}
+                onClick={() => onOpenChange(false)}
+                className="hover:text-evergreen transition-colors min-h-[44px] inline-flex items-center font-medium"
+              >
+                {STUDIO_PHONE_DISPLAY}
+              </a>
+              <span className="text-foreground/25" aria-hidden="true">·</span>
+              <a
+                href={`mailto:${STUDIO_EMAIL}`}
+                onClick={() => onOpenChange(false)}
+                className="hover:text-evergreen transition-colors min-h-[44px] inline-flex items-center break-all"
+              >
+                {STUDIO_EMAIL}
+              </a>
+            </div>
           </div>
 
-          {/* Bottom rail — trust line · phone · email · CTA */}
+          {/* Bottom rail — trust line + ONE CTA */}
           <div
             className="relative z-10 border-t border-border/60 bg-background/40 backdrop-blur-sm"
-            style={{
-              paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
-            }}
+            style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
           >
-            <div className="px-6 md:px-10 lg:px-16 py-4 md:py-5 flex flex-col md:flex-row md:items-center justify-between gap-5">
-              <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-sm">
-                <p className="text-foreground/70 flex items-center gap-2">
-                  <span
-                    className="menu-trust-dot inline-block h-1.5 w-1.5 rounded-full bg-evergreen/80"
-                    aria-hidden="true"
-                  />
-                  Family-run · Foothills, AB
-                </p>
-                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 text-foreground/75">
-                  <a
-                    href={`tel:${STUDIO_PHONE_TEL}`}
-                    onClick={handlePhone}
-                    className="hover:text-evergreen transition-colors min-h-[44px] inline-flex items-center font-medium"
-                  >
-                    {STUDIO_PHONE_DISPLAY}
-                  </a>
-                  <span className="hidden md:inline text-foreground/30" aria-hidden="true">·</span>
-                  <a
-                    href={`mailto:${STUDIO_EMAIL}`}
-                    onClick={() => onOpenChange(false)}
-                    className="hover:text-evergreen transition-colors min-h-[44px] inline-flex items-center break-all"
-                  >
-                    {STUDIO_EMAIL}
-                  </a>
-                </div>
-              </div>
+            <div className="px-6 md:px-10 lg:px-16 py-4 md:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <p className="text-foreground/70 text-sm flex items-center gap-2">
+                <span
+                  className="inline-block h-1.5 w-1.5 rounded-full bg-evergreen/80"
+                  aria-hidden="true"
+                />
+                Family-run · Foothills, AB
+              </p>
 
-              {/* Single, clearly-shaped CTA — full width on mobile, natural on desktop */}
-              <div className="flex flex-col items-stretch md:items-end gap-2 w-full md:w-auto">
-                {isMobile ? (
-                  <button
-                    type="button"
-                    onClick={handleQuote}
-                    className={cn(
-                      "menu-drawer__cta nav-pill group/btn",
-                      "inline-flex items-center justify-center gap-2.5",
-                      "bg-evergreen text-evergreen-foreground rounded-full px-6 text-[15px] font-semibold",
-                      "min-h-[56px] w-full",
-                      "active:scale-[0.985] transition-transform duration-200",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    )}
-                  >
-                    <span>Get a Free Quote</span>
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={2} />
-                  </button>
-                ) : (
-                  <Link
-                    to="/contact"
-                    onClick={() => onOpenChange(false)}
-                    className={cn(
-                      "menu-drawer__cta nav-pill group/btn",
-                      "inline-flex items-center justify-center gap-2.5 shrink-0",
-                      "bg-evergreen text-evergreen-foreground rounded-full px-6 text-[15px] font-semibold",
-                      "min-h-[48px] min-w-[220px]",
-                      "hover:bg-evergreen-hover transition-colors duration-300",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    )}
-                  >
-                    <span>Get a Free Quote</span>
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={2} />
-                  </Link>
+              {/* Mobile CTA — opens QuickContactSheet */}
+              <button
+                type="button"
+                onClick={closeAndQuickContact}
+                className={cn(
+                  "menu-drawer__cta md:hidden",
+                  "inline-flex items-center justify-center gap-2.5",
+                  "bg-evergreen text-evergreen-foreground rounded-full px-6 text-[15px] font-semibold",
+                  "min-h-[56px] w-full",
+                  "active:scale-[0.985] transition-transform duration-200",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
-                {isMobile && (
-                  <a
-                    href={`tel:${STUDIO_PHONE_TEL}`}
-                    onClick={handlePhone}
-                    className="text-center text-sm text-foreground/65 hover:text-evergreen transition-colors min-h-[40px] inline-flex items-center justify-center"
-                  >
-                    Or call {STUDIO_PHONE_DISPLAY}
-                  </a>
+              >
+                <span>Get a Free Quote</span>
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={2} />
+              </button>
+
+              {/* Desktop CTA — routes to /contact */}
+              <Link
+                to="/contact"
+                onClick={() => onOpenChange(false)}
+                className={cn(
+                  "menu-drawer__cta hidden md:inline-flex",
+                  "items-center justify-center gap-2.5 shrink-0",
+                  "bg-evergreen text-evergreen-foreground rounded-full px-6 text-[15px] font-semibold",
+                  "min-h-[48px] min-w-[220px]",
+                  "hover:bg-evergreen-hover transition-colors duration-300",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
-              </div>
+              >
+                <span>Get a Free Quote</span>
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={2} />
+              </Link>
             </div>
           </div>
         </Dialog.Content>
@@ -308,7 +256,7 @@ const DrawerColumn = ({
 }) => (
   <div>
     <p
-      className="menu-drawer__label menu-col-bar relative text-evergreen text-xs font-semibold uppercase tracking-[0.14em] mb-3 pl-3"
+      className="menu-drawer__label text-evergreen text-[11px] font-semibold uppercase tracking-[0.16em] mb-3"
       style={{ animationDelay: `${delay}ms` }}
     >
       {label}
@@ -320,14 +268,12 @@ const DrawerColumn = ({
 const DrawerLink = ({
   to,
   onClick,
-  muted,
   delay,
   active,
   children,
 }: {
   to: string;
   onClick: () => void;
-  muted?: boolean;
   delay: number;
   active?: boolean;
   children: React.ReactNode;
@@ -337,22 +283,15 @@ const DrawerLink = ({
     onClick={onClick}
     aria-current={active ? "page" : undefined}
     className={cn(
-      "menu-drawer__link relative py-1.5 min-h-[52px] flex items-center transition-colors duration-300",
-      "text-[1.125rem] md:text-[1.1875rem]",
-      muted
-        ? "text-foreground/55 hover:text-evergreen text-base"
+      "menu-drawer__link py-1.5 min-h-[48px] flex items-center transition-colors duration-300",
+      "text-[1.0625rem] md:text-[1.125rem]",
+      active
+        ? "text-evergreen font-semibold"
         : "text-foreground/85 hover:text-evergreen",
-      active && "text-evergreen font-semibold",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm px-1 -mx-1",
     )}
     style={{ animationDelay: `${delay}ms` }}
   >
-    {active && (
-      <span
-        aria-hidden="true"
-        className="inline-block h-1.5 w-1.5 rounded-full bg-evergreen mr-2.5 -ml-3.5"
-      />
-    )}
     {children}
   </Link>
 );
