@@ -1,161 +1,160 @@
-# Plan — World-class AI photography for Haven Creek
+# Worldclass Navigation Cleanup — "Two-Tier Editorial Nav"
 
-## 0 · Decisions logged from your answers
-- **Intent:** Full replacement — every photo-pending surface gets a real image.
-- **Aesthetic:** Realistic worksite documentary. **No people, no faces, no hands.** Materials, tools mid-task, finished details, weathered exteriors, framed deck structures, prairie context.
-- **Model + storage:** `google/gemini-3-pro-image-preview` (Nano Banana Pro), written to `src/assets/photography/` so Vite hashes/optimizes them.
+## The owner's complaint, named
 
-I'm also going to silently fix the runtime error you're seeing (`Cannot read properties of null (reading 'useEffect')` from `QueryClientProvider`) — that's a stale Vite dep cache, resolved by removing `node_modules/.vite`. No code change needed there.
+Today's nav is a single floating glass pill that has to do **four jobs at once**: brand mark, five route links, the Consultation CTA, and (on mobile) a hamburger. There's nothing telling you *where you are within a long page* — the home page alone is six sections deep. The result feels busy without feeling navigable.
 
----
+## The pattern we're borrowing (RoyalMechanical.com)
 
-## 1 · Brand-photography contract (the rules every prompt must obey)
+A slim, quiet **two-tier system**:
 
-These rules come straight out of `knowledge/source-documents/brand-identity/1.5-brand-identity-north-star.md` and `1.3-client-design-preferences.md`. Every prompt I write will be derived from this contract:
+1. **Top bar** = "where am I right now"
+   - Logo (left) · **section anchors of the current page, auto-highlighted as you scroll** (center) · Phone / Message Us / **always-on hamburger** (right).
+2. **Fullscreen drawer** = "where else can I go"
+   - Triggered by the hamburger on **every viewport** (not just mobile).
+   - Three editorial columns: **Services · Service Areas · Studio**.
+   - Bottom rail: trust line + the consultation CTA.
 
-| Rule | Concrete prompt language |
-|------|-------------------------|
-| Rural Alberta, not urban | "rural Alberta acreage… prairie horizon… aspen / lodgepole pine in the distance… foothills haze on the west edge" |
-| Natural light, never studio | "soft overcast morning" or "low golden afternoon" — no ring lights, no rim flash |
-| No people, no faces, no hands | Hard-coded *negative*: "no people, no faces, no hands, no figures, no portraits" in every prompt |
-| Honest worksite, not luxury | "tools in mid-task, sawdust on the sill, a level resting on the trim, drop sheet folded" — the *evidence* of work, not staging |
-| Calm palette aligned to the site | Dominant cedar / evergreen / warm off-white. *Negative*: "no neon, no chrome, no glossy plastic, no high-saturation accent colors" |
-| Lens & framing | 35mm or 50mm equivalent, eye-level, no tilt-shift fisheye, no drone unless the shot is explicitly aerial |
-| Aspect & resolution | 3:2 horizontal for hero / area / about (1536×1024), 4:5 vertical for gallery plate cards (1024×1280), 16:9 ultrawide for closing band (1536×864) |
-
-**Negative prompt baseline (re-used everywhere):** *"no people, no faces, no hands, no figures, no signage with brand logos, no urban backdrop, no high-rise, no neon, no chrome, no luxury hotel staging, no real-estate stock look, no over-saturation, no HDR halos, no fisheye, no watermark, no text overlay."*
+The top bar handles intra-page navigation, the drawer handles cross-page navigation. Neither competes with the other, and both stay quiet.
 
 ---
 
-## 2 · The image catalogue (14 frames, every one accounted for)
+## Site-wide outcomes
 
-Each entry is the **filename → surface → prompt seed**. I'll feed each through the `lovable_ai.py --image --model google/gemini-3-pro-image-preview` skill script, one at a time, and visually QA each before moving on.
-
-### Group A — Hero & site-wide (3 images)
-1. **`hero-acreage-morning.jpg`** *(1536×1024, replaces `HeroVignette` watermark in `Hero.tsx`)* — A dark cedar-clad acreage home seen across a frosted late-autumn field at low golden hour, soft Alberta foothills behind, single chimney, no people, no signage. Restrained. The photograph the brand has been waiting for.
-2. **`hero-detail-trim.jpg`** *(1024×1280, secondary hero accent / fallback)* — Macro detail of a hand-fitted door casing meeting baseboard, the joint perfectly tight, faint sawdust on the sill, cool north light through an unframed window edge.
-3. **`closing-prairie-light.jpg`** *(1536×864, drop into `ClosingCta` section as ambient backdrop on the home page only)* — Wide horizontal plate of an aspen line at the property edge under late afternoon prairie light. Used at very low opacity.
-
-### Group B — Service cards & service pages (3 images)
-4. **`service-interior-finishing.jpg`** *(1024×1280)* — Replaces `ServicePlate` for **Interior Finishing**. A nearly-finished interior corner: stained cedar trim meeting white drywall, a small carpenter's level resting on the casing, soft window light from the right, painter's tape rolled off to the side.
-5. **`service-exterior-finishing.jpg`** *(1024×1280)* — For **Exterior Repairs**. Weather-side cedar siding mid-repair on an acreage gable: a panel newly replaced, the older boards visibly weathered grey, soffit detail visible at the top, foothill light raking from the left.
-6. **`service-decking.jpg`** *(1024×1280)* — For **Decking**. A wraparound cedar deck framed but not yet boarded, joists casting clean shadow lines, prairie horizon visible through the framing, golden hour.
-
-### Group C — Selected works gallery plates (6 images, one per `galleryPlates` entry)
-These replace every `ProjectPlaceholder` on the Work page and inside `SelectedWorks` on the home page. Filenames mirror the slugs so the swap is mechanical:
-
-7. **`work-bragg-creek-trim-transitions.jpg`** — A mitred trim transition between two rooms, framed at eye-level, the fit-up clean, soft north light.
-8. **`work-water-valley-builtin-shelving.jpg`** — Wall-spanning built-in shelving photographed at a slight angle so you can read the depth, a single linen-bound book on the middle shelf for scale, no styling clutter.
-9. **`work-rocky-view-siding-repair.jpg`** — Mid-repair shot of a south-exposure cedar wall: the new boards a touch lighter than the weathered originals, ladder leaning out of frame, no hands.
-10. **`work-bearspaw-soffit-fascia.jpg`** — Low-angle shot of new soffit and fascia meeting a gable, vent placement clean, late afternoon shadow on the wall.
-11. **`work-bearspaw-wraparound-deck.jpg`** — Finished wraparound cedar deck wrapping a corner of the home, two empty Adirondack chairs at the far end, prairie beyond, no people.
-12. **`work-water-valley-stepdown-platform.jpg`** — Two-tier deck stepping down a slope toward an aspen line, natural-grade follow visible, framing reads as inevitable.
-
-### Group D — Area / About atmosphere (2 images)
-13. **`area-foothills-evening.jpg`** *(1536×1024)* — Long-exposure-feel foothill horizon at dusk, used as the SubPageHero secondary accent on the four area pages. Brand-true context, not a project.
-14. **`about-tools-bench.jpg`** *(1024×1280)* — Worn workbench with a chalk line, square, planer-shaving curls, and a thermos. Tools-of-the-trade still life. Drops into About as the right-column atmosphere.
-
-That's the entire catalogue. Nothing else on the site is currently photo-pending.
+- **Visible route links in the top bar drop from 5 → 0.** The header becomes: logo · section anchors · phone · Consultation pill · hamburger.
+- **Hamburger goes always-on (desktop too).** That's the single entry to cross-page nav. One door, not five.
+- **Every page gets in-page section wayfinding** with a hairline underline that draws in under the active section as you scroll.
+- **Editorial language preserved end to end**: dossier strip in the drawer, italic numerals, evergreen hairlines, Ken Burns-quiet motion (≤300ms, weighted easing, full `prefers-reduced-motion` overrides).
+- **Mobile contact stack consolidated**: the Consultation pill in the header stays; the redundant `QuickContactFab` is retired (its job is now done by the always-visible header pill + the hamburger drawer's bottom CTA). `StickyConsultBar` keeps its current "shows after hero" behavior but as a softer tertiary surface.
+- **Desktop layout untouched in spirit**: same widths, same typography, same color tokens — just *less* in the bar and *more* in the drawer.
 
 ---
 
-## 3 · Generation pipeline
+## Architecture
 
-I'll run the `ai-gateway` skill (`/tmp/lovable_ai.py`) in a deliberate loop, **not** in parallel, so I can:
-1. Generate one image at the right aspect.
-2. View it with `code--view` (the skill writes raw PNG to /tmp).
-3. Visually QA it against the contract above. If a face, hand, fisheye warp, watermark, neon accent, or staged-luxury vibe slipped in, I regenerate with a tightened negative prompt before moving on.
-4. Convert PNG → optimized JPEG (q=82, mozjpeg-style) using ImageMagick via `nix run nixpkgs#imagemagick` so the asset bundle stays light.
-5. Write the final JPEG into `src/assets/photography/<filename>`.
+### New files
 
-Expected wall time: ~3–5 minutes per image with the Pro model + QA, so ~50–70 minutes of generation total. I'll keep you posted as each group completes.
+- `src/lib/pageSections.ts` — typed map of `pathname → PageSection[]`. Mirrors RoyalMechanical's `lib/navigation.ts` shape (`{ name, anchor }`). Centralized so the nav and the page can never drift.
+- `src/hooks/useActiveSection.ts` — IntersectionObserver hook returning the currently-most-visible anchor id. Same shape as the reference hook (threshold 0.3, `rootMargin: "-72px 0px 0px 0px"` to account for the fixed header).
+- `src/components/nav/SectionRail.tsx` — the center pill of anchors. Hairline underline draws in via `scaleX` on the active item (uses the existing `nav-active-rule` token). Hidden when fewer than 2 sections exist on the route.
+- `src/components/nav/MenuDrawer.tsx` — fullscreen overlay. Three columns + bottom rail. Opens on hamburger click (any viewport). Reuses `Sheet` primitive for focus trap, Escape, scroll lock, return-focus — but rendered fullscreen, not edge-anchored, so it reads as a *cinematic editorial drop* on desktop (and the existing right-anchored mobile sheet on phones if we keep that variant — see Decision 2 below).
+- `src/components/nav/HamburgerButton.tsx` — small dedicated button so the animation lives in one place (open/close morph reused on both viewports).
+
+### Modified files
+
+- `src/components/Navigation.tsx` — slimmed. Removes the inline desktop link list. Adds `SectionRail` in the center. Adds `HamburgerButton` (visible at all breakpoints). Keeps the brand chip + Consultation pill. The mobile-only `Sheet` block is replaced by the new `MenuDrawer`.
+- `src/App.tsx` — retires `QuickContactFab` (kept around for one cycle behind a feature flag if you'd prefer; default is to remove). Everything else unchanged.
+- Long pages get `id="…"` attributes added to the section wrappers that don't already have them, so the section rail can target them.
+
+### Files left alone
+
+- `src/components/QuickContactSheet.tsx` — kept exactly as is. It's still triggered by the bottom-rail CTA in the drawer and by `StickyConsultBar` on mobile.
+- `src/components/StickyConsultBar.tsx` — unchanged behaviour.
+- All page content, all gallery components, all photography, all desktop typography. **Zero design changes outside the nav surface.**
 
 ---
 
-## 4 · Code integration (desktop-pixel-stable)
+## The top bar — exact spec
 
-### 4a · One typed manifest
-**New file: `src/assets/photography/index.ts`** — a single `import` surface so every component pulls from the same source of truth and Vite emits hashed, optimized URLs.
+Heights, paddings, glass effect, ring, scroll densification — **all unchanged from the current `nav-island`**. Only the contents change:
 
-```ts
-import heroAcreage from "./hero-acreage-morning.jpg";
-import heroDetail from "./hero-detail-trim.jpg";
-// …14 imports total
-export const photography = {
-  heroAcreage, heroDetail, closingPrairie,
-  serviceInterior, serviceExterior, serviceDecking,
-  works: {
-    "bragg-creek-trim-transitions": workBraggCreekTrim,
-    "water-valley-builtin-shelving": workWaterValleyShelving,
-    // …
-  },
-  areaFoothills, aboutToolsBench,
-} as const;
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  [Logo]      Trust · Services · Approach · Work · Areas      [☎] [Consultation ↗] [☰]  │
+└─────────────────────────────────────────────────────────────────────────┘
+       └ brand chip      └ SectionRail (auto-highlight)        └ actions
 ```
 
-### 4b · `ProjectPlaceholder` → real `<img>`, falls back gracefully
-Add a `src?: string` prop. When supplied, render a **real photograph** layered into the same `photo-pending` shell so the desktop card sizing is byte-identical:
-- `<img src srcset sizes loading="lazy" decoding="async" alt={`${title} — ${area}`} />` filling the plate area, with the existing numeral pill kept as a small overlay in the corner (continues the editorial "plate" language).
-- The italic "Photograph in progress" line + hairline rule are removed *only when* `src` is provided.
-- All Tailwind classes preserved; the `<img>` uses `object-cover w-full h-full aspect-[4/5]` so the card height doesn't shift.
-- When `src` is absent (e.g. an unphotographed future project), the existing typographic plate still renders. No regression.
+- **Logo** — same crossfade between full mark and small mark on scroll. Unchanged.
+- **SectionRail (center)** — only renders when the current route has ≥2 mapped sections. Each anchor = `text-minimal text-foreground/75`, hover `text-foreground`, active `text-evergreen` with the existing draw-in hairline beneath. Smooth-scrolls to the section with a `-72px` offset for the header.
+- **Phone (lg+ only)** — small ghost icon button, `text-evergreen` on hover. Tap-to-call with `tel:` href. (New addition — owner explicitly cares about call conversions on a contractor site.)
+- **Consultation pill** — unchanged. Stays as the right-anchored primary action.
+- **Hamburger** — always visible at every breakpoint. Replaces the desktop "no hamburger" pattern. Three lines that morph to an X via the existing `hamburger-animated` language (or a small new equivalent).
 
-### 4c · `ServicePlate` → real `<img>` with the same pattern
-Identical treatment. The numeral pill stays as a small bottom-left badge over the photograph so the editorial signature survives.
-
-### 4d · `Hero.tsx` — replace `HeroVignette` with a real photograph
-- `HeroVignette` is currently a watermark in the soft right-side bloom. Swap that node for an `<img src={photography.heroAcreage} alt="" aria-hidden="true" loading="eager" fetchpriority="high">` masked by the existing radial bloom (kept as an overlay) so the LCP element is the real photo, not the SVG. The watermark drift effect (clip-path + opacity) is preserved as a wrapper class.
-- Headline column, drift hook, eyebrow, field notes — **untouched.** Desktop stays pixel-identical apart from "the SVG behind has become a real photo."
-- I'll mark the hero image with `fetchpriority="high"` and add `<link rel="preload" as="image" imagesrcset>` in `index.html` so LCP improves rather than regresses.
-
-### 4e · `Index.tsx` (home gallery + closing band)
-- Pass the matching `photography.works[slug]` into each `<ProjectPlaceholder>`.
-- `SelectedWorks` (lazy chunk) gets the same prop — its sidebar rows already use `ProjectPlaceholder` in compact mode, so they get the photograph too at the smaller crop.
-- The `closing-prairie-light.jpg` becomes the ambient backdrop of the existing `ClosingCta` on home only, layered at `opacity-[0.08]` behind the existing radial bloom. Optional — call out below.
-
-### 4f · `Work.tsx` and service pages
-- `Work.tsx` simply forwards `photography.works[p.slug]` into `ProjectPlaceholder`. The filter rail, layout, hover transform — all unchanged.
-- `Services.tsx` forwards `photography.serviceInterior/Exterior/Decking` into `ServicePlate`.
-- The three service deep pages (`InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`) — I'll add a single hero photograph slot beneath their existing `SubPageHero` (right-column vignette becomes the matching service photograph). Desktop layout untouched because it just fills the existing `vignette` slot.
-
-### 4g · Area pages and About
-- `AreaPage.tsx` accepts an optional `vignette` slot already. Pass `photography.areaFoothills` so all four area pages share one calm context image. Could later be diversified per area; not required today.
-- `About.tsx` gets the `photography.aboutToolsBench` still life dropped into its existing right-column slot.
-
-### 4h · Performance & accessibility hygiene
-- Every `<img>` gets explicit `width` + `height` attributes (matching the source) → zero CLS impact.
-- Lazy-load everything except the Hero image (eager + preload).
-- Meaningful `alt` text on every photograph (scope + area), empty `alt=""` only on the decorative hero/closing backdrop layers, with `aria-hidden="true"`.
-- Vite will produce `.webp` automatically via the asset pipeline; no extra build config needed.
-
-### 4i · Typography overlay polish
-Where a numeral pill or italic caption now sits **on** a photograph, I'll add a 12-pixel-wide gradient scrim (`linear-gradient(to top, hsl(var(--background)/0.55), transparent 40%)`) at the bottom of the image so caption text always meets WCAG AA contrast — no matter how light or dark the image turns out.
+Everything respects `pt-[env(safe-area-inset-top)]` and the existing `nav-island` densification on scroll.
 
 ---
 
-## 5 · Runtime error fix (silent)
-- `QueryClientProvider` complaining about a null React is a stale Vite dependency cache (a known issue when many deps are added/removed in succession). I'll simply delete `node_modules/.vite` on the next exec so Vite re-pre-bundles. No source change.
+## The drawer — exact spec
+
+Fullscreen, `bg-background/95 backdrop-blur-2xl`, with the same plaster-grain veil already used on the mobile sheet. Three zones:
+
+**Zone A · Header** — close button (top-right), small dossier strip directly under it: `——  Site Map · Edition I  ——`.
+
+**Zone B · Primary** — single italic serif "Home" link (matches the existing italic mobile-sheet treatment), staggered reveal `80ms` per child. Full editorial flair — same numbered serial chips you already have on the mobile sheet (`01 · Work`, `02 · Services`, `03 · Service Areas`, `04 · About`, `05 · Contact`).
+
+**Zone C · Three columns**
+
+```
+SERVICES                SERVICE AREAS              STUDIO
+────────                ─────────────              ──────
+Interior Finishing      Bragg Creek                About
+Exterior Repairs        Rocky View County          Selected Works
+Decking                 Bearspaw                   Contact
+                        Water Valley
+```
+
+Quiet eyebrow labels in evergreen tracking, then 14px sans links with min-height 44px. On desktop the three columns sit side-by-side with `gap-12`; on mobile they stack with the existing `MobileNavGroup`-style accordion-free hairline dividers.
+
+**Zone D · Bottom rail** — `border-t border-border/60`, two children left/right:
+
+- *Left:* trust line — `Family-run · Foothills, AB` with the existing evergreen dot.
+- *Right:* the **Consultation CTA pill**, full evergreen, opens `QuickContactSheet` on touch viewports and routes to `/contact` on lg+ (matches the existing fork in `StickyConsultBar`).
+
+Stagger delays mirror the reference (`100ms + 30ms × index`). All animations gated on `prefers-reduced-motion: no-preference`.
 
 ---
 
-## 6 · QA checklist before I hand back
-- [ ] Each generated image opened and inspected: no people / no faces / no neon / no fisheye / no watermark / no urban context.
-- [ ] Each one feels like a real photograph from a rural Alberta worksite.
-- [ ] File sizes ≤ ~250 KB (JPEG q=82) so the page weight stays sane.
-- [ ] `bunx tsc --noEmit` clean.
-- [ ] `bunx vite build` clean.
-- [ ] Spot-check the home, work, services, an area page, and about at desktop preview width — pixel layout unchanged.
-- [ ] Mobile: `<img>` lazy-loading + `sizes` attribute confirmed correct (via DevTools network tab simulation).
-- [ ] Runtime error gone after Vite cache reset.
+## Per-page section map (proposed)
+
+Already-existing IDs in **bold**; new IDs to add are tagged *(add)*.
+
+| Route | Sections (label · anchor) |
+|---|---|
+| `/` (home) | Trust · **trust-promise**, Services · **services-preview**, Approach · **approach**, Work · **work-preview**, Areas · **areas**, Contact · **final-cta** |
+| `/services` | Promise · *services-promise (add)*, The Three · *services-three (add)*, How we work · **circle-heading** wrapper *(add §id)*, Quote · *quote-promise (add)* |
+| `/services/interior-finishing` | What we mean · *meaning (add)*, Why it matters · *why (add)*, How we work · *craft (add)*, Proof · *proof (add)* |
+| `/services/exterior-finishing` | What we handle · *needs (add)*, Rural conditions · *rural (add)*, Property respect · *respect (add)*, Proof · *proof (add)* |
+| `/services/decking` | Planning · *planning (add)*, Lifestyle · *lifestyle (add)*, Materials · *materials (add)*, Proof · *proof (add)* |
+| `/work` | *(no rail — single grid)* |
+| `/service-areas` | Roster · *roster (add)*, Fit · *fit (add)* |
+| `/service-areas/:slug` | Promise · *promise (add)*, Services here · *services-here (add)*, Talk to us · *closing (add)* |
+| `/about` | Philosophy · *philosophy (add)*, Property respect · *respect (add)*, Continuity · *continuity (add)*, Long-term · *longterm (add)* |
+| `/contact` | Form · *form (add)*, Quote process · *quote (add)*, Areas · *areas (add)* |
+| `/thank-you`, `/404` | *(no rail)* |
+
+The "(add)" entries cost a single `id="…"` attribute on an existing section wrapper — purely additive, **zero visual change**.
 
 ---
 
-## 7 · One choice for you before I start
-**Should the home-page `ClosingCta` get the very-low-opacity `closing-prairie-light.jpg` backdrop (item 3 in the catalogue)?** It would only render on the home page closing band, layered at ~8% opacity so it reads as ambient warmth, not a billboard.
+## Motion & accessibility contract
 
-- **Recommended (default):** Yes — it gives the closing moment the same warmth as the hero. Reply *"no closing photo"* to skip it; otherwise I include it.
-- I'll proceed with all 14 images on approval; that question only changes whether image 3 is wired into the closing band or simply kept as an unused asset for future use.
+- **Top bar**: existing `nav-island` densification preserved. Section rail underline uses `transform: scaleX(0 → 1)` with `transition-transform duration-500 ease-swift`.
+- **Drawer**: opens with `opacity 0 → 1` over 240ms + a subtle 8px `translateY` lift on the panel. Items stagger at `100ms + 30ms × i`. Closes in 180ms. All overrides under `prefers-reduced-motion: reduce` collapse to opacity-only at 120ms.
+- **Focus management**: drawer uses Radix `Sheet` underneath → focus trap + Escape + scroll lock + return-focus are free. Skip-link still lands on `#main`.
+- **ARIA**: `<nav aria-label="Page sections">` for the rail, `<nav aria-label="Site map">` inside the drawer, `aria-current="location"` on the active section anchor, `aria-expanded` on the hamburger.
+- **Touch targets**: hamburger 44×44, section-rail anchors `px-3.5 py-2` (already ≥44 effective), drawer rows min-height 44.
+- **Contrast**: every link state has been mapped to existing tokens (`text-foreground/75`, `text-evergreen`, `text-foreground/60`) — all already pass AA on the off-white background.
 
 ---
 
-**On approval I'll generate Group A first, post the Hero image to you for inline visual QA, then continue Groups B → C → D, and finally do the code integration in one focused commit at the end. Total time estimate: ~75–90 minutes wall-clock.**
+## Decisions to confirm
+
+1. **Phone in the top bar (lg+)?** Recommended **yes** — adds zero visual weight (small ghost icon) and gives rural visitors a one-tap call route. Reply *"no phone"* to skip.
+2. **Drawer style on mobile**: keep the *fullscreen overlay* pattern at every breakpoint (matches RoyalMechanical exactly, more cinematic), or keep mobile as the existing right-side sheet and only show fullscreen on `md+`? Recommended **fullscreen at every viewport** — single mental model, same animation, same code path.
+3. **`QuickContactFab`**: retire on shipment (recommended — the pill in the header + the drawer's bottom CTA cover the same job without floating UI), or keep it behind a feature flag for one cycle? Reply *"keep FAB"* to retain.
+
+Default if you reply only "approved": phone in top bar = **yes**, fullscreen drawer at every viewport = **yes**, retire FAB = **yes**.
+
+---
+
+## What ships when approved
+
+1. `src/lib/pageSections.ts` + `src/hooks/useActiveSection.ts` (new, ~80 LOC total).
+2. `SectionRail`, `MenuDrawer`, `HamburgerButton` under `src/components/nav/` (new, ~280 LOC total).
+3. `Navigation.tsx` slimmed and wired to the new pieces (net **−~140 LOC** versus today).
+4. `App.tsx` — `QuickContactFab` removed (one import + one tag).
+5. `id="…"` additions on the listed section wrappers across the page files (one-line each, no visual change).
+6. Memory updated: new `mem://features/two-tier-navigation` describing the pattern, plus a `mem://constraint/no-floating-fab` note so this doesn't regress.
+
+The desktop typography, photography, hero, gallery, area pages, services pages, contact form, and footer are not touched.
