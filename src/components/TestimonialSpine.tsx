@@ -88,7 +88,7 @@ const TestimonialSpine = () => (
       </div>
 
       <p
-        className="mt-12 text-center text-minimal text-muted-foreground/80"
+        className="mt-12 text-center text-minimal text-muted-foreground"
         data-reveal
         style={{ ["--reveal-delay" as string]: "560ms" }}
       >
