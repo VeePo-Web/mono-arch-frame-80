@@ -7,8 +7,6 @@ import Footer from "./components/Footer";
 import ChapterSpine from "./components/ChapterSpine";
 import PageSlug from "./components/PageSlug";
 import RoutePrefetcher from "./components/RoutePrefetcher";
-import StickyConsultBar from "./components/StickyConsultBar";
-import QuickContactSheet from "./components/QuickContactSheet";
 
 // Eager: home (LCP-critical) + 404 (tiny, instant fallback)
 import Index from "./pages/Index";
@@ -28,6 +26,10 @@ const Bearspaw = lazy(() => import("./pages/areas/Bearspaw"));
 const WaterValley = lazy(() => import("./pages/areas/WaterValley"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
+
+// QuickContactSheet only renders after a user interaction (custom event fired
+// by the drawer / mobile triggers). Defer it past the LCP-critical bundle.
+const QuickContactSheet = lazy(() => import("./components/QuickContactSheet"));
 
 // Toaster + Sonner only render output after a user interaction.
 // Defer them so they don't ship in the eager LCP-critical bundle.
@@ -49,8 +51,9 @@ function ScrollToTop() {
   return null;
 }
 
-// Mount toasters only after first paint to keep them out of the eager bundle.
-function DeferredToasters() {
+// Mount toasters + the QuickContactSheet only after first paint to keep them
+// out of the eager bundle. They're all interaction-only surfaces.
+function DeferredOverlays() {
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const idle = (cb: () => void) => {
@@ -63,6 +66,7 @@ function DeferredToasters() {
   if (!ready) return null;
   return (
     <Suspense fallback={null}>
+      <QuickContactSheet />
       <Toaster />
       <Sonner />
     </Suspense>
@@ -102,9 +106,7 @@ const App = () => (
           </Routes>
         </Suspense>
         <Footer />
-        <StickyConsultBar />
-        <QuickContactSheet />
-        <DeferredToasters />
+        <DeferredOverlays />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

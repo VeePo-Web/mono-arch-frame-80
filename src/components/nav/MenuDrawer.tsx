@@ -2,25 +2,15 @@ import { useEffect } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Link, useLocation } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
-import Phone from "lucide-react/dist/esm/icons/phone";
-import Mail from "lucide-react/dist/esm/icons/mail";
 import X from "lucide-react/dist/esm/icons/x";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
 import { useIsMobile } from "@/hooks/use-mobile";
-import logo from "@/assets/logo/haven-creek-horizontal.webp";
 
 interface MenuDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const PRIMARY_LINKS = [
-  { label: "Home", to: "/" },
-  { label: "Work", to: "/work" },
-  { label: "About", to: "/about" },
-  { label: "Contact", to: "/contact" },
-];
 
 const SERVICES = [
   { label: "Interior Finishing", to: "/services/interior-finishing" },
@@ -37,20 +27,30 @@ const AREAS = [
   { label: "All Areas", to: "/service-areas", muted: true },
 ];
 
+const STUDIO = [
+  { label: "About", to: "/about" },
+  { label: "Selected Work", to: "/work" },
+  { label: "Contact", to: "/contact" },
+];
+
 const STUDIO_PHONE_TEL = "+14035550100";
 const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
 const STUDIO_EMAIL = "hello@havencreekrenovations.ca";
 
 /**
- * MenuDrawer — fullscreen editorial Site Map.
+ * MenuDrawer — fullscreen editorial Site Map (round 2 cleanup).
  *
- * Replaces the right-anchored mobile sheet AND the desktop inline link list.
- * Triggered by the always-on hamburger from the floating nav island.
- * Three columns of cross-page navigation, italic primary links above,
- * trust line + Consultation CTA pinned at the bottom rail.
+ * Top-row: only the close button (no duplicate logo — the floating island
+ * already carries the brand mark, doubling it under the close button felt
+ * heavy and redundant).
  *
- * Built on Radix Dialog directly so we get focus trap, scroll lock,
- * Escape, and return-focus for free without the side-sheet animation.
+ * Body: a single italic display "Home" link on top, then three same-shape
+ * link columns — Services · Service Areas · Studio. Mixed-shape columns
+ * (icon rows beside link lists) broke the rhythm; this is uniform.
+ *
+ * Bottom rail: trust line · phone · email · Consultation CTA. Phone +
+ * email moved out of the columns so the grid stays uniform and the
+ * contact methods sit next to the primary CTA where leads expect them.
  */
 const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
   const { pathname } = useLocation();
@@ -67,8 +67,6 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
     if (isMobile) {
       // Defer so the close animation doesn't fight the sheet enter
       setTimeout(() => openQuickContact({ source: "quick_contact_sheet" }), 220);
-    } else {
-      // Desktop routes to /contact via Link below — handled there
     }
   };
 
@@ -98,30 +96,14 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
             }}
           />
 
-          {/* Top row — logo (left) + close (right). Mirrors the floating island so
-              the spatial transition feels intentional. */}
+          {/* Top row — close button only (logo lives on the floating island). */}
           <div
-            className="relative z-10 flex items-center justify-between px-6 md:px-12 lg:px-20"
+            className="relative z-10 flex items-center justify-end px-6 md:px-10 lg:px-16"
             style={{
               paddingTop: "max(1.25rem, calc(env(safe-area-inset-top) + 0.75rem))",
               paddingRight: "max(1.5rem, env(safe-area-inset-right))",
             }}
           >
-            <Link
-              to="/"
-              onClick={() => onOpenChange(false)}
-              aria-label="Haven Creek — home"
-              className="inline-flex items-center"
-            >
-              <img
-                src={logo}
-                alt="Haven Creek Renovations"
-                width={160}
-                height={28}
-                className="h-6 md:h-7 w-auto"
-                decoding="async"
-              />
-            </Link>
             <Dialog.Close
               className={cn(
                 "inline-flex items-center justify-center h-11 w-11 rounded-full",
@@ -136,7 +118,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
           </div>
 
           {/* Dossier strip — unmistakably brand voice */}
-          <div className="relative z-10 mt-6 md:mt-10 px-6 md:px-12 lg:px-20 dossier-strip" aria-hidden="true">
+          <div className="relative z-10 mt-2 md:mt-6 px-6 md:px-10 lg:px-16 dossier-strip" aria-hidden="true">
             <span className="dossier-strip__rule" />
             <span className="dossier-strip__inner">
               <span className="dossier-strip__no">Site Map</span>
@@ -148,50 +130,38 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
 
           {/* Scrollable content body */}
           <div
-            className="relative z-10 flex-1 overflow-y-auto px-6 md:px-12 lg:px-20 pt-6 md:pt-10"
+            className="relative z-10 flex-1 overflow-y-auto px-6 md:px-10 lg:px-16 pt-8 md:pt-12"
             style={{
               paddingBottom: "max(2rem, calc(env(safe-area-inset-bottom) + 1rem))",
             }}
           >
-            {/* Primary numbered list — italic serif, big, generous tap targets */}
-            <ul className="space-y-1 max-w-3xl">
-              {PRIMARY_LINKS.map((link, i) => (
-                <li key={link.to} className="overflow-hidden">
-                  <Link
-                    to={link.to}
-                    onClick={() => onOpenChange(false)}
-                    className={cn(
-                      "menu-drawer__primary",
-                      "flex items-baseline gap-4 py-2 md:py-3 px-1 -mx-1 rounded-sm",
-                      "text-[1.65rem] md:text-[2.25rem] lg:text-[2.6rem] font-serif italic font-light leading-tight min-h-[56px]",
-                      pathname === link.to ? "text-evergreen" : "text-foreground hover:text-evergreen",
-                      "transition-colors duration-300",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    )}
-                    style={{ animationDelay: `${100 + i * 60}ms` }}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="shrink-0 w-7 md:w-9 text-[0.7rem] md:text-[0.75rem] tracking-[0.18em] tabular-nums not-italic font-sans font-medium pt-3 text-evergreen/55"
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="flex-1">{link.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Single italic "Home" — primary anchor; everything else is a column. */}
+            <Link
+              to="/"
+              onClick={() => onOpenChange(false)}
+              aria-current={pathname === "/" ? "page" : undefined}
+              className={cn(
+                "menu-drawer__primary inline-block py-2 px-1 -mx-1 rounded-sm",
+                "menu-primary-text",
+                pathname === "/" ? "text-evergreen" : "text-foreground hover:text-evergreen",
+                "transition-colors duration-300",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              )}
+              style={{ animationDelay: "120ms" }}
+            >
+              Home
+            </Link>
 
-            {/* Three-column grid: Services · Areas · Reach */}
+            {/* Three same-shape columns: Services · Service Areas · Studio */}
             <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-16 max-w-5xl">
-              <DrawerColumn label="Services" delay={300}>
+              <DrawerColumn label="Services" delay={260}>
                 {SERVICES.map((s, i) => (
                   <DrawerLink
                     key={s.to}
                     to={s.to}
                     onClick={() => onOpenChange(false)}
                     muted={s.muted}
-                    delay={340 + i * 30}
+                    delay={300 + i * 30}
                     active={pathname === s.to}
                   >
                     {s.label}
@@ -199,14 +169,14 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 ))}
               </DrawerColumn>
 
-              <DrawerColumn label="Service Areas" delay={420}>
+              <DrawerColumn label="Service Areas" delay={360}>
                 {AREAS.map((a, i) => (
                   <DrawerLink
                     key={a.to}
                     to={a.to}
                     onClick={() => onOpenChange(false)}
                     muted={a.muted}
-                    delay={460 + i * 30}
+                    delay={400 + i * 30}
                     active={pathname === a.to}
                   >
                     {a.label}
@@ -214,41 +184,57 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 ))}
               </DrawerColumn>
 
-              <DrawerColumn label="Reach Us" delay={540}>
-                <a
-                  href={`tel:${STUDIO_PHONE_TEL}`}
-                  onClick={() => onOpenChange(false)}
-                  className="menu-drawer__link group flex items-center gap-3 py-1.5 min-h-[44px] text-foreground/85 hover:text-evergreen transition-colors"
-                  style={{ animationDelay: "580ms" }}
-                >
-                  <Phone className="h-4 w-4 text-evergreen/70 group-hover:text-evergreen shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                  <span>{STUDIO_PHONE_DISPLAY}</span>
-                </a>
-                <a
-                  href={`mailto:${STUDIO_EMAIL}`}
-                  onClick={() => onOpenChange(false)}
-                  className="menu-drawer__link group flex items-center gap-3 py-1.5 min-h-[44px] text-foreground/85 hover:text-evergreen transition-colors break-all"
-                  style={{ animationDelay: "610ms" }}
-                >
-                  <Mail className="h-4 w-4 text-evergreen/70 group-hover:text-evergreen shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                  <span>hello@havencreekrenovations.ca</span>
-                </a>
+              <DrawerColumn label="The Studio" delay={480}>
+                {STUDIO.map((s, i) => (
+                  <DrawerLink
+                    key={s.to}
+                    to={s.to}
+                    onClick={() => onOpenChange(false)}
+                    delay={520 + i * 30}
+                    active={pathname === s.to}
+                  >
+                    {s.label}
+                  </DrawerLink>
+                ))}
               </DrawerColumn>
             </div>
           </div>
 
-          {/* Bottom rail — trust line + Consultation CTA */}
+          {/* Bottom rail — trust line · phone · email · Consultation CTA */}
           <div
             className="relative z-10 border-t border-border/60 bg-background/40 backdrop-blur-sm"
             style={{
               paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
             }}
           >
-            <div className="px-6 md:px-12 lg:px-20 py-4 md:py-5 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-              <p className="text-minimal text-foreground/70 flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-evergreen/80" aria-hidden="true" />
-                Family-run · Foothills, AB
-              </p>
+            <div className="px-6 md:px-10 lg:px-16 py-4 md:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              {/* Left cluster: trust line + contact methods */}
+              <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-minimal">
+                <p className="text-foreground/70 flex items-center gap-2">
+                  <span
+                    className="menu-trust-dot inline-block h-1.5 w-1.5 rounded-full bg-evergreen/80"
+                    aria-hidden="true"
+                  />
+                  Family-run · Foothills, AB
+                </p>
+                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 text-foreground/70">
+                  <a
+                    href={`tel:${STUDIO_PHONE_TEL}`}
+                    onClick={() => onOpenChange(false)}
+                    className="hover:text-evergreen transition-colors min-h-[32px] inline-flex items-center"
+                  >
+                    {STUDIO_PHONE_DISPLAY}
+                  </a>
+                  <span className="hidden md:inline text-foreground/30" aria-hidden="true">·</span>
+                  <a
+                    href={`mailto:${STUDIO_EMAIL}`}
+                    onClick={() => onOpenChange(false)}
+                    className="hover:text-evergreen transition-colors min-h-[32px] inline-flex items-center break-all"
+                  >
+                    {STUDIO_EMAIL}
+                  </a>
+                </div>
+              </div>
 
               {isMobile ? (
                 <button
@@ -271,7 +257,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                   to="/contact"
                   onClick={() => onOpenChange(false)}
                   className={cn(
-                    "menu-drawer__cta group/btn inline-flex items-center gap-3",
+                    "menu-drawer__cta group/btn inline-flex items-center gap-3 shrink-0",
                     "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-minimal min-h-[44px]",
                     "hover:bg-evergreen-hover transition-colors duration-300",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
@@ -331,6 +317,7 @@ const DrawerLink = ({
   <Link
     to={to}
     onClick={onClick}
+    aria-current={active ? "page" : undefined}
     className={cn(
       "menu-drawer__link py-1.5 min-h-[44px] flex items-center transition-colors duration-300",
       muted

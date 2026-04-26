@@ -7,7 +7,7 @@
  * raise it.
  *
  * Why an event instead of context? Triggers live in different subtrees
- * (Navigation is outside Routes, StickyConsultBar lives below the Footer,
+ * (Navigation is outside Routes, QuickContactSheet is mounted at the App layer,
  * page-level FABs live deep in route trees). A plain CustomEvent avoids
  * threading a provider through every wrapper and keeps zero re-renders
  * for components that aren't actively driving the sheet.

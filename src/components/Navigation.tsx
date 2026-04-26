@@ -15,17 +15,19 @@ const STUDIO_PHONE_TEL = "+14035550100";
 const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
 
 /**
- * Navigation — Two-Tier Editorial Nav.
+ * Navigation — Two-Tier Editorial Nav (round 2 cleanup).
  *
  * Top bar (this file):
- *   Logo (left) · SectionRail (center, lg+) · Phone · Consultation · Hamburger
+ *   Logo · SectionRail (md+) · Phone (lg+) · Hamburger · Consultation
+ *
+ * Right cluster reading order: Phone → Hamburger → Consultation. The CTA
+ * is the right-edge anchor; the hamburger sits between Phone and CTA so
+ * it reads as "menu access" rather than an afterthought after the pill.
  *
  * Drawer (MenuDrawer):
- *   Fullscreen overlay for cross-page navigation. Triggered by the
- *   always-on hamburger at every breakpoint.
- *
- * The bar's job is "where am I." The drawer's job is "where else can I go."
- * They never compete.
+ *   Fullscreen overlay for cross-page navigation. The single persistent
+ *   secondary CTA lives in its bottom rail — there is no sticky bar and
+ *   no floating FAB elsewhere on the page.
  */
 const Navigation = () => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -107,7 +109,7 @@ const Navigation = () => {
             to="/"
             aria-label="Haven Creek Renovations — home"
             className={cn(
-              "relative z-10 flex items-center rounded-full",
+              "relative z-10 flex items-center rounded-full shrink-0",
               "transition-all duration-700 ease-weighted",
               scrolled ? "px-2.5 py-1.5" : "px-3 py-2",
             )}
@@ -139,53 +141,54 @@ const Navigation = () => {
             </span>
           </Link>
 
-          {/* Section rail — in-page wayfinding (auto-highlights as you scroll). */}
-          <div className="hidden lg:flex flex-1 justify-center">
+          {/* Section rail — in-page wayfinding (md+, scroll-snap on overflow). */}
+          <div className="hidden md:flex flex-1 min-w-0 justify-center">
             <SectionRail />
           </div>
 
-          {/* Spacer pushes right cluster to the edge on mobile / when rail is empty. */}
-          <div className="flex-1 lg:hidden" aria-hidden="true" />
+          {/* Spacer pushes right cluster to the edge below md (rail is hidden). */}
+          <div className="flex-1 md:hidden" aria-hidden="true" />
 
-          {/* Right cluster — Phone (lg+) · Consultation · Hamburger */}
+          {/* Right cluster — Phone (lg+) · Hamburger · Consultation. */}
           <a
             href={`tel:${STUDIO_PHONE_TEL}`}
             aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
             className={cn(
-              "hidden lg:inline-flex relative z-10 items-center gap-2 rounded-full px-3 py-2",
+              "hidden lg:inline-flex relative z-10 items-center gap-2 rounded-full px-3 py-1.5 shrink-0",
               "text-minimal text-foreground/70 hover:text-evergreen hover:bg-foreground/[0.04]",
-              "transition-colors duration-300 min-h-[40px]",
+              "transition-colors duration-300 min-h-[38px]",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
           >
             <Phone className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
-            <span className="hidden xl:inline">{STUDIO_PHONE_DISPLAY}</span>
-            <span className="xl:hidden">Call</span>
+            <span>{STUDIO_PHONE_DISPLAY}</span>
           </a>
+
+          {/* Always-on hamburger — opens the editorial Site Map drawer. */}
+          <HamburgerButton open={drawerOpen} onClick={() => setDrawerOpen(true)} />
 
           <Link
             to="/contact"
             onClick={handleConsultClick}
+            aria-label="Request a consultation"
             className={cn(
-              "relative z-10 group/btn",
-              "inline-flex items-center gap-2.5 rounded-full",
+              "relative z-10 group/btn shrink-0",
+              "inline-flex items-center justify-center gap-2.5 rounded-full",
               "bg-evergreen text-evergreen-foreground",
-              "pl-4 sm:pl-5 pr-1.5 py-1.5",
-              "text-minimal min-h-[40px]",
+              "text-minimal min-h-[38px]",
               "transition-all duration-500 ease-swift",
               "hover:bg-evergreen-hover active:scale-[0.98]",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              // Below sm: icon-only chip (44×44 tap target), no word.
+              // sm+: full pill with "Consultation" label.
+              "h-11 w-11 sm:h-auto sm:w-auto sm:pl-5 sm:pr-1.5 sm:py-1.5",
             )}
           >
             <span className="hidden sm:inline">Consultation</span>
-            <span className="sm:hidden">Consult</span>
             <span className="icon-chip icon-chip-light bg-background/15">
               <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.5} />
             </span>
           </Link>
-
-          {/* Always-on hamburger — opens the editorial Site Map drawer. */}
-          <HamburgerButton open={drawerOpen} onClick={() => setDrawerOpen(true)} />
         </nav>
       </header>
 

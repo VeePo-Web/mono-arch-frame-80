@@ -6,10 +6,14 @@
  * Anchors must match `id="…"` attributes on the corresponding page sections.
  * Adding/removing entries here is the single point of truth — components
  * never hardcode section names.
+ *
+ * Label voice: concrete, plain English — readers should recognise the
+ * label as a section's own name without translation. Keep ≤ 14 chars
+ * so the floating pill never wraps.
  */
 
 export interface PageSection {
-  /** Display label in the rail. Keep ≤ 12 chars for the floating pill. */
+  /** Display label in the rail. Keep ≤ 14 chars. */
   name: string;
   /** Element id (without the `#`) that the anchor scrolls to. */
   anchor: string;
@@ -17,7 +21,7 @@ export interface PageSection {
 
 const pageSections: Record<string, PageSection[]> = {
   "/": [
-    { name: "Trust", anchor: "trust-promise" },
+    { name: "Promise", anchor: "trust-promise" },
     { name: "Services", anchor: "services-preview" },
     { name: "Approach", anchor: "approach" },
     { name: "Work", anchor: "work-preview" },
@@ -25,40 +29,40 @@ const pageSections: Record<string, PageSection[]> = {
     { name: "Contact", anchor: "final-cta" },
   ],
   "/services": [
-    { name: "The Three", anchor: "services-three" },
-    { name: "How", anchor: "circle" },
+    { name: "Services", anchor: "services-three" },
+    { name: "Process", anchor: "circle" },
     { name: "Quote", anchor: "quote" },
   ],
   "/services/interior-finishing": [
-    { name: "Meaning", anchor: "meaning" },
+    { name: "Overview", anchor: "meaning" },
     { name: "Why", anchor: "why" },
     { name: "Craft", anchor: "craft" },
-    { name: "Proof", anchor: "proof" },
+    { name: "Recent Work", anchor: "proof" },
   ],
   "/services/exterior-finishing": [
-    { name: "Needs", anchor: "needs" },
+    { name: "Overview", anchor: "needs" },
     { name: "Rural", anchor: "rural" },
-    { name: "Respect", anchor: "respect" },
-    { name: "Proof", anchor: "proof" },
+    { name: "Stewardship", anchor: "respect" },
+    { name: "Recent Work", anchor: "proof" },
   ],
   "/services/decking": [
     { name: "Planning", anchor: "planning" },
-    { name: "Lifestyle", anchor: "lifestyle" },
+    { name: "Outside", anchor: "lifestyle" },
     { name: "Materials", anchor: "materials" },
-    { name: "Proof", anchor: "proof" },
+    { name: "Recent Work", anchor: "proof" },
   ],
   "/service-areas": [
-    { name: "Roster", anchor: "roster" },
-    { name: "Fit", anchor: "fit" },
+    { name: "Areas", anchor: "roster" },
+    { name: "A Fit?", anchor: "fit" },
   ],
   "/about": [
     { name: "Philosophy", anchor: "philosophy" },
-    { name: "Respect", anchor: "respect" },
+    { name: "Land", anchor: "respect" },
     { name: "Continuity", anchor: "continuity" },
-    { name: "Long-term", anchor: "longterm" },
+    { name: "Long View", anchor: "longterm" },
   ],
   "/contact": [
-    { name: "Form", anchor: "form" },
+    { name: "Get in Touch", anchor: "form" },
     { name: "Process", anchor: "quote" },
     { name: "Areas", anchor: "areas" },
   ],
