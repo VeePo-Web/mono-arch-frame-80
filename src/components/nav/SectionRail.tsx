@@ -1,18 +1,19 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { getPageSections } from "@/lib/pageSections";
 import { useActiveSection } from "@/hooks/useActiveSection";
 
 /**
- * SectionRail — Round 5: one cue, not three.
+ * SectionRail — Round 7: shared sliding underline (FLIP).
  *
- * Active anchor: 2px center-anchored evergreen underline + font-semibold
- * weight bump. No background chip — calmer, easier to scan.
+ * One absolutely-positioned indicator slides between active tabs by
+ * writing CSS vars `--ind-x`/`--ind-w` from the active tab's geometry.
+ * The user *sees* the underline glide, not flicker.
  *
- * Always renders in scroll-x mode with an edge-fade mask. The mask is
- * harmless when content fits; when it doesn't, the user can scroll the
- * rail without a UI hint about overflow detection. No ResizeObserver.
+ * Always renders in scroll-x mode with edge-fade mask. When the active
+ * tab changes (page scroll), the rail auto-centers it horizontally so
+ * the active label is never hidden behind the mask.
  */
 const HEADER_OFFSET = 72;
 
@@ -20,6 +21,27 @@ const SectionRail = () => {
   const { pathname } = useLocation();
   const sections = useMemo(() => getPageSections(pathname), [pathname]);
   const active = useActiveSection(sections, HEADER_OFFSET + 24);
+  const innerRef = useRef<HTMLDivElement | null>(null);
+  const tabRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
+  const [indicator, setIndicator] = useState<{ x: number; w: number } | null>(null);
+
+  // Measure active tab and write CSS vars for the sliding indicator.
+  useLayoutEffect(() => {
+    if (!active) {
+      setIndicator(null);
+      return;
+    }
+    const el = tabRefs.current.get(active);
+    if (!el) return;
+    setIndicator({ x: el.offsetLeft, w: el.offsetWidth });
+  }, [active, sections]);
+
+  // Keep active tab visible behind the edge-fade mask.
+  useEffect(() => {
+    if (!active) return;
+    const el = tabRefs.current.get(active);
+    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [active]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, anchor: string) => {
@@ -35,19 +57,36 @@ const SectionRail = () => {
     [],
   );
 
+  const setTabRef = useCallback(
+    (anchor: string) => (el: HTMLAnchorElement | null) => {
+      if (el) tabRefs.current.set(anchor, el);
+      else tabRefs.current.delete(anchor);
+    },
+    [],
+  );
+
   if (sections.length < 2) return null;
 
   return (
     <nav
       aria-label="Page sections"
-      className="section-rail section-rail-mask hidden md:flex items-center min-w-0 max-w-full"
+      className="section-rail section-rail-mask hidden lg:flex items-center min-w-0 max-w-full"
     >
-      <div className="flex items-center gap-0.5">
+      <div
+        ref={innerRef}
+        className="relative flex items-center gap-0.5"
+        style={
+          indicator
+            ? ({ "--ind-x": `${indicator.x}px`, "--ind-w": `${indicator.w}px` } as React.CSSProperties)
+            : undefined
+        }
+      >
         {sections.map((section) => {
           const isActive = active === section.anchor;
           return (
             <a
               key={section.anchor}
+              ref={setTabRef(section.anchor)}
               data-anchor={section.anchor}
               href={`#${section.anchor}`}
               onClick={(e) => handleClick(e, section.anchor)}
@@ -61,14 +100,14 @@ const SectionRail = () => {
               )}
             >
               <span>{section.name}</span>
-              <span
-                aria-hidden="true"
-                className="nav-tab-rule"
-                style={{ transform: isActive ? "scaleX(1)" : "scaleX(0)" }}
-              />
             </a>
           );
         })}
+
+        {/* Shared sliding underline (FLIP). One element for the whole rail. */}
+        {indicator && (
+          <span aria-hidden="true" className="nav-tab-indicator" />
+        )}
       </div>
     </nav>
   );

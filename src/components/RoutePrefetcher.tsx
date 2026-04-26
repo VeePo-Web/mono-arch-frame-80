@@ -1,34 +1,20 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { routeImporters, shouldPrefetch } from "@/lib/routePrefetch";
 
 /**
- * RoutePrefetcher — idle-time route warming.
+ * RoutePrefetcher — idle-time route warming from the home page.
  *
- * After requestIdleCallback fires on the home page, dynamically import() the
- * routes a visitor is most likely to hit next. Vite turns these into
- * <link rel="modulepreload"> + parallel chunk fetches, so the actual click
- * navigation is instant.
+ * After requestIdleCallback fires, dynamically import() the routes a visitor
+ * is most likely to hit. Vite turns these into <link rel="modulepreload">
+ * + parallel chunk fetches, so the actual click navigation is instant.
  *
- * Guards:
- *   - Only runs from "/" (no point prefetching from a destination page)
- *   - Skips on Save-Data / 2g connections
- *   - Skips when the user has reduced-motion preference set AND we're on a
- *     metered connection (treat as "user wants minimal noise")
+ * Drawer + section-rail links separately warm their own chunks on
+ * pointerdown/focus via `prefetchRoute()` — see `src/lib/routePrefetch.ts`.
+ *
+ * Guards: only runs from "/", skips Save-Data / 2g.
  */
-
-type NetInfo = {
-  saveData?: boolean;
-  effectiveType?: "slow-2g" | "2g" | "3g" | "4g";
-};
-
-function shouldPrefetch(): boolean {
-  const nav = navigator as Navigator & { connection?: NetInfo };
-  const c = nav.connection;
-  if (!c) return true;
-  if (c.saveData) return false;
-  if (c.effectiveType === "slow-2g" || c.effectiveType === "2g") return false;
-  return true;
-}
+const PRIORITY = ["/services", "/work", "/contact", "/about"] as const;
 
 const RoutePrefetcher = () => {
   const { pathname } = useLocation();
@@ -39,15 +25,15 @@ const RoutePrefetcher = () => {
 
     const w = window as Window & {
       requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (h: number) => void;
     };
 
     const run = () => {
       // Order = expected click likelihood. Vite emits modulepreload links
-      // in the same order, so the network prioritises them top-to-bottom.
-      void import("@/pages/Services");
-      void import("@/pages/Work");
-      void import("@/pages/Contact");
-      void import("@/pages/About");
+      // in the same order so the network prioritises top-to-bottom.
+      for (const path of PRIORITY) {
+        routeImporters[path]?.();
+      }
     };
 
     const handle = w.requestIdleCallback
@@ -56,9 +42,7 @@ const RoutePrefetcher = () => {
 
     return () => {
       if (w.requestIdleCallback && typeof handle === "number") {
-        const cancel = (window as unknown as { cancelIdleCallback?: (h: number) => void })
-          .cancelIdleCallback;
-        cancel?.(handle);
+        w.cancelIdleCallback?.(handle);
       } else {
         clearTimeout(handle as unknown as number);
       }
