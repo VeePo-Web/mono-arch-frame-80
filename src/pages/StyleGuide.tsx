@@ -73,7 +73,7 @@ const StyleGuide = () => {
     title: "Style Guide — Internal Reference",
     description: "Internal design system reference for Haven Creek Renovations.",
     path: "/style-guide",
-    noIndex: true,
+    noindex: true,
   });
 
   return (
