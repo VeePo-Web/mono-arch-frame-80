@@ -45,17 +45,16 @@ const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
 const STUDIO_EMAIL = "hello@havencreekrenovations.ca";
 
 /**
- * MenuDrawer — Round 3 "phone-book" cleanup.
+ * MenuDrawer — Round 4 "grandpa-grade" cleanup.
  *
  * Top: close button.
  * Body:
- *   1. Horizontal primary row: Home · About · Selected Work · Contact
- *   2. Three same-shape link columns: Services · Service Areas · Company
- * Bottom rail: trust line + phone + email + "Get a Free Quote" CTA.
+ *   1. Horizontal primary row: Home · About · Selected Work · Contact (19px semibold)
+ *   2. Three same-shape link columns with evergreen left bars on each header
+ * Bottom rail: trust line · phone · email · ONE clearly-shaped CTA pill,
+ *   plus an "Or call …" tertiary line on mobile.
  *
- * Removed: dossier strip ("Edition I"), italic display Home, scroll mask.
- * Larger 18px link rows + 52px tap targets — built for finger taps and
- * older eyes, not portfolio screenshots.
+ * Active links use BOTH colour and a leading `•` glyph — colour-blind safe.
  */
 const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
   const { pathname } = useLocation();
@@ -70,9 +69,12 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
   const handleQuote = () => {
     onOpenChange(false);
     if (isMobile) {
-      // Defer so the close animation doesn't fight the sheet enter
       setTimeout(() => openQuickContact({ source: "quick_contact_sheet" }), 220);
     }
+  };
+
+  const handlePhone = () => {
+    onOpenChange(false);
   };
 
   return (
@@ -111,13 +113,13 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
             <Dialog.Close
               className={cn(
                 "inline-flex items-center justify-center gap-2 h-12 min-w-[48px] px-3 rounded-full",
-                "text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/[0.05]",
+                "text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.05]",
                 "transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               )}
               aria-label="Close menu"
             >
-              <X className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+              <X className="h-4 w-4" strokeWidth={1.85} aria-hidden="true" />
               <span className="hidden sm:inline">Close</span>
             </Dialog.Close>
           </div>
@@ -132,7 +134,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
             {/* Primary horizontal row — siblings, no soloist */}
             <nav
               aria-label="Main pages"
-              className="flex flex-wrap items-center gap-x-6 gap-y-2 pb-6 md:pb-8 border-b border-border/60"
+              className="flex flex-wrap items-center gap-x-7 gap-y-2 pb-6 md:pb-8 border-b border-border/60"
               style={{ animationDelay: "120ms" }}
             >
               {PRIMARY.map((p, i) => {
@@ -144,9 +146,9 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                     onClick={() => onOpenChange(false)}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "menu-drawer__link inline-flex items-center min-h-[44px]",
-                      "text-base md:text-lg font-medium transition-colors duration-300",
-                      isActive ? "text-evergreen" : "text-foreground/85 hover:text-evergreen",
+                      "menu-drawer__link relative inline-flex items-center min-h-[52px]",
+                      "text-lg md:text-xl font-semibold transition-colors duration-300",
+                      isActive ? "text-evergreen menu-primary--active" : "text-foreground/90 hover:text-evergreen",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm px-1 -mx-1",
                     )}
                     style={{ animationDelay: `${160 + i * 40}ms` }}
@@ -224,7 +226,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 text-foreground/75">
                   <a
                     href={`tel:${STUDIO_PHONE_TEL}`}
-                    onClick={() => onOpenChange(false)}
+                    onClick={handlePhone}
                     className="hover:text-evergreen transition-colors min-h-[44px] inline-flex items-center font-medium"
                   >
                     {STUDIO_PHONE_DISPLAY}
@@ -240,39 +242,51 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 </div>
               </div>
 
-              {isMobile ? (
-                <button
-                  type="button"
-                  onClick={handleQuote}
-                  className={cn(
-                    "menu-drawer__cta nav-pill group/btn flex items-center justify-between gap-3",
-                    "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-sm font-medium min-h-[52px]",
-                    "active:scale-[0.985] transition-transform duration-200",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                  )}
-                >
-                  <span>Get a Free Quote</span>
-                  <span className="icon-chip icon-chip-light bg-background/15">
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={1.75} />
-                  </span>
-                </button>
-              ) : (
-                <Link
-                  to="/contact"
-                  onClick={() => onOpenChange(false)}
-                  className={cn(
-                    "menu-drawer__cta nav-pill group/btn inline-flex items-center gap-3 shrink-0",
-                    "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-sm font-medium min-h-[44px]",
-                    "hover:bg-evergreen-hover transition-colors duration-300",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                  )}
-                >
-                  <span>Get a Free Quote</span>
-                  <span className="icon-chip icon-chip-light bg-background/15">
-                    <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.75} />
-                  </span>
-                </Link>
-              )}
+              {/* Single, clearly-shaped CTA — full width on mobile, natural on desktop */}
+              <div className="flex flex-col items-stretch md:items-end gap-2 w-full md:w-auto">
+                {isMobile ? (
+                  <button
+                    type="button"
+                    onClick={handleQuote}
+                    className={cn(
+                      "menu-drawer__cta nav-pill group/btn",
+                      "inline-flex items-center justify-center gap-2.5",
+                      "bg-evergreen text-evergreen-foreground rounded-full px-6 text-[15px] font-semibold",
+                      "min-h-[56px] w-full",
+                      "active:scale-[0.985] transition-transform duration-200",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    )}
+                  >
+                    <span>Get a Free Quote</span>
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={2} />
+                  </button>
+                ) : (
+                  <Link
+                    to="/contact"
+                    onClick={() => onOpenChange(false)}
+                    className={cn(
+                      "menu-drawer__cta nav-pill group/btn",
+                      "inline-flex items-center justify-center gap-2.5 shrink-0",
+                      "bg-evergreen text-evergreen-foreground rounded-full px-6 text-[15px] font-semibold",
+                      "min-h-[48px] min-w-[220px]",
+                      "hover:bg-evergreen-hover transition-colors duration-300",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    )}
+                  >
+                    <span>Get a Free Quote</span>
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={2} />
+                  </Link>
+                )}
+                {isMobile && (
+                  <a
+                    href={`tel:${STUDIO_PHONE_TEL}`}
+                    onClick={handlePhone}
+                    className="text-center text-sm text-foreground/65 hover:text-evergreen transition-colors min-h-[40px] inline-flex items-center justify-center"
+                  >
+                    Or call {STUDIO_PHONE_DISPLAY}
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </Dialog.Content>
@@ -294,7 +308,7 @@ const DrawerColumn = ({
 }) => (
   <div>
     <p
-      className="menu-drawer__label text-evergreen text-xs font-semibold uppercase tracking-[0.14em] mb-3"
+      className="menu-drawer__label menu-col-bar relative text-evergreen text-xs font-semibold uppercase tracking-[0.14em] mb-3 pl-3"
       style={{ animationDelay: `${delay}ms` }}
     >
       {label}
@@ -323,16 +337,22 @@ const DrawerLink = ({
     onClick={onClick}
     aria-current={active ? "page" : undefined}
     className={cn(
-      "menu-drawer__link py-1.5 min-h-[52px] flex items-center transition-colors duration-300",
-      "text-[1.0625rem] md:text-[1.125rem]",
+      "menu-drawer__link relative py-1.5 min-h-[52px] flex items-center transition-colors duration-300",
+      "text-[1.125rem] md:text-[1.1875rem]",
       muted
         ? "text-foreground/55 hover:text-evergreen text-base"
         : "text-foreground/85 hover:text-evergreen",
-      active && "text-evergreen",
+      active && "text-evergreen font-semibold",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm px-1 -mx-1",
     )}
     style={{ animationDelay: `${delay}ms` }}
   >
+    {active && (
+      <span
+        aria-hidden="true"
+        className="inline-block h-1.5 w-1.5 rounded-full bg-evergreen mr-2.5 -ml-3.5"
+      />
+    )}
     {children}
   </Link>
 );
