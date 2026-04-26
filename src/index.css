@@ -646,6 +646,11 @@
     margin-right: 0.875rem;
     color: hsl(var(--evergreen) / 0.45);
   }
+  /* Tighter dot spacing on tiny phones so the row stays on one line. */
+  @media (max-width: 480px) {
+    .trust-microcopy { gap: 0.5rem; }
+    .trust-microcopy > span + span::before { margin-right: 0.5rem; }
+  }
 
   /* ──────────────────────────────────────────────────────────────────────
      Fear row — § I "what you're worried about" ledger pattern.
@@ -655,9 +660,9 @@
   .fear-row {
     display: grid;
     grid-template-columns: 2.25rem 1fr;
-    gap: 1rem 1.25rem;
+    gap: 0.625rem 1rem;
     align-items: baseline;
-    padding: 1.5rem 0;
+    padding: 1.25rem 0;
     border-bottom: 1px solid hsl(var(--border) / 0.7);
     transition: border-color 500ms var(--ease-silk);
   }
