@@ -224,6 +224,10 @@ const QuickContactSheet = () => {
             // Manual focus so the close button isn't the initial target
             beginRef.current?.focus();
           }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
           className={cn(
             "lg:hidden",
             "fixed inset-x-0 bottom-0 z-50 max-h-[88svh] overflow-y-auto",
@@ -233,18 +237,29 @@ const QuickContactSheet = () => {
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
             "data-[state=closed]:duration-300 data-[state=open]:duration-[420ms]",
-            "qc-sheet",
+            "qc-sheet touch-pan-y",
           )}
           style={{
             paddingBottom: "max(1.75rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem))",
+            transform: dragY > 0 ? `translateY(${dragY}px)` : undefined,
+            transition: dragY > 0 ? "none" : undefined,
           }}
         >
-          {/* Drag handle pill */}
-          <div className="pt-3 pb-1 flex items-center justify-center" aria-hidden="true">
-            <span className="block h-1.5 w-12 rounded-full bg-evergreen/40" />
-          </div>
+          {/* Drag handle pill — also a tap-to-dismiss target. */}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close"
+            className={cn(
+              "block w-full pt-3 pb-1.5 flex items-center justify-center",
+              "focus-visible:outline-none focus-visible:bg-foreground/[0.02]",
+            )}
+          >
+            <span aria-hidden="true" className="block h-1.5 w-12 rounded-full bg-evergreen/40" />
+          </button>
 
-          {/* Top bar — back arrow (when past invite) + close */}
+          {/* Top bar — back arrow (when past invite) + close. Progress moved
+              under the question, so this row is clean on form steps. */}
           <div className="relative h-12 px-2">
             {step !== "invite" && step !== "done" && (
               <button
@@ -261,28 +276,6 @@ const QuickContactSheet = () => {
               >
                 <ArrowLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
               </button>
-            )}
-
-            {/* Progress dots — only on form steps */}
-            {stepIndex >= 0 && (
-              <div
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5"
-                aria-hidden="true"
-              >
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className={cn(
-                      "block h-1.5 rounded-full transition-all duration-400",
-                      i === stepIndex
-                        ? "w-5 bg-evergreen"
-                        : i < stepIndex
-                          ? "w-1.5 bg-evergreen/70"
-                          : "w-1.5 bg-evergreen/20",
-                    )}
-                  />
-                ))}
-              </div>
             )}
 
             <DialogPrimitive.Close
