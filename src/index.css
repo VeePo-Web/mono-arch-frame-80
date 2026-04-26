@@ -640,6 +640,36 @@
       hsl(var(--evergreen) / 0.045) 11px 12px
     );
   }
+  /* Compact variant — used in sidebar lists and dense grids. */
+  .photo-pending--compact {
+    padding: 1rem 1rem 0.875rem;
+    gap: 0.625rem;
+    aspect-ratio: 1 / 1;
+  }
+  .photo-pending--compact::before {
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 7px,
+      hsl(var(--evergreen) / 0.045) 7px 8px
+    );
+  }
+  /* Service variant — slightly warmer wash, taller plate (services overview). */
+  .photo-pending--service {
+    aspect-ratio: 4 / 5;
+    background-image: linear-gradient(
+      155deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--evergreen-soft) / 0.55) 100%
+    );
+  }
+  .photo-pending--service::before {
+    opacity: 0.55;
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 13px,
+      hsl(var(--evergreen) / 0.06) 13px 14px
+    );
+  }
 
   /* ──────────────────────────────────────────────────────────────────────
      Testimonial card — quiet attributed quote tile. Used in the
