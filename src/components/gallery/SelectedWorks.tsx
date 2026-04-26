@@ -124,8 +124,80 @@ const SelectedWorks = () => {
         </div>
 
         {/* Featured plate + sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-9">
-          {/* ── Featured plate (left, 7/12) ────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-7 lg:gap-9">
+          {/* ── Mobile rail — horizontal snap-scroller above the featured plate.
+              Hidden on lg+, where the right-column sidebar takes over. */}
+          <div
+            className="lg:hidden"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "180ms" }}
+          >
+            <div
+              ref={railRef}
+              role="tablist"
+              aria-label="Project plates"
+              onKeyDown={handleSidebarKey}
+              className="gallery-rail"
+            >
+              {galleryPlates.map((plate, i) => {
+                const isActive = i === activeIndex;
+                return (
+                  <button
+                    key={plate.slug}
+                    type="button"
+                    role="tab"
+                    data-rail-chip={i}
+                    aria-selected={isActive}
+                    aria-controls={`plate-row-${plate.slug}`}
+                    onClick={() => {
+                      handlePromote(i);
+                      setHintVisible(false);
+                    }}
+                    onTouchStart={() => setHintVisible(false)}
+                    className={cn(
+                      "gallery-rail__chip text-left",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "font-serif italic text-[0.95rem] tabular-nums leading-none transition-colors",
+                        isActive ? "text-evergreen" : "text-evergreen/60",
+                      )}
+                    >
+                      {plate.romanNumeral}
+                    </span>
+                    <span
+                      className={cn(
+                        "font-serif text-[0.95rem] leading-tight truncate transition-colors",
+                        isActive ? "text-evergreen" : "text-foreground",
+                      )}
+                    >
+                      {plate.title}
+                    </span>
+                    <span className="text-[0.65rem] tracking-[0.18em] uppercase text-muted-foreground truncate">
+                      {plate.area}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <p
+              aria-hidden="true"
+              className={cn(
+                "mt-2 text-center text-[0.65rem] tracking-[0.22em] uppercase text-evergreen/60 transition-opacity duration-700",
+                hintVisible ? "opacity-100" : "opacity-0",
+              )}
+            >
+              ← Swipe to explore →
+            </p>
+            {/* aria-live announcement for SR users when active plate changes */}
+            <p id={liveId} aria-live="polite" className="sr-only">
+              {`Now showing Plate ${active.romanNumeral}: ${active.title}, ${active.area}.`}
+            </p>
+          </div>
+
+          {/* ── Featured plate (left, 7/12 on lg; full-width below the rail on mobile) ─ */}
           <div
             className="lg:col-span-7"
             data-reveal
