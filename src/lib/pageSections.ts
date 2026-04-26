@@ -25,7 +25,6 @@ const pageSections: Record<string, PageSection[]> = {
     { name: "Contact", anchor: "final-cta" },
   ],
   "/services": [
-    { name: "Promise", anchor: "services-promise" },
     { name: "The Three", anchor: "services-three" },
     { name: "How", anchor: "circle" },
     { name: "Quote", anchor: "quote" },

@@ -52,7 +52,7 @@ const About = () => {
       />
 
       {/* § I — Working philosophy */}
-      <RevealSection aria-labelledby="philosophy-heading" className={SECTION}>
+      <RevealSection id="philosophy" aria-labelledby="philosophy-heading" className={SECTION}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-6" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -81,7 +81,7 @@ const About = () => {
       </RevealSection>
 
       {/* § II — Property respect */}
-      <RevealSection aria-labelledby="respect-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection id="respect" aria-labelledby="respect-heading" className={cn(SECTION, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -116,7 +116,7 @@ const About = () => {
       </RevealSection>
 
       {/* § III — Hands-on continuity */}
-      <RevealSection aria-labelledby="continuity-heading" className={SECTION}>
+      <RevealSection id="continuity" aria-labelledby="continuity-heading" className={SECTION}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -149,7 +149,7 @@ const About = () => {
       </RevealSection>
 
       {/* § IV — Long-term relationship */}
-      <RevealSection aria-labelledby="longterm-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection id="longterm" aria-labelledby="longterm-heading" className={cn(SECTION, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
             <Eyebrow align="center" label="A longer horizon" />
