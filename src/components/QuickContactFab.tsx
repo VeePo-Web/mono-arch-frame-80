@@ -142,10 +142,9 @@ const QuickContactFab = () => {
         "active:scale-[0.95] hover:bg-evergreen-hover",
         "transition-[width,padding,background-color,bottom] duration-500 ease-out",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        // Width + padding swap based on flashed state. 60×60 base for thumb-target.
-        flashed
-          ? "h-15 pl-5 pr-5 justify-start"
-          : "h-15 w-15 px-0 justify-center",
+        // Width + padding swap based on flashed state. 60×60 base for thumb-target
+        // (height/width come from inline `style` since Tailwind has no default 60px token).
+        flashed ? "pl-5 pr-5 justify-start" : "px-0 justify-center",
       )}
       style={{
         // Sit clear of safe-area + StickyConsultBar (which publishes
