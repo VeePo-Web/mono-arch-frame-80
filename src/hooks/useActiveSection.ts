@@ -10,7 +10,7 @@ import type { PageSection } from "@/lib/pageSections";
  * section the user is "on." This produces stable highlights even when
  * multiple sections are intersecting at once.
  *
- * `headerOffset` matches the floating nav-island height + breathing room
+ * `headerOffset` matches the solid nav bar height + breathing room
  * so a section is considered "active" the moment its title clears the bar.
  */
 export const useActiveSection = (
