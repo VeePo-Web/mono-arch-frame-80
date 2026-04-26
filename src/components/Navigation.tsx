@@ -1,9 +1,9 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { prefetchRoute } from "@/lib/routePrefetch";
 import HamburgerButton from "@/components/nav/HamburgerButton";
 import SectionRail from "@/components/nav/SectionRail";
 import Container from "@/components/Container";
@@ -15,45 +15,34 @@ const MenuDrawer = lazy(() => import("@/components/nav/MenuDrawer"));
 const STUDIO_PHONE_TEL = "+14035550100";
 const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
 
-// Routes whose primary entry-point lives inside the drawer.
-const DRAWER_ROUTE_PREFIXES = ["/services/", "/service-areas/", "/about", "/work"];
-
 /**
- * Navigation — Round 5 "Ruthless Simplification".
+ * Navigation — Round 7 "Buttery Smooth".
  *
- * Solid full-width bar. Three-zone grid:
- *   [ Logo ]  [ SectionRail (md+) ]  [ Phone · Quote · Menu ]
+ * Round 7 motion adds:
+ * - Quote CTA: hover lift (1px) + soft evergreen halo + 0.97 spring press.
+ * - Phone: locked 44×44 hit zone aligned with hamburger silhouette.
+ * - Drawer + section-rail links warm route chunks on pointerdown/focus.
  *
- * Right-cluster hierarchy is now visually 1-2-3:
- * - Quote: solid evergreen pill (primary).
- * - Phone: ghost icon, number from lg+ (secondary).
- * - Menu: 48×48 icon-only square (tertiary). Calm 2px evergreen bar
- *   below the icon when the current route lives inside the drawer.
- *
- * Performance: MenuDrawer is lazy-loaded; no scroll-shadow IntersectionObserver.
- * The bottom border alone signals the bar — saves an observer + DOM node.
+ * Right cluster shapes (round 6, kept):
+ * - Phone: flat ghost icon (no chip).
+ * - Quote: solid evergreen square (8px radius).
+ * - Menu: 44×44 square ghost.
  */
 const Navigation = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTouched, setDrawerTouched] = useState(false);
   const { pathname } = useLocation();
-  const isMobile = useIsMobile();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
 
-  const currentLivesInDrawer = useMemo(
-    () => DRAWER_ROUTE_PREFIXES.some((p) => pathname.startsWith(p)),
-    [pathname],
-  );
-
-  // Close drawer on route change.
-  useEffect(() => setDrawerOpen(false), [pathname]);
-
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (isMobile && !onContactRoute) {
+    if (onContactRoute) return;
+    if (window.matchMedia("(max-width: 767px)").matches) {
       e.preventDefault();
       openQuickContact({ source: "quick_contact_sheet" });
     }
   };
+
+  const warmContact = () => prefetchRoute("/contact");
 
   const openDrawer = () => {
     setDrawerTouched(true);
@@ -105,55 +94,50 @@ const Navigation = () => {
               />
             </Link>
 
-            {/* Section rail — center. */}
-            <div className="hidden md:flex justify-center min-w-0">
+            {/* Section rail — center. lg+ only. */}
+            <div className="hidden lg:flex justify-center min-w-0">
               <SectionRail />
             </div>
-            <div className="md:hidden" aria-hidden="true" />
+            <div className="lg:hidden" aria-hidden="true" />
 
-            {/* Right cluster — Phone (ghost) · Quote (primary) · Menu (icon) */}
-            <div className="flex items-center gap-1 sm:gap-1.5 justify-end">
-              {/* Phone — icon-only, number from lg+ */}
+            {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
+            <div className="flex items-center gap-1 sm:gap-2 justify-end">
+              {/* Phone — flat ghost icon, locked 44×44 at <lg */}
               <a
                 href={`tel:${STUDIO_PHONE_TEL}`}
                 aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                 className={cn(
-                  "inline-flex items-center justify-center gap-2 rounded-full shrink-0",
-                  "h-12 min-w-[48px] px-2.5 lg:px-3",
-                  "text-sm font-medium text-foreground/80 hover:text-evergreen hover:bg-foreground/[0.05]",
-                  "transition-colors duration-300",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "inline-flex items-center justify-center gap-2 shrink-0",
+                  "h-11 w-11 lg:w-auto lg:px-2.5",
+                  "text-sm font-medium text-foreground/75 hover:text-evergreen",
+                  "transition-colors duration-200",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md",
                 )}
               >
                 <Phone className="h-[18px] w-[18px] lg:h-4 lg:w-4" strokeWidth={1.85} aria-hidden="true" />
                 <span className="hidden lg:inline">{STUDIO_PHONE_DISPLAY}</span>
               </a>
 
-              {/* Quote CTA — primary. No arrow chip, no responsive split. */}
+              {/* Quote CTA — primary. Hover-lift + spring press. */}
               <Link
                 to="/contact"
                 onClick={handleQuoteClick}
+                onPointerDown={warmContact}
+                onFocus={warmContact}
                 aria-label="Get a quote"
                 className={cn(
-                  "shrink-0 inline-flex items-center justify-center rounded-full",
+                  "cta-spring shrink-0 inline-flex items-center justify-center rounded-lg",
                   "bg-evergreen text-evergreen-foreground",
-                  "text-[15px] font-semibold",
-                  "h-12 sm:h-11 px-5",
-                  "transition-colors duration-300",
-                  "hover:bg-evergreen-hover active:scale-[0.98]",
+                  "text-[15px] font-semibold whitespace-nowrap",
+                  "h-11 px-4 sm:px-5",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
               >
-                <span className="sm:hidden">Quote</span>
-                <span className="hidden sm:inline">Get a Quote</span>
+                Get a Quote
               </Link>
 
-              {/* Menu — square icon-only */}
-              <HamburgerButton
-                open={drawerOpen}
-                onClick={openDrawer}
-                current={currentLivesInDrawer}
-              />
+              {/* Menu — square ghost, matches Quote silhouette */}
+              <HamburgerButton open={drawerOpen} onClick={openDrawer} />
             </div>
           </nav>
         </Container>
