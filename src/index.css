@@ -508,27 +508,29 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Hamburger — three lines morph to an X. Top + bottom only (no middle):
-     keeps the form quieter and the morph cleaner.
+     Hamburger — two lines morph to an X. At rest the top is full width
+     and the bottom is 70%, left-aligned — reads as "list" not "equals".
+     On open both extend to full width, cross at the centre at ±45°.
      ────────────────────────────────────────────────────────────────────── */
-  .hamburger-stage {
-    /* The two lines sit at the top and bottom of the stage at rest. */
-  }
   .hamburger-line {
+    transform-origin: left center;
     transition:
+      width 320ms var(--ease-swift),
       transform 320ms var(--ease-swift),
       top 320ms var(--ease-swift),
       bottom 320ms var(--ease-swift);
-    will-change: transform;
+    will-change: transform, width;
   }
-  .hamburger-line--top { top: 0; }
-  .hamburger-line--bottom { bottom: 0; }
+  .hamburger-line--top    { top: 0;    width: 100%; }
+  .hamburger-line--bottom { bottom: 0; width: 70%;  }
   .hamburger-stage[data-open="true"] .hamburger-line--top {
     top: 50%;
+    width: 100%;
     transform: translateY(-50%) rotate(45deg);
   }
   .hamburger-stage[data-open="true"] .hamburger-line--bottom {
     bottom: 50%;
+    width: 100%;
     transform: translateY(50%) rotate(-45deg);
   }
 
