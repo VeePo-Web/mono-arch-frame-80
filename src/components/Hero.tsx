@@ -183,7 +183,7 @@ const Hero = () => {
                     <span key={a.slug}>
                       <Link
                         to={a.href}
-                        className="hover:text-evergreen transition-colors duration-300"
+                        className="rounded-sm hover:text-evergreen focus-visible:outline-none focus-visible:underline focus-visible:decoration-evergreen focus-visible:underline-offset-4 focus-visible:text-evergreen transition-colors duration-300"
                       >
                         {a.name}
                       </Link>
@@ -233,7 +233,10 @@ const Hero = () => {
           <p className="font-serif italic text-foreground/85 text-[1rem] leading-relaxed">
             {serviceAreas.map((a, i) => (
               <span key={a.slug}>
-                <Link to={a.href} className="hover:text-evergreen transition-colors duration-300">
+                <Link
+                  to={a.href}
+                  className="rounded-sm hover:text-evergreen focus-visible:outline-none focus-visible:underline focus-visible:decoration-evergreen focus-visible:underline-offset-4 focus-visible:text-evergreen transition-colors duration-300"
+                >
                   {a.name}
                 </Link>
                 {i < serviceAreas.length - 1 && (
