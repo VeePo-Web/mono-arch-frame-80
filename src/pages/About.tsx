@@ -130,22 +130,15 @@ const About = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 lg:gap-9">
+          <div className={cn("grid grid-cols-1 md:grid-cols-3", CONTENT_GAP.cardGrid)}>
             {CONTINUITY.map((c, i) => (
-              <PremiumCard
+              <div
                 key={c.n}
                 data-reveal
                 style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
-                className="h-full"
               >
-                <div className="relative p-9 lg:p-11 flex flex-col h-full">
-                  <span className="numeral-disc">{c.n}</span>
-                  <h3 className="text-title text-foreground mt-8">{c.title}</h3>
-                  <p className="mt-4 text-body text-muted-foreground text-[0.98rem] leading-relaxed flex-1">
-                    {c.body}
-                  </p>
-                </div>
-              </PremiumCard>
+                <InfoCard eyebrow={c.n} title={c.title} body={c.body} />
+              </div>
             ))}
           </div>
         </Container>
