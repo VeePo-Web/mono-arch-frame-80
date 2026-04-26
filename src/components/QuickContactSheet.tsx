@@ -43,11 +43,13 @@ const QuickContactSheet = () => {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; contact?: string; message?: string }>({});
+  const [dragY, setDragY] = useState(0);
   const titleId = useId();
   const liveId = useId();
   const beginRef = useRef<HTMLButtonElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const textRef = useRef<HTMLTextAreaElement | null>(null);
+  const dragStateRef = useRef<{ y: number; t: number; active: boolean } | null>(null);
 
   // Subscribe to global open events
   useEffect(() => {
@@ -63,16 +65,49 @@ const QuickContactSheet = () => {
   const looksLikePhone = /^[+\d(]/.test(contact.trim());
 
   // Focus management — move focus to the new question's primary input
-  // after each step transition, deferred so the slide animation completes.
+  // after each step transition, deferred so the slide animation completes
+  // *before* the keyboard rises. (260ms > 220ms qc-step-in.)
   useEffect(() => {
     if (!open) return;
     const t = setTimeout(() => {
       if (step === "invite") beginRef.current?.focus();
       else if (step === "name" || step === "contact") inputRef.current?.focus();
       else if (step === "message") textRef.current?.focus();
-    }, 280);
+    }, 260);
     return () => clearTimeout(t);
   }, [step, open]);
+
+  // Swipe-to-dismiss — pointer drag from the top ~90px of the sheet
+  // (handle + top bar zone). >120px or velocity >0.5 px/ms closes.
+  // Scoped to that strip so textarea scroll on the message step is unaffected.
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+    const localY = e.clientY - rect.top;
+    if (localY > 90) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    dragStateRef.current = { y: e.clientY, t: performance.now(), active: true };
+    target.setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const s = dragStateRef.current;
+    if (!s?.active) return;
+    const dy = Math.max(0, e.clientY - s.y);
+    setDragY(dy);
+  };
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const s = dragStateRef.current;
+    if (!s?.active) {
+      setDragY(0);
+      return;
+    }
+    const dy = Math.max(0, e.clientY - s.y);
+    const dt = Math.max(1, performance.now() - s.t);
+    const v = dy / dt; // px per ms
+    dragStateRef.current = null;
+    setDragY(0);
+    if (dy > 120 || v > 0.5) setOpen(false);
+  };
 
   const reset = () => {
     setStep("invite");
