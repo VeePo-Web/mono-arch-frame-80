@@ -173,11 +173,11 @@ const QuickContactSheet = () => {
     }
 
     setStep("done");
-    toast.success("Thank you. We'll be in touch.");
+    toast.success("Thank you. We'll be in touch shortly.");
     setTimeout(() => {
       setOpen(false);
       setTimeout(reset, 280);
-    }, 4500);
+    }, 3800);
   };
 
   // Live-region announcements for step transitions
