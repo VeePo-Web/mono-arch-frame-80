@@ -12,7 +12,7 @@ import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas, getServiceArea } from "@/data/serviceAreas";
 import { services } from "@/data/services";
 
-const SECTION = "py-24 md:py-32";
+const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 const POSTAL: Record<string, string> = {

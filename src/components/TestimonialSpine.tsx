@@ -48,7 +48,7 @@ const TESTIMONIALS: Testimonial[] = [
 const TestimonialSpine = () => (
   <RevealSection
     aria-labelledby="testimonials-heading"
-    className="py-24 md:py-32"
+    className="py-16 md:py-32"
   >
     <Container size="wide">
       <div

@@ -14,7 +14,13 @@ interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
 const Container = ({ children, size = "default", className, ...rest }: ContainerProps) => (
   <div
     className={cn(
-      "mx-auto px-6 md:px-12 lg:px-20",
+      // Mobile floor uses max() so iOS notched-landscape safe-area insets
+      // cannot push text under the speaker cutout. sm+ keeps the existing
+      // 24px paper margin; md/lg are byte-for-byte unchanged.
+      "mx-auto",
+      "pl-[max(1.25rem,env(safe-area-inset-left))]",
+      "pr-[max(1.25rem,env(safe-area-inset-right))]",
+      "sm:pl-6 sm:pr-6 md:px-12 lg:px-20",
       size === "wide" ? "max-w-[1360px]" : "max-w-[1200px]",
       className,
     )}

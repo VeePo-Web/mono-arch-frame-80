@@ -11,7 +11,7 @@ import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { projects } from "@/data/projects";
 
-const SECTION = "py-24 md:py-32";
+const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 const PLANNING = [

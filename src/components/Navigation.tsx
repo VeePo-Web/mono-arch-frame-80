@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
+import Phone from "lucide-react/dist/esm/icons/phone";
+import Mail from "lucide-react/dist/esm/icons/mail";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import logo from "@/assets/logo/haven-creek-horizontal.webp";
@@ -13,6 +15,18 @@ const NAV_LINKS = [
   { label: "About", to: "/about" },
   { label: "Contact", to: "/contact" },
 ];
+
+// Three service shortcuts surfaced in the mobile sheet so mid-funnel
+// visitors can skip the Services index page.
+const SERVICE_SHORTCUTS = [
+  { label: "Interior finishing", to: "/services/interior-finishing" },
+  { label: "Exterior repairs", to: "/services/exterior-finishing" },
+  { label: "Decking", to: "/services/decking" },
+];
+
+const STUDIO_PHONE_TEL = "+14035550100";
+const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
+const STUDIO_EMAIL = "hello@havencreekrenovations.ca";
 
 /**
  * Navigation — Floating Glass Island.
@@ -181,7 +195,7 @@ const Navigation = () => {
             aria-label="Open menu"
             aria-expanded={open}
             aria-controls="mobile-menu"
-            className="md:hidden relative z-10 inline-flex items-center justify-center h-10 w-10 rounded-full hover:bg-foreground/[0.04] transition-colors"
+            className="md:hidden relative z-10 inline-flex items-center justify-center h-11 w-11 rounded-full hover:bg-foreground/[0.04] transition-colors"
           >
             <span className="relative block h-3 w-4">
               <span className="absolute left-0 right-0 top-0 h-px bg-foreground" />
@@ -202,6 +216,10 @@ const Navigation = () => {
             "bg-background/92 backdrop-blur-2xl",
             "border-l border-border/60",
             "p-0",
+            // Honour iOS safe-area insets (notched landscape, home indicator).
+            "[--sheet-pt:max(1.25rem,calc(var(--safe-top)+0.75rem))]",
+            "[--sheet-pb:max(2rem,calc(var(--safe-bottom)+1rem))]",
+            "[--sheet-pr:max(1.5rem,var(--safe-right))]",
           )}
         >
           {/* Accessible label (visually hidden) */}
@@ -217,7 +235,15 @@ const Navigation = () => {
             }}
           />
 
-          <div className="relative h-full flex flex-col px-6 pt-5 pb-10">
+          <div
+            className="relative h-full flex flex-col overflow-y-auto"
+            style={{
+              paddingTop: "var(--sheet-pt)",
+              paddingBottom: "var(--sheet-pb)",
+              paddingLeft: "1.5rem",
+              paddingRight: "var(--sheet-pr)",
+            }}
+          >
             <div className="flex items-center justify-between">
               <Link to="/" onClick={() => setOpen(false)} aria-label="Haven Creek — home">
                 <img src={logo} alt="" width={160} height={28} className="h-6 w-auto" loading="lazy" decoding="async" />
@@ -227,7 +253,7 @@ const Navigation = () => {
             </div>
 
             {/* Dossier-strip rule — echoes sub-page heroes */}
-            <div className="mt-12 dossier-strip" aria-hidden="true">
+            <div className="mt-10 dossier-strip" aria-hidden="true">
               <span className="dossier-strip__rule" />
               <span className="dossier-strip__inner">
                 <span className="dossier-strip__no">Menu</span>
@@ -237,7 +263,10 @@ const Navigation = () => {
               <span className="dossier-strip__rule" />
             </div>
 
-            <ul className="mt-6 space-y-2">
+            {/* Primary nav — numbered serial in front of each italic label.
+                Per-row min-height = 56px so every tap target sits well above
+                the 48px Apple/Google guideline. */}
+            <ul className="mt-5 space-y-1">
               {NAV_LINKS.map((link, i) => (
                 <li key={link.to} className="overflow-hidden">
                   <NavLink
@@ -245,7 +274,8 @@ const Navigation = () => {
                     onClick={() => setOpen(false)}
                     className={({ isActive }) =>
                       cn(
-                        "block py-3 px-1 -mx-1 rounded-sm text-headline font-serif italic font-light leading-tight",
+                        "flex items-baseline gap-4 py-3 px-1 -mx-1 rounded-sm",
+                        "text-[1.65rem] font-serif italic font-light leading-tight min-h-[56px]",
                         "reveal-up",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                         isActive ? "text-evergreen" : "text-foreground hover:text-evergreen",
@@ -253,24 +283,99 @@ const Navigation = () => {
                     }
                     style={{ animationDelay: `${80 + i * 70}ms` }}
                   >
-                    {link.label}
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "shrink-0 w-7 text-[0.7rem] tracking-[0.18em] tabular-nums not-italic font-sans font-medium pt-2",
+                        "text-evergreen/55",
+                      )}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="flex-1">{link.label}</span>
                   </NavLink>
                 </li>
               ))}
             </ul>
 
-            <div className="mt-auto pt-10 border-t border-border/60">
+            {/* Service shortcuts — quiet sub-list so mid-funnel visitors can
+                jump straight to a service detail page. */}
+            <div className="mt-7 pt-5 border-t border-border/60">
+              <p className="text-minimal text-evergreen/75 mb-3">Services</p>
+              <ul className="space-y-0.5">
+                {SERVICE_SHORTCUTS.map((s) => (
+                  <li key={s.to}>
+                    <NavLink
+                      to={s.to}
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center min-h-[44px] py-1.5 text-body text-[0.97rem] rounded-sm px-1 -mx-1",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                          isActive ? "text-evergreen" : "text-foreground/80 hover:text-evergreen",
+                        )
+                      }
+                    >
+                      {s.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Quick-actions — tap-to-call + tap-to-email. Sized at 48×48
+                with 12px gap so thumbs reach without misclick. */}
+            <div className="mt-7 pt-5 border-t border-border/60">
+              <p className="text-minimal text-evergreen/75 mb-3">Reach us directly</p>
+              <div className="grid grid-cols-2 gap-3">
+                <a
+                  href={`tel:${STUDIO_PHONE_TEL}`}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "group/btn flex items-center gap-3 min-h-[52px] px-4 rounded-full",
+                    "bg-evergreen/[0.06] text-foreground border border-evergreen/15",
+                    "hover:bg-evergreen/[0.10] transition-colors duration-300",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  )}
+                  aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
+                >
+                  <Phone className="h-4 w-4 text-evergreen shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  <span className="text-minimal">Call</span>
+                </a>
+                <a
+                  href={`mailto:${STUDIO_EMAIL}`}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "group/btn flex items-center gap-3 min-h-[52px] px-4 rounded-full",
+                    "bg-evergreen/[0.06] text-foreground border border-evergreen/15",
+                    "hover:bg-evergreen/[0.10] transition-colors duration-300",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  )}
+                  aria-label={`Email ${STUDIO_EMAIL}`}
+                >
+                  <Mail className="h-4 w-4 text-evergreen shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  <span className="text-minimal">Email</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Bottom-pinned consultation pill — full-bleed on the smallest phones */}
+            <div className="mt-auto pt-8 border-t border-border/60">
               <Link
                 to="/contact"
                 onClick={() => setOpen(false)}
-                className="group/btn inline-flex items-center gap-3 bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-minimal min-h-[48px]"
+                className={cn(
+                  "group/btn flex items-center justify-between gap-3 w-full",
+                  "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-minimal min-h-[52px]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                )}
               >
                 <span>Request a Consultation</span>
                 <span className="icon-chip icon-chip-light bg-background/15">
                   <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={1.5} />
                 </span>
               </Link>
-              <p className="mt-4 text-minimal text-muted-foreground">
+              <p className="mt-3 text-minimal text-muted-foreground">
                 No pressure. Just a clear conversation.
               </p>
             </div>
