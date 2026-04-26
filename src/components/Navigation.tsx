@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
-import { prefetchRoute } from "@/lib/routePrefetch";
 import HamburgerButton from "@/components/nav/HamburgerButton";
 import SectionRail from "@/components/nav/SectionRail";
 import Container from "@/components/Container";
@@ -16,17 +15,20 @@ const STUDIO_PHONE_TEL = "+14035550100";
 const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
 
 /**
- * Navigation — Round 7 "Buttery Smooth".
+ * Navigation — Round 6 "Shape Hierarchy".
  *
- * Round 7 motion adds:
- * - Quote CTA: hover lift (1px) + soft evergreen halo + 0.97 spring press.
- * - Phone: locked 44×44 hit zone aligned with hamburger silhouette.
- * - Drawer + section-rail links warm route chunks on pointerdown/focus.
+ * Solid full-width bar. Three-zone grid:
+ *   [ Logo ]  [ SectionRail (lg+) ]  [ Phone · Quote · Menu ]
  *
- * Right cluster shapes (round 6, kept):
- * - Phone: flat ghost icon (no chip).
- * - Quote: solid evergreen square (8px radius).
- * - Menu: 44×44 square ghost.
+ * Right cluster reads 1-2-3 by SHAPE, not weight:
+ * - Phone: flat ghost icon, no chip — looks like an affordance, not a button.
+ * - Quote: solid evergreen SQUARE button (8px radius) — universal "submit" shape.
+ * - Menu: 44×44 square ghost — matches the Quote silhouette.
+ *
+ * Performance: MenuDrawer is lazy-loaded (mounted on first touch).
+ * No useIsMobile subscription — the QuickContact branch uses a one-shot
+ * window.matchMedia check at click time.
+ * No close-on-pathname effect — drawer link onClicks already close it.
  */
 const Navigation = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -36,13 +38,12 @@ const Navigation = () => {
 
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onContactRoute) return;
+    // One-shot media query — no subscription, no React re-renders.
     if (window.matchMedia("(max-width: 767px)").matches) {
       e.preventDefault();
       openQuickContact({ source: "quick_contact_sheet" });
     }
   };
-
-  const warmContact = () => prefetchRoute("/contact");
 
   const openDrawer = () => {
     setDrawerTouched(true);
@@ -94,7 +95,7 @@ const Navigation = () => {
               />
             </Link>
 
-            {/* Section rail — center. lg+ only. */}
+            {/* Section rail — center. lg+ only (round 6). */}
             <div className="hidden lg:flex justify-center min-w-0">
               <SectionRail />
             </div>
@@ -102,15 +103,15 @@ const Navigation = () => {
 
             {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
             <div className="flex items-center gap-1 sm:gap-2 justify-end">
-              {/* Phone — flat ghost icon, locked 44×44 at <lg */}
+              {/* Phone — flat ghost icon. No background chip ever. */}
               <a
                 href={`tel:${STUDIO_PHONE_TEL}`}
                 aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                 className={cn(
                   "inline-flex items-center justify-center gap-2 shrink-0",
-                  "h-11 w-11 lg:w-auto lg:px-2.5",
+                  "h-11 min-w-[44px] px-2 lg:px-2.5",
                   "text-sm font-medium text-foreground/75 hover:text-evergreen",
-                  "transition-colors duration-200",
+                  "transition-colors duration-300",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md",
                 )}
               >
@@ -118,18 +119,18 @@ const Navigation = () => {
                 <span className="hidden lg:inline">{STUDIO_PHONE_DISPLAY}</span>
               </a>
 
-              {/* Quote CTA — primary. Hover-lift + spring press. */}
+              {/* Quote CTA — primary. Square solid. Universal "action" shape. */}
               <Link
                 to="/contact"
                 onClick={handleQuoteClick}
-                onPointerDown={warmContact}
-                onFocus={warmContact}
                 aria-label="Get a quote"
                 className={cn(
-                  "cta-spring shrink-0 inline-flex items-center justify-center rounded-lg",
+                  "shrink-0 inline-flex items-center justify-center rounded-lg",
                   "bg-evergreen text-evergreen-foreground",
                   "text-[15px] font-semibold whitespace-nowrap",
                   "h-11 px-4 sm:px-5",
+                  "transition-colors duration-300",
+                  "hover:bg-evergreen-hover active:scale-[0.98]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
               >

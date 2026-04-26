@@ -476,10 +476,24 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Haven Creek nav — round 7 "buttery smooth" motion.
+     Haven Creek nav — solid bar (round 5, "ruthless simplification").
+     Active section-rail tab: 2px center-anchored evergreen underline +
+     font-semibold weight bump. Two cues, colour-blind safe, calm.
      ────────────────────────────────────────────────────────────────────── */
+  .nav-tab-rule {
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.25rem;
+    height: 2px;
+    border-radius: 1px;
+    background: hsl(var(--evergreen));
+    transform-origin: center;
+    transition: transform 320ms var(--ease-swift);
+  }
 
-  /* Section rail — always scroll-x with edge-fade mask. */
+  /* Section rail — always scroll-x with edge-fade mask. Mask is harmless
+     when content fits; allows graceful overflow with no JS observer. */
   .section-rail {
     overflow-x: auto;
     scrollbar-width: none;
@@ -503,142 +517,119 @@
     );
   }
 
-  /* Shared FLIP underline indicator — slides between tabs. One element. */
-  .nav-tab-indicator {
-    position: absolute;
-    left: 0;
-    bottom: 0.25rem;
-    height: 2px;
-    width: var(--ind-w, 0px);
-    border-radius: 1px;
-    background: hsl(var(--evergreen));
-    transform: translateX(var(--ind-x, 0px));
-    transition:
-      transform 380ms var(--ease-swift),
-      width 380ms var(--ease-swift);
-    pointer-events: none;
-    will-change: transform, width;
-  }
+  /* (round 6: hamburger "you are here" tick removed — drawer shows the
+     active route in green when opened, which is enough.) */
 
-  /* CTA spring — hover lift + soft halo + spring press.
-     The single biggest "feels expensive" tell. */
-  .cta-spring {
-    transition:
-      background-color 220ms var(--ease-swift),
-      transform 200ms var(--ease-swift),
-      box-shadow 220ms var(--ease-swift);
-  }
-  .cta-spring:hover {
-    background-color: hsl(var(--evergreen-hover));
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px -4px hsl(var(--evergreen) / 0.42);
-  }
-  .cta-spring:active {
-    transform: scale(0.97) translateY(0);
-    box-shadow: none;
-    transition-duration: 120ms;
-  }
-
-  /* Route crossfade — soft 140ms reveal, never blank-flashes. */
-  .route-fade {
-    animation: route-in 140ms var(--ease-swift) both;
-  }
-  @keyframes route-in {
-    from { opacity: 0.6; }
-    to   { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .havencreek-nav,
+    .nav-tab-rule {
+      transition-duration: 0ms !important;
+    }
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Hamburger — three lines, X morph via PURE TRANSFORM (zero layout).
-     Lines stay 100% width at top:0 / 50% / 100%. Only `transform` and
-     `opacity` animate — paint-only, 60fps on low-end Android.
+     Hamburger — three lines morph to an X (canonical "menu" glyph).
+     At rest: three full-width horizontal lines.
+     Open: top + bottom rotate to form X; middle line fades out.
      ────────────────────────────────────────────────────────────────────── */
   .hamburger-line {
     transform-origin: center;
     transition:
-      transform 220ms var(--ease-swift),
-      opacity 160ms linear;
+      width 280ms var(--ease-swift),
+      transform 280ms var(--ease-swift),
+      opacity 200ms var(--ease-swift),
+      top 280ms var(--ease-swift),
+      bottom 280ms var(--ease-swift);
+    will-change: transform, opacity;
+    width: 100%;
   }
   .hamburger-line--top    { top: 0; }
   .hamburger-line--mid    { top: 50%; transform: translateY(-50%); }
   .hamburger-line--bottom { bottom: 0; }
   .hamburger-stage[data-open="true"] .hamburger-line--top {
-    transform: translateY(6px) rotate(45deg);
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
   }
   .hamburger-stage[data-open="true"] .hamburger-line--mid {
-    transform: translateY(-50%) scaleX(0);
     opacity: 0;
+    transform: translateY(-50%) scaleX(0);
   }
   .hamburger-stage[data-open="true"] .hamburger-line--bottom {
-    transform: translateY(-6px) rotate(-45deg);
+    bottom: 50%;
+    transform: translateY(50%) rotate(-45deg);
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Menu drawer — round 7: ONE motion layer. Panel opacity-fades; items
-     rise. No stacked panel-rise + item-rise. Overlay drops backdrop blur
-     (invisible behind the opaque panel; saves a compositing pass).
+     Menu drawer — fullscreen editorial Site Map.
+     Backdrop: soft plaster wash (not a flat black scrim).
+     Panel: opacity + 8px lift on enter; 200ms exit.
+     Items: staggered fade-up via per-item animation-delay.
      ────────────────────────────────────────────────────────────────────── */
   .menu-drawer__overlay {
     background: hsl(var(--background) / 0.6);
-    animation: drawer-overlay-in 200ms var(--ease-weighted) both;
+    backdrop-filter: blur(4px);
+    animation: drawer-overlay-in 240ms var(--ease-weighted) both;
   }
   .menu-drawer__overlay[data-state="closed"] {
-    animation: drawer-overlay-out 120ms var(--ease-swift) both;
+    animation: drawer-overlay-out 180ms var(--ease-swift) both;
   }
   .menu-drawer {
-    animation: drawer-panel-in 220ms var(--ease-weighted) both;
+    animation: drawer-panel-in 320ms var(--ease-weighted) both;
   }
   .menu-drawer[data-state="closed"] {
-    animation: drawer-panel-out 140ms var(--ease-swift) both;
+    animation: drawer-panel-out 200ms var(--ease-swift) both;
   }
-  @keyframes drawer-overlay-in  { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes drawer-overlay-out { from { opacity: 1; } to { opacity: 0; } }
-  @keyframes drawer-panel-in    { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes drawer-panel-out   { from { opacity: 1; } to { opacity: 0; } }
-
-  /* Items rise on enter — CSS-driven stagger via :nth-of-type, no inline styles. */
+  @keyframes drawer-overlay-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes drawer-overlay-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+  @keyframes drawer-panel-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes drawer-panel-out {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(4px); }
+  }
   .menu-drawer__primary,
   .menu-drawer__label,
   .menu-drawer__link,
   .menu-drawer__cta {
     opacity: 0;
-    animation: drawer-item-rise 360ms var(--ease-weighted) both;
+    animation: drawer-item-rise 480ms var(--ease-weighted) forwards;
   }
   @keyframes drawer-item-rise {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  /* Stagger ladder — items appear in reading order. */
-  .menu-drawer__link:nth-of-type(1)  { animation-delay:  80ms; }
-  .menu-drawer__link:nth-of-type(2)  { animation-delay: 110ms; }
-  .menu-drawer__link:nth-of-type(3)  { animation-delay: 140ms; }
-  .menu-drawer__link:nth-of-type(4)  { animation-delay: 170ms; }
-  .menu-drawer__link:nth-of-type(5)  { animation-delay: 200ms; }
-  .menu-drawer__label:nth-of-type(1) { animation-delay: 120ms; }
-  .menu-drawer__label:nth-of-type(2) { animation-delay: 160ms; }
-  .menu-drawer__label:nth-of-type(3) { animation-delay: 200ms; }
-  .menu-drawer__cta                  { animation-delay: 280ms; }
-
   @media (prefers-reduced-motion: reduce) {
-    .havencreek-nav,
-    .nav-tab-indicator,
-    .cta-spring,
     .menu-drawer__overlay,
     .menu-drawer,
     .menu-drawer__primary,
     .menu-drawer__label,
     .menu-drawer__link,
     .menu-drawer__cta,
-    .hamburger-line,
-    .route-fade {
-      animation: none !important;
-      transition-duration: 0ms !important;
+    .hamburger-line {
+      animation-duration: 1ms !important;
+      transition-duration: 1ms !important;
       transform: none !important;
     }
   }
 
-  /* (legacy section-rail comment block removed in round 7 — see active
-     `.section-rail` + `.nav-tab-indicator` rules above.) */
+  /* ──────────────────────────────────────────────────────────────────────
+     Section rail — overflow-x scroll-snap with masked edges so long
+     section lists fade at the boundaries instead of hard-cutting. The
+     rail itself is scroll-snap-x mandatory; SectionRail auto-centers
+     the active label via scrollIntoView.
+     ────────────────────────────────────────────────────────────────────── */
+  /* (section-rail-scroll + menu-primary-text removed in round 3 cleanup —
+     rail now lives inside a solid header with overflow:hidden, and the
+     drawer uses a flat sibling-row of primary links instead of one
+     italic display word.) */
 
   /* ──────────────────────────────────────────────────────────────────────
      Section wash — two-tone vertical gradient replaces flat bg-card/40.

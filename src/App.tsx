@@ -26,6 +26,7 @@ const Bearspaw = lazy(() => import("./pages/areas/Bearspaw"));
 const WaterValley = lazy(() => import("./pages/areas/WaterValley"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
+const StyleGuide = lazy(() => import("./pages/StyleGuide"));
 
 // QuickContactSheet only renders after a user interaction (custom event fired
 // by the drawer / mobile triggers). Defer it past the LCP-critical bundle.
@@ -76,37 +77,6 @@ function DeferredOverlays() {
 // Minimal, bg-matching fallback — invisible during fast chunk loads, no layout shift
 const RouteFallback = () => <div className="min-h-screen bg-background" aria-hidden="true" />;
 
-// Route content gets a key={pathname} so React unmounts/remounts on switch,
-// triggering the .route-fade animation. Subtle 0.6→1 opacity feels like a
-// page reveal instead of a blank-flash chunk load.
-const RoutedPages = () => {
-  const { pathname } = useLocation();
-  return (
-    <div key={pathname} className="route-fade">
-      <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/services/interior-finishing" element={<InteriorFinishing />} />
-          <Route path="/services/exterior-finishing" element={<ExteriorFinishing />} />
-          <Route path="/services/decking" element={<Decking />} />
-          <Route path="/work" element={<Work />} />
-          <Route path="/service-areas" element={<ServiceAreas />} />
-          <Route path="/service-areas/bragg-creek" element={<BraggCreek />} />
-          <Route path="/service-areas/rocky-view-county" element={<RockyView />} />
-          <Route path="/service-areas/bearspaw" element={<Bearspaw />} />
-          <Route path="/service-areas/water-valley" element={<WaterValley />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/thank-you" element={<ThankYou />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
-    </div>
-  );
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -116,7 +86,27 @@ const App = () => (
         <ChapterSpine />
         <PageSlug />
         <Navigation />
-        <RoutedPages />
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/services/interior-finishing" element={<InteriorFinishing />} />
+            <Route path="/services/exterior-finishing" element={<ExteriorFinishing />} />
+            <Route path="/services/decking" element={<Decking />} />
+            <Route path="/work" element={<Work />} />
+            <Route path="/service-areas" element={<ServiceAreas />} />
+            <Route path="/service-areas/bragg-creek" element={<BraggCreek />} />
+            <Route path="/service-areas/rocky-view-county" element={<RockyView />} />
+            <Route path="/service-areas/bearspaw" element={<Bearspaw />} />
+            <Route path="/service-areas/water-valley" element={<WaterValley />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/thank-you" element={<ThankYou />} />
+            <Route path="/style-guide" element={<StyleGuide />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
         <Footer />
         <DeferredOverlays />
       </BrowserRouter>

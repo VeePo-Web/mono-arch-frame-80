@@ -243,7 +243,7 @@ const ConsultationForm = ({
                   className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                 />
               </FormControl>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -268,10 +268,10 @@ const ConsultationForm = ({
                   className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                 />
               </FormControl>
-              <p className="text-[0.7rem] text-muted-foreground/80 leading-relaxed">
+              <p className="text-sm text-foreground/65 leading-relaxed">
                 Email or phone — whichever you prefer.
               </p>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -292,7 +292,7 @@ const ConsultationForm = ({
                   className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
                 />
               </FormControl>
-              <FormMessage className="text-xs" />
+              <FormMessage className="text-sm" />
             </FormItem>
           )}
         />
@@ -336,7 +336,7 @@ const ConsultationForm = ({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage className="text-xs" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -361,7 +361,7 @@ const ConsultationForm = ({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage className="text-xs" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -386,7 +386,7 @@ const ConsultationForm = ({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage className="text-xs" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
@@ -405,7 +405,7 @@ const ConsultationForm = ({
                       className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                     />
                   </FormControl>
-                  <FormMessage className="text-xs" />
+                  <FormMessage className="text-sm" />
                 </FormItem>
               )}
             />
