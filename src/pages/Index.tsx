@@ -564,7 +564,7 @@ const Index = () => {
               direct-contact + promise blocks live inside the text column via
               `lg:contents` (CSS Display: contents flattens the wrapper into
               the grid so order classes still apply on desktop). */}
-          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-10 lg:gap-20 lg:items-start">
+          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-12 lg:gap-x-20 lg:gap-y-0 lg:items-start">
             {/* 1. Headline + lede — first on mobile, top of left column on desktop */}
             <div
               className="order-1 lg:order-1 lg:col-span-6"
