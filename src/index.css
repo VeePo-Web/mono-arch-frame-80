@@ -1186,6 +1186,38 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
+     Sticky-bar inset reservation — when the floating consultation bar is
+     showing, leave room at the bottom of the document so it doesn't sit
+     atop the footer copyright row on phones. Only applies <sm.
+     ────────────────────────────────────────────────────────────────────── */
+  body[data-sticky-bar="shown"] {
+    padding-bottom: max(4.5rem, calc(var(--safe-bottom) + 4rem));
+  }
+  @media (min-width: 640px) {
+    body[data-sticky-bar="shown"] { padding-bottom: 0; }
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Touch tactile feedback — on devices without :hover, tapping any
+     pill / link / row gives a brief scale-down so the interaction reads
+     as physical instead of mute. Limited to coarse pointers via the
+     hover:none query so desktop trackpads aren't affected.
+     ────────────────────────────────────────────────────────────────────── */
+  @media (hover: none) {
+    .area-row:active,
+    .contact-row:active,
+    a[class*="rounded-full"]:active,
+    button[class*="rounded-full"]:active {
+      transform: scale(0.985);
+      transition: transform 120ms var(--ease-swift);
+    }
+    .group:active .icon-chip,
+    .group\/btn:active .icon-chip {
+      background-color: hsl(var(--evergreen) / 0.12);
+    }
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
      Gallery rail (mobile) — horizontal snap-scroller for SelectedWorks
      sidebar. Active on <lg via the component's own grid switch.
      ────────────────────────────────────────────────────────────────────── */
