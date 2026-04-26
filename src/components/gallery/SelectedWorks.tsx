@@ -1,4 +1,4 @@
-import { useCallback, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
@@ -24,9 +24,12 @@ const SelectedWorks = () => {
   const { ref, revealed } = useReveal<HTMLElement>({ threshold: 0.1 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [hintVisible, setHintVisible] = useState(true);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
   const headingId = useId();
   const expansionId = useId();
+  const liveId = useId();
 
   const active = galleryPlates[activeIndex];
 
@@ -35,20 +38,44 @@ const SelectedWorks = () => {
     setExpanded(false);
   }, []);
 
-  // Arrow-key navigation across the sidebar list
+  // Auto-dismiss the "Swipe to explore" hint after 4 s, or when the user
+  // first interacts with the rail.
+  useEffect(() => {
+    const t = setTimeout(() => setHintVisible(false), 4000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Scroll the active rail chip into view whenever the active plate changes
+  // (so keyboard ←/→ navigation drags the rail along).
+  useEffect(() => {
+    const node = railRef.current?.querySelector<HTMLButtonElement>(
+      `[data-rail-chip="${activeIndex}"]`,
+    );
+    node?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [activeIndex]);
+
+  // Arrow-key navigation across the sidebar list (desktop) and rail (mobile).
+  // Both ArrowUp/Down and ArrowLeft/Right are supported so keyboards on
+  // either layout work without context.
   const handleSidebarKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    const isVertical = e.key === "ArrowDown" || e.key === "ArrowUp";
+    const isHorizontal = e.key === "ArrowRight" || e.key === "ArrowLeft";
+    if (!isVertical && !isHorizontal) return;
     e.preventDefault();
-    const direction = e.key === "ArrowDown" ? 1 : -1;
+    const direction = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : -1;
     const next =
       (activeIndex + direction + galleryPlates.length) % galleryPlates.length;
     handlePromote(next);
-    // Move focus to the newly active row's button
+    // Move focus to the newly active row's button (desktop sidebar) or chip (mobile rail).
     requestAnimationFrame(() => {
-      const buttons = sidebarRef.current?.querySelectorAll<HTMLButtonElement>(
+      const sidebarBtn = sidebarRef.current?.querySelectorAll<HTMLButtonElement>(
         "button[data-plate-row]",
+      )?.[next];
+      const railBtn = railRef.current?.querySelector<HTMLButtonElement>(
+        `[data-rail-chip="${next}"]`,
       );
-      buttons?.[next]?.focus();
+      // Prefer whichever surface initiated the keypress.
+      (sidebarBtn ?? railBtn)?.focus();
     });
   };
 
@@ -97,8 +124,80 @@ const SelectedWorks = () => {
         </div>
 
         {/* Featured plate + sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-9">
-          {/* ── Featured plate (left, 7/12) ────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-7 lg:gap-9">
+          {/* ── Mobile rail — horizontal snap-scroller above the featured plate.
+              Hidden on lg+, where the right-column sidebar takes over. */}
+          <div
+            className="lg:hidden"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "180ms" }}
+          >
+            <div
+              ref={railRef}
+              role="tablist"
+              aria-label="Project plates"
+              onKeyDown={handleSidebarKey}
+              className="gallery-rail"
+            >
+              {galleryPlates.map((plate, i) => {
+                const isActive = i === activeIndex;
+                return (
+                  <button
+                    key={plate.slug}
+                    type="button"
+                    role="tab"
+                    data-rail-chip={i}
+                    aria-selected={isActive}
+                    aria-controls={`plate-row-${plate.slug}`}
+                    onClick={() => {
+                      handlePromote(i);
+                      setHintVisible(false);
+                    }}
+                    onTouchStart={() => setHintVisible(false)}
+                    className={cn(
+                      "gallery-rail__chip text-left",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "font-serif italic text-[0.95rem] tabular-nums leading-none transition-colors",
+                        isActive ? "text-evergreen" : "text-evergreen/60",
+                      )}
+                    >
+                      {plate.romanNumeral}
+                    </span>
+                    <span
+                      className={cn(
+                        "font-serif text-[0.95rem] leading-tight truncate transition-colors",
+                        isActive ? "text-evergreen" : "text-foreground",
+                      )}
+                    >
+                      {plate.title}
+                    </span>
+                    <span className="text-[0.65rem] tracking-[0.18em] uppercase text-muted-foreground truncate">
+                      {plate.area}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <p
+              aria-hidden="true"
+              className={cn(
+                "mt-2 text-center text-[0.65rem] tracking-[0.22em] uppercase text-evergreen/60 transition-opacity duration-700",
+                hintVisible ? "opacity-100" : "opacity-0",
+              )}
+            >
+              ← Swipe to explore →
+            </p>
+            {/* aria-live announcement for SR users when active plate changes */}
+            <p id={liveId} aria-live="polite" className="sr-only">
+              {`Now showing Plate ${active.romanNumeral}: ${active.title}, ${active.area}.`}
+            </p>
+          </div>
+
+          {/* ── Featured plate (left, 7/12 on lg; full-width below the rail on mobile) ─ */}
           <div
             className="lg:col-span-7"
             data-reveal
@@ -203,9 +302,10 @@ const SelectedWorks = () => {
             </PremiumCard>
           </div>
 
-          {/* ── Sidebar list (right, 5/12) ─────────────────────────────── */}
+          {/* ── Sidebar list (right, 5/12) — desktop only.
+              Mobile uses the snap-rail above. */}
           <div
-            className="lg:col-span-5"
+            className="hidden lg:block lg:col-span-5"
             data-reveal
             style={{ ["--reveal-delay" as string]: "320ms" }}
           >

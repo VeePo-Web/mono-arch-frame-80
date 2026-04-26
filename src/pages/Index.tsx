@@ -1,6 +1,8 @@
 import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
+import Mail from "lucide-react/dist/esm/icons/mail";
+import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
@@ -239,8 +241,8 @@ const Index = () => {
                 aria-label={`${s.title} — ${s.promise}`}
               >
                 <PremiumCard featured={i === 0} className="h-full">
-                  <div className="relative p-9 lg:p-11 flex flex-col h-full">
-                    <div className="flex items-center gap-4 mb-10">
+                  <div className="relative p-6 sm:p-8 lg:p-11 flex flex-col h-full">
+                    <div className="flex items-center gap-4 mb-6 md:mb-10">
                       <span className="numeral-disc">{s.numeral}</span>
                       <span className="h-px w-8 bg-evergreen/30 group-hover:w-20 transition-all duration-700 ease-weighted" />
                     </div>
@@ -367,7 +369,7 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 lg:gap-9">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-9">
             {projects.map((p, i) => (
               <article
                 key={p.slug}
@@ -379,7 +381,7 @@ const Index = () => {
                   <div className="flex flex-col h-full">
                     <ProjectPlaceholder project={p} index={i} />
 
-                    <div className="p-8 lg:p-9 flex flex-col flex-1">
+                    <div className="p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col flex-1">
                       <p className="text-minimal text-evergreen/80">
                         {p.category} · {p.area}
                       </p>
@@ -418,7 +420,7 @@ const Index = () => {
       >
         <Container size="wide">
           <h2 id="trust-panel-heading" className="sr-only">Why homeowners choose Haven Creek</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12 lg:gap-14">
             {[
               {
                 n: "01",
@@ -442,7 +444,7 @@ const Index = () => {
                 data-reveal
                 style={{ ["--reveal-delay" as string]: `${i * 120}ms` }}
               >
-                <span className="numeral-disc mb-6" aria-hidden="true">
+                <span className="numeral-disc mb-4 md:mb-6" aria-hidden="true">
                   {c.n}
                 </span>
                 <h3 className="mt-6 text-title text-foreground">{c.title}</h3>
@@ -492,18 +494,22 @@ const Index = () => {
                   >
                     <Link
                       to={area.href}
-                      className="area-row group flex items-baseline justify-between gap-6 py-10"
+                      className="area-row group flex items-baseline justify-between gap-4 sm:gap-6 py-7 sm:py-9 lg:py-10 min-h-[88px]"
                     >
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-serif text-[1.65rem] md:text-[2rem] leading-tight text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
+                        <h3 className="font-serif text-[1.5rem] sm:text-[1.65rem] md:text-[2rem] leading-tight text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
                           {area.name}
                         </h3>
                         <p className="mt-2 text-body text-muted-foreground text-[0.95rem]">
                           {area.shortLine}
                         </p>
+                        {/* Mobile-only postal — desktop keeps it in the right cluster */}
+                        <span className="sm:hidden mt-2 inline-block text-minimal text-evergreen/75 tabular-nums">
+                          {AREA_POSTAL[area.slug]}
+                        </span>
                       </div>
                       <div className="flex items-center gap-4 shrink-0">
-                        <span className="text-minimal text-evergreen/70 tabular-nums">
+                        <span className="hidden sm:inline text-minimal text-evergreen/70 tabular-nums">
                           {AREA_POSTAL[area.slug]}
                         </span>
                         <span className="icon-chip bg-evergreen/[0.06]">
@@ -553,9 +559,15 @@ const Index = () => {
         </svg>
 
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20 items-start">
+          {/* Mobile: flex-col with explicit order so the form lands second.
+              Desktop: 12-col grid where text takes 6, form takes 6, and the
+              direct-contact + promise blocks live inside the text column via
+              `lg:contents` (CSS Display: contents flattens the wrapper into
+              the grid so order classes still apply on desktop). */}
+          <div className="flex flex-col gap-10 lg:grid lg:grid-cols-12 lg:gap-x-20 lg:gap-y-0 lg:items-start">
+            {/* 1. Headline + lede — first on mobile, top of left column on desktop */}
             <div
-              className="lg:col-span-6"
+              className="order-1 lg:order-1 lg:col-span-6"
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
@@ -575,32 +587,112 @@ const Index = () => {
               <p className="mt-4 text-minimal text-background/60 max-w-[46ch]">
                 A real person reads every message. No drip emails, no calls unless you ask for one.
               </p>
+            </div>
 
-              {/* Direct-contact escape hatch */}
-              <div className="mt-10 pt-8 border-t border-background/20 max-w-[46ch] space-y-3">
+            {/* 2. Form bezel — promoted to second position on mobile (order-2),
+                desktop keeps it on the right column (lg:col-span-6 lg:row-span-3
+                so the text column's three children stack to its left). */}
+            <div
+              className="order-2 lg:order-2 lg:col-span-6 lg:row-span-3"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "180ms" }}
+            >
+              <div className="cta-bezel">
+                <div className="cta-bezel__core p-5 sm:p-7 md:p-9">
+                  <p
+                    data-drift
+                    className="font-serif text-foreground text-[1.25rem] sm:text-[1.3rem] md:text-[1.5rem] leading-snug"
+                  >
+                    What should we know before we reach out?
+                  </p>
+                  <p className="mt-2 text-minimal text-muted-foreground">
+                    Just enough so the first reply is useful — five fields, two minutes.
+                  </p>
+
+                  <div className="mt-6 sm:mt-7 mb-5 sm:mb-6 h-px bg-foreground/10" />
+
+                  <Suspense
+                    fallback={
+                      <div
+                        aria-hidden="true"
+                        className="h-[640px] md:h-[460px] rounded-md bg-foreground/[0.03] animate-pulse"
+                      />
+                    }
+                  >
+                    <ConsultationForm source="home_final_cta" />
+                  </Suspense>
+                </div>
+                <span aria-hidden="true" className="cta-bezel__seal">
+                  Edition I · No. VII
+                </span>
+              </div>
+            </div>
+
+            {/* 3. Direct-contact escape hatch — third on mobile (after form),
+                second item in the text column on desktop. Mobile renders as
+                full-width tap rows with leading icons. */}
+            <div
+              className="order-3 lg:order-3 lg:col-span-6 lg:mt-10"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "260ms" }}
+            >
+              <div className="pt-6 lg:pt-8 border-t border-background/20 max-w-[46ch]">
                 <p className="text-minimal text-background/65">
                   Or reach us directly
                 </p>
-                <p>
+                {/* Mobile: full-width tap rows. Desktop: italic inline text. */}
+                <div className="mt-4 grid grid-cols-1 gap-2 sm:gap-3 lg:hidden">
                   <a
                     href="mailto:hello@havencreekrenovations.ca"
-                    className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300"
+                    className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
+                    aria-label="Email hello@havencreekrenovations.ca"
                   >
-                    hello@havencreekrenovations.ca
+                    <Mail className="h-4 w-4 text-background/85 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    <span className="font-serif italic text-[0.98rem] truncate">
+                      hello@havencreekrenovations.ca
+                    </span>
                   </a>
-                </p>
-                <p>
                   <a
                     href="tel:+14035550100"
-                    className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300 tabular-nums"
+                    className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
+                    aria-label="Call (403) 555-0100"
                   >
-                    (403) 555-0100
+                    <Phone className="h-4 w-4 text-background/85 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    <span className="font-serif italic text-[0.98rem] tabular-nums">
+                      (403) 555-0100
+                    </span>
                   </a>
-                </p>
+                </div>
+                {/* Desktop only — original italic inline list */}
+                <div className="hidden lg:block space-y-3 mt-3">
+                  <p>
+                    <a
+                      href="mailto:hello@havencreekrenovations.ca"
+                      className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300"
+                    >
+                      hello@havencreekrenovations.ca
+                    </a>
+                  </p>
+                  <p>
+                    <a
+                      href="tel:+14035550100"
+                      className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300 tabular-nums"
+                    >
+                      (403) 555-0100
+                    </a>
+                  </p>
+                </div>
               </div>
+            </div>
 
-              {/* Promise list — left rule + hanging numerals */}
-              <ul className="mt-12 max-w-[46ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
+            {/* 4. Promise list — last on mobile (closing reassurance),
+                third item in the text column on desktop. */}
+            <div
+              className="order-4 lg:order-4 lg:col-span-6 lg:mt-12"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "340ms" }}
+            >
+              <ul className="max-w-[46ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
                 {[
                   "Hands-on support from planning to completion.",
                   "Interior finishing, exterior repairs, and decking for rural homes.",
@@ -618,42 +710,6 @@ const Index = () => {
                   </li>
                 ))}
               </ul>
-            </div>
-
-            <div
-              className="lg:col-span-6"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "180ms" }}
-            >
-              <div className="cta-bezel">
-                <div className="cta-bezel__core p-7 md:p-9">
-                  <p
-                    data-drift
-                    className="font-serif text-foreground text-[1.3rem] md:text-[1.5rem] leading-snug"
-                  >
-                    What should we know before we reach out?
-                  </p>
-                  <p className="mt-2 text-minimal text-muted-foreground">
-                    Just enough so the first reply is useful — five fields, two minutes.
-                  </p>
-
-                  <div className="mt-7 mb-6 h-px bg-foreground/10" />
-
-                  <Suspense
-                    fallback={
-                      <div
-                        aria-hidden="true"
-                        className="h-[460px] rounded-md bg-foreground/[0.03] animate-pulse"
-                      />
-                    }
-                  >
-                    <ConsultationForm source="home_final_cta" />
-                  </Suspense>
-                </div>
-                <span aria-hidden="true" className="cta-bezel__seal">
-                  Edition I · No. VII
-                </span>
-              </div>
             </div>
           </div>
         </Container>
