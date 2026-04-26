@@ -7,26 +7,21 @@ import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
 import Hero from "@/components/Hero";
-import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import TestimonialSpine from "@/components/TestimonialSpine";
-import ProjectPlaceholder from "@/components/gallery/ProjectPlaceholder";
-import { previewPhotos } from "@/assets/photography";
+import StatCard from "@/components/ui/StatCard";
+import InfoCard from "@/components/ui/InfoCard";
+import BentoGrid, { BentoTile } from "@/components/ui/BentoGrid";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
+import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { SECTION_PADDING, CONTENT_GAP } from "@/lib/spacing";
 import { services } from "@/data/services";
-import { projects } from "@/data/projects";
 import { serviceAreas } from "@/data/serviceAreas";
 
 // Lazy: form pulls in react-hook-form + zod resolver — fetched only when the
 // final CTA enters the viewport, keeping the home-page initial JS lean.
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
-
-// Lazy: Selected Works lives below the fold and pulls in 6 inline-SVG plates.
-// Splitting it shaves the eager Index chunk by ~5 KB gz.
-const SelectedWorks = lazy(() => import("@/components/gallery/SelectedWorks"));
-
-const SECTION_PADDING = "py-20 md:py-40";
 
 /** Postal-code prefixes for the four areas — drawn from Canada Post FSAs. */
 const AREA_POSTAL: Record<string, string> = {
@@ -34,6 +29,14 @@ const AREA_POSTAL: Record<string, string> = {
   "rocky-view-county": "T4A",
   bearspaw: "T3R",
   "water-valley": "T0M",
+};
+
+/** Short scannable descriptors — bento copy is tight on purpose. */
+const AREA_BENTO_LINE: Record<string, string> = {
+  "bragg-creek": "Wooded lots and quiet drives.",
+  "rocky-view-county": "Acreages cared for over years.",
+  bearspaw: "Established homes, discreet work.",
+  "water-valley": "Practical work, real distance.",
 };
 
 const Index = () => {
