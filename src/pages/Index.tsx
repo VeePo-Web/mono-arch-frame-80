@@ -349,10 +349,14 @@ const Index = () => {
               </h2>
             </div>
             <div
-              className="lg:col-span-5 lg:pt-8 flex lg:items-end lg:justify-end"
+              className="lg:col-span-5 lg:pt-8 flex flex-col gap-6 lg:items-end lg:justify-end lg:text-right"
               data-reveal
               style={{ ["--reveal-delay" as string]: "120ms" }}
             >
+              <p className="font-serif italic font-light text-muted-foreground text-[0.98rem] leading-snug max-w-[36ch]">
+                Photographs are added as projects close. Until then, the work
+                speaks through the case notes.
+              </p>
               <Link
                 to="/work"
                 className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
@@ -373,12 +377,7 @@ const Index = () => {
               >
                 <PremiumCard className="h-full transition-transform duration-700 ease-weighted group-hover:-translate-y-1">
                   <div className="flex flex-col h-full">
-                    <div className="relative aspect-[4/3] overflow-hidden border-b border-border">
-                      <ProjectVignette
-                        category={p.category as VignetteCategory}
-                        className="absolute inset-0 w-full h-full transition-transform duration-700 ease-weighted group-hover:scale-[1.015]"
-                      />
-                    </div>
+                    <ProjectPlaceholder project={p} index={i} />
 
                     <div className="p-8 lg:p-9 flex flex-col flex-1">
                       <p className="text-minimal text-evergreen/80">
