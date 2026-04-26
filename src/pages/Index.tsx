@@ -455,6 +455,9 @@ const Index = () => {
         </Container>
       </RevealSection>
 
+      {/* ─── § V.b — Testimonial Spine: words from clients ─────────────── */}
+      <TestimonialSpine />
+
       {/* ─── § VI — Service Areas Roster ────────────────────────────────── */}
       <RevealSection
         id="areas"
