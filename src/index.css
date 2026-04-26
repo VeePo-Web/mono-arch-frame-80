@@ -116,6 +116,14 @@
 
     --transition-smooth: all 0.4s var(--ease-silk);
     --transition-fast: all 0.22s var(--ease-swift);
+
+    /* iOS / Android safe-area insets — surface them as tokens so
+       components can compose them into max(...) padding without
+       repeating env() everywhere. Default 0 on browsers without notches. */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
   }
 
   html {
@@ -123,6 +131,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Sticky-nav-aware in-page anchor jumps. Floating island is ~88px tall
+       on desktop, ~76px on phones — pad the scroll target so the headline
+       isn't covered. */
+    scroll-padding-top: 88px;
+  }
+  @media (max-width: 767px) {
+    html { scroll-padding-top: 76px; }
   }
 
   body {
