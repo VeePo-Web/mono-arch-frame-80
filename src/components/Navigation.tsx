@@ -8,26 +8,27 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import HamburgerButton from "@/components/nav/HamburgerButton";
 import SectionRail from "@/components/nav/SectionRail";
 import MenuDrawer from "@/components/nav/MenuDrawer";
+import Container from "@/components/Container";
 import logo from "@/assets/logo/haven-creek-horizontal.webp";
-import logoMark from "@/assets/logo/haven-creek-mark.webp";
 
 const STUDIO_PHONE_TEL = "+14035550100";
 const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
 
 /**
- * Navigation — Two-Tier Editorial Nav (round 2 cleanup).
+ * Navigation — Round 3 "Grandma-Grade" cleanup.
  *
- * Top bar (this file):
- *   Logo · SectionRail (md+) · Phone (lg+) · Hamburger · Consultation
+ * Solid full-width bar (not a floating glass island). Three-zone grid:
+ *   [ Logo ]  [ SectionRail (md+) ]  [ Phone · Quote · Menu ]
  *
- * Right cluster reading order: Phone → Hamburger → Consultation. The CTA
- * is the right-edge anchor; the hamburger sits between Phone and CTA so
- * it reads as "menu access" rather than an afterthought after the pill.
+ * Rules applied:
+ * - Persistent full horizontal logo (no crossfade to mark on scroll).
+ * - Phone visible from sm+ (icon-only sm→md, full number lg+).
+ * - "Get a Quote" CTA always shows the word at every breakpoint.
+ * - Hamburger labeled "Menu" at md+, three-line glyph (the universal one).
  *
  * Drawer (MenuDrawer):
  *   Fullscreen overlay for cross-page navigation. The single persistent
- *   secondary CTA lives in its bottom rail — there is no sticky bar and
- *   no floating FAB elsewhere on the page.
+ *   secondary CTA lives in its bottom rail — no sticky bar, no FAB.
  */
 const Navigation = () => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -37,13 +38,13 @@ const Navigation = () => {
   const isMobile = useIsMobile();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
 
-  // IntersectionObserver on a 1px sentinel — no scroll handler at all.
+  // IntersectionObserver on a 1px sentinel — adds shadow on scroll, no scroll handler.
   useEffect(() => {
     const node = sentinelRef.current;
     if (!node) return;
     const obs = new IntersectionObserver(
       ([entry]) => setScrolled(!entry.isIntersecting),
-      { rootMargin: "-80px 0px 0px 0px", threshold: 0 },
+      { rootMargin: "-40px 0px 0px 0px", threshold: 0 },
     );
     obs.observe(node);
     return () => obs.disconnect();
@@ -52,7 +53,7 @@ const Navigation = () => {
   // Close drawer on route change (defence in depth — also handled inside drawer).
   useEffect(() => setDrawerOpen(false), [pathname]);
 
-  const handleConsultClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // On touch viewports, prefer the in-place sheet so cautious leads
     // don't lose their scroll position. Skip when we're already on /contact.
     if (isMobile && !onContactRoute) {
@@ -71,126 +72,108 @@ const Navigation = () => {
         Skip to content
       </a>
 
-      {/* Sentinel: when this scrolls out of view, the island contracts. */}
+      {/* Sentinel: when this scrolls out of view, the bar gets its scroll-shadow. */}
       <div ref={sentinelRef} aria-hidden="true" className="absolute top-0 left-0 h-px w-px" />
 
       <header
+        role="banner"
+        data-scrolled={scrolled}
         className={cn(
-          "fixed inset-x-0 z-50 flex justify-center pointer-events-none",
-          "transition-[padding] duration-700 ease-weighted",
-          scrolled ? "pt-3" : "pt-5",
+          "havencreek-nav fixed inset-x-0 top-0 z-50",
+          "h-14 sm:h-16",
+          "bg-background/95 backdrop-blur-sm",
+          "border-b border-border/60",
+          "transition-shadow duration-300",
+          scrolled && "shadow-[0_2px_12px_-6px_hsl(20_8%_14%/0.10)]",
         )}
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <nav
-          aria-label="Primary"
-          className={cn(
-            "nav-island pointer-events-auto",
-            "relative flex items-center gap-1.5",
-            "backdrop-blur-xl",
-            "rounded-full",
-            "transition-all duration-700 ease-weighted",
-            scrolled
-              ? [
-                  "bg-background/85",
-                  "ring-1 ring-foreground/[0.10]",
-                  "shadow-[0_1px_0_hsl(36_25%_99%/0.6)_inset,0_14px_32px_-16px_hsl(20_8%_14%/0.22),0_6px_18px_-10px_hsl(20_8%_14%/0.12)]",
-                  "p-1.5 max-w-[min(94vw,940px)]",
-                ]
-              : [
-                  "bg-background/55",
-                  "ring-1 ring-foreground/[0.06]",
-                  "shadow-[0_1px_0_hsl(36_25%_99%/0.4)_inset,0_18px_44px_-20px_hsl(20_8%_14%/0.16),0_8px_24px_-14px_hsl(20_8%_14%/0.08)]",
-                  "p-2 max-w-[min(96vw,1040px)]",
-                ],
-          )}
-        >
-          {/* Brand chip — left. Crossfade between full logo (rest) and mark (scrolled). */}
-          <Link
-            to="/"
-            aria-label="Haven Creek Renovations — home"
-            className={cn(
-              "relative z-10 flex items-center rounded-full shrink-0",
-              "transition-all duration-700 ease-weighted",
-              scrolled ? "px-2.5 py-1.5" : "px-3 py-2",
-            )}
+        <Container size="wide" className="h-full">
+          <nav
+            aria-label="Primary"
+            className="grid grid-cols-[auto_1fr_auto] items-center h-full gap-3"
           >
-            <span
-              className="relative inline-flex items-center justify-start h-7"
-              style={{ width: scrolled ? 28 : 160, transition: "width 700ms var(--ease-weighted)" }}
+            {/* Brand — left. Persistent full horizontal logo. */}
+            <Link
+              to="/"
+              aria-label="Haven Creek Renovations — home"
+              className={cn(
+                "inline-flex items-center shrink-0 rounded-sm",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              )}
             >
               <img
                 src={logo}
                 alt="Haven Creek Renovations"
                 width={160}
                 height={28}
-                className="nav-mark absolute inset-y-0 left-0 h-6 w-auto my-auto"
-                data-state={scrolled ? "hidden" : "visible"}
+                className="h-6 sm:h-7 w-auto"
                 fetchPriority="high"
                 decoding="async"
               />
-              <img
-                src={logoMark}
-                alt=""
-                aria-hidden="true"
-                width={28}
-                height={28}
-                className="nav-mark absolute inset-y-0 left-0 h-7 w-7 my-auto"
-                data-state={scrolled ? "visible" : "hidden"}
-                decoding="async"
+            </Link>
+
+            {/* Section rail — center. Truly centered via grid 1fr column. */}
+            <div className="hidden md:flex justify-center min-w-0">
+              <SectionRail />
+            </div>
+            {/* Mobile spacer keeps right cluster pinned right when rail hidden */}
+            <div className="md:hidden" aria-hidden="true" />
+
+            {/* Right cluster — Phone · Quote · Menu */}
+            <div className="flex items-center gap-1 sm:gap-2 justify-end">
+              {/* Phone — sm+ icon-only, lg+ icon + number */}
+              <a
+                href={`tel:${STUDIO_PHONE_TEL}`}
+                aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
+                className={cn(
+                  "hidden sm:inline-flex items-center justify-center gap-2 rounded-full shrink-0",
+                  "h-11 min-w-[44px] px-2.5 lg:px-3",
+                  "text-sm font-medium text-foreground/75 hover:text-evergreen hover:bg-foreground/[0.04]",
+                  "transition-colors duration-300",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                )}
+              >
+                <Phone className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                <span className="hidden lg:inline">{STUDIO_PHONE_DISPLAY}</span>
+              </a>
+
+              {/* Quote CTA — always shows a word */}
+              <Link
+                to="/contact"
+                onClick={handleQuoteClick}
+                aria-label="Get a free quote"
+                className={cn(
+                  "nav-pill group/btn shrink-0",
+                  "inline-flex items-center justify-center gap-2 rounded-full",
+                  "bg-evergreen text-evergreen-foreground",
+                  "text-sm font-medium",
+                  "h-11 sm:h-10 px-4 sm:px-5 lg:pl-5 lg:pr-1.5",
+                  "transition-colors duration-300",
+                  "hover:bg-evergreen-hover active:scale-[0.98]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                )}
+              >
+                <span className="sm:hidden">Quote</span>
+                <span className="hidden sm:inline">Get a Quote</span>
+                <span className="hidden lg:inline-flex icon-chip icon-chip-light bg-background/15">
+                  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.75} />
+                </span>
+              </Link>
+
+              {/* Menu hamburger — labeled "Menu" md+ */}
+              <HamburgerButton
+                open={drawerOpen}
+                onClick={() => setDrawerOpen(true)}
+                showLabel
               />
-            </span>
-          </Link>
-
-          {/* Section rail — in-page wayfinding (md+, scroll-snap on overflow). */}
-          <div className="hidden md:flex flex-1 min-w-0 justify-center">
-            <SectionRail />
-          </div>
-
-          {/* Spacer pushes right cluster to the edge below md (rail is hidden). */}
-          <div className="flex-1 md:hidden" aria-hidden="true" />
-
-          {/* Right cluster — Phone (lg+) · Hamburger · Consultation. */}
-          <a
-            href={`tel:${STUDIO_PHONE_TEL}`}
-            aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
-            className={cn(
-              "hidden lg:inline-flex relative z-10 items-center gap-2 rounded-full px-3 py-1.5 shrink-0",
-              "text-minimal text-foreground/70 hover:text-evergreen hover:bg-foreground/[0.04]",
-              "transition-colors duration-300 min-h-[38px]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            )}
-          >
-            <Phone className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
-            <span>{STUDIO_PHONE_DISPLAY}</span>
-          </a>
-
-          {/* Always-on hamburger — opens the editorial Site Map drawer. */}
-          <HamburgerButton open={drawerOpen} onClick={() => setDrawerOpen(true)} />
-
-          <Link
-            to="/contact"
-            onClick={handleConsultClick}
-            aria-label="Request a consultation"
-            className={cn(
-              "relative z-10 group/btn shrink-0",
-              "inline-flex items-center justify-center gap-2.5 rounded-full",
-              "bg-evergreen text-evergreen-foreground",
-              "text-minimal min-h-[38px]",
-              "transition-all duration-500 ease-swift",
-              "hover:bg-evergreen-hover active:scale-[0.98]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              // Below sm: icon-only chip (44×44 tap target), no word.
-              // sm+: full pill with "Consultation" label.
-              "h-11 w-11 sm:h-auto sm:w-auto sm:pl-5 sm:pr-1.5 sm:py-1.5",
-            )}
-          >
-            <span className="hidden sm:inline">Consultation</span>
-            <span className="icon-chip icon-chip-light bg-background/15">
-              <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.5} />
-            </span>
-          </Link>
-        </nav>
+            </div>
+          </nav>
+        </Container>
       </header>
+
+      {/* Spacer so page content doesn't slide under the fixed bar. */}
+      <div aria-hidden="true" className="h-14 sm:h-16" />
 
       <MenuDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
     </>

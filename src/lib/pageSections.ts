@@ -53,7 +53,7 @@ const pageSections: Record<string, PageSection[]> = {
   ],
   "/service-areas": [
     { name: "Areas", anchor: "roster" },
-    { name: "A Fit?", anchor: "fit" },
+    { name: "Coverage", anchor: "fit" },
   ],
   "/about": [
     { name: "Philosophy", anchor: "philosophy" },
