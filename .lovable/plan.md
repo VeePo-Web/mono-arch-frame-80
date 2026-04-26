@@ -1,177 +1,161 @@
-# Round 3 — Mobile Overhaul: Contact-First, Thumb-First
+# Plan — World-class AI photography for Haven Creek
 
-> **Hard constraint:** Zero visual change at `lg` and above. Every rule lives behind `<sm:`, `sm:`, `md:`, or `lg:hidden` / `hidden lg:block` gates. After each pass I'll diff a desktop screenshot against the previous turn's baseline.
+## 0 · Decisions logged from your answers
+- **Intent:** Full replacement — every photo-pending surface gets a real image.
+- **Aesthetic:** Realistic worksite documentary. **No people, no faces, no hands.** Materials, tools mid-task, finished details, weathered exteriors, framed deck structures, prairie context.
+- **Model + storage:** `google/gemini-3-pro-image-preview` (Nano Banana Pro), written to `src/assets/photography/` so Vite hashes/optimizes them.
 
----
-
-## § 1 — A real "Quick Contact" bottom-sheet (new)
-
-Right now the only ways to reach the team on a phone are: scroll all the way to the home final-CTA, navigate to `/contact`, tap the sticky pill (which routes to `/contact`), or open the hamburger and tap one of the contact tiles. None of these are a single-tap, in-place capture.
-
-I'll add a **mobile-only bottom-sheet modal** (`QuickContactSheet`) — a true Radix Dialog rendered as a bottom-anchored sheet — that gives visitors three escape hatches in one tap: **call**, **email**, or **send a short note** (3-field micro-form: name, contact, one line).
-
-**Trigger surfaces** (all mobile-only):
-- `StickyConsultBar` — the existing pill becomes a button that opens the sheet *instead of* routing to `/contact`. Routing still happens on `lg+`. (This eliminates a full page navigation on phones — a huge UX win for cautious leads.)
-- `Navigation.tsx` mobile sheet bottom CTA — same swap.
-- A new persistent bottom-right **Floating Action Button (FAB)** for `/work`, `/services`, `/about`, `/service-areas` — a 56×56 evergreen circle with a `MessageCircle` icon, fixed bottom-right, safe-area-respecting. Hidden on `lg+`. Opens the same sheet. (The sticky bar already handles the home page.)
-
-**The bottom-sheet itself** (`src/components/QuickContactSheet.tsx`):
-- Built on `Dialog` from `@/components/ui/dialog.tsx`, with custom positioning so it slides up from the bottom: `fixed bottom-0 inset-x-0 rounded-t-[1.25rem] max-h-[85svh]` (uses `svh` so iOS Safari address-bar resize doesn't reflow), `pb-[max(1.5rem,calc(var(--safe-bottom)+1rem))]`.
-- Drag-handle pill at the top (4px × 36px, evergreen/30) — purely visual, no actual drag-to-dismiss (we keep tap-outside + close button + Escape).
-- Header: `Eyebrow` "QUICK CONTACT" + serif headline "How would you like to reach us?".
-- **Tier 1 — instant actions** (rendered as two 64px-tall full-width tiles in a 2-col grid):
-  - "Call (403) 555-0100" → `tel:` link with `Phone` icon and "Mon–Fri" sub-line.
-  - "Email hello@…" → `mailto:` with `Mail` icon and "Reply within 2 days" sub-line.
-- Hairline divider with italic "or".
-- **Tier 2 — micro-form** (3 fields only): `Name`, `Email or phone` (with mobile keyboard switcher — see § 2), and `One sentence about the project` (textarea, `rows={3}`, `min-h-[88px]`). Submit button is full-width 56px evergreen pill ("Send a short note").
-- Foot rule: "Want to add timing/budget/location? Open the full form →" link to `/contact`.
-- The micro-form posts to the same `consultations` Supabase table with `source: "quick_contact_sheet"` so leads are attributable. On success: collapse the form into a 5-second "Thanks — we'll reply within two business days" panel and auto-close the sheet, then toast.
-
-**Decision I want you to flag, otherwise I'll proceed with my recommendation:** I recommend the FAB *only* on `/work`, `/services`, `/about`, `/service-areas`, and `/{area}` pages — **not** on `/` (the sticky bar already lives there) and **not** on `/contact` or `/thank-you` (you're already there). My alternative is "FAB everywhere" — simpler but creates double-CTAs on the home page. **If you want FAB everywhere, say "fab everywhere"; otherwise I proceed with the targeted list.**
+I'm also going to silently fix the runtime error you're seeing (`Cannot read properties of null (reading 'useEffect')` from `QueryClientProvider`) — that's a stale Vite dep cache, resolved by removing `node_modules/.vite`. No code change needed there.
 
 ---
 
-## § 2 — Inline `ConsultationForm` ergonomics (mobile-only refinements)
+## 1 · Brand-photography contract (the rules every prompt must obey)
 
-These apply to the form wherever it's rendered (home final-CTA bezel, `/contact` panel, and the new bottom-sheet's "open the full form" target):
+These rules come straight out of `knowledge/source-documents/brand-identity/1.5-brand-identity-north-star.md` and `1.3-client-design-preferences.md`. Every prompt I write will be derived from this contract:
 
-1. **Mobile keyboard hints** — every input gets `enterKeyHint`:
-   - `name` → `enterKeyHint="next"`
-   - `contact` → `enterKeyHint="next"` + dynamic `inputMode`/`type`: detect at `onChange` whether the value starts with a digit, `(`, `+` → switch to `inputMode="tel"` + `type="tel"`; otherwise `inputMode="email"` + `type="email"`. Falls back to `email` on initial render.
-   - `message` → `enterKeyHint="send"` (Enter submits the form when the message field is the last touched and form is valid).
-   - `location` → `enterKeyHint="done"`.
-2. **Touch-floor heights** — bump every `Input`/`SelectTrigger` from `h-11` (44px) to `h-12` (48px) on phones via responsive class `h-12 sm:h-11`. Textarea floor `min-h-[140px] sm:min-h-[120px]`.
-3. **Label hit-area** — wrap `FormLabel` so tapping the label focuses the input (Radix `Label` already does this when `htmlFor` is wired, but our current setup uses `FormLabel` which inherits the `id`). Verify each field's label-to-input association renders correctly.
-4. **Optional-context `<details>`** — convert the summary into a true 56px tap row with a chevron on the right (currently 18px text + tiny chevron). Add a hairline above and below so it reads as a discrete "section" on mobile.
-5. **Submit button** — already 56px, but on phones add `text-[1rem]` (currently `text-minimal` = 11px) so the action is unmistakable. Desktop preserves `text-minimal`.
-6. **Inline success state** — currently displays as a small block. On phones, render full-width with a leading evergreen check disc (40×40), serif italic headline, and a 56px "Send another note" / "View where we work" two-button row.
-7. **Honeypot** — already off-screen; unchanged.
-8. **Field validation messages** — increase from `text-xs` to `text-sm` on phones for legibility (`text-sm sm:text-xs`).
+| Rule | Concrete prompt language |
+|------|-------------------------|
+| Rural Alberta, not urban | "rural Alberta acreage… prairie horizon… aspen / lodgepole pine in the distance… foothills haze on the west edge" |
+| Natural light, never studio | "soft overcast morning" or "low golden afternoon" — no ring lights, no rim flash |
+| No people, no faces, no hands | Hard-coded *negative*: "no people, no faces, no hands, no figures, no portraits" in every prompt |
+| Honest worksite, not luxury | "tools in mid-task, sawdust on the sill, a level resting on the trim, drop sheet folded" — the *evidence* of work, not staging |
+| Calm palette aligned to the site | Dominant cedar / evergreen / warm off-white. *Negative*: "no neon, no chrome, no glossy plastic, no high-saturation accent colors" |
+| Lens & framing | 35mm or 50mm equivalent, eye-level, no tilt-shift fisheye, no drone unless the shot is explicitly aerial |
+| Aspect & resolution | 3:2 horizontal for hero / area / about (1536×1024), 4:5 vertical for gallery plate cards (1024×1280), 16:9 ultrawide for closing band (1536×864) |
 
----
-
-## § 3 — `/contact` page mobile reflow
-
-1. **Promote the form** — currently the "What happens next" rail is column 1 and the form is column 2. On `lg+` keep verbatim. On `<lg`, use `flex flex-col` + `order-*` so the order becomes:
-   1. SubPageHero
-   2. Form bezel (was second)
-   3. Direct-contact rows (was third)
-   4. "What happens next" 4-step rail (was first — demoted on mobile, since by the time someone is on `/contact` they are ready to act, not learn).
-2. **Form bezel padding** — `p-7 md:p-10` becomes `p-5 sm:p-7 md:p-10`.
-3. **Direct-contact rows** — currently three rows with email, phone, "MON–FRI" stacked on the left and uppercase tags on the right. On `<sm` the email overflows. Switch to:
-   - Numeral on the left.
-   - Email/phone/text in serif, **stacked above** the small "EMAIL · MON–FRI" tag (column layout on `<sm`, baseline row on `sm+`).
-   - Each `<a>` becomes a 64px tap row with `active:bg-evergreen/[0.04]` for tactile feedback.
-4. **"What happens next" rail** (now last on mobile) — render the 4 steps as a vertical list with `numeral-disc` markers (40px) instead of the current border-left rule + numeral combination, so the rhythm matches the home page's process section.
-5. **Sticky-rail cleanup** — the left column has `lg:sticky lg:top-28`. Already `lg:` gated. Verified safe.
-6. **Vertical rhythm** — `pb-24 md:pb-32` becomes `pb-16 sm:pb-20 md:pb-32` (compress on mobile).
+**Negative prompt baseline (re-used everywhere):** *"no people, no faces, no hands, no figures, no signage with brand logos, no urban backdrop, no high-rise, no neon, no chrome, no luxury hotel staging, no real-estate stock look, no over-saturation, no HDR halos, no fisheye, no watermark, no text overlay."*
 
 ---
 
-## § 4 — `/thank-you` page mobile reflow & "Back to home" pill
+## 2 · The image catalogue (14 frames, every one accounted for)
 
-1. **Sticky "Back to home" pill** — on `<lg`, fix a 48px evergreen-outline pill at the top-right of the viewport, `top-[max(0.75rem,calc(var(--safe-top)+0.5rem))] right-3`, `z-40`. Hides at `lg+`. Lets visitors who landed on the page from a successful submission return without scrolling.
-2. **NEXT_LINKS cards** — currently `p-6 lg:p-7`. Compress to `p-5 sm:p-6 lg:p-7` and increase `numeral-disc` size on phones (already 40px — fine), but ensure the entire card has `min-h-[148px]` so the four cards form a clean 2-col grid on `sm` (320–480px gets 1 col, 481–767 gets 2 cols).
-3. **§ I — "What happens next" rail** — currently `lg:col-span-5` text + `lg:col-span-7` rail. On `<lg`, the rail's `surveyor-frame` and dotted left line look great but the 3 numbered items use `pl-12` which leaves the discs visually orphaned at narrow widths. Reduce to `pl-10` on `<sm` and shrink the disc to 36px.
-4. **§ II — "While you wait" grid** — already `sm:grid-cols-2 lg:grid-cols-4`. Verified.
-5. **§ III — Quiet sign-off** — increase top/bottom padding floor on phones so the page doesn't end abruptly above the sticky pill: `py-20 md:py-28` becomes `pb-32 sm:pb-24 md:pb-28 pt-20`.
-6. **Receipt stamp** — on `<sm`, the `figure-footnote` row wraps awkwardly because the timestamp + "RECEIVED" label + check svg compete for one line. Switch to a 2-row layout: row 1 = check + "Fig. iv. RECEIVED", row 2 = timestamp right-aligned in `tabular-nums`. Desktop preserves the single-line.
+Each entry is the **filename → surface → prompt seed**. I'll feed each through the `lovable_ai.py --image --model google/gemini-3-pro-image-preview` skill script, one at a time, and visually QA each before moving on.
 
----
+### Group A — Hero & site-wide (3 images)
+1. **`hero-acreage-morning.jpg`** *(1536×1024, replaces `HeroVignette` watermark in `Hero.tsx`)* — A dark cedar-clad acreage home seen across a frosted late-autumn field at low golden hour, soft Alberta foothills behind, single chimney, no people, no signage. Restrained. The photograph the brand has been waiting for.
+2. **`hero-detail-trim.jpg`** *(1024×1280, secondary hero accent / fallback)* — Macro detail of a hand-fitted door casing meeting baseboard, the joint perfectly tight, faint sawdust on the sill, cool north light through an unframed window edge.
+3. **`closing-prairie-light.jpg`** *(1536×864, drop into `ClosingCta` section as ambient backdrop on the home page only)* — Wide horizontal plate of an aspen line at the property edge under late afternoon prairie light. Used at very low opacity.
 
-## § 5 — `StickyConsultBar` mobile refinements
+### Group B — Service cards & service pages (3 images)
+4. **`service-interior-finishing.jpg`** *(1024×1280)* — Replaces `ServicePlate` for **Interior Finishing**. A nearly-finished interior corner: stained cedar trim meeting white drywall, a small carpenter's level resting on the casing, soft window light from the right, painter's tape rolled off to the side.
+5. **`service-exterior-finishing.jpg`** *(1024×1280)* — For **Exterior Repairs**. Weather-side cedar siding mid-repair on an acreage gable: a panel newly replaced, the older boards visibly weathered grey, soffit detail visible at the top, foothill light raking from the left.
+6. **`service-decking.jpg`** *(1024×1280)* — For **Decking**. A wraparound cedar deck framed but not yet boarded, joists casting clean shadow lines, prairie horizon visible through the framing, golden hour.
 
-1. **On `<lg`, the pill opens `QuickContactSheet`** instead of routing to `/contact`. (Routing remains on `lg+`.) Implementation: keep the `<Link>` for `lg+`; render a `<button>` for `<lg` that calls a new prop `onMobileTap?: () => void`, passed from `App.tsx` which holds the sheet's open state.
-2. **Body inset reservation** — already toggles `body[data-sticky-bar="shown"]`. Add a CSS rule in `index.css`:
-   ```css
-   body[data-sticky-bar="shown"] {
-     padding-bottom: max(4.5rem, calc(var(--safe-bottom) + 4rem));
-   }
-   @media (min-width: 640px) {
-     body[data-sticky-bar="shown"] { padding-bottom: 0; }
-   }
-   ```
-   This prevents the bar from overlapping footer content on phones.
-3. **Slide-in motion** — currently `translateY(calc(100% + 1.25rem))` then `translateY(0)`. Add `will-change: transform, opacity` only while transitioning (toggled via JS `data-transitioning`) for smoother 60fps slide on low-end Androids.
-4. **Dismiss feedback** — when the user taps X, briefly slide-down + fade (already does this) and announce "Dismissed — reopen by scrolling back to the top" via a `sr-only` live region.
+### Group C — Selected works gallery plates (6 images, one per `galleryPlates` entry)
+These replace every `ProjectPlaceholder` on the Work page and inside `SelectedWorks` on the home page. Filenames mirror the slugs so the swap is mechanical:
 
----
+7. **`work-bragg-creek-trim-transitions.jpg`** — A mitred trim transition between two rooms, framed at eye-level, the fit-up clean, soft north light.
+8. **`work-water-valley-builtin-shelving.jpg`** — Wall-spanning built-in shelving photographed at a slight angle so you can read the depth, a single linen-bound book on the middle shelf for scale, no styling clutter.
+9. **`work-rocky-view-siding-repair.jpg`** — Mid-repair shot of a south-exposure cedar wall: the new boards a touch lighter than the weathered originals, ladder leaning out of frame, no hands.
+10. **`work-bearspaw-soffit-fascia.jpg`** — Low-angle shot of new soffit and fascia meeting a gable, vent placement clean, late afternoon shadow on the wall.
+11. **`work-bearspaw-wraparound-deck.jpg`** — Finished wraparound cedar deck wrapping a corner of the home, two empty Adirondack chairs at the far end, prairie beyond, no people.
+12. **`work-water-valley-stepdown-platform.jpg`** — Two-tier deck stepping down a slope toward an aspen line, natural-grade follow visible, framing reads as inevitable.
 
-## § 6 — Mobile-nav `Sheet` polish
+### Group D — Area / About atmosphere (2 images)
+13. **`area-foothills-evening.jpg`** *(1536×1024)* — Long-exposure-feel foothill horizon at dusk, used as the SubPageHero secondary accent on the four area pages. Brand-true context, not a project.
+14. **`about-tools-bench.jpg`** *(1024×1280)* — Worn workbench with a chalk line, square, planer-shaving curls, and a thermos. Tools-of-the-trade still life. Drops into About as the right-column atmosphere.
 
-1. **Bottom CTA opens `QuickContactSheet`** on `<lg` instead of routing — same logic as § 5.1.
-2. **Quick-actions tiles** — already 52px tall. Bump to 56px and add `active:scale-[0.98]` for tactile feedback.
-3. **Service shortcuts** — already 44px min. Keep, but increase font from `text-[0.97rem]` to `text-[1.05rem]` for one-handed legibility, and add a trailing `→` chevron that shifts 4px right on `:hover`/`:focus-visible`.
-4. **Sheet width** — `w-full sm:max-w-md`. On very wide phones (414+) this is fine. On 320–360px screens the sheet is full-bleed which is correct. Verified.
-5. **Safe-area** — already wired via `--sheet-pt`/`--sheet-pb`. Verified.
-6. **Reduce close-tap risk** — the Sheet's built-in close button sits absolute top-right. On `<sm`, add `top-[max(1rem,calc(var(--safe-top)+0.5rem))] right-4` and make it 48×48 so it doesn't sit too close to the iOS notch.
+That's the entire catalogue. Nothing else on the site is currently photo-pending.
 
 ---
 
-## § 7 — Hero ghost-link tap rows (queued from Round 2)
+## 3 · Generation pipeline
 
-The home Hero has inline italic ghost links ("View our work" / "Read about us") that on `<md` are too small and too close together. On `<md`, render them as full-width tap rows (`min-h-[56px]`) inside a 1-column grid, separated by a hairline. Desktop keeps the inline italic treatment via `md:flex md:items-center md:gap-8` + `block w-full md:w-auto`.
+I'll run the `ai-gateway` skill (`/tmp/lovable_ai.py`) in a deliberate loop, **not** in parallel, so I can:
+1. Generate one image at the right aspect.
+2. View it with `code--view` (the skill writes raw PNG to /tmp).
+3. Visually QA it against the contract above. If a face, hand, fisheye warp, watermark, neon accent, or staged-luxury vibe slipped in, I regenerate with a tightened negative prompt before moving on.
+4. Convert PNG → optimized JPEG (q=82, mozjpeg-style) using ImageMagick via `nix run nixpkgs#imagemagick` so the asset bundle stays light.
+5. Write the final JPEG into `src/assets/photography/<filename>`.
+
+Expected wall time: ~3–5 minutes per image with the Pro model + QA, so ~50–70 minutes of generation total. I'll keep you posted as each group completes.
 
 ---
 
-## § 8 — Global `@media (hover: none)` active-state pass
+## 4 · Code integration (desktop-pixel-stable)
 
-Add a single CSS block in `src/index.css` so every pill, link, and card has tactile feedback on touch (currently most rely on `:hover` which never fires on touch):
+### 4a · One typed manifest
+**New file: `src/assets/photography/index.ts`** — a single `import` surface so every component pulls from the same source of truth and Vite emits hashed, optimized URLs.
 
-```css
-@media (hover: none) {
-  .area-row:active,
-  .contact-row:active,
-  a[class*="rounded-full"]:active,
-  button[class*="rounded-full"]:active {
-    transform: scale(0.985);
-    transition: transform 120ms var(--ease-swift);
-  }
-  .group:active .icon-chip { background-color: hsl(var(--evergreen) / 0.12); }
-}
+```ts
+import heroAcreage from "./hero-acreage-morning.jpg";
+import heroDetail from "./hero-detail-trim.jpg";
+// …14 imports total
+export const photography = {
+  heroAcreage, heroDetail, closingPrairie,
+  serviceInterior, serviceExterior, serviceDecking,
+  works: {
+    "bragg-creek-trim-transitions": workBraggCreekTrim,
+    "water-valley-builtin-shelving": workWaterValleyShelving,
+    // …
+  },
+  areaFoothills, aboutToolsBench,
+} as const;
 ```
 
-Plus an explicit `-webkit-tap-highlight-color: transparent` on `body` (already partially set — verify and consolidate).
+### 4b · `ProjectPlaceholder` → real `<img>`, falls back gracefully
+Add a `src?: string` prop. When supplied, render a **real photograph** layered into the same `photo-pending` shell so the desktop card sizing is byte-identical:
+- `<img src srcset sizes loading="lazy" decoding="async" alt={`${title} — ${area}`} />` filling the plate area, with the existing numeral pill kept as a small overlay in the corner (continues the editorial "plate" language).
+- The italic "Photograph in progress" line + hairline rule are removed *only when* `src` is provided.
+- All Tailwind classes preserved; the `<img>` uses `object-cover w-full h-full aspect-[4/5]` so the card height doesn't shift.
+- When `src` is absent (e.g. an unphotographed future project), the existing typographic plate still renders. No regression.
+
+### 4c · `ServicePlate` → real `<img>` with the same pattern
+Identical treatment. The numeral pill stays as a small bottom-left badge over the photograph so the editorial signature survives.
+
+### 4d · `Hero.tsx` — replace `HeroVignette` with a real photograph
+- `HeroVignette` is currently a watermark in the soft right-side bloom. Swap that node for an `<img src={photography.heroAcreage} alt="" aria-hidden="true" loading="eager" fetchpriority="high">` masked by the existing radial bloom (kept as an overlay) so the LCP element is the real photo, not the SVG. The watermark drift effect (clip-path + opacity) is preserved as a wrapper class.
+- Headline column, drift hook, eyebrow, field notes — **untouched.** Desktop stays pixel-identical apart from "the SVG behind has become a real photo."
+- I'll mark the hero image with `fetchpriority="high"` and add `<link rel="preload" as="image" imagesrcset>` in `index.html` so LCP improves rather than regresses.
+
+### 4e · `Index.tsx` (home gallery + closing band)
+- Pass the matching `photography.works[slug]` into each `<ProjectPlaceholder>`.
+- `SelectedWorks` (lazy chunk) gets the same prop — its sidebar rows already use `ProjectPlaceholder` in compact mode, so they get the photograph too at the smaller crop.
+- The `closing-prairie-light.jpg` becomes the ambient backdrop of the existing `ClosingCta` on home only, layered at `opacity-[0.08]` behind the existing radial bloom. Optional — call out below.
+
+### 4f · `Work.tsx` and service pages
+- `Work.tsx` simply forwards `photography.works[p.slug]` into `ProjectPlaceholder`. The filter rail, layout, hover transform — all unchanged.
+- `Services.tsx` forwards `photography.serviceInterior/Exterior/Decking` into `ServicePlate`.
+- The three service deep pages (`InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`) — I'll add a single hero photograph slot beneath their existing `SubPageHero` (right-column vignette becomes the matching service photograph). Desktop layout untouched because it just fills the existing `vignette` slot.
+
+### 4g · Area pages and About
+- `AreaPage.tsx` accepts an optional `vignette` slot already. Pass `photography.areaFoothills` so all four area pages share one calm context image. Could later be diversified per area; not required today.
+- `About.tsx` gets the `photography.aboutToolsBench` still life dropped into its existing right-column slot.
+
+### 4h · Performance & accessibility hygiene
+- Every `<img>` gets explicit `width` + `height` attributes (matching the source) → zero CLS impact.
+- Lazy-load everything except the Hero image (eager + preload).
+- Meaningful `alt` text on every photograph (scope + area), empty `alt=""` only on the decorative hero/closing backdrop layers, with `aria-hidden="true"`.
+- Vite will produce `.webp` automatically via the asset pipeline; no extra build config needed.
+
+### 4i · Typography overlay polish
+Where a numeral pill or italic caption now sits **on** a photograph, I'll add a 12-pixel-wide gradient scrim (`linear-gradient(to top, hsl(var(--background)/0.55), transparent 40%)`) at the bottom of the image so caption text always meets WCAG AA contrast — no matter how light or dark the image turns out.
 
 ---
 
-## § 9 — Tablet (768–1023px) targeted pass
-
-iPad portrait is currently caught by `md:` rules but a few sections feel cramped:
-- **Service Areas roster** — already `sm:` for the postal stack; add `md:py-12` so rows breathe at iPad portrait.
-- **`/contact` form bezel** — at `md:` keep the form as the second column but compress the left rail to `md:col-span-5`. Already correct.
-- **Navigation** — at `768px` exactly, the desktop horizontal nav appears (`md:flex`). Verify spacing on a 768px-portrait iPad with safe-area gutters. Likely fine; will screenshot to confirm.
+## 5 · Runtime error fix (silent)
+- `QueryClientProvider` complaining about a null React is a stale Vite dependency cache (a known issue when many deps are added/removed in succession). I'll simply delete `node_modules/.vite` on the next exec so Vite re-pre-bundles. No source change.
 
 ---
 
-## § 10 — QA & Verification
-
-1. `bun run build` — must stay green.
-2. Manual viewport sweep at: **320×568** (iPhone SE 1), **360×800** (Android baseline), **375×812** (iPhone 13 mini), **390×844** (iPhone 15), **414×896** (iPhone Plus), **768×1024** (iPad portrait), **820×1180** (iPad Air portrait), **1024×768** (iPad landscape — should look identical to small desktop), **1280×720** (small desktop — must be byte-for-byte unchanged), **1536×864** and **1920×1080** (full desktop — must be byte-for-byte unchanged).
-3. **Bottom-sheet a11y check**: focus trap (Radix Dialog handles it), Escape closes, focus returns to trigger, sheet has `aria-labelledby` pointing at the visible headline.
-4. **Reduced-motion**: bottom-sheet's slide-up collapses to a fade per existing `@media (prefers-reduced-motion: reduce)` block; verify.
-5. **Lighthouse mobile**: target ≥ 95 a11y, ≥ 90 perf on the home and `/contact` pages.
-6. **Tap-target audit**: confirm every interactive element on every mobile page is ≥ 44×44, ideally 48×48.
-
----
-
-## Files I expect to edit
-
-- **New:** `src/components/QuickContactSheet.tsx`, `src/components/QuickContactFab.tsx`
-- **Modified:** `src/App.tsx` (mount sheet + global state), `src/components/StickyConsultBar.tsx`, `src/components/Navigation.tsx`, `src/components/ConsultationForm.tsx`, `src/components/Hero.tsx`, `src/components/SubPageHero.tsx`, `src/pages/Contact.tsx`, `src/pages/ThankYou.tsx`, `src/pages/Index.tsx` (FAB exclusion), `src/index.css` (sticky-bar reservation, hover-none block, bottom-sheet styles, tap-target floors).
+## 6 · QA checklist before I hand back
+- [ ] Each generated image opened and inspected: no people / no faces / no neon / no fisheye / no watermark / no urban context.
+- [ ] Each one feels like a real photograph from a rural Alberta worksite.
+- [ ] File sizes ≤ ~250 KB (JPEG q=82) so the page weight stays sane.
+- [ ] `bunx tsc --noEmit` clean.
+- [ ] `bunx vite build` clean.
+- [ ] Spot-check the home, work, services, an area page, and about at desktop preview width — pixel layout unchanged.
+- [ ] Mobile: `<img>` lazy-loading + `sizes` attribute confirmed correct (via DevTools network tab simulation).
+- [ ] Runtime error gone after Vite cache reset.
 
 ---
 
-## What I am explicitly **not** doing
+## 7 · One choice for you before I start
+**Should the home-page `ClosingCta` get the very-low-opacity `closing-prairie-light.jpg` backdrop (item 3 in the catalogue)?** It would only render on the home page closing band, layered at ~8% opacity so it reads as ambient warmth, not a billboard.
 
-- Not changing any desktop (`lg+`) styles. All edits are gated `<sm:`, `sm:`, `md:`, or `lg:hidden`.
-- Not redesigning the form's information architecture — same fields, same submit, same Supabase write.
-- Not adding a service worker / offline mode (out of scope for a UX polish round).
-- Not changing copy beyond the new bottom-sheet and the "Back to home" pill.
-- Not touching auth, RLS, or any backend logic.
+- **Recommended (default):** Yes — it gives the closing moment the same warmth as the hero. Reply *"no closing photo"* to skip it; otherwise I include it.
+- I'll proceed with all 14 images on approval; that question only changes whether image 3 is wired into the closing band or simply kept as an unused asset for future use.
 
 ---
 
-## Open question for you (please answer before approval)
-
-**FAB scope** — see § 1. My recommendation is targeted (skip `/`, `/contact`, `/thank-you`). If you want FAB on every mobile page, reply **"fab everywhere"**; if you want it nowhere (sticky bar only), reply **"no fab"**; otherwise I proceed with the targeted list.
+**On approval I'll generate Group A first, post the Hero image to you for inline visual QA, then continue Groups B → C → D, and finally do the code integration in one focused commit at the end. Total time estimate: ~75–90 minutes wall-clock.**
