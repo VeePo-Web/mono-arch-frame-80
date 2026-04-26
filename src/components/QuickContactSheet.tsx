@@ -464,9 +464,11 @@ const QuickContactSheet = () => {
             {/* ── STEP: contact ──────────────────────────────────────── */}
             {step === "contact" && (
               <div key="contact" className="qc-step">
-                <p className="text-[0.68rem] tracking-[0.22em] uppercase text-evergreen/75 font-medium">
-                  Step 2 of 3
-                </p>
+                <div className="qc-progress" aria-hidden="true">
+                  <span data-state="done" />
+                  <span data-state="active" />
+                  <span />
+                </div>
                 <h2 className="mt-3 font-serif text-foreground text-[1.65rem] leading-[1.15] max-w-[18ch]">
                   How can we reach you?
                 </h2>
