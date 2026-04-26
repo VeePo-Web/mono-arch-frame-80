@@ -492,18 +492,22 @@ const Index = () => {
                   >
                     <Link
                       to={area.href}
-                      className="area-row group flex items-baseline justify-between gap-6 py-10"
+                      className="area-row group flex items-baseline justify-between gap-4 sm:gap-6 py-7 sm:py-9 lg:py-10 min-h-[88px]"
                     >
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-serif text-[1.65rem] md:text-[2rem] leading-tight text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
+                        <h3 className="font-serif text-[1.5rem] sm:text-[1.65rem] md:text-[2rem] leading-tight text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
                           {area.name}
                         </h3>
                         <p className="mt-2 text-body text-muted-foreground text-[0.95rem]">
                           {area.shortLine}
                         </p>
+                        {/* Mobile-only postal — desktop keeps it in the right cluster */}
+                        <span className="sm:hidden mt-2 inline-block text-minimal text-evergreen/75 tabular-nums">
+                          {AREA_POSTAL[area.slug]}
+                        </span>
                       </div>
                       <div className="flex items-center gap-4 shrink-0">
-                        <span className="text-minimal text-evergreen/70 tabular-nums">
+                        <span className="hidden sm:inline text-minimal text-evergreen/70 tabular-nums">
                           {AREA_POSTAL[area.slug]}
                         </span>
                         <span className="icon-chip bg-evergreen/[0.06]">
