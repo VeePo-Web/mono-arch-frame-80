@@ -476,61 +476,61 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Nav island — scroll-state crossfade for the brand mark + active rule.
-     The pill itself densifies on scroll via inline classes; these helpers
-     handle the brand-mark crossfade and the editorial active-route hairline.
+     Haven Creek nav — solid bar (round 3, "grandma-grade").
+     The bar itself is solid; this rule adds the active-tab underline and
+     reduces motion when requested.
      ────────────────────────────────────────────────────────────────────── */
-  .nav-mark {
-    transition: opacity 500ms var(--ease-weighted);
-    will-change: opacity;
-  }
-  .nav-mark[data-state="hidden"] {
-    opacity: 0;
-    pointer-events: none;
-  }
-  .nav-active-rule {
+  .nav-tab-rule {
     position: absolute;
-    left: 50%;
-    bottom: -2px;
-    height: 1px;
-    width: 14px;
-    margin-left: -7px;
-    background: hsl(var(--evergreen) / 0.7);
-    transform-origin: center;
-    transition: transform 500ms var(--ease-swift);
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.25rem;
+    height: 2px;
+    background: hsl(var(--evergreen));
+    transform-origin: left center;
+    transition: transform 400ms var(--ease-swift);
+  }
+  .nav-pill {
+    /* Hook for shared CTA polish; styling lives on the element itself
+       so callers can override per surface. */
   }
   @media (prefers-reduced-motion: reduce) {
-    .nav-island,
-    .nav-mark,
-    .nav-active-rule {
+    .havencreek-nav,
+    .nav-tab-rule,
+    .nav-pill {
       transition-duration: 0ms !important;
     }
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Hamburger — two lines morph to an X. At rest the top is full width
-     and the bottom is 70%, left-aligned — reads as "list" not "equals".
-     On open both extend to full width, cross at the centre at ±45°.
+     Hamburger — three lines morph to an X (canonical "menu" glyph).
+     At rest: three full-width horizontal lines.
+     Open: top + bottom rotate to form X; middle line fades out.
      ────────────────────────────────────────────────────────────────────── */
   .hamburger-line {
-    transform-origin: left center;
+    transform-origin: center;
     transition:
-      width 320ms var(--ease-swift),
-      transform 320ms var(--ease-swift),
-      top 320ms var(--ease-swift),
-      bottom 320ms var(--ease-swift);
-    will-change: transform, width;
+      width 280ms var(--ease-swift),
+      transform 280ms var(--ease-swift),
+      opacity 200ms var(--ease-swift),
+      top 280ms var(--ease-swift),
+      bottom 280ms var(--ease-swift);
+    will-change: transform, opacity;
+    width: 100%;
   }
-  .hamburger-line--top    { top: 0;    width: 100%; }
-  .hamburger-line--bottom { bottom: 0; width: 70%;  }
+  .hamburger-line--top    { top: 0; }
+  .hamburger-line--mid    { top: 50%; transform: translateY(-50%); }
+  .hamburger-line--bottom { bottom: 0; }
   .hamburger-stage[data-open="true"] .hamburger-line--top {
     top: 50%;
-    width: 100%;
     transform: translateY(-50%) rotate(45deg);
+  }
+  .hamburger-stage[data-open="true"] .hamburger-line--mid {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0);
   }
   .hamburger-stage[data-open="true"] .hamburger-line--bottom {
     bottom: 50%;
-    width: 100%;
     transform: translateY(50%) rotate(-45deg);
   }
 
@@ -601,42 +601,10 @@
      rail itself is scroll-snap-x mandatory; SectionRail auto-centers
      the active label via scrollIntoView.
      ────────────────────────────────────────────────────────────────────── */
-  .section-rail-scroll {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent 0,
-      #000 16px,
-      #000 calc(100% - 16px),
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to right,
-      transparent 0,
-      #000 16px,
-      #000 calc(100% - 16px),
-      transparent 100%
-    );
-  }
-  .section-rail-scroll::-webkit-scrollbar { display: none; }
-
-  /* ──────────────────────────────────────────────────────────────────────
-     Menu drawer — single primary "Home" link. Italic display weight,
-     restrained vs the previous numbered ladder so the columns below
-     carry the structural weight.
-     ────────────────────────────────────────────────────────────────────── */
-  .menu-primary-text {
-    font-family: "Fraunces", "Fraunces Fallback", Georgia, serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: clamp(2rem, 4.5vw, 2.75rem);
-    line-height: 1.05;
-    letter-spacing: -0.01em;
-  }
+  /* (section-rail-scroll + menu-primary-text removed in round 3 cleanup —
+     rail now lives inside a solid header with overflow:hidden, and the
+     drawer uses a flat sibling-row of primary links instead of one
+     italic display word.) */
 
   /* ──────────────────────────────────────────────────────────────────────
      Section wash — two-tone vertical gradient replaces flat bg-card/40.
