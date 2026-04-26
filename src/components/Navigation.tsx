@@ -361,31 +361,32 @@ const Navigation = () => {
             </div>
 
             {/* Bottom-pinned consultation pill — opens the QuickContactSheet
-                in-place on mobile so cautious leads don't lose their scroll
-                position to a full route change. */}
+                rather than navigating to /contact, so the visitor never
+                leaves the page they were exploring. */}
             <div className="mt-auto pt-8 border-t border-border/60">
               <button
                 type="button"
                 onClick={() => {
                   setOpen(false);
-                  // Defer the sheet open so the mobile-nav close animation
-                  // doesn't fight the new sheet's enter animation.
+                  // Defer one frame so the Sheet close animation isn't cancelled
+                  // by the QuickContact open.
                   setTimeout(() => openQuickContact({ source: "quick_contact_sheet" }), 220);
                 }}
                 className={cn(
                   "group/btn flex items-center justify-between gap-3 w-full",
-                  "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-minimal min-h-[56px]",
+                  "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 text-minimal min-h-[52px]",
                   "active:scale-[0.985] transition-transform duration-200",
+                  "hover:bg-evergreen-hover",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
               >
-                <span>Request a Consultation</span>
+                <span>Start a conversation</span>
                 <span className="icon-chip icon-chip-light bg-background/15">
                   <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={1.5} />
                 </span>
               </button>
               <p className="mt-3 text-minimal text-muted-foreground">
-                No pressure. Just a clear conversation.
+                Reply within two business days.
               </p>
             </div>
           </div>

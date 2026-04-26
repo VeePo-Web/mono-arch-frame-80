@@ -136,9 +136,7 @@ const StickyConsultBar = () => {
           {/* Mobile (<lg): tap opens the QuickContactSheet — no full-page navigation. */}
           <button
             type="button"
-            onClick={() => {
-              openQuickContact({ source: "quick_contact_sheet" });
-            }}
+            onClick={() => openQuickContact({ source: "quick_contact_sheet" })}
             className={cn(
               "lg:hidden",
               "group/btn flex sm:inline-flex flex-1 sm:flex-initial items-center justify-between sm:justify-start gap-2.5 rounded-full",
@@ -150,7 +148,7 @@ const StickyConsultBar = () => {
               "focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
           >
-            <span>Request a Consultation</span>
+            <span>Start a conversation</span>
             <span className="icon-chip icon-chip-light bg-background/15">
               <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
             </span>

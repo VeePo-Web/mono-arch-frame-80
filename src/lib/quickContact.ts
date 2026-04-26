@@ -1,16 +1,14 @@
 /**
  * Quick Contact bottom-sheet — global open helper.
  *
- * The sheet itself is mounted once at the App layer and listens for a
- * `quickcontact:open` window event. Any trigger (sticky bar, mobile-nav
- * pill, FAB, future inline ghost buttons) calls `openQuickContact()` to
- * raise it.
+ * The sheet is mounted once at the App layer and listens for a window
+ * `quickcontact:open` event. Any trigger (sticky bar pill on mobile,
+ * mobile-nav consultation pill, page-level FAB) calls `openQuickContact()`
+ * to raise it.
  *
- * Why an event instead of context? Triggers live in different subtrees
- * (Navigation is outside Routes, StickyConsultBar lives below the Footer,
- * page-level FABs live deep in route trees). A plain CustomEvent avoids
- * threading a provider through every wrapper and keeps zero re-renders
- * for components that aren't actively driving the sheet.
+ * A plain CustomEvent avoids threading a context provider through every
+ * wrapper and keeps zero re-renders for components that aren't actively
+ * driving the sheet.
  */
 
 const EVENT_NAME = "quickcontact:open";
