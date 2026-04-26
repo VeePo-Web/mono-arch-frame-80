@@ -272,6 +272,73 @@
     border-color: hsl(var(--evergreen) / 0.25);
   }
 
+  /* ──────────────────────────────────────────────────────────────────────
+     CTA bezel — the one permitted double-bezel on the site.
+     Used only on the home Final CTA, where the form is the headline event.
+     Outer shell + inner core, separated by a 6px paper inset. Reads as an
+     objet sitting on the deep-evergreen band, not a UI panel.
+     ────────────────────────────────────────────────────────────────────── */
+  .cta-bezel {
+    position: relative;
+    border-radius: calc(var(--r-shell) + 6px);
+    /* Warm cream paper — derived from --background so it sits in-family */
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-elegant), 0 1px 0 hsl(36 25% 99% / 0.6) inset;
+    padding: 6px;
+    transition:
+      border-color 500ms var(--ease-silk),
+      box-shadow 500ms var(--ease-silk);
+  }
+  .cta-bezel:hover {
+    border-color: hsl(var(--evergreen) / 0.30);
+    box-shadow:
+      0 16px 38px -14px hsl(20 8% 14% / 0.16),
+      0 1px 0 hsl(36 25% 99% / 0.7) inset;
+  }
+  .cta-bezel__core {
+    position: relative;
+    border-radius: var(--r-shell);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border) / 0.7);
+    box-shadow: 0 1px 0 hsl(var(--background) / 0.6) inset;
+    overflow: hidden;
+  }
+  /* Hairline evergreen rail along the top of the core — the chapter mark. */
+  .cta-bezel__core::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--evergreen) / 0.45) 30%,
+      hsl(var(--evergreen) / 0.45) 70%,
+      transparent
+    );
+    pointer-events: none;
+  }
+  /* Edition seal — bottom-right of the shell, outside the core. */
+  .cta-bezel__seal {
+    position: absolute;
+    right: 16px;
+    bottom: 6px;
+    padding: 4px 0;
+    font-size: 0.65rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: hsl(var(--muted-foreground) / 0.7);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta-bezel {
+      transition-duration: 0ms !important;
+    }
+  }
+
+
   /* Legacy bezel classes — neutralized to surface-card behavior so any
      remaining markup renders cleanly without a second look. */
   .bezel-shell {
