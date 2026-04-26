@@ -364,6 +364,11 @@ const Navigation = () => {
                 rather than navigating to /contact, so the visitor never
                 leaves the page they were exploring. */}
             <div className="mt-auto pt-8 border-t border-border/60">
+              {/* Warmth lead-in sits above the pill — Fantasy.co pattern:
+                  the invitation is the lede, the action is the close. */}
+              <p className="font-serif italic text-foreground/65 text-[0.9rem] leading-relaxed mb-3">
+                We reply within two business days.
+              </p>
               <button
                 type="button"
                 onClick={() => {
@@ -385,9 +390,6 @@ const Navigation = () => {
                   <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={1.5} />
                 </span>
               </button>
-              <p className="mt-3 text-minimal text-muted-foreground">
-                Reply within two business days.
-              </p>
             </div>
           </div>
         </SheetContent>
