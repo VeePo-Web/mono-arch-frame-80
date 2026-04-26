@@ -133,15 +133,38 @@ const StickyConsultBar = () => {
         </p>
 
         <div className="flex flex-1 sm:flex-initial sm:ml-auto items-center gap-2">
+          {/* Mobile (<lg): tap opens the QuickContactSheet — no full-page navigation. */}
+          <button
+            type="button"
+            onClick={() => {
+              openQuickContact({ source: "quick_contact_sheet" });
+            }}
+            className={cn(
+              "lg:hidden",
+              "group/btn flex sm:inline-flex flex-1 sm:flex-initial items-center justify-between sm:justify-start gap-2.5 rounded-full",
+              "bg-evergreen text-evergreen-foreground",
+              "pl-6 pr-1.5 py-1.5 text-minimal",
+              "min-h-[48px] sm:min-h-[40px]",
+              "active:scale-[0.985] transition-transform duration-200",
+              "hover:bg-evergreen-hover focus-visible:outline-none",
+              "focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            )}
+          >
+            <span>Request a Consultation</span>
+            <span className="icon-chip icon-chip-light bg-background/15">
+              <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
+            </span>
+          </button>
+
+          {/* Desktop (lg+): unchanged — routes to /contact and dismisses the bar. */}
           <Link
             to="/contact"
             onClick={handleDismiss}
             className={cn(
-              "group/btn flex sm:inline-flex flex-1 sm:flex-initial items-center justify-between sm:justify-start gap-2.5 rounded-full",
+              "hidden lg:inline-flex",
+              "group/btn items-center gap-2.5 rounded-full",
               "bg-evergreen text-evergreen-foreground",
-              "pl-6 pr-1.5 py-1.5 text-minimal",
-              // 48px min on phones (Apple/Google guideline), 40px on tablet+ to stay quiet.
-              "min-h-[48px] sm:min-h-[40px]",
+              "pl-6 pr-1.5 py-1.5 text-minimal min-h-[40px]",
               "transition-colors duration-300",
               "hover:bg-evergreen-hover focus-visible:outline-none",
               "focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
