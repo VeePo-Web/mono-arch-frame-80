@@ -6,7 +6,7 @@ import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import ClosingCta from "@/components/ClosingCta";
-import { GalleryVignette } from "@/components/gallery/GalleryVignettes";
+import ProjectPlaceholder from "@/components/gallery/ProjectPlaceholder";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { galleryPlates, type PlateCategory } from "@/data/galleryPlates";
@@ -128,12 +128,17 @@ const Work = () => {
                 >
                   <PremiumCard className="h-full transition-transform duration-700 ease-weighted group-hover:-translate-y-1">
                     <div className="flex flex-col h-full">
-                      <div className="relative aspect-[4/3] overflow-hidden border-b border-evergreen/10">
-                        <GalleryVignette
-                          vignetteKey={p.vignetteKey}
-                          className="absolute inset-0 w-full h-full transition-transform duration-700 ease-weighted group-hover:scale-[1.015]"
-                        />
-                      </div>
+                      <ProjectPlaceholder
+                        project={{
+                          slug: p.slug,
+                          title: p.title,
+                          area: p.area,
+                          category: p.category,
+                          romanNumeral: p.romanNumeral,
+                        }}
+                        index={i}
+                        className="border-b border-evergreen/10 transition-transform duration-700 ease-weighted group-hover:scale-[1.005]"
+                      />
 
                       <div className="p-7 lg:p-8 flex flex-col flex-1">
                         <p className="text-minimal text-evergreen/80">
