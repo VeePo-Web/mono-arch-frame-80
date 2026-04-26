@@ -517,18 +517,8 @@
     );
   }
 
-  /* Hamburger "you are here" bar — calm static evergreen tick beneath the icon */
-  .hamburger-btn[data-current="true"]::after {
-    content: "";
-    position: absolute;
-    bottom: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 16px;
-    height: 2px;
-    border-radius: 1px;
-    background: hsl(var(--evergreen));
-  }
+  /* (round 6: hamburger "you are here" tick removed — drawer shows the
+     active route in green when opened, which is enough.) */
 
   @media (prefers-reduced-motion: reduce) {
     .havencreek-nav,
