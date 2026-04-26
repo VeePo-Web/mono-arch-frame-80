@@ -8,7 +8,7 @@ import { useReveal } from "@/hooks/useReveal";
 import ProjectPlaceholder from "./ProjectPlaceholder";
 import { galleryPlates } from "@/data/galleryPlates";
 
-const SECTION_PADDING = "py-28 md:py-40";
+const SECTION_PADDING = "py-20 md:py-40";
 
 /**
  * SelectedWorks — § IV.b on the home page.

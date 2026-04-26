@@ -23,7 +23,7 @@ const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 // Splitting it shaves the eager Index chunk by ~5 KB gz.
 const SelectedWorks = lazy(() => import("@/components/gallery/SelectedWorks"));
 
-const SECTION_PADDING = "py-28 md:py-40";
+const SECTION_PADDING = "py-20 md:py-40";
 
 /** Postal-code prefixes for the four areas — drawn from Canada Post FSAs. */
 const AREA_POSTAL: Record<string, string> = {
@@ -414,7 +414,7 @@ const Index = () => {
       {/* ─── § V — Trust Panel: three quiet reassurances ──────────────── */}
       <RevealSection
         aria-labelledby="trust-panel-heading"
-        className="py-24 md:py-32"
+        className="py-16 md:py-32"
       >
         <Container size="wide">
           <h2 id="trust-panel-heading" className="sr-only">Why homeowners choose Haven Creek</h2>
@@ -523,7 +523,7 @@ const Index = () => {
       <RevealSection
         id="final-cta"
         aria-labelledby="final-cta-heading"
-        className="relative pt-32 md:pt-44 pb-40 md:pb-52 overflow-hidden bg-evergreen-deep"
+        className="relative pt-20 md:pt-44 pb-24 md:pb-52 overflow-hidden bg-evergreen-deep"
         style={{
           contentVisibility: "auto",
           containIntrinsicSize: "1200px 1200px",
@@ -539,7 +539,7 @@ const Index = () => {
         {/* Brand silhouette — single-stroke skyline along bottom edge */}
         <svg
           aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 w-full h-[120px] text-background/[0.06] pointer-events-none"
+          className="absolute inset-x-0 bottom-0 w-full h-16 md:h-[120px] text-background/[0.06] pointer-events-none"
           viewBox="0 0 1440 120"
           preserveAspectRatio="none"
           fill="none"

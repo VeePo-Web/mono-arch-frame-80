@@ -10,7 +10,7 @@ import SubPageHero from "@/components/SubPageHero";
 import { useSeo } from "@/hooks/useSeo";
 import { PROJECT_TYPES } from "@/lib/validation/consultation";
 
-const SECTION = "py-20 md:py-28";
+const SECTION = "py-14 md:py-28";
 
 const NEXT_LINKS = [
   { to: "/work", title: "Our Work", body: "Recent plates from rural properties." },

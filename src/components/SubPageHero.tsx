@@ -93,7 +93,7 @@ const SubPageHero = ({
       aria-labelledby="subpage-hero-heading"
       className={cn(
         "relative overflow-hidden",
-        compact ? "pt-32 md:pt-36 pb-14 md:pb-20" : "pt-36 md:pt-44 pb-20 md:pb-28",
+        compact ? "pt-24 md:pt-36 pb-10 md:pb-20" : "pt-28 md:pt-44 pb-12 md:pb-28",
       )}
     >
       {/* Radial bloom — same warm evergreen wash as the home Hero */}

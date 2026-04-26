@@ -41,7 +41,7 @@ const Hero = () => {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative pt-40 md:pt-52 pb-24 md:pb-36 overflow-hidden"
+      className="relative pt-32 md:pt-52 pb-16 md:pb-36 overflow-hidden"
     >
       {/* Soft radial bloom — invisible until you look for it */}
       <div

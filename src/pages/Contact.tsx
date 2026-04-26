@@ -13,7 +13,7 @@ import { projectTypeFromQuery } from "@/lib/validation/consultation";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
-const SECTION = "py-24 md:py-32";
+const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 // TODO: replace with real number when ready.

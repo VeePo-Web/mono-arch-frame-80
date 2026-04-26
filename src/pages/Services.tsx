@@ -12,7 +12,7 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
 
-const SECTION = "py-24 md:py-32";
+const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 // (Service plates are typographic — no category-to-vignette map needed.)
