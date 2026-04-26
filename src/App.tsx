@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import ChapterSpine from "./components/ChapterSpine";
 import PageSlug from "./components/PageSlug";
 import RoutePrefetcher from "./components/RoutePrefetcher";
+import StickyConsultBar from "./components/StickyConsultBar";
 
 // Eager: home (LCP-critical) + 404 (tiny, instant fallback)
 import Index from "./pages/Index";
