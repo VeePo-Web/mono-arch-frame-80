@@ -523,12 +523,17 @@ const Index = () => {
       <RevealSection
         id="final-cta"
         aria-labelledby="final-cta-heading"
-        className="relative py-36 md:py-48 overflow-hidden bg-evergreen-deep"
+        className="relative pt-32 md:pt-44 pb-40 md:pb-52 overflow-hidden bg-evergreen-deep"
         style={{
           contentVisibility: "auto",
           containIntrinsicSize: "1200px 1200px",
-          backgroundImage:
+          // Layered washes: warm radial from upper-left + cool halo behind the
+          // form column + gentle bottom vignette so the silhouette reads quieter.
+          backgroundImage: [
             "radial-gradient(120% 80% at 15% 0%, hsl(145 22% 22%) 0%, hsl(var(--evergreen-deep)) 70%)",
+            "radial-gradient(60% 50% at 78% 32%, hsl(145 18% 30% / 0.55), transparent 70%)",
+            "linear-gradient(to bottom, transparent 60%, hsl(145 30% 10% / 0.35))",
+          ].join(", "),
         }}
       >
         {/* Brand silhouette — single-stroke skyline along bottom edge */}
@@ -558,16 +563,21 @@ const Index = () => {
               <h2
                 id="final-cta-heading"
                 data-drift
-                className="text-headline text-background mt-6 max-w-[20ch]"
+                className="text-headline text-background mt-6 max-w-[22ch]"
               >
-                A quiet conversation about your property.
+                Let&apos;s talk about what you&apos;re thinking.
               </h2>
-              <p className="mt-7 text-body text-background/85 max-w-[44ch]">
-                No template quote. No pressure. We reply within two business days.
+              <p className="mt-7 text-body text-background/85 max-w-[46ch]">
+                Tell us a little about the place and what&apos;s on your mind. We&apos;ll write
+                back within two business days — usually the same day — with a couple of
+                clear questions, not a template quote.
+              </p>
+              <p className="mt-4 text-minimal text-background/60 max-w-[46ch]">
+                A real person reads every message. No drip emails, no calls unless you ask for one.
               </p>
 
               {/* Direct-contact escape hatch */}
-              <div className="mt-10 pt-8 border-t border-background/15 max-w-[44ch] space-y-3">
+              <div className="mt-10 pt-8 border-t border-background/20 max-w-[46ch] space-y-3">
                 <p className="text-minimal text-background/65">
                   Or reach us directly
                 </p>
@@ -590,7 +600,7 @@ const Index = () => {
               </div>
 
               {/* Promise list — left rule + hanging numerals */}
-              <ul className="mt-12 max-w-[44ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
+              <ul className="mt-12 max-w-[46ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
                 {[
                   "Hands-on support from planning to completion.",
                   "Interior finishing, exterior repairs, and decking for rural homes.",
@@ -615,16 +625,16 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "180ms" }}
             >
-              <div className="surface-card">
-                <div className="p-7 md:p-9">
+              <div className="cta-bezel">
+                <div className="cta-bezel__core p-7 md:p-9">
                   <p
                     data-drift
                     className="font-serif text-foreground text-[1.3rem] md:text-[1.5rem] leading-snug"
                   >
-                    Tell us what you&apos;re considering.
+                    What should we know before we reach out?
                   </p>
                   <p className="mt-2 text-minimal text-muted-foreground">
-                    A few details so we can come prepared.
+                    Just enough so the first reply is useful — five fields, two minutes.
                   </p>
 
                   <div className="mt-7 mb-6 h-px bg-foreground/10" />
@@ -640,6 +650,9 @@ const Index = () => {
                     <ConsultationForm source="home_final_cta" />
                   </Suspense>
                 </div>
+                <span aria-hidden="true" className="cta-bezel__seal">
+                  Edition I · No. VII
+                </span>
               </div>
             </div>
           </div>
@@ -650,3 +663,4 @@ const Index = () => {
 };
 
 export default Index;
+
