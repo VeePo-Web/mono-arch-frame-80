@@ -5,24 +5,20 @@ interface HamburgerButtonProps {
   onClick: () => void;
   /** Optional label override for screen readers. */
   label?: string;
-  /** Mark current route as living inside the drawer — adds a calm static
-   *  evergreen bar 4px below the icon. No animation, no ambiguity. */
-  current?: boolean;
   className?: string;
 }
 
 /**
- * Round 5: square 48×48 icon-only hamburger.
+ * Round 6: square 44×44 icon-only hamburger.
  * - Three 1.5px lines (canonical menu glyph) → X morph on open.
- * - Optional `current` data flag draws a 2px evergreen "you are here" bar.
- * - No visible "Menu" word, no pulse — calmer next to the Quote pill.
+ * - Square shape (8px radius) — matches the new square Quote CTA so the
+ *   right cluster reads as a coherent set of "actions" not "tags".
  * - Honours prefers-reduced-motion via index.css.
  */
 const HamburgerButton = ({
   open,
   onClick,
   label,
-  current = false,
   className,
 }: HamburgerButtonProps) => (
   <button
@@ -31,10 +27,9 @@ const HamburgerButton = ({
     aria-label={label ?? (open ? "Close menu" : "Open menu")}
     aria-expanded={open}
     aria-controls="site-map-drawer"
-    data-current={current ? "true" : undefined}
     className={cn(
       "hamburger-btn relative z-10 inline-flex items-center justify-center shrink-0",
-      "h-12 w-12 rounded-full",
+      "h-11 w-11 rounded-lg",
       "text-foreground hover:bg-foreground/[0.05] active:scale-95",
       "transition-[background-color,transform]",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",

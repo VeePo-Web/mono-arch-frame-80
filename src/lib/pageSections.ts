@@ -21,12 +21,10 @@ export interface PageSection {
 
 const pageSections: Record<string, PageSection[]> = {
   "/": [
-    { name: "Why Us", anchor: "trust-promise" },
     { name: "Services", anchor: "services-preview" },
     { name: "How We Work", anchor: "approach" },
     { name: "Our Work", anchor: "work-preview" },
     { name: "Where We Work", anchor: "areas" },
-    { name: "Contact", anchor: "final-cta" },
   ],
   "/services": [
     { name: "Services", anchor: "services-three" },
