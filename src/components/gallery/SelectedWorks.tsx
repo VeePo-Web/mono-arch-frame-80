@@ -345,25 +345,39 @@ const SelectedWorks = () => {
                               : "border-l-transparent hover:bg-foreground/[0.03]",
                           )}
                         >
-                          {/* Thumb — typographic chip (no synthetic illustration) */}
+                          {/* Thumb — real photograph when available, typographic chip otherwise */}
                           <span
                             aria-hidden="true"
                             className={cn(
-                              "shrink-0 h-14 w-14 md:h-16 md:w-16 rounded-sm overflow-hidden",
+                              "shrink-0 h-14 w-14 md:h-16 md:w-16 rounded-sm overflow-hidden relative",
                               "ring-1 ring-evergreen/15 transition-all duration-500 ease-swift",
-                              "flex items-center justify-center",
-                              "bg-gradient-to-br from-card to-evergreen/[0.05]",
-                              isActive && "ring-evergreen/40 from-evergreen/[0.04] to-evergreen/[0.10]",
+                              isActive && "ring-evergreen/40",
                             )}
                           >
-                            <span
-                              className={cn(
-                                "font-serif italic text-[1.05rem] tabular-nums transition-colors duration-500",
-                                isActive ? "text-evergreen" : "text-evergreen/65",
-                              )}
-                            >
-                              {plate.romanNumeral}
-                            </span>
+                            {workPhotos[plate.slug] ? (
+                              <img
+                                src={workPhotos[plate.slug]}
+                                alt=""
+                                loading="lazy"
+                                decoding="async"
+                                width={128}
+                                height={128}
+                                className={cn(
+                                  "absolute inset-0 w-full h-full object-cover transition-all duration-500",
+                                  !isActive && "opacity-80 saturate-90 group-hover/row:opacity-100",
+                                )}
+                              />
+                            ) : (
+                              <span
+                                className={cn(
+                                  "absolute inset-0 flex items-center justify-center font-serif italic text-[1.05rem] tabular-nums transition-colors duration-500",
+                                  "bg-gradient-to-br from-card to-evergreen/[0.05]",
+                                  isActive ? "text-evergreen" : "text-evergreen/65",
+                                )}
+                              >
+                                {plate.romanNumeral}
+                              </span>
+                            )}
                           </span>
 
                           {/* Body */}
