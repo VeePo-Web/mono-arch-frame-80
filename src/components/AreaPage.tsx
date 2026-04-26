@@ -110,7 +110,6 @@ const AreaPage = ({
       <AreaLocalBusinessJsonLd name={area.name} area={area.slug} />
 
       <SubPageHero
-        eyebrowNumeral={NUMERAL_BY_SLUG[slug]}
         eyebrowLabel={area.name.toUpperCase()}
         folio={`${POSTAL[slug]} · ${area.name}, AB`}
         headline={computedHeadline}
@@ -118,7 +117,11 @@ const AreaPage = ({
         subhead={area.page.intro}
         primaryCta={{ to: "/contact", label: `Talk through your ${area.name} property` }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        coordMark={`Locality No. ${NUMERAL_BY_SLUG[slug].split(".")[1]} · ${POSTAL[slug]}`}
+        dossier={{
+          sectionNo: NUMERAL_BY_SLUG[slug],
+          coord: `${area.name} · ${POSTAL[slug]}`,
+          edition: "Edition I",
+        }}
       />
 
       {/* § I — Local context */}

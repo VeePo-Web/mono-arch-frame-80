@@ -54,14 +54,13 @@ const Work = () => {
       />
 
       <SubPageHero
-        eyebrowNumeral="·"
         eyebrowLabel="THE WORK"
         headline="Real properties. Real outcomes. Worth a closer look."
         accentWord="closer"
         subhead="Each plate is a record of a real project — what we found, what we did, and what changed for the homeowner."
         primaryCta={{ to: "/contact", label: "Discuss similar work" }}
         secondaryCta={{ to: "/services", label: "Our services" }}
-        coordMark={`${galleryPlates.length} plates · Edition I`}
+        dossier={{ sectionNo: "VIII", coord: `${galleryPlates.length} plates · selected work`, edition: "Edition I" }}
       />
 
       {/* § I — Filter rail */}

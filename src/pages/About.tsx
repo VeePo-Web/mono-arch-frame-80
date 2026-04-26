@@ -42,14 +42,13 @@ const About = () => {
       />
 
       <SubPageHero
-        eyebrowNumeral="·"
         eyebrowLabel="ABOUT"
         headline="A hands-on renovation partner for rural properties."
         accentWord="hands-on"
         subhead="Haven Creek was built for homeowners who want a more personal, less scattered way to improve the property they care about."
         primaryCta={{ to: "/contact", label: "Talk through your project" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        coordMark="Section · About"
+        dossier={{ sectionNo: "II", coord: "About · Working philosophy", edition: "Edition I" }}
       />
 
       {/* § I — Working philosophy */}

@@ -45,14 +45,13 @@ const ServiceAreas = () => {
       />
 
       <SubPageHero
-        eyebrowNumeral="·"
         eyebrowLabel="WHERE WE WORK"
         headline="Local, by choice."
         accentWord="choice"
         subhead="Four communities. Each different in pace, exposure, and the kind of property care it asks for. We chose this footprint so the work could stay personal."
         primaryCta={{ to: "/contact", label: "Discuss your area" }}
         secondaryCta={{ to: "/services", label: "Our services" }}
-        coordMark="4 localities · Foothills west & north of Calgary"
+        dossier={{ sectionNo: "IX", coord: "Foothills · West & North of Calgary", edition: "Edition I" }}
       />
 
       {/* § I — Roster */}
