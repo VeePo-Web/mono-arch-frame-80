@@ -13,11 +13,11 @@ const PageSlug = ({ number = "01", name = "Home" }: PageSlugProps) => (
     aria-hidden="true"
     className="hidden lg:flex fixed top-7 right-8 z-10 pointer-events-none items-center gap-3"
   >
-    <span className="text-[9px] tracking-[0.32em] text-evergreen/55 font-sans uppercase tabular-nums">
+    <span className="text-[9px] tracking-[0.32em] text-evergreen/80 font-sans uppercase tabular-nums">
       Page {number}
     </span>
     <span className="block h-px w-5 bg-evergreen/30" />
-    <span className="text-[9px] tracking-[0.32em] text-evergreen/55 font-sans uppercase">
+    <span className="text-[9px] tracking-[0.32em] text-evergreen/80 font-sans uppercase">
       {name}
     </span>
   </div>

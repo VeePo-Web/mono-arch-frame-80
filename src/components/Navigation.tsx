@@ -245,8 +245,9 @@ const Navigation = () => {
                     onClick={() => setOpen(false)}
                     className={({ isActive }) =>
                       cn(
-                        "block py-3 text-headline font-serif italic font-light leading-tight",
+                        "block py-3 px-1 -mx-1 rounded-sm text-headline font-serif italic font-light leading-tight",
                         "reveal-up",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                         isActive ? "text-evergreen" : "text-foreground hover:text-evergreen",
                       )
                     }

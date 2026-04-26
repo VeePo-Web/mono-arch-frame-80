@@ -242,7 +242,7 @@ const ExteriorFinishing = () => {
                   <div className="figure-footnote mb-5">
                     <span className="footnote-figmark">Fig. iv.</span>
                     <span className="flex-1">{proof.category.toUpperCase()}</span>
-                    <span className="text-evergreen/55 tabular-nums normal-case tracking-[0.18em]">{proof.area}</span>
+                    <span className="text-evergreen/80 tabular-nums normal-case tracking-[0.18em]">{proof.area}</span>
                   </div>
                   <h3 className="text-title text-foreground">{proof.title}</h3>
                   <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-6">

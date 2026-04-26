@@ -132,7 +132,7 @@ const SelectedWorks = () => {
                   <div className="figure-footnote">
                     <span className="footnote-figmark">Fig. {active.figmark}.</span>
                     <span className="flex-1">{active.category.toUpperCase()}</span>
-                    <span className="text-evergreen/55 tabular-nums normal-case tracking-[0.18em]">
+                    <span className="text-evergreen/80 tabular-nums normal-case tracking-[0.18em]">
                       {active.area}
                     </span>
                   </div>

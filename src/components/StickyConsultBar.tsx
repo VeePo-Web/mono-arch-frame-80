@@ -148,9 +148,9 @@ const StickyConsultBar = () => {
             aria-label="Dismiss consultation shortcut"
             className={cn(
               "inline-flex items-center justify-center h-9 w-9 rounded-full",
-              "text-foreground/55 hover:text-foreground/85 hover:bg-foreground/[0.05]",
+              "text-foreground/70 hover:text-foreground hover:bg-foreground/[0.05]",
               "transition-colors duration-300",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
           >
             <X className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
