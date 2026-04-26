@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import logo from "@/assets/logo/haven-creek-horizontal.webp";
 import logoMark from "@/assets/logo/haven-creek-mark.webp";
 
@@ -16,9 +17,9 @@ const NAV_LINKS = [
 /**
  * Navigation — Floating Glass Island.
  * Detached from the top, rounded-full, soft plaster glass with a hairline ring.
- * On scroll past 80px the island contracts (no background swap, no jank).
- * Link hover = chip background fade. Active route = 4px evergreen dot.
- * CTA uses the Button-in-Button trailing icon pattern.
+ * On scroll past 80px the island visibly densifies (background, ring, shadow).
+ * Active route = 14px hairline that draws in via scaleX (matches dossier rules).
+ * Mobile menu uses the Sheet primitive (Radix dialog) for proper a11y.
  */
 const Navigation = () => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -38,14 +39,8 @@ const Navigation = () => {
     return () => obs.disconnect();
   }, []);
 
+  // Close mobile menu on route change.
   useEffect(() => setOpen(false), [pathname]);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
 
   return (
     <>
@@ -70,38 +65,60 @@ const Navigation = () => {
         <nav
           aria-label="Primary"
           className={cn(
-            "pointer-events-auto",
+            "nav-island pointer-events-auto",
             "relative flex items-center gap-1.5",
-            "bg-background/72 backdrop-blur-xl",
+            "backdrop-blur-xl",
             "rounded-full",
-            "ring-1 ring-foreground/[0.08]",
-            "shadow-[0_1px_0_hsl(36_25%_99%/0.5)_inset,0_18px_40px_-18px_hsl(20_8%_14%/0.18),0_8px_24px_-12px_hsl(20_8%_14%/0.10)]",
             "transition-all duration-700 ease-weighted",
-            scrolled ? "p-1.5 max-w-[min(94vw,940px)]" : "p-2 max-w-[min(96vw,1040px)]",
+            // Scroll-state contrast: the pill visibly firms up.
+            scrolled
+              ? [
+                  "bg-background/85",
+                  "ring-1 ring-foreground/[0.10]",
+                  "shadow-[0_1px_0_hsl(36_25%_99%/0.6)_inset,0_14px_32px_-16px_hsl(20_8%_14%/0.22),0_6px_18px_-10px_hsl(20_8%_14%/0.12)]",
+                  "p-1.5 max-w-[min(94vw,940px)]",
+                ]
+              : [
+                  "bg-background/55",
+                  "ring-1 ring-foreground/[0.06]",
+                  "shadow-[0_1px_0_hsl(36_25%_99%/0.4)_inset,0_18px_44px_-20px_hsl(20_8%_14%/0.16),0_8px_24px_-14px_hsl(20_8%_14%/0.08)]",
+                  "p-2 max-w-[min(96vw,1040px)]",
+                ],
           )}
         >
-          {/* Brand chip — left */}
+          {/* Brand chip — left. Crossfade between full logo (rest) and mark (scrolled). */}
           <Link
             to="/"
             aria-label="Haven Creek Renovations — home"
             className={cn(
-              "relative z-10 flex items-center gap-2 rounded-full",
+              "relative z-10 flex items-center rounded-full",
               "transition-all duration-700 ease-weighted",
               scrolled ? "px-2.5 py-1.5" : "px-3 py-2",
             )}
           >
-            <img
-              src={scrolled ? logoMark : logo}
-              alt="Haven Creek Renovations"
-              width={scrolled ? 28 : 160}
-              height={28}
-              className={cn(
-                "transition-all duration-700 ease-weighted",
-                scrolled ? "h-7 w-7" : "h-6 w-auto",
-              )}
-              fetchPriority="high"
-              decoding="async"
-            />
+            {/* Fixed-height stage so the swap doesn't jolt the layout. */}
+            <span className="relative inline-flex items-center justify-start h-7" style={{ width: scrolled ? 28 : 160, transition: "width 700ms var(--ease-weighted)" }}>
+              <img
+                src={logo}
+                alt="Haven Creek Renovations"
+                width={160}
+                height={28}
+                className="nav-mark absolute inset-y-0 left-0 h-6 w-auto my-auto"
+                data-state={scrolled ? "hidden" : "visible"}
+                fetchPriority="high"
+                decoding="async"
+              />
+              <img
+                src={logoMark}
+                alt=""
+                aria-hidden="true"
+                width={28}
+                height={28}
+                className="nav-mark absolute inset-y-0 left-0 h-7 w-7 my-auto"
+                data-state={scrolled ? "visible" : "hidden"}
+                decoding="async"
+              />
+            </span>
           </Link>
 
           {/* Desktop links */}
@@ -124,15 +141,11 @@ const Navigation = () => {
                   {({ isActive }) => (
                     <>
                       <span>{link.label}</span>
-                      {/* Active dot — draws in via scaleX */}
+                      {/* Editorial hairline — draws in via scaleX. */}
                       <span
                         aria-hidden="true"
-                        className={cn(
-                          "absolute left-1/2 -bottom-px h-[3px] w-[3px] rounded-full bg-evergreen",
-                          "transition-transform duration-500 ease-swift",
-                          isActive ? "scale-100" : "scale-0",
-                        )}
-                        style={{ transformOrigin: "center" }}
+                        className="nav-active-rule"
+                        style={{ transform: isActive ? "scaleX(1)" : "scaleX(0)" }}
                       />
                     </>
                   )}
@@ -155,14 +168,13 @@ const Navigation = () => {
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
           >
-            <span className="hidden sm:inline">Consultation</span>
-            <span className="sm:hidden">Consultation</span>
+            <span>Consultation</span>
             <span className="icon-chip icon-chip-light bg-background/15">
               <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" strokeWidth={1.5} />
             </span>
           </Link>
 
-          {/* Mobile hamburger — two-line morph */}
+          {/* Mobile hamburger — opens the Sheet */}
           <button
             type="button"
             onClick={() => setOpen(true)}
@@ -179,21 +191,30 @@ const Navigation = () => {
         </nav>
       </header>
 
-      {/* Mobile glass overlay */}
-      {open && (
-        <div
+      {/* Mobile menu — Radix Sheet (focus trap, Escape, scroll lock, return-focus). */}
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          side="right"
           id="mobile-menu"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Site menu"
-          className="fixed inset-0 z-[60] md:hidden bg-background/85 backdrop-blur-2xl animate-in fade-in duration-300"
+          className={cn(
+            "md:hidden",
+            "w-full sm:max-w-md",
+            "bg-background/92 backdrop-blur-2xl",
+            "border-l border-border/60",
+            "p-0",
+          )}
         >
-          {/* Plaster-grain veil sits on top of body grain — feels physical */}
-          <div className="absolute inset-0 pointer-events-none opacity-[0.04] mix-blend-multiply"
-               style={{
-                 backgroundImage:
-                   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
-               }}
+          {/* Accessible label (visually hidden) */}
+          <SheetTitle className="sr-only">Site menu</SheetTitle>
+
+          {/* Plaster-grain veil — keeps the menu surface true to the rest of the site */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.04] mix-blend-multiply"
+            aria-hidden="true"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
+            }}
           />
 
           <div className="relative h-full flex flex-col px-6 pt-5 pb-10">
@@ -201,25 +222,24 @@ const Navigation = () => {
               <Link to="/" onClick={() => setOpen(false)} aria-label="Haven Creek — home">
                 <img src={logo} alt="" width={160} height={28} className="h-6 w-auto" loading="lazy" decoding="async" />
               </Link>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close menu"
-                className="relative inline-flex items-center justify-center h-10 w-10 rounded-full hover:bg-foreground/[0.05] transition-colors"
-              >
-                <span className="relative block h-3 w-3">
-                  <span className="absolute inset-x-0 top-1/2 h-px bg-foreground rotate-45" />
-                  <span className="absolute inset-x-0 top-1/2 h-px bg-foreground -rotate-45" />
-                </span>
-              </button>
+              {/* Sheet's built-in close button is positioned absolute top-right by default;
+                  we hide our own to avoid duplicates. */}
             </div>
 
-            <ul className="mt-16 space-y-2">
+            {/* Dossier-strip rule — echoes sub-page heroes */}
+            <div className="mt-12 dossier-strip" aria-hidden="true">
+              <span className="dossier-strip__rule" />
+              <span className="dossier-strip__inner">
+                <span className="dossier-strip__no">Menu</span>
+                <span className="dossier-strip__dot">·</span>
+                <span>Edition I</span>
+              </span>
+              <span className="dossier-strip__rule" />
+            </div>
+
+            <ul className="mt-6 space-y-2">
               {NAV_LINKS.map((link, i) => (
-                <li
-                  key={link.to}
-                  className="overflow-hidden"
-                >
+                <li key={link.to} className="overflow-hidden">
                   <NavLink
                     to={link.to}
                     onClick={() => setOpen(false)}
@@ -254,8 +274,8 @@ const Navigation = () => {
               </p>
             </div>
           </div>
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
     </>
   );
 };
