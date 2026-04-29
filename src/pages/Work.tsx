@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -11,8 +10,9 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { galleryPlates, type PlateCategory } from "@/data/galleryPlates";
 import { workPhotos } from "@/assets/photography";
+import { HEADLINE, BODY, EYEBROW } from "@/lib/typography";
+import { SECTION_PADDING } from "@/lib/spacing";
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 type Filter = "All" | PlateCategory | "Bragg Creek" | "Rocky View County" | "Bearspaw" | "Water Valley";

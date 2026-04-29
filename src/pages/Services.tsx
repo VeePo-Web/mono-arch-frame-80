@@ -8,12 +8,14 @@ import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import ClosingCta from "@/components/ClosingCta";
 import ServicePlate from "@/components/gallery/ServicePlate";
+import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
 import { servicePhotos } from "@/assets/photography";
+import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { SECTION_PADDING } from "@/lib/spacing";
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 // (Service plates are typographic — no category-to-vignette map needed.)
