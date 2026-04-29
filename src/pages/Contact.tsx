@@ -87,7 +87,7 @@ const Contact = () => {
                       <span className="numeral-mark tabular-nums">{s.n}</span>
                       <span>{s.title}</span>
                     </p>
-                    <p className="text-body text-muted-foreground text-[0.95rem] leading-relaxed max-w-[42ch]">
+                    <p className="text-body text-muted-foreground  leading-relaxed max-w-[42ch]">
                       {s.body}
                     </p>
                   </li>
@@ -133,7 +133,7 @@ const Contact = () => {
                 <h3 className="text-title text-foreground mt-5 max-w-[24ch]">
                   Prefer to write or call?
                 </h3>
-                <p className="mt-3 text-body text-muted-foreground text-[0.95rem] max-w-[48ch]">
+                <p className="mt-3 text-body text-muted-foreground  max-w-[48ch]">
                   Either reaches the same small team. We answer in the order notes arrive.
                 </p>
 
