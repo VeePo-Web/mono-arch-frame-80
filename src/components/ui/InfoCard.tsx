@@ -17,6 +17,11 @@ interface InfoCardProps {
   linkLabel?: string;
   /** Optional leading icon / numeral. */
   leading?: ReactNode;
+  /**
+   * Optional media slot rendered above the eyebrow — used for vignette
+   * thumbnails on flagship card grids.
+   */
+  media?: ReactNode;
   /** Featured emphasis — adds an evergreen tinted border. */
   featured?: boolean;
   className?: string;
@@ -34,32 +39,40 @@ const InfoCard = ({
   to,
   linkLabel = "Learn more",
   leading,
+  media,
   featured = false,
   className,
 }: InfoCardProps) => {
   const inner = (
-    <div className="relative p-7 md:p-8 flex flex-col h-full">
-      {leading && <div className="mb-5">{leading}</div>}
-      {eyebrow && <span className={EYEBROW.standard}>{eyebrow}</span>}
-      <h3 className={cn(HEADLINE.card, "mt-3 text-foreground group-hover/info:text-evergreen transition-colors duration-500")}>
-        {title}
-      </h3>
-      <p className={cn(BODY.card, "mt-3 flex-1")}>{body}</p>
-      {to && (
-        <span className={cn(UI.link, "mt-6 inline-flex items-center gap-2 text-evergreen")}>
-          <span>{linkLabel}</span>
-          <ArrowUpRight
-            className="h-4 w-4 transition-transform duration-500 ease-swift group-hover/info:translate-x-0.5 group-hover/info:-translate-y-0.5"
-            strokeWidth={1.75}
-            aria-hidden="true"
-          />
-        </span>
+    <div className="flex flex-col h-full">
+      {media && (
+        <div className="relative overflow-hidden border-b border-evergreen/10">
+          {media}
+        </div>
       )}
+      <div className="relative p-7 md:p-8 flex flex-col flex-1">
+        {leading && <div className="mb-5">{leading}</div>}
+        {eyebrow && <span className={EYEBROW.standard}>{eyebrow}</span>}
+        <h3 className={cn(HEADLINE.card, "mt-3 text-foreground group-hover/info:text-evergreen transition-colors duration-500")}>
+          {title}
+        </h3>
+        <p className={cn(BODY.card, "mt-3 flex-1")}>{body}</p>
+        {to && (
+          <span className={cn(UI.link, "mt-6 inline-flex items-center gap-2 text-evergreen")}>
+            <span>{linkLabel}</span>
+            <ArrowUpRight
+              className="h-4 w-4 transition-transform duration-500 ease-swift group-hover/info:translate-x-0.5 group-hover/info:-translate-y-0.5"
+              strokeWidth={1.75}
+              aria-hidden="true"
+            />
+          </span>
+        )}
+      </div>
     </div>
   );
 
   const baseClasses = cn(
-    "surface-card group/info h-full block",
+    "surface-card group/info h-full block overflow-hidden",
     featured && "surface-card-featured",
     className,
   );
