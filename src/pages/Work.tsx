@@ -102,7 +102,7 @@ const Work = () => {
       </RevealSection>
 
       {/* § II — Plate grid */}
-      <RevealSection aria-labelledby="grid-heading" className={cn(SECTION, "section-wash pt-0 md:pt-0")}>
+      <RevealSection aria-labelledby="grid-heading" className={cn(SECTION_PADDING.standard, "section-wash pt-0 md:pt-0")}>
         <Container size="wide">
           <h2 id="grid-heading" className="sr-only">Project plates</h2>
 

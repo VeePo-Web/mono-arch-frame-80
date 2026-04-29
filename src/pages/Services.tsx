@@ -57,7 +57,7 @@ const Services = () => {
       />
 
       {/* § I — Service hierarchy */}
-      <RevealSection id="services-three" aria-labelledby="services-heading" className={SECTION}>
+      <RevealSection id="services-three" aria-labelledby="services-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -131,7 +131,7 @@ const Services = () => {
       </RevealSection>
 
       {/* § II — Full-circle support */}
-      <RevealSection id="circle" aria-labelledby="circle-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection id="circle" aria-labelledby="circle-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -184,7 +184,7 @@ const Services = () => {
       </RevealSection>
 
       {/* § III — Custom quote */}
-      <RevealSection id="quote" aria-labelledby="quote-heading" className={SECTION}>
+      <RevealSection id="quote" aria-labelledby="quote-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
