@@ -61,11 +61,8 @@ const Services = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="I" label="WHAT WE BUILD" />
-                <span className="coord-mark hidden md:inline-flex">Three services</span>
-              </div>
-              <h2 id="services-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+              <Eyebrow numeral="I" label="WHAT WE BUILD" />
+              <h2 id="services-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
                 In order of where the craft shows most.
               </h2>
             </div>
@@ -109,10 +106,10 @@ const Services = () => {
                       <h3 className="text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
                         {s.title}
                       </h3>
-                      <p className="mt-3 text-subhead text-foreground/70 text-[1.05rem]">
+                      <p className={cn(BODY.large, "mt-3")}>
                         {s.promise}
                       </p>
-                      <p className="mt-5 text-body text-muted-foreground text-[0.95rem] leading-relaxed">
+                      <p className={cn(BODY.card, "mt-5", MEASURE.prose)}>
                         {SERVICE_DETAIL[s.slug]}
                       </p>
                       <div className="mt-7 inline-flex items-center gap-3 text-minimal text-evergreen self-start">
@@ -136,10 +133,10 @@ const Services = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <Eyebrow numeral="II" label="FULL-CIRCLE SUPPORT" />
-              <h2 id="circle-heading" className="text-headline text-foreground mt-6">
+              <h2 id="circle-heading" className={cn(HEADLINE.section, "text-foreground mt-6")}>
                 One conversation. One contractor. One relationship.
               </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-md">
+              <p className={cn(BODY.standard, "mt-6", MEASURE.prose)}>
                 Most renovation friction lives in the gaps between trades. We close those
                 gaps by holding the work together — from the first walk-through to the
                 final inspection.
@@ -172,8 +169,8 @@ const Services = () => {
                       style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
                     >
                       <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey">{step.n}</span>
-                      <h3 className="text-title text-foreground">{step.title}</h3>
-                      <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">{step.body}</p>
+                      <h3 className={cn(HEADLINE.card, "text-foreground")}>{step.title}</h3>
+                      <p className={cn(BODY.card, "mt-3", MEASURE.prose)}>{step.body}</p>
                     </li>
                   ))}
                 </ol>
@@ -189,48 +186,41 @@ const Services = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <Eyebrow numeral="III" label="ABOUT QUOTES" />
-              <h2 id="quote-heading" className="text-headline text-foreground mt-6 max-w-[22ch]">
+              <h2 id="quote-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[22ch]")}>
                 Pricing is custom because the work is.
               </h2>
-              <div className="mt-7 space-y-6 max-w-[55ch]">
-                <p className="text-body text-foreground/85">
+              <div className={cn("mt-7 space-y-6", MEASURE.prose)}>
+                <p className={BODY.large}>
                   We don't publish flat rates because rural projects don't have flat
                   realities. Site access, scope, materials, and the condition of what's
                   already there all change the answer. So the quote is built around your
                   property — not a template.
                 </p>
-                <p className="text-body text-muted-foreground">
+                <p className={BODY.standard}>
                   We'll talk through what's possible, what's worth it, and what isn't.
                   No pressure either way.
                 </p>
               </div>
             </div>
 
-            <div className="lg:col-span-5 lg:pt-8" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-              <PremiumCard className="h-full">
-                <div className="p-8 lg:p-10">
-                  <div className="figure-footnote mb-5">
-                    <span className="footnote-figmark">Fig. iii.</span>
-                    <span className="flex-1">WHAT A QUOTE INCLUDES</span>
-                  </div>
-                  <ul className="divide-y divide-border/60">
-                    {[
-                      "Scope of work, written plainly",
-                      "Materials & finishes, by name",
-                      "Timeline & phasing approach",
-                      "Site access & seasonal considerations",
-                      "A clear, all-in price",
-                    ].map((item, i) => (
-                      <li key={item} className="flex items-baseline gap-4 py-3.5">
-                        <span className="numeral-mark tabular-nums text-evergreen/70">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="text-body text-foreground/85 text-[0.95rem]">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </PremiumCard>
+            <div className="lg:col-span-12" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
+              <p className={cn(EYEBROW.quiet, "mb-5 mt-4")}>What a quote includes</p>
+              <BentoGrid layout="auto">
+                {[
+                  "Scope of work, written plainly",
+                  "Materials & finishes, by name",
+                  "Timeline & phasing approach",
+                  "Site access & seasonal considerations",
+                  "A clear, all-in price",
+                ].map((item, i) => (
+                  <BentoTile
+                    key={item}
+                    eyebrow={String(i + 1).padStart(2, "0")}
+                    title={item}
+                    compact
+                  />
+                ))}
+              </BentoGrid>
             </div>
           </div>
         </Container>
