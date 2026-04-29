@@ -37,7 +37,7 @@ const Footer = () => {
                 Haven Creek<br />Renovations
               </span>
             </Link>
-            <p className="mt-6 text-body text-muted-foreground text-[0.92rem] max-w-xs">
+            <p className="mt-6 text-body text-muted-foreground text-sm max-w-xs">
               Hands-on renovation for rural and acreage homes across Alberta.
             </p>
           </div>
@@ -49,7 +49,7 @@ const Footer = () => {
                 <li key={s.slug}>
                   <Link
                     to={s.href}
-                    className="inline-flex min-h-[44px] items-center text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-[0.95rem]"
+                    className="inline-flex min-h-[44px] items-center text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-base"
                   >
                     {s.shortName}
                   </Link>
@@ -65,7 +65,7 @@ const Footer = () => {
                 <li key={a.slug}>
                   <Link
                     to={a.href}
-                    className="inline-flex min-h-[44px] items-center text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-[0.95rem]"
+                    className="inline-flex min-h-[44px] items-center text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-base"
                   >
                     {a.name}
                   </Link>
@@ -76,7 +76,7 @@ const Footer = () => {
 
           <div className="col-span-2 md:col-span-3">
             <p className="text-minimal text-evergreen/80 mb-5">Contact</p>
-            <p className="text-body text-foreground/75 text-[0.95rem] leading-relaxed max-w-xs">
+            <p className="text-body text-foreground/75 text-base leading-relaxed max-w-xs">
               Reach out and we&apos;ll respond within two business days.
             </p>
             <Link

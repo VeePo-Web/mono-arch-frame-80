@@ -6,12 +6,15 @@ import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import ClosingCta from "@/components/ClosingCta";
+import InfoCard from "@/components/ui/InfoCard";
+import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
 import { InteriorVignette } from "@/components/ProjectVignette";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { projects } from "@/data/projects";
+import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { SECTION_PADDING } from "@/lib/spacing";
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 const DETAILS = [
@@ -40,7 +43,7 @@ const CRAFT = [
     n: "03",
     title: "Fit",
     body:
-      "Built-ins and millwork that sit against the wall the way they should — even when the wall, the floor, or the ceiling won't quite cooperate.",
+      "Built-ins and millwork that sit against the wall the way they should — even when the wall, floor, or ceiling won't quite cooperate.",
   },
 ];
 
@@ -81,7 +84,7 @@ const InteriorFinishing = () => {
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">
               <InteriorVignette className="absolute inset-0 w-full h-full" />
               <span
-                className="absolute top-5 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
+                className="absolute top-5 left-5 text-[0.75rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
                 aria-hidden="true"
               >
                 Plate I · Cabinetry section
@@ -91,50 +94,42 @@ const InteriorFinishing = () => {
         }
       />
 
-      {/* § I — What it means */}
-      <RevealSection id="meaning" aria-labelledby="meaning-heading" className={SECTION}>
+      {/* § I — What it means + details bento */}
+      <RevealSection id="meaning" aria-labelledby="meaning-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="I" label="WHAT THE WORK COVERS" />
-                <span className="coord-mark hidden md:inline-flex">Detail · Fit · Finish</span>
-              </div>
-              <h2 id="meaning-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+              <Eyebrow numeral="I" label="WHAT THE WORK COVERS" />
+              <h2 id="meaning-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
                 Interior finishing is the work that holds the rest together.
               </h2>
-              <p className="mt-7 text-body text-muted-foreground max-w-[55ch]">
-                It's the part of a renovation that decides whether a room feels resolved or
-                merely complete. Trim that lands where it should. Transitions that don't
-                fight one another. Built-ins that sit against the wall the way they were
-                drawn. We treat the finishing as the work, not the wrap-up.
+              <p className={cn(BODY.large, "mt-7", MEASURE.prose)}>
+                It's the part of a renovation that decides whether a room feels resolved
+                or merely complete. Trim that lands where it should. Transitions that
+                don't fight one another. Built-ins that sit against the wall the way they
+                were drawn.
               </p>
             </div>
-            <div className="lg:col-span-5 lg:pt-8" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-              <div className="figure-footnote mb-5">
-                <span className="footnote-figmark">Fig. i.</span>
-                <span className="flex-1">DETAILS WE OBSESS OVER</span>
-              </div>
-              <ul className="divide-y divide-border/60 border-y border-border/60">
-                {DETAILS.map((d) => (
-                  <li key={d.n} className="flex items-baseline gap-4 py-3.5">
-                    <span className="numeral-mark tabular-nums text-evergreen/70">{d.n}</span>
-                    <span className="text-body text-foreground/85 text-[0.95rem]">{d.label}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          </div>
+
+          <div data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
+            <p className={cn(EYEBROW.quiet, "mb-5")}>Details we obsess over</p>
+            <BentoGrid layout="auto">
+              {DETAILS.map((d) => (
+                <BentoTile key={d.n} eyebrow={d.n} title={d.label} compact />
+              ))}
+            </BentoGrid>
           </div>
         </Container>
       </RevealSection>
 
       {/* § II — Why it matters (pull quote) */}
-      <RevealSection id="why" aria-labelledby="why-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection id="why" aria-labelledby="why-heading" className={cn(SECTION_PADDING.compact, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
             <Eyebrow align="center" numeral="II" label="WHY IT MATTERS" />
             <h2 id="why-heading" className="sr-only">Why interior finishing matters</h2>
-            <p className="pull-quote text-[1.4rem] md:text-[1.65rem] mt-7 max-w-[34ch] mx-auto">
+            <p className={cn(BODY.quote, "mt-7 max-w-[34ch] mx-auto")}>
               This is the part you see and feel every day. It either rewards a closer look,
               or it doesn't.
             </p>
@@ -142,54 +137,36 @@ const InteriorFinishing = () => {
         </Container>
       </RevealSection>
 
-      {/* § III — Craft & detail */}
-      <RevealSection id="craft" aria-labelledby="craft-heading" className={SECTION}>
+      {/* § III — Craft & detail (3 InfoCards w/ vignette) */}
+      <RevealSection id="craft" aria-labelledby="craft-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="III" label="CRAFT & DETAIL" />
-                <span className="coord-mark hidden md:inline-flex">Three close-ups</span>
-              </div>
-              <h2 id="craft-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+              <Eyebrow numeral="III" label="CRAFT & DETAIL" />
+              <h2 id="craft-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
                 Three details that decide the read of a finished room.
               </h2>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 lg:gap-9">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {CRAFT.map((c, i) => (
-              <article
+              <div
                 key={c.n}
                 data-reveal
                 style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
               >
-                <PremiumCard className="h-full">
-                  <div className="flex flex-col h-full">
-                    <div className="relative aspect-[4/3] overflow-hidden border-b border-evergreen/10">
+                <InfoCard
+                  eyebrow={`Detail ${c.n}`}
+                  title={c.title}
+                  body={c.body}
+                  media={
+                    <div className="relative aspect-[4/3]">
                       <InteriorVignette className="absolute inset-0 w-full h-full" />
-                      <span
-                        className="absolute top-4 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
-                        aria-hidden="true"
-                      >
-                        Detail {c.n}
-                      </span>
                     </div>
-                    <div className="px-8 lg:px-9 pt-6">
-                      <div className="figure-footnote">
-                        <span className="footnote-figmark">Fig. {["a","b","c"][i]}.</span>
-                        <span className="flex-1">{c.title.toUpperCase()}</span>
-                      </div>
-                    </div>
-                    <div className="p-8 lg:p-9 pt-5 flex-1">
-                      <h3 className="text-title text-foreground">{c.title}</h3>
-                      <p className="mt-4 text-body text-muted-foreground text-[0.95rem] leading-relaxed">
-                        {c.body}
-                      </p>
-                    </div>
-                  </div>
-                </PremiumCard>
-              </article>
+                  }
+                />
+              </div>
             ))}
           </div>
         </Container>
@@ -197,15 +174,12 @@ const InteriorFinishing = () => {
 
       {/* § IV — Project proof */}
       {proof && (
-        <RevealSection id="proof" aria-labelledby="proof-heading" className={cn(SECTION, "section-wash cv-auto")}>
+        <RevealSection id="proof" aria-labelledby="proof-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
           <Container size="wide">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
               <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <div className="flex items-start justify-between gap-6">
-                  <Eyebrow numeral="IV" label="PROJECT PROOF" />
-                  <span className="coord-mark hidden md:inline-flex">Plate · Bragg Creek</span>
-                </div>
-                <h2 id="proof-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+                <Eyebrow numeral="IV" label="PROJECT PROOF" />
+                <h2 id="proof-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
                   A recent interior, finished as it should be.
                 </h2>
               </div>
@@ -216,19 +190,17 @@ const InteriorFinishing = () => {
                 <div className="lg:col-span-5 relative aspect-[4/3] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-evergreen/10">
                   <InteriorVignette className="absolute inset-0 w-full h-full" />
                   <span
-                    className="absolute top-4 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
+                    className="absolute top-4 left-5 text-[0.75rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
                     aria-hidden="true"
                   >
                     Plate I
                   </span>
                 </div>
                 <div className="lg:col-span-7 p-8 md:p-12">
-                  <div className="figure-footnote mb-5">
-                    <span className="footnote-figmark">Fig. iv.</span>
-                    <span className="flex-1">{proof.category.toUpperCase()}</span>
-                    <span className="text-evergreen/80 tabular-nums normal-case tracking-[0.18em]">{proof.area}</span>
-                  </div>
-                  <h3 className="text-title text-foreground">{proof.title}</h3>
+                  <p className={cn(EYEBROW.standard, "mb-4")}>
+                    {proof.category} · {proof.area}
+                  </p>
+                  <h3 className={cn(HEADLINE.subsection, "text-foreground")}>{proof.title}</h3>
                   <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {[
                       { n: "01", label: "Scope", body: proof.scope },
@@ -237,24 +209,16 @@ const InteriorFinishing = () => {
                       { n: "04", label: "Why it mattered", body: proof.whyItMattered, italic: true },
                     ].map((row) => (
                       <div key={row.n}>
-                        <p className="flex items-baseline gap-2 text-minimal text-evergreen mb-2">
-                          <span className="numeral-mark tabular-nums">{row.n}</span>
-                          <span>{row.label}</span>
+                        <p className={cn(EYEBROW.standard, "mb-2")}>
+                          {row.n} · {row.label}
                         </p>
-                        <p
-                          className={cn(
-                            "text-body text-foreground/80 text-[0.95rem] leading-relaxed",
-                            row.italic && "italic text-muted-foreground",
-                          )}
-                        >
-                          {row.body}
-                        </p>
+                        <p className={cn(BODY.card, row.italic && "italic")}>{row.body}</p>
                       </div>
                     ))}
                   </div>
                   <Link
                     to="/work"
-                    className="group/ghost mt-8 inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
+                    className="group/ghost mt-8 inline-flex items-center gap-3 text-foreground/85 hover:text-evergreen transition-colors duration-500"
                   >
                     <span>See more interior work</span>
                     <span className="block w-6 h-px bg-evergreen/60 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
@@ -271,7 +235,7 @@ const InteriorFinishing = () => {
         eyebrow="DISCUSS THE WORK"
         heading="Tell us about the interior finishing on your mind."
         body="Whether it's a single room or a whole-floor finish, we're glad to walk through the property and talk it through."
-        primary={{ to: "/contact", label: "Request a Consultation" }}
+        primary={{ to: "/contact", label: "Get a Quote" }}
         secondary={{ to: "/services", label: "All services" }}
       />
     </main>

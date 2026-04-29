@@ -19,7 +19,7 @@ export const BentoGrid = ({ children, className, layout = "auto" }: BentoGridPro
   const layoutClasses = {
     "2x2": "grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6",
     "1+2": "grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6",
-    auto: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6",
+    auto: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6",
   } as const;
   return <div className={cn(layoutClasses[layout], className)}>{children}</div>;
 };
@@ -34,6 +34,8 @@ interface BentoTileProps {
   className?: string;
   /** Optional leading slot — for icons, big stat numbers, etc. */
   leading?: ReactNode;
+  /** Compact tile — eyebrow + title only, smaller padding. For dense itemized grids. */
+  compact?: boolean;
 }
 
 /**
@@ -47,17 +49,20 @@ export const BentoTile = ({
   span = "default",
   className,
   leading,
+  compact = false,
 }: BentoTileProps) => {
   const spanClass =
     span === "wide" ? "md:col-span-2" : span === "tall" ? "md:row-span-2" : "";
 
+  const padding = compact ? "p-5 md:p-6" : "p-6 md:p-7";
+
   const inner = (
-    <div className="relative p-6 md:p-7 flex flex-col h-full">
+    <div className={cn("relative flex flex-col h-full", padding)}>
       {leading && <div className="mb-4">{leading}</div>}
       {eyebrow && <span className={EYEBROW.standard}>{eyebrow}</span>}
       <h3
         className={cn(
-          HEADLINE.compact,
+          compact ? HEADLINE.compact : HEADLINE.compact,
           "mt-2.5 text-foreground group-hover/tile:text-evergreen transition-colors duration-500",
         )}
       >

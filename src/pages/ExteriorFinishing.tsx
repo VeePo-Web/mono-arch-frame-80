@@ -6,19 +6,21 @@ import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import ClosingCta from "@/components/ClosingCta";
+import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
 import { ExteriorVignette } from "@/components/ProjectVignette";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { projects } from "@/data/projects";
+import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { SECTION_PADDING } from "@/lib/spacing";
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 const NEEDS = [
   { n: "01", title: "Siding & trim repair", body: "Targeted replacement on the faces that have seen the most weather, blended back into the existing line." },
   { n: "02", title: "Soffit, fascia & venting", body: "Eaves restored to a clean line; airflow corrected so the attic dries the way it should." },
   { n: "03", title: "Entrances, stairs & rails", body: "The high-touch exterior details — rebuilt to feel solid and to last another decade." },
-  { n: "04", title: "Weather-related protection", body: "Sealing, flashing, and the small repairs that keep small failures from becoming big ones." },
+  { n: "04", title: "Weather protection", body: "Sealing, flashing, and the small repairs that keep small failures from becoming big ones." },
 ];
 
 const RESPECT = [
@@ -60,7 +62,7 @@ const ExteriorFinishing = () => {
         headline="Practical protection for the property you keep."
         accentWord="protection"
         subhead="Repairs, finishing, and weather-facing detail work that respects the home and the land around it. Built for prairie exposure and a long horizon."
-        primaryCta={{ to: "/contact", label: "Request a Consultation" }}
+        primaryCta={{ to: "/contact", label: "Get a Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
         dossier={{ sectionNo: "V", coord: "Exterior · Stewardship", edition: "Edition I" }}
         vignette={
@@ -68,7 +70,7 @@ const ExteriorFinishing = () => {
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">
               <ExteriorVignette className="absolute inset-0 w-full h-full" />
               <span
-                className="absolute top-5 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
+                className="absolute top-5 left-5 text-[0.75rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
                 aria-hidden="true"
               >
                 Plate II · Eave & soffit
@@ -78,21 +80,18 @@ const ExteriorFinishing = () => {
         }
       />
 
-      {/* § I — Common needs */}
-      <RevealSection id="needs" aria-labelledby="needs-heading" className={SECTION}>
+      {/* § I — Common needs (2x2 bento) */}
+      <RevealSection id="needs" aria-labelledby="needs-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="I" label="WHAT THE WORK COVERS" />
-                <span className="coord-mark hidden md:inline-flex">Repairs · Finishing · Maintenance</span>
-              </div>
-              <h2 id="needs-heading" className="text-headline text-foreground mt-6 max-w-[22ch]">
+              <Eyebrow numeral="I" label="WHAT THE WORK COVERS" />
+              <h2 id="needs-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[22ch]")}>
                 Four kinds of exterior work, handled with one standard.
               </h2>
             </div>
             <div className="lg:col-span-5 lg:pt-8" data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
-              <p className="text-body text-muted-foreground">
+              <p className={cn(BODY.standard, MEASURE.prose)}>
                 Most of what we do outside is preventive — catching the small failures
                 before they invite the bigger ones. The rest is the visible repair work
                 that brings the exterior back to a clean line.
@@ -100,39 +99,26 @@ const ExteriorFinishing = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-7 lg:gap-9">
+          <BentoGrid layout="2x2">
             {NEEDS.map((n, i) => (
-              <PremiumCard
-                key={n.n}
-                data-reveal
-                style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
-                className="h-full"
-              >
-                <div className="p-8 lg:p-10 flex gap-6">
-                  <span className="numeral-disc shrink-0">{n.n}</span>
-                  <div>
-                    <h3 className="text-title text-foreground">{n.title}</h3>
-                    <p className="mt-3 text-body text-muted-foreground text-[0.95rem] leading-relaxed">
-                      {n.body}
-                    </p>
-                  </div>
-                </div>
-              </PremiumCard>
+              <div key={n.n} data-reveal style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }} className="h-full">
+                <BentoTile eyebrow={n.n} title={n.title} body={n.body} />
+              </div>
             ))}
-          </div>
+          </BentoGrid>
         </Container>
       </RevealSection>
 
       {/* § II — Rural property considerations */}
-      <RevealSection id="rural" aria-labelledby="rural-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection id="rural" aria-labelledby="rural-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <Eyebrow numeral="II" label="RURAL CONSIDERATIONS" />
-              <h2 id="rural-heading" className="text-headline text-foreground mt-6">
+              <h2 id="rural-heading" className={cn(HEADLINE.section, "text-foreground mt-6")}>
                 Planned around the realities of the property.
               </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-md">
+              <p className={cn(BODY.standard, "mt-6", MEASURE.prose)}>
                 Exterior work on a rural acreage isn't the same as a suburban repair.
                 Weather windows, distance, access, and what's around the home all change
                 what's possible — and when.
@@ -166,8 +152,8 @@ const ExteriorFinishing = () => {
                       style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
                     >
                       <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey">{step.n}</span>
-                      <h3 className="text-title text-foreground">{step.title}</h3>
-                      <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">{step.body}</p>
+                      <h3 className={cn(HEADLINE.card, "text-foreground")}>{step.title}</h3>
+                      <p className={cn(BODY.card, "mt-3", MEASURE.prose)}>{step.body}</p>
                     </li>
                   ))}
                 </ol>
@@ -177,51 +163,40 @@ const ExteriorFinishing = () => {
         </Container>
       </RevealSection>
 
-      {/* § III — Property respect */}
-      <RevealSection id="respect" aria-labelledby="respect-heading" className={SECTION}>
+      {/* § III — Property respect (bento) */}
+      <RevealSection id="respect" aria-labelledby="respect-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <Eyebrow numeral="III" label="WHAT WE PROTECT" />
-              <h2 id="respect-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+              <h2 id="respect-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[22ch]")}>
                 We work around what the property already is.
               </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-[55ch]">
+              <p className={cn(BODY.standard, "mt-6", MEASURE.prose)}>
                 A rural exterior job touches more than the building. We leave the property
                 the way we found it — minus the work that needed doing.
               </p>
             </div>
-            <div className="lg:col-span-5 lg:pt-8" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-              <div className="figure-footnote mb-5">
-                <span className="footnote-figmark">Fig. iii.</span>
-                <span className="flex-1">RESPECT, ITEMIZED</span>
-              </div>
-              <ul className="divide-y divide-border/60 border-y border-border/60">
-                {RESPECT.map((r, i) => (
-                  <li key={r} className="flex items-baseline gap-4 py-3.5">
-                    <span className="numeral-mark tabular-nums text-evergreen/70">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="text-body text-foreground/85 text-[0.95rem]">{r}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
+
+          <BentoGrid layout="auto">
+            {RESPECT.map((r, i) => (
+              <div key={r} data-reveal style={{ ["--reveal-delay" as string]: `${180 + i * 80}ms` }} className="h-full">
+                <BentoTile eyebrow={String(i + 1).padStart(2, "0")} title={r} compact />
+              </div>
+            ))}
+          </BentoGrid>
         </Container>
       </RevealSection>
 
       {/* § IV — Project proof */}
       {proof && (
-        <RevealSection id="proof" aria-labelledby="proof-heading" className={cn(SECTION, "section-wash cv-auto")}>
+        <RevealSection id="proof" aria-labelledby="proof-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
           <Container size="wide">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
               <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <div className="flex items-start justify-between gap-6">
-                  <Eyebrow numeral="IV" label="PROJECT PROOF" />
-                  <span className="coord-mark hidden md:inline-flex">Plate · {proof.area}</span>
-                </div>
-                <h2 id="proof-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
+                <Eyebrow numeral="IV" label="PROJECT PROOF" />
+                <h2 id="proof-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
                   Stewardship on a Rocky View acreage.
                 </h2>
               </div>
@@ -232,19 +207,17 @@ const ExteriorFinishing = () => {
                 <div className="lg:col-span-5 relative aspect-[4/3] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-evergreen/10">
                   <ExteriorVignette className="absolute inset-0 w-full h-full" />
                   <span
-                    className="absolute top-4 left-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
+                    className="absolute top-4 left-5 text-[0.75rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
                     aria-hidden="true"
                   >
                     Plate II
                   </span>
                 </div>
                 <div className="lg:col-span-7 p-8 md:p-12">
-                  <div className="figure-footnote mb-5">
-                    <span className="footnote-figmark">Fig. iv.</span>
-                    <span className="flex-1">{proof.category.toUpperCase()}</span>
-                    <span className="text-evergreen/80 tabular-nums normal-case tracking-[0.18em]">{proof.area}</span>
-                  </div>
-                  <h3 className="text-title text-foreground">{proof.title}</h3>
+                  <p className={cn(EYEBROW.standard, "mb-4")}>
+                    {proof.category} · {proof.area}
+                  </p>
+                  <h3 className={cn(HEADLINE.subsection, "text-foreground")}>{proof.title}</h3>
                   <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {[
                       { n: "01", label: "Scope", body: proof.scope },
@@ -253,24 +226,14 @@ const ExteriorFinishing = () => {
                       { n: "04", label: "Why it mattered", body: proof.whyItMattered, italic: true },
                     ].map((row) => (
                       <div key={row.n}>
-                        <p className="flex items-baseline gap-2 text-minimal text-evergreen mb-2">
-                          <span className="numeral-mark tabular-nums">{row.n}</span>
-                          <span>{row.label}</span>
-                        </p>
-                        <p
-                          className={cn(
-                            "text-body text-foreground/80 text-[0.95rem] leading-relaxed",
-                            row.italic && "italic text-muted-foreground",
-                          )}
-                        >
-                          {row.body}
-                        </p>
+                        <p className={cn(EYEBROW.standard, "mb-2")}>{row.n} · {row.label}</p>
+                        <p className={cn(BODY.card, row.italic && "italic")}>{row.body}</p>
                       </div>
                     ))}
                   </div>
                   <Link
                     to="/work"
-                    className="group/ghost mt-8 inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
+                    className="group/ghost mt-8 inline-flex items-center gap-3 text-foreground/85 hover:text-evergreen transition-colors duration-500"
                   >
                     <span>See more exterior work</span>
                     <span className="block w-6 h-px bg-evergreen/60 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
@@ -287,7 +250,7 @@ const ExteriorFinishing = () => {
         eyebrow="DISCUSS THE WORK"
         heading="A weather-side repair, a full-property refresh, or somewhere in between."
         body="Reach out and we'll plan around the property — the access, the season, and what the home actually needs."
-        primary={{ to: "/contact", label: "Request a Consultation" }}
+        primary={{ to: "/contact", label: "Get a Quote" }}
         secondary={{ to: "/services", label: "All services" }}
       />
     </main>

@@ -195,10 +195,10 @@ const AreaPage = ({
                     <p className="mt-3 text-subhead text-foreground/70 text-[1.02rem]">
                       {s.promise}
                     </p>
-                    <p className="mt-5 text-body text-muted-foreground text-[0.95rem] leading-relaxed flex-1">
+                    <p className="mt-5 text-body text-muted-foreground  leading-relaxed flex-1">
                       {s.cardBody}
                     </p>
-                    <p className="mt-6 pl-4 border-l-2 border-evergreen/30 text-body text-foreground/75 italic text-[0.92rem] leading-relaxed">
+                    <p className="mt-6 pl-4 border-l-2 border-evergreen/30 text-body text-foreground/75 italic  leading-relaxed">
                       {serviceLines[s.slug]}
                     </p>
                     <div className="mt-6 inline-flex items-center gap-3 text-minimal text-evergreen">
@@ -246,7 +246,7 @@ const AreaPage = ({
                         <h3 className="font-serif text-[1.4rem] md:text-[1.65rem] leading-tight text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
                           {other.name}
                         </h3>
-                        <p className="mt-1.5 text-body text-muted-foreground text-[0.92rem]">
+                        <p className="mt-1.5 text-body text-muted-foreground ">
                           {other.shortLine}
                         </p>
                       </div>

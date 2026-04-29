@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -11,8 +10,9 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { galleryPlates, type PlateCategory } from "@/data/galleryPlates";
 import { workPhotos } from "@/assets/photography";
+import { HEADLINE, BODY, EYEBROW } from "@/lib/typography";
+import { SECTION_PADDING } from "@/lib/spacing";
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 type Filter = "All" | PlateCategory | "Bragg Creek" | "Rocky View County" | "Bearspaw" | "Water Valley";
@@ -102,7 +102,7 @@ const Work = () => {
       </RevealSection>
 
       {/* § II — Plate grid */}
-      <RevealSection aria-labelledby="grid-heading" className={cn(SECTION, "section-wash pt-0 md:pt-0")}>
+      <RevealSection aria-labelledby="grid-heading" className={cn(SECTION_PADDING.standard, "section-wash pt-0 md:pt-0")}>
         <Container size="wide">
           <h2 id="grid-heading" className="sr-only">Project plates</h2>
 
@@ -112,8 +112,8 @@ const Work = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <p className="text-minimal text-evergreen/80 mb-5">No plates yet</p>
-              <p className="text-body text-muted-foreground">
+              <p className={cn(EYEBROW.standard, "mb-5")}>No plates yet</p>
+              <p className={BODY.standard}>
                 No plates in this category yet. We're adding work as it's photographed.
               </p>
             </div>
@@ -143,16 +143,16 @@ const Work = () => {
                       />
 
                       <div className="p-7 lg:p-8 flex flex-col flex-1">
-                        <p className="text-minimal text-evergreen/80">
+                        <p className={EYEBROW.standard}>
                           {p.category} · {p.area}
                         </p>
-                        <h3 className="mt-4 text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
+                        <h3 className={cn(HEADLINE.card, "mt-4 text-foreground group-hover:text-evergreen transition-colors duration-500")}>
                           {p.title}
                         </h3>
-                        <p className="mt-4 text-body text-foreground/80 text-[0.95rem] leading-relaxed flex-1">
+                        <p className={cn(BODY.card, "mt-4 flex-1")}>
                           {p.scope}
                         </p>
-                        <p className="mt-5 text-body text-muted-foreground italic text-[0.95rem] border-l-2 border-evergreen/35 pl-4">
+                        <p className={cn(BODY.card, "mt-5 italic text-foreground/85 border-l-2 border-evergreen/35 pl-4")}>
                           {p.whyItMattered}
                         </p>
                       </div>
@@ -170,7 +170,7 @@ const Work = () => {
         eyebrow="WORK LIKE THIS"
         heading="See a project that resembles yours? Let's talk through it."
         body="Most of our work begins with a homeowner pointing at a plate and saying — that one, but for our property."
-        primary={{ to: "/contact", label: "Request a Consultation" }}
+        primary={{ to: "/contact", label: "Get a Quote" }}
         secondary={{ to: "/services", label: "Browse services" }}
       />
     </main>
