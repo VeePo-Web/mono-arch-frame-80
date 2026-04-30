@@ -30,10 +30,8 @@ const POSTAL: Record<string, string> = {
 };
 
 const STEPS = [
-  { n: "01", title: "You write", body: "Share a few details about the project, the property, and what you're considering." },
-  { n: "02", title: "We reply", body: "Within two business days. A real reply from a real person — not an automated funnel." },
-  { n: "03", title: "We walk the property", body: "Or talk by phone if that's easier. We come prepared, ask honest questions, and listen." },
-  { n: "04", title: "A thoughtful quote", body: "Built around your property — scope, materials, timeline, and an all-in price, written plainly." },
+  { n: "01", title: "You write", body: "A few details about the property and what you're considering. Five fields, two minutes." },
+  { n: "02", title: "We reply", body: "Within two business days. A real reply from a real person — Cory — with honest questions and a clear next step." },
 ];
 
 const Contact = () => {
@@ -64,7 +62,7 @@ const Contact = () => {
         headline="Let's talk through your property."
         accentWord="talk"
         subhead="This is the beginning of a relationship, not a sales trap. Share a few details and we'll come prepared."
-        dossier={{ sectionNo: "XI", coord: "Reply within two business days" }}
+        dossier={{ sectionNo: "XI", coord: "Contact · Bragg Creek · Bearspaw · Rocky View · Water Valley" }}
       />
 
       {/* § I — What happens + form + direct-contact panel */}
