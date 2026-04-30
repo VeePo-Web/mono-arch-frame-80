@@ -1,6 +1,5 @@
 import { lazy, Suspense, useMemo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { useSearchParams } from "react-router-dom";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
@@ -8,32 +7,19 @@ import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
-import { serviceAreas } from "@/data/serviceAreas";
 import { projectTypeFromQuery } from "@/lib/validation/consultation";
-import { BODY } from "@/lib/typography";
-import { SECTION_PADDING } from "@/lib/spacing";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
 const SITE = "https://havencreekrenovations.ca";
 
-// TODO: replace with real number when ready.
 const STUDIO_PHONE = "403 970-7691";
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_EMAIL = "cory@havencreekrenovations.com";
 
-const POSTAL: Record<string, string> = {
-  "bragg-creek": "T0L",
-  "rocky-view-county": "T4A",
-  bearspaw: "T3R",
-  "water-valley": "T0M",
-};
-
 const STEPS = [
-  { n: "01", title: "You write", body: "Share a few details about the project, the property, and what you're considering." },
-  { n: "02", title: "We reply", body: "Within two business days. A real reply from a real person — not an automated funnel." },
-  { n: "03", title: "We walk the property", body: "Or talk by phone if that's easier. We come prepared, ask honest questions, and listen." },
-  { n: "04", title: "A thoughtful quote", body: "Built around your property — scope, materials, timeline, and an all-in price, written plainly." },
+  { n: "01", title: "You write", body: "A few details about the property and what you're considering. Five fields, two minutes." },
+  { n: "02", title: "We reply", body: "Within two business days. A real reply from a real person — Cory — with honest questions and a clear next step." },
 ];
 
 const Contact = () => {
@@ -44,9 +30,9 @@ const Contact = () => {
   );
 
   useSeo({
-    title: "Contact — Talk Through Your Project",
+    title: "Contact — Tell Us About Your Property",
     description:
-      "Request a consultation for renovation work in rural Alberta. We respond within two business days — no pressure, no automated funnel, just a clear conversation.",
+      "Tell us about your renovation project in rural Alberta. A real person — Cory — replies within two business days.",
     path: "/contact",
   });
 
@@ -64,7 +50,7 @@ const Contact = () => {
         headline="Let's talk through your property."
         accentWord="talk"
         subhead="This is the beginning of a relationship, not a sales trap. Share a few details and we'll come prepared."
-        dossier={{ sectionNo: "XI", coord: "Reply within two business days" }}
+        dossier={{ sectionNo: "XI", coord: "Contact · Bragg Creek · Bearspaw · Rocky View · Water Valley" }}
       />
 
       {/* § I — What happens + form + direct-contact panel */}
@@ -157,7 +143,6 @@ const Contact = () => {
                     </a>
                   </li>
                   <li>
-                    {/* TODO: replace with real phone number */}
                     <a
                       href={`tel:${STUDIO_PHONE_TEL}`}
                       className="contact-row group flex items-baseline justify-between gap-6 py-5"
@@ -171,80 +156,8 @@ const Contact = () => {
                       <span className="text-minimal text-evergreen/65">PHONE</span>
                     </a>
                   </li>
-                  <li>
-                    <div className="flex items-baseline justify-between gap-6 py-5">
-                      <span className="flex items-baseline gap-4">
-                        <span className="numeral-mark tabular-nums text-evergreen/70">03</span>
-                        <span className="font-serif text-[1.1rem] md:text-[1.2rem] text-foreground/85">
-                          Reply within two business days
-                        </span>
-                      </span>
-                      <span className="text-minimal text-evergreen/65 tabular-nums">MON–FRI</span>
-                    </div>
-                  </li>
                 </ul>
               </div>
-            </div>
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* § II — Custom quote reassurance */}
-      <RevealSection id="quote" aria-labelledby="quote-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
-        <Container size="wide">
-          <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <SectionHeader
-              id="quote-heading"
-              eyebrow="About the quote"
-              title="Pricing is custom because the work is."
-              lede="We don't quote on instinct, and we don't quote without seeing the property. The number we send back is built on the scope, the site, and the materials that suit it — not on a template."
-              align="center"
-              titleWidth="wide"
-              bottomGap="none"
-            />
-            <p className={cn(BODY.standard, "mt-5 max-w-[58ch] mx-auto text-center")}>
-              No obligation to proceed, either way.
-            </p>
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* § III — Service-area trust line */}
-      <RevealSection id="areas" aria-labelledby="areas-heading" className={cn(SECTION_PADDING.standard, "cv-auto")}>
-        <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <SectionHeader
-                id="areas-heading"
-                eyebrow="Where we work"
-                title="Local, by choice."
-                lede="If your property sits in or near one of these communities, we're glad to talk."
-                titleWidth="none"
-                bottomGap="none"
-              />
-            </div>
-            <div className="lg:col-span-7">
-              <ul className="divide-y divide-border/60 border-y border-border/60">
-                {serviceAreas.map((a, i) => (
-                  <li
-                    key={a.slug}
-                    data-reveal
-                    style={{ ["--reveal-delay" as string]: `${180 + i * 80}ms` }}
-                  >
-                    <Link
-                      to={a.href}
-                      className="area-row group flex items-baseline justify-between gap-6 py-6"
-                    >
-                      <span className="font-serif text-[1.25rem] md:text-[1.4rem] text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
-                        {a.name}
-                      </span>
-                      <span className="text-minimal text-evergreen/70 tabular-nums">
-                        {POSTAL[a.slug]}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </Container>

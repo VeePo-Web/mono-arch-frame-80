@@ -51,7 +51,7 @@ const Services = () => {
         headline="Three services, held to one standard."
         accentWord="held"
         subhead="We chose focus over breadth on purpose. Interior finishing leads — that's where the craft is felt most clearly. Exterior repairs and decking carry the same care, scaled to what the weather and the land require."
-        primaryCta={{ to: "/contact", label: "Discuss your project" }}
+        primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
         dossier={{ sectionNo: "III", coord: "Services · Three, one standard", edition: "Edition I" }}
       />
@@ -234,7 +234,7 @@ const Services = () => {
         numeral="IV"
         eyebrow="DISCUSS YOUR PROJECT"
         heading="Tell us what you're considering. We'll come prepared."
-        primary={{ to: "/contact", label: "Request a Consultation" }}
+        primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/work", label: "View Our Work" }}
       />
     </main>

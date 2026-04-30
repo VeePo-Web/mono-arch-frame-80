@@ -115,7 +115,7 @@ const AreaPage = ({
         headline={computedHeadline}
         accentWord={accentWord}
         subhead={area.page.intro}
-        primaryCta={{ to: "/contact", label: `Talk through your ${area.name} property` }}
+        primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
         dossier={{
           sectionNo: NUMERAL_BY_SLUG[slug],
@@ -275,7 +275,7 @@ const AreaPage = ({
         eyebrow={`${area.name.toUpperCase()} · NEXT STEP`}
         heading={closingHeading}
         body="No pressure. Just a clear conversation about your property."
-        primary={{ to: "/contact", label: "Request a Consultation" }}
+        primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/service-areas", label: "All service areas" }}
       />
     </main>

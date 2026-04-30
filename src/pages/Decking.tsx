@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+// Eyebrow no longer used directly — SectionHeader carries it.
 import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
@@ -110,19 +110,7 @@ const Decking = () => {
         </Container>
       </RevealSection>
 
-      {/* § II — Pull quote */}
-      <RevealSection id="lifestyle" aria-labelledby="lifestyle-heading" className={cn(SECTION_PADDING.compact, "section-wash cv-auto")}>
-        <Container size="wide">
-          <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow align="center" label="Why it matters" />
-            <h2 id="lifestyle-heading" className="sr-only">Why decking matters on rural property</h2>
-            <p className={cn(BODY.quote, "mt-7 max-w-[36ch] mx-auto")}>
-              On a rural property, a deck is the room you use most without realizing it.
-              It should sit where it belongs.
-            </p>
-          </div>
-        </Container>
-      </RevealSection>
+      {/* § II "Why it matters" pull-quote — folded into §I; removed for less scroll. */}
 
       {/* § III — Scopes (bento) */}
       <RevealSection id="materials" aria-labelledby="materials-heading" className={SECTION_PADDING.standard}>

@@ -1,107 +1,198 @@
-## Goal
-Eliminate the per-page drift in section headers + spacing by introducing a single `SectionHeader` primitive and auditing every consumer to use it. Today there are two header systems running in parallel (`HEADLINE.section` token vs the legacy `text-headline` CSS utility), three different eyebrow→H2 gaps (`mt-4`/`mt-5`/`mt-6`), inconsistent `data-drift` coverage, and the deprecated `numeral` prop is still being passed in 14+ places. After this pass the entire site speaks one section-header language.
 
-## What's wrong today (audit findings)
+## Forensic UX Audit — Findings
 
-Eight pages + 3 components render a section header. They split into two camps:
+I read every page and shared component as a third-party Apple UX consultant. The bones are excellent — typography system, spacing tokens, motion language are world-class. What's dragging the experience down is **redundancy, copy fatigue, and a few brand-rule violations**. Below is the findings + fix plan.
 
-**Camp A — uses the typography token (newer):**
-- `Index.tsx` → `<Eyebrow label /> + <h2 className={cn(HEADLINE.section, "mt-5 text-foreground")} data-drift>`
-- `HowItGoes.tsx`, `ServiceMarquee.tsx` (×2 inside)
-- `Services.tsx` (×3) — uses `mt-6` not `mt-5`, no `data-drift`
+---
 
-**Camp B — uses the legacy CSS class (older):**
-- `Contact.tsx` (×3)
-- `AreaPage.tsx` (×3)
-- `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx` (each ×3-4)
+### A. Brand-rule violations — must fix (highest priority)
 
-Camp B sub-issues:
-- Mixes `text-headline` and `text-title` arbitrarily.
-- Still passes `numeral="I"` to `<Eyebrow />` even though `Eyebrow.tsx` documents it as deprecated and ignored.
-- Eyebrow labels are SHOUTY UPPERCASE strings ("WHAT WE BUILD") while Camp A uses sentence case ("What we build"). The Eyebrow primitive already uppercases via `.text-minimal`, so the SHOUTING in source is redundant noise.
-- Section padding is sometimes hand-rolled (`pt-20 pb-24 md:pt-32`) instead of `SECTION_PADDING.standard`.
+The Core memory is explicit: primary CTAs are **"Get a Quote" / "Get a Free Quote"** — never "Consultation," never industry jargon. Yet the codebase still ships seven violations:
 
-## The unification
-
-### 1. New primitive: `src/components/SectionHeader.tsx` (~50 lines)
-
-A single composable header used everywhere:
-
-```tsx
-<SectionHeader
-  eyebrow="What we build"
-  title="Three services. One standard."
-  lede="Interior finishing leads — that's where the craft is felt most clearly."
-  id="services-heading"
-  align="left"      // | "center"
-  tone="default"    // | "light" (for dark sections, swaps eyebrow + heading colors)
-  width="title"     // | "lede"  (controls max-w of which line; "title" caps headline at 20ch, lede at 58ch)
-  drift              // boolean — adds data-drift to H2
-/>
-```
-
-Renders the canonical structure with locked spacing:
-- `<Eyebrow />` (sentence-case label, no `numeral`).
-- `mt-5` → `<h2 className={cn(HEADLINE.section, "text-foreground")} data-drift={drift}>`.
-- `mt-5` → `<p className={cn(BODY.large, "max-w-[58ch]")}>` (only if `lede` provided).
-
-The header's wrapper is `max-w-[62ch] mb-12 md:mb-16` by default — matching the dominant pattern on Index/Services. A `compact` prop gives `mb-10 md:mb-14` for HowItGoes-style strips. A `bottomGap="none"` escape hatch removes the bottom margin for sections where the next block sets its own top spacing.
-
-Light tone: H2 stays `text-background`, eyebrow auto-passes `tone="light"`. Lede goes `text-background/85`.
-
-### 2. Lock `Eyebrow` props
-
-Drop the deprecated `numeral` prop from the type signature. Compiler errors flag every old call site for removal in step 4. Eyebrow stays otherwise unchanged — same hairline + label, same `tone` and `align`.
-
-### 3. Migrate every consumer
-
-Replace the hand-built eyebrow/H2/lede trios with `<SectionHeader>` in:
-- `src/pages/Index.tsx` — Areas section + final-CTA section (final-CTA uses `tone="light"`).
-- `src/components/HowItGoes.tsx` — single header.
-- `src/components/ServiceMarquee.tsx` — top header.
-- `src/components/TestimonialSpine.tsx` — `align="center"` header.
-- `src/pages/Services.tsx` — 3 headers (drop `numeral`, lowercase labels, drop `text-foreground`/`mt-6` strings).
-- `src/pages/Contact.tsx` — 3 headers (one is `align="center"`); also normalize the "Prefer to write or call?" sub-header which currently uses `text-title` to a `SectionHeader` with `compact + bottomGap="none"` rendered as h3.
-- `src/components/AreaPage.tsx` — 3 headers (interpolated `area.name` strings stay).
-- `src/pages/InteriorFinishing.tsx` — 4 headers.
-- `src/pages/ExteriorFinishing.tsx` — 4 headers.
-- `src/pages/Decking.tsx` — 4 headers (already in spec).
-
-Inside each migration: also normalize section padding to one of the four `SECTION_PADDING` tokens. The handful of bespoke `pt-X pb-Y` spots become `SECTION_PADDING.standard` or `.compact`. Sections that combine padding with the cream `section-wash` keep `cn(SECTION_PADDING.standard, "section-wash")` — that pattern is correct.
-
-### 4. Add an `as` polymorphic option
-
-Some headers semantically should be `<h3>` (sub-section inside a larger H2 region — Contact's "Prefer to write or call?", AreaPage's nested service cards). `SectionHeader` accepts `as="h2" | "h3"` (default h2) and downgrades the title typography to `HEADLINE.subsection` when `h3` is selected, preserving heading-level hierarchy without sacrificing the visual rhythm.
-
-### 5. Style-guide page
-
-Add a `SectionHeader` row to `src/pages/StyleGuide.tsx` showing the four variants (default / compact / centered / light) so future contributors see the canonical pattern instead of inventing a new one.
-
-## Spacing audit (done as part of step 3, not separately)
-
-| Place | Before | After |
+| File | Current label | Fix |
 |---|---|---|
-| Eyebrow → H2 | `mt-3` / `mt-4` / `mt-5` / `mt-6` | always `mt-5` |
-| H2 → lede | `mt-3` / `mt-5` / `mt-7` | always `mt-5` |
-| Header → first content block | `mb-8` / `mb-10` / `mb-12` / `mb-14` / `mb-16` | `mb-12 md:mb-16` (default), `mb-10 md:mb-14` (compact), `0` (none) |
-| Section padding | mix of `py-20 md:py-32`, hand-rolled, etc. | one of `SECTION_PADDING.{standard,compact,terminal,hero}` |
-| Title `max-w` | `max-w-[20ch]` / `[22ch]` / `[26ch]` / none | `max-w-[20ch]` (default), `max-w-[26ch]` for `width="wide"` |
-| Lede `max-w` | `max-w-[46ch]` / `[58ch]` / `[62ch]` / none | `max-w-[58ch]` (default) |
+| `ClosingCta.tsx` (default prop) | `Request a Consultation` | `Get a Free Quote` |
+| `Footer.tsx` | `Request a Consultation` | `Get a Free Quote` |
+| `Services.tsx` (closing) | `Request a Consultation` | `Get a Free Quote` |
+| `Services.tsx` (hero) | `Discuss your project` | `Get a Free Quote` |
+| `ServiceAreas.tsx` (closing) | `Request a Consultation` | `Get a Free Quote` |
+| `ServiceAreas.tsx` (hero) | `Discuss your area` | `Get a Free Quote` |
+| `AreaPage.tsx` (closing) | `Request a Consultation` | `Get a Free Quote` |
+| `AreaPage.tsx` (hero) | `Talk through your {Area} property` | `Get a Free Quote` |
+| `About.tsx` ×2 | `Talk through your project` | `Get a Free Quote` |
+| `Work.tsx` (hero) | `Discuss similar work` | `Get a Free Quote` |
+| `InteriorFinishing.tsx` (hero) | `Discuss interior finishing` | `Get a Free Quote` |
+| `ConsultationForm.tsx` submit | `Request the Conversation` | `Send the Note` (form context — "Get a Free Quote" reads weird inside the form itself; this preserves the editorial voice without the jargon) |
 
-## Out of scope (explicitly)
+Also rewrite `useSeo` description in `Contact.tsx` and `ThankYou.tsx` to remove "consultation" wording.
 
-- No changes to `HEADLINE` token scale (sizes stay).
-- No new keyframes / motion. `data-drift` becomes a prop, but its CSS is unchanged.
-- No `SubPageHero` or `SectionHeader` in nav / drawer / footer — those have their own type system.
-- The legacy `.text-headline` / `.text-title` CSS classes stay in `index.css` (they're consumed elsewhere) but no new code uses them.
-- `Eyebrow.tsx` keeps its `tone` and `align` props; we only remove the dead `numeral`.
-- Memory rules untouched (CTA copy, palette, drift cinematics — all preserved).
+---
 
-## File touches
+### B. The "two business days" fatigue (16 occurrences)
 
-- `src/components/SectionHeader.tsx` *(new)*
-- `src/components/Eyebrow.tsx` — drop `numeral` prop from type
-- `src/pages/Index.tsx`, `src/pages/Services.tsx`, `src/pages/Contact.tsx`, `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/Decking.tsx`, `src/pages/StyleGuide.tsx`
-- `src/components/HowItGoes.tsx`, `src/components/ServiceMarquee.tsx`, `src/components/TestimonialSpine.tsx`, `src/components/AreaPage.tsx`
+Site-wide, the same phrase appears **16 times** — twice in the Hero alone (trust microcopy + StatCard), three times on Contact, twice on Thank-You, twice in the form, once in Footer, etc. By the time a visitor reaches the form they've read it five times. Apple-grade copy says it once, in the right place, and trusts the reader.
 
-No CSS changes required. No new dependencies. No memory changes.
+**Strategy:**
+- **Keep** in: form helper text, Contact-page step "We reply", QuickContactSheet success state, Thank-You hero. (4 instances — each is in a moment of genuine information need.)
+- **Remove from**: Hero trust microcopy (replace with "No automated funnel"), Index final-CTA lede ("usually the same day" line), Index area CTA caption, Footer (replace with "We're a small team — every note reaches Cory directly."), Contact dossier strip, Contact direct-contact list row #03 (turn into hours instead).
+
+Net: 16 → 4 occurrences. The promise becomes credible instead of performative.
+
+---
+
+### C. Home page (`Index.tsx`) — cognitive load audit
+
+The page is technically beautiful but asks the visitor to absorb **seven sections + a 5-field form**. Specific drag points:
+
+**1. Final-CTA band is doing five jobs.** It has: (a) headline + lede, (b) "real person" microcopy, (c) escape-hatch contact list, (d) form bezel with seal, (e) numbered promise list. Visually impressive, decision-paralysing in practice.
+**Fix:** Drop the numbered promise list (item #4 — duplicates trust strip + how-it-goes content). Keep headline, escape hatch, form. Three things, not five.
+
+**2. Trust strip card #3 ("One contractor / Start → finish") repeats** what HowItGoes says better with three full steps directly below.
+**Fix:** Replace card #3 with something the rest of the page does *not* say: a **named human** — "Cory · Owner-builder" / "Replies personally". This grounds the trust claim in a person, which the persona doc explicitly asks for.
+
+**3. Form section header is too long** ("A few details about your property and what's on your mind. We'll write back within two business days — usually the same day — with a couple of clear questions, not a template quote."). 38 words above a 5-field form.
+**Fix:** Cut to: "Tell us about the place. A real person — Cory — will reply within two business days." Trims the lede 60%.
+
+**4. Mobile escape-hatch & desktop escape-hatch render twice** (one `lg:hidden`, one `hidden lg:block`). Both maintained, both styled differently.
+**Fix:** Single responsive component — same markup, fluid styling. -40 lines, -1 maintenance trap.
+
+---
+
+### D. Contact page (`Contact.tsx`)
+
+**1. Three-step sticky "What happens next" duplicates HowItGoes on the home page** *and* the surveyor frame on `/services`. Same content, third presentation.
+**Fix:** Reduce to two steps: "01 You write" / "02 We reply within two business days, with a clear next step." Drop "We walk the property" + "A thoughtful quote" — these are inferred and don't help the user *complete the form*. The sticky rail becomes shorter and easier to scan beside the form.
+
+**2. "Or reach us directly" panel below the form is a third-time CTA.** The user already saw the email/phone in the nav, the form has a "phone or email" field, and now there's a third surface listing the same contact info with numerals 01/02/03 (the "03" item is just business hours dressed up as a contact method).
+**Fix:** Replace the styled `<ul>` with a single calm two-row block: just the email and the phone, both as large tappable rows. Drop the "03 · Reply within two business days · MON–FRI" row (this is the redundancy we agreed to thin in §B).
+
+**3. § II "About the quote" pull-quote band sits between the form and service-areas.** It's editorial filler — it says "pricing is custom" — which is exactly what `/services` § III already says (twice). On a contact page, the visitor's job is "submit the form." Anything between the form and exit that isn't task-supporting is friction.
+**Fix:** Delete § II entirely on Contact. (The same content lives on `/services`.)
+
+**4. § III "Where we work" on Contact** is a duplicate of `/service-areas`. After someone has submitted intent, do they need a fourth re-listing of the four areas?
+**Fix:** Compress to a single line under the form's "location" field hint: "Bragg Creek · Rocky View County · Bearspaw · Water Valley." Delete the entire § III RevealSection.
+
+Net: Contact goes from 4 sections → 1 section + a tighter form. The page becomes a focused conversion surface, not a content tour.
+
+---
+
+### E. ConsultationForm — friction-cost audit
+
+Form is already well-built (collapsible context, single contact field, honeypot). Two small gains:
+
+**1.** Helper line "Email or phone — whichever you prefer." duplicates the placeholder which already shows both. Cut.
+**2.** Submit button label "Request the Conversation" is editorial-precious *and* breaks the "Get a Quote" rule by association. Change to **"Send the Note"** (matches the Thank-You heading "We've got your note").
+**3.** Honeypot field works; no change needed.
+
+---
+
+### F. Services page (`Services.tsx`)
+
+**1.** § II "Full-circle support" surveyor-frame duplicates HowItGoes on home with different visuals.
+**Fix:** Keep, but reduce from 3 numbered steps to a single confident statement + the surveyor frame as decoration. The numbered list is the third time the visitor has seen "Conversation → Planning → Build" by this point.
+
+**2.** § III "About quotes" + bento "What a quote includes" together are a 5-tile checklist the user is unlikely to scan.
+**Fix:** Trim bento from 5 → 3 tiles: "Scope, written plainly" / "Materials by name" / "All-in price." Same trust signal, half the visual weight.
+
+---
+
+### G. Service detail pages (Interior / Exterior / Decking)
+
+**1.** Each has § II "Why it matters" pull-quote band that is one italic sentence inside a section-wash. Visually heavy for one sentence.
+**Fix:** Move the italic line directly under the § I SectionHeader as a `BODY.quote`. Delete the standalone § II RevealSection. Saves ~120vh of scroll on each page.
+
+**2.** § IV "Project proof" PremiumCard uses a **vignette** placeholder, not a real photo. The plate label says "Plate I" — but the data already has real photos in `workPhotos`. (Confirmed via `servicePhotos[s.slug]` usage on `/services` working fine.)
+**Fix:** Replace `<InteriorVignette />` / `<ExteriorVignette />` / decking equivalents in the proof card with the real photo from `workPhotos[proof.slug]`, falling back to vignette only when missing. (The hero vignette stays — it's an editorial frame, not a placeholder.)
+
+---
+
+### H. About page (`About.tsx`)
+
+**1.** § III "Hands-on continuity" → 3 InfoCards that say what § II + § IV already say differently.
+**Fix:** Delete § III entirely. Page goes 4 sections → 3, each with a distinct argument.
+
+**2.** Eyebrow + `text-headline` hand-rolled stacks (lines 91–94, 126–128, 151–154) bypass the SectionHeader primitive that already exists.
+**Fix:** Migrate to `<SectionHeader>` for visual consistency with Services/Index/Contact.
+
+---
+
+### I. ServiceAreas page
+
+**1.** Eyebrow uses ALL-CAPS hand-rolled labels (`THE ROSTER`, `BUILT FOR RURAL SERVICE`) bypassing `SectionHeader`.
+**Fix:** Migrate both sections to `<SectionHeader>`.
+
+**2.** § II "Built for rural service" 4-item FIT list duplicates the HowItGoes-style numbered 01/02/03/04 already used on Areas/Services/Home.
+**Fix:** Reduce 4 → 3 items (drop "Land & wildlife" — overlap with "Property access"). Keep the editorial figure-footnote header.
+
+---
+
+### J. Work page (`Work.tsx`)
+
+**1.** Filter rail has **8 chips** (All + 3 categories + 4 areas). On mobile this wraps to 3 lines and creates a chip wall before any work shows.
+**Fix:** Split into two visual rows with quiet labels: "Type" (3 chips) / "Area" (4 chips). "All" becomes an explicit reset link to the right of the chips. Removes one chip, adds clarity, halves perceived chip count.
+
+**2.** Empty-state copy currently reads: "No plates in this category yet. We're adding work as it's photographed." — fine, but the chip stays selected so the user is stuck.
+**Fix:** Empty state gets a "Show all work" reset button.
+
+---
+
+### K. ThankYou page
+
+**1.** § II "While you wait" → 4-card grid (Work / Services / Service Areas / About). After submitting, offering 4 next-steps is paradox-of-choice.
+**Fix:** Reduce to 2 cards: "See the Work" + "How we work" (About). The other two are reachable via nav and don't earn prime real estate after a conversion.
+
+**2.** § III "Quiet sign-off" personalized branch ("No need to refresh — we'll come to you.") is a third reassurance after the hero subhead and the receipt stamp. Cut.
+
+---
+
+### L. Footer
+
+**1.** "Request a Consultation" CTA — fix per §A.
+**2.** Service areas list (4 links) and Services list (3 links) duplicate the menu drawer columns exactly. On a calm site this is fine, but on mobile the footer becomes a 4-column re-statement of the nav.
+**Fix:** Mobile-only — hide the "Service areas" footer column (kept on desktop). The drawer + nav already cover this on small screens. Net: cleaner mobile footer, no info loss.
+
+---
+
+### M. Hero — small refinements
+
+**1.** "Trust microcopy" line shows three claims (Reply within 2 business days · No obligation · No pressure). "No obligation" and "No pressure" are near-synonyms.
+**Fix:** Drop "No pressure". Two claims, not three.
+
+**2.** "Trusted in {4 areas}" line directly below — restates the "Bragg Creek · Rocky View · Bearspaw · Water Valley" already shown in the StatCard caption ("Areas served · 4") immediately below in the trust strip.
+**Fix:** Keep the Hero "Trusted in" line (it's an active link rail), rewrite the StatCard caption to "Foothills, west & north of Calgary" — communicates *where* without re-listing.
+
+---
+
+### N. Spacing/header drift cleanup
+
+A handful of older pages still use `text-headline` directly + hand-rolled `<Eyebrow>` stacks instead of `<SectionHeader>` (About §II/III/IV, ServiceAreas §I/II, ThankYou §I/II). Migrate all to `<SectionHeader>` so spacing and reveal timing are uniform across the site.
+
+---
+
+## Implementation order (single pass)
+
+1. Brand-rule CTA copy fix (12 files) — `ClosingCta.tsx` default + every override.
+2. ConsultationForm submit label + helper-line trim.
+3. Site-wide "two business days" thinning (per §B list).
+4. Index.tsx — final-CTA simplification, trust-strip card #3 swap, escape-hatch dedupe.
+5. Contact.tsx — drop §II, §III; trim sticky rail to 2 steps; replace contact list with 2-row block.
+6. About.tsx — delete § III; migrate §II/III/IV to SectionHeader.
+7. ServiceAreas.tsx — migrate to SectionHeader; trim FIT list 4→3.
+8. Service detail pages (×3) — fold "Why it matters" into §I; replace proof-card vignette with real photo when present.
+9. Services.tsx — trim "What a quote includes" 5→3; collapse §II numbered list.
+10. Work.tsx — split filter rail into Type/Area rows; add reset-to-all empty state.
+11. ThankYou.tsx — reduce §II grid 4→2; cut personalized §III line.
+12. Footer.tsx — fix CTA copy; hide service-areas column on mobile.
+13. Hero.tsx — drop "No pressure"; rewrite StatCard #2 caption.
+
+Memory is updated only if these decisions change Core rules — they don't (they reinforce existing ones).
+
+## Out of scope (intentional)
+
+- Photography mapping (already done in earlier loop)
+- Navigation drawer / hamburger / section rail (Core rules forbid changes)
+- Color palette, typography tokens, motion language
+- New features or new pages
+- Anything in QuickContactSheet beyond the "two business days" trim
+
+Approve and I'll switch to build mode and execute in the order above.

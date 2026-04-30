@@ -59,7 +59,7 @@ const Work = () => {
         headline="Real properties. Real outcomes. Worth a closer look."
         accentWord="closer"
         subhead="Each plate is a record of a real project — what we found, what we did, and what changed for the homeowner."
-        primaryCta={{ to: "/contact", label: "Discuss similar work" }}
+        primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/services", label: "Our services" }}
         dossier={{ sectionNo: "VIII", coord: `${galleryPlates.length} plates · selected work`, edition: "Edition I" }}
       />
