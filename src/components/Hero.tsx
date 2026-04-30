@@ -148,9 +148,8 @@ const Hero = () => {
               className="trust-microcopy mt-7 reveal-up"
               style={{ animationDelay: "620ms" }}
             >
-              <span>Reply within 2 business days</span>
+              <span>No automated funnel</span>
               <span>No obligation</span>
-              <span>No pressure</span>
             </p>
 
             {/* Trusted-in line — small, calm, links to area pages */}

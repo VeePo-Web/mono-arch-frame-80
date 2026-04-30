@@ -104,14 +104,14 @@ const Index = () => {
               <StatCard
                 label="Areas served"
                 value="4"
-                caption="Bragg Creek · Rocky View · Bearspaw · Water Valley."
+                caption="Foothills, west & north of Calgary."
               />
             </div>
             <div data-reveal style={{ ["--reveal-delay" as string]: "240ms" }}>
               <StatCard
-                label="One contractor"
-                value="Start → finish"
-                caption="The same person plans, builds, and walks the finish."
+                label="Cory · Owner-builder"
+                value="Replies personally"
+                caption="Every note reaches him directly. Not a funnel."
               />
             </div>
           </div>
