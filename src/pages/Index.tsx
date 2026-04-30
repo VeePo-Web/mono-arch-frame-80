@@ -15,7 +15,7 @@ import StatCard from "@/components/ui/StatCard";
 import BentoGrid, { BentoTile } from "@/components/ui/BentoGrid";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
-import { HEADLINE } from "@/lib/typography";
+// (typography tokens used implicitly via SectionHeader)
 import { SECTION_PADDING, CONTENT_GAP } from "@/lib/spacing";
 import { serviceAreas } from "@/data/serviceAreas";
 
