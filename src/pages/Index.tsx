@@ -210,9 +210,9 @@ const Index = () => {
 
         <Container size="wide">
           <div className="flex flex-col gap-10 lg:grid lg:grid-cols-12 lg:gap-x-20 lg:gap-y-0 lg:items-start">
-            {/* 1. Headline + lede */}
+            {/* 1. Headline + lede + escape hatch (left column) */}
             <div
-              className="order-1 lg:order-1 lg:col-span-6"
+              className="order-1 lg:col-span-6"
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
@@ -220,30 +220,19 @@ const Index = () => {
                 id="final-cta-heading"
                 eyebrow="Next step"
                 title="Tell us about the place."
-                lede="A few details about your property and what's on your mind. We'll write back within two business days — usually the same day — with a couple of clear questions, not a template quote."
+                lede="A real person — Cory — will reply within two business days."
                 tone="light"
                 titleWidth="narrow"
                 bottomGap="none"
                 drift
               />
-              <p className="mt-4 text-minimal text-background/60 max-w-[46ch]">
-                A real person reads every message. No drip emails, no calls unless you ask for one.
-              </p>
-            </div>
 
-            {/* 2. Direct-contact escape hatch — promoted ABOVE the form on mobile (order-2),
-                tucked into desktop's left column below the lede (lg:order-3). */}
-            <div
-              className="order-2 lg:order-3 lg:col-span-6 lg:mt-10"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "180ms" }}
-            >
-              <div className="lg:pt-8 lg:border-t lg:border-background/20 max-w-[46ch]">
-                <p className="hidden lg:block text-minimal text-background/65">
+              {/* Single responsive escape hatch — one markup, fluid styling */}
+              <div className="mt-10 lg:pt-8 lg:border-t lg:border-background/20 max-w-[46ch]">
+                <p className="text-minimal text-background/65 mb-3 lg:mb-4">
                   Or reach us directly
                 </p>
-                {/* Mobile: full-width tap rows */}
-                <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:hidden">
+                <div className="grid grid-cols-1 gap-2 sm:gap-3">
                   <a
                     href="mailto:cory@havencreekrenovations.com"
                     className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
@@ -265,31 +254,12 @@ const Index = () => {
                     </span>
                   </a>
                 </div>
-                {/* Desktop only — italic inline list */}
-                <div className="hidden lg:block space-y-3 mt-3">
-                  <p>
-                    <a
-                      href="mailto:cory@havencreekrenovations.com"
-                      className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300"
-                    >
-                      cory@havencreekrenovations.com
-                    </a>
-                  </p>
-                  <p>
-                    <a
-                      href="tel:+14039707691"
-                      className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300 tabular-nums"
-                    >
-                      403 970-7691
-                    </a>
-                  </p>
-                </div>
               </div>
             </div>
 
-            {/* 3. Form bezel — third on mobile (after escape hatch), right column desktop */}
+            {/* 2. Form bezel — right column desktop, second on mobile */}
             <div
-              className="order-3 lg:order-2 lg:col-span-6 lg:row-span-3"
+              className="order-2 lg:col-span-6"
               data-reveal
               style={{ ["--reveal-delay" as string]: "260ms" }}
             >
@@ -302,7 +272,7 @@ const Index = () => {
                     What should we know before we reach out?
                   </p>
                   <p className="mt-2 text-minimal text-muted-foreground">
-                    Just enough so the first reply is useful — five fields, two minutes.
+                    Five fields, two minutes.
                   </p>
 
                   <div className="mt-6 sm:mt-7 mb-5 sm:mb-6 h-px bg-foreground/10" />
@@ -322,32 +292,6 @@ const Index = () => {
                   Edition I · No. VII
                 </span>
               </div>
-            </div>
-
-            {/* 4. Promise list — last on both layouts */}
-            <div
-              className="order-4 lg:order-4 lg:col-span-6 lg:mt-12"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "340ms" }}
-            >
-              <ul className="max-w-[46ch] border-l border-background/15 pl-6 space-y-4 text-body text-background/85 text-[0.98rem]">
-                {[
-                  "Hands-on support from planning to completion.",
-                  "Interior finishing, exterior repairs, and decking for rural homes.",
-                  "A respectful process built around trust, privacy, and long-term care.",
-                  "Serving Bragg Creek, Rocky View County, Bearspaw, and Water Valley.",
-                ].map((line, i) => (
-                  <li key={line} className="flex items-baseline gap-5">
-                    <span
-                      aria-hidden="true"
-                      className="text-minimal text-background/55 tabular-nums w-6"
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="flex-1">{line}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </Container>
