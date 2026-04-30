@@ -210,18 +210,18 @@ const Contact = () => {
       </RevealSection>
 
       {/* § III — Service-area trust line */}
-      <RevealSection id="areas" aria-labelledby="areas-heading" className={cn(SECTION, "cv-auto")}>
+      <RevealSection id="areas" aria-labelledby="areas-heading" className={cn(SECTION_PADDING.standard, "cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="III" label="WHERE WE WORK" />
-              <h2 id="areas-heading" className="text-headline text-foreground mt-6">
-                Local, by choice.
-              </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-md">
-                If your property sits in or near one of these communities, we're glad to
-                talk.
-              </p>
+              <SectionHeader
+                id="areas-heading"
+                eyebrow="Where we work"
+                title="Local, by choice."
+                lede="If your property sits in or near one of these communities, we're glad to talk."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
             <div className="lg:col-span-7">
               <ul className="divide-y divide-border/60 border-y border-border/60">
