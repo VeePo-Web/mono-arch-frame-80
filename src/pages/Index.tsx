@@ -5,7 +5,7 @@ import Mail from "lucide-react/dist/esm/icons/mail";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import Hero from "@/components/Hero";
 import HowItGoes from "@/components/HowItGoes";
 import ServiceMarquee from "@/components/ServiceMarquee";
@@ -135,14 +135,15 @@ const Index = () => {
         style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 900px" }}
       >
         <Container size="wide">
-          <div className="max-w-[62ch] mb-12 md:mb-16" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow label="Where we work" />
-            <h2 id="areas-heading" data-drift className={cn(HEADLINE.section, "mt-5 text-foreground")}>
-              Local, by choice.
-            </h2>
-            <p className={cn(BODY.large, "mt-5 max-w-[58ch]")}>
-              Four communities. Each one different in pace, exposure, and the kind of property care it asks for.
-            </p>
+          <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+            <SectionHeader
+              id="areas-heading"
+              eyebrow="Where we work"
+              title="Local, by choice."
+              lede="Four communities. Each one different in pace, exposure, and the kind of property care it asks for."
+              titleWidth="none"
+              drift
+            />
           </div>
 
           <BentoGrid layout="2x2">
