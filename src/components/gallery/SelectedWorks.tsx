@@ -98,7 +98,7 @@ const SelectedWorks = () => {
             style={{ ["--reveal-delay" as string]: "0ms" }}
           >
             <div className="flex items-start justify-between gap-6">
-              <Eyebrow numeral="IV.b" label="SELECTED WORKS" />
+              <Eyebrow label="SELECTED WORKS" />
               <span className="coord-mark hidden md:inline-flex">
                 Plates IV–IX
               </span>
