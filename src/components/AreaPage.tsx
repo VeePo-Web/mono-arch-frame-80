@@ -125,7 +125,7 @@ const AreaPage = ({
       />
 
       {/* § I — Local context */}
-      <RevealSection aria-labelledby="context-heading" className={SECTION}>
+      <RevealSection aria-labelledby="context-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -158,7 +158,7 @@ const AreaPage = ({
       </RevealSection>
 
       {/* § II — How we serve here */}
-      <RevealSection aria-labelledby="services-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection aria-labelledby="services-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -216,7 +216,7 @@ const AreaPage = ({
       </RevealSection>
 
       {/* § III — Other nearby areas */}
-      <RevealSection aria-labelledby="nearby-heading" className={SECTION}>
+      <RevealSection aria-labelledby="nearby-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
