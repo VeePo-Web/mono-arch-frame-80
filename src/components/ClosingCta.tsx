@@ -23,7 +23,7 @@ const ClosingCta = ({
   eyebrow = "NEXT STEP",
   heading,
   body,
-  primary = { to: "/contact", label: "Request a Consultation" },
+  primary = { to: "/contact", label: "Get a Free Quote" },
   secondary = { to: "/work", label: "View Our Work" },
 }: ClosingCtaProps) => (
   <RevealSection

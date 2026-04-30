@@ -58,7 +58,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="col-span-1 md:col-span-3">
+          <div className="hidden md:block md:col-span-3">
             <p className="text-minimal text-evergreen/80 mb-5">Service areas</p>
             <ul className="space-y-3">
               {serviceAreas.map((a) => (
@@ -77,13 +77,13 @@ const Footer = () => {
           <div className="col-span-2 md:col-span-3">
             <p className="text-minimal text-evergreen/80 mb-5">Contact</p>
             <p className="text-body text-foreground/75 text-base leading-relaxed max-w-xs">
-              Reach out and we&apos;ll respond within two business days.
+              We&apos;re a small team — every note reaches Cory directly.
             </p>
             <Link
               to="/contact"
               className="group/btn mt-5 inline-flex items-center gap-3 min-h-[44px] text-minimal text-foreground hover:text-evergreen transition-colors duration-300"
             >
-              <span>Request a Consultation</span>
+              <span>Get a Free Quote</span>
               <span className="icon-chip bg-evergreen/[0.06]">
                 <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
               </span>
