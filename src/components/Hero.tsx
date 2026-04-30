@@ -7,54 +7,35 @@ import { serviceAreas } from "@/data/serviceAreas";
 import { photography } from "@/assets/photography";
 
 /**
- * Hero — five-second trust answer.
+ * Hero — cinematic split-stage.
  *
- * The persona's verbatim primary hook is the H1:
- *   "One trusted contractor for the property you value."
+ * Headline column (60%) carries the brand promise + two CTAs.
+ * Photo column (40%) anchors right at md+, sits below H1 on mobile so
+ * the headline + buttons land in the first viewport on every device.
  *
- * The right column is no longer a colophon vanity; it is a *behavioural*
- * promise list answering four of Sam's seven named fears in the first
- * viewport, capped with a single "Trusted in" line that names the four
- * communities. No fake imagery — typography is the proof here.
+ * Award-tier touches:
+ *  - H1 lines rise on staggered clip-path reveal (.reveal-up).
+ *  - Photo gets a slow ken-burns drift via .photo-drift.
+ *  - "Trusted" italic keeps its hand-drawn underline.
+ *  - CTAs use the new .cta-primary spring + .cta-ghost arrow vocabulary.
  */
-
-const FIELD_NOTES = [
-  {
-    title: "One person on site",
-    body: "Plans the work, does the work, walks the finish with you.",
-  },
-  {
-    title: "Property left as found",
-    body: "Access, animals, and clean-up are part of the deliverable.",
-  },
-  {
-    title: "Real reply within two business days",
-    body: "From a person, not a funnel.",
-  },
-  {
-    title: "No template quote",
-    body: "Built around your site, your scope, your materials.",
-  },
-];
-
 const Hero = () => {
   const headlineRef = useDrift<HTMLHeadingElement>(4);
+
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative pt-32 md:pt-52 pb-16 md:pb-36 overflow-hidden"
+      className="relative pt-28 md:pt-44 pb-16 md:pb-32 overflow-hidden"
     >
-      {/* Soft photographic backdrop — the brand's first real photograph,
-          held in the right-side bloom area at low opacity so the typography
-          remains the primary signal. */}
+      {/* Desktop photo stage — absolute, right-anchored, soft mask blends to cream */}
       <div
         aria-hidden="true"
-        className="absolute -top-32 -right-24 w-[680px] h-[520px] -z-10 hidden md:block overflow-hidden rounded-[3rem]"
+        className="hidden md:block absolute inset-y-0 right-0 w-[44%] -z-10 overflow-hidden"
         style={{
           maskImage:
-            "radial-gradient(ellipse at 70% 40%, hsl(0 0% 0% / 0.85) 0%, hsl(0 0% 0% / 0.55) 45%, transparent 75%)",
+            "linear-gradient(to right, transparent 0%, black 22%, black 100%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse at 70% 40%, hsl(0 0% 0% / 0.85) 0%, hsl(0 0% 0% / 0.55) 45%, transparent 75%)",
+            "linear-gradient(to right, transparent 0%, black 22%, black 100%)",
         }}
       >
         <img
@@ -65,7 +46,15 @@ const Hero = () => {
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          className="w-full h-full object-cover opacity-[0.55]"
+          className="w-full h-full object-cover photo-drift"
+        />
+        {/* Warm color wash to keep the cream palette continuous */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to right, hsl(var(--background) / 0.55), hsl(var(--background) / 0.10) 35%, transparent 70%)",
+          }}
         />
       </div>
 
@@ -75,14 +64,14 @@ const Hero = () => {
         className="absolute -top-40 -right-40 w-[640px] h-[640px] rounded-full -z-10"
         style={{
           background:
-            "radial-gradient(closest-side, hsl(145 18% 28% / 0.07), transparent 70%)",
+            "radial-gradient(closest-side, hsl(145 18% 28% / 0.08), transparent 70%)",
         }}
       />
 
       <Container size="wide">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          {/* Headline column */}
-          <div className="lg:col-span-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          {/* Headline column — wider so the H1 reads first */}
+          <div className="lg:col-span-7">
             <div className="reveal-up" style={{ animationDelay: "0ms" }}>
               <Eyebrow label="Haven Creek · Rural Alberta" />
             </div>
@@ -91,7 +80,7 @@ const Hero = () => {
               ref={headlineRef}
               id="hero-heading"
               data-drift
-              className="text-display text-foreground mt-10 max-w-[18ch] text-balance"
+              className="text-display text-foreground mt-8 max-w-[18ch] text-balance"
             >
               <span className="block overflow-hidden">
                 <span className="block reveal-up" style={{ animationDelay: "120ms" }}>
@@ -125,39 +114,36 @@ const Hero = () => {
             </h1>
 
             <p
-              className="text-subhead text-muted-foreground mt-10 max-w-[52ch] reveal-up"
+              className="text-subhead text-muted-foreground mt-8 max-w-[48ch] reveal-up"
               style={{ animationDelay: "380ms" }}
             >
               Hands-on finishing, repairs, and decks across rural Alberta. One
               person plans the work, does the work, and walks the finish with you.
-              No rotating trades.
             </p>
 
+            {/* CTA pair — primary spring + ghost arrow */}
             <div
-              className="mt-12 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7 reveal-up"
+              className="mt-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 reveal-up"
               style={{ animationDelay: "500ms" }}
             >
               <Link
                 to="/contact"
                 className="cta-anchor group/btn"
-                aria-label="Request a consultation — start a conversation about your property"
+                aria-label="Get a free quote — start a conversation about your property"
               >
-                <span>Request a Consultation</span>
+                <span>Get a Free Quote</span>
                 <span className="icon-chip icon-chip-light bg-background/15">
                   <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 </span>
               </Link>
 
-              <Link
-                to="/work"
-                className="group/ghost inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-foreground transition-colors duration-500 ease-swift"
-              >
+              <Link to="/work" className="cta-ghost group/ghost">
                 <span>View the Work</span>
-                <span className="block w-6 h-px bg-evergreen/60 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
+                <span className="cta-ghost__rule" aria-hidden="true" />
               </Link>
             </div>
 
-            {/* Trust microcopy — answers three of Sam's fears in one line */}
+            {/* Trust microcopy */}
             <p
               className="trust-microcopy mt-7 reveal-up"
               style={{ animationDelay: "620ms" }}
@@ -166,111 +152,56 @@ const Hero = () => {
               <span>No obligation</span>
               <span>No pressure</span>
             </p>
-          </div>
 
-          {/* Right "Field notes" promise column */}
-          <aside
-            className="hidden lg:block lg:col-span-4"
-            aria-label="What this means in practice"
-          >
-            <div
-              className="reveal-up border-l border-evergreen/20 pl-7"
+            {/* Trusted-in line — small, calm, links to area pages */}
+            <p
+              className="mt-9 font-serif italic text-foreground/75 text-[0.98rem] leading-relaxed reveal-up max-w-[52ch]"
               style={{ animationDelay: "740ms" }}
             >
-              <p className="text-minimal text-evergreen/80 mb-7">
-                What this means in practice
-              </p>
-
-              <ul className="space-y-6">
-                {FIELD_NOTES.map((note, i) => (
-                  <li key={note.title} className="flex gap-4">
-                    <span
-                      aria-hidden="true"
-                      className="text-minimal text-evergreen/80 tabular-nums pt-1 w-6 shrink-0"
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="flex-1">
-                      <p className="font-serif text-foreground/90 text-[1.02rem] leading-snug">
-                        {note.title}
-                      </p>
-                      <p className="mt-1.5 text-minimal text-muted-foreground leading-relaxed normal-case tracking-normal">
-                        {note.body}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-9 pt-6 border-t border-evergreen/15">
-                <p className="text-minimal text-evergreen/80 mb-3">Trusted in</p>
-                <p className="font-serif italic text-foreground/85 text-[1rem] leading-relaxed">
-                  {serviceAreas.map((a, i) => (
-                    <span key={a.slug}>
-                      <Link
-                        to={a.href}
-                        className="rounded-sm hover:text-evergreen focus-visible:outline-none focus-visible:underline focus-visible:decoration-evergreen focus-visible:underline-offset-4 focus-visible:text-evergreen transition-colors duration-300"
-                      >
-                        {a.name}
-                      </Link>
-                      {i < serviceAreas.length - 1 && (
-                        <span className="text-evergreen/35" aria-hidden="true">{" · "}</span>
-                      )}
-                    </span>
-                  ))}
-                </p>
-              </div>
-            </div>
-          </aside>
-        </div>
-
-        {/* Mobile fallback — Trusted-in line + the promise list collapsed to a single grid */}
-        <div
-          className="lg:hidden mt-14 pt-8 border-t border-border/60 reveal-up"
-          style={{ animationDelay: "740ms" }}
-        >
-          <p className="text-minimal text-evergreen/80 mb-5">
-            What this means in practice
-          </p>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {FIELD_NOTES.map((note, i) => (
-              <li key={note.title} className="flex gap-3">
-                <span
-                  aria-hidden="true"
-                  className="text-minimal text-evergreen/80 tabular-nums pt-0.5 w-6 shrink-0"
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <p className="font-serif text-foreground/90 text-[1rem] leading-snug">
-                    {note.title}
-                  </p>
-                  <p className="mt-1 text-minimal text-muted-foreground leading-relaxed normal-case tracking-normal">
-                    {note.body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <p className="mt-8 pt-6 border-t border-evergreen/15 text-minimal text-evergreen/80 mb-3">
-            Trusted in
-          </p>
-          <p className="font-serif italic text-foreground/85 text-[1rem] leading-relaxed">
-            {serviceAreas.map((a, i) => (
-              <span key={a.slug}>
-                <Link
-                  to={a.href}
-                  className="rounded-sm hover:text-evergreen focus-visible:outline-none focus-visible:underline focus-visible:decoration-evergreen focus-visible:underline-offset-4 focus-visible:text-evergreen transition-colors duration-300"
-                >
-                  {a.name}
-                </Link>
-                {i < serviceAreas.length - 1 && (
-                  <span className="text-evergreen/35" aria-hidden="true">{" · "}</span>
-                )}
+              <span className="not-italic font-sans text-xs uppercase tracking-[0.18em] text-evergreen/80 mr-3">
+                Trusted in
               </span>
-            ))}
-          </p>
+              {serviceAreas.map((a, i) => (
+                <span key={a.slug}>
+                  <Link
+                    to={a.href}
+                    className="rounded-sm hover:text-evergreen focus-visible:outline-none focus-visible:underline focus-visible:decoration-evergreen focus-visible:underline-offset-4 focus-visible:text-evergreen transition-colors duration-300"
+                  >
+                    {a.name}
+                  </Link>
+                  {i < serviceAreas.length - 1 && (
+                    <span className="text-evergreen/35" aria-hidden="true">{" · "}</span>
+                  )}
+                </span>
+              ))}
+            </p>
+          </div>
+
+          {/* Mobile photo plate — single 16:10 image below H1 */}
+          <div
+            className="md:hidden -mx-4 sm:-mx-6 reveal-up"
+            style={{ animationDelay: "860ms" }}
+          >
+            <div className="relative aspect-[16/10] overflow-hidden">
+              <img
+                src={photography.heroAcreage}
+                alt=""
+                width={1536}
+                height={960}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="w-full h-full object-cover photo-drift"
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(to top, hsl(var(--background) / 0.6), transparent 50%)",
+                }}
+              />
+            </div>
+          </div>
         </div>
       </Container>
     </section>

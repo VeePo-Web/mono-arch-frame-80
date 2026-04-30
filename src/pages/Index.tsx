@@ -7,16 +7,16 @@ import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
 import Hero from "@/components/Hero";
+import HowItGoes from "@/components/HowItGoes";
+import ServiceMarquee from "@/components/ServiceMarquee";
 import RevealSection from "@/components/RevealSection";
 import TestimonialSpine from "@/components/TestimonialSpine";
 import StatCard from "@/components/ui/StatCard";
-import InfoCard from "@/components/ui/InfoCard";
 import BentoGrid, { BentoTile } from "@/components/ui/BentoGrid";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
-import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { HEADLINE, BODY } from "@/lib/typography";
 import { SECTION_PADDING, CONTENT_GAP } from "@/lib/spacing";
-import { services } from "@/data/services";
 import { serviceAreas } from "@/data/serviceAreas";
 
 // Lazy: form pulls in react-hook-form + zod resolver — fetched only when the
@@ -66,7 +66,7 @@ const Index = () => {
           {
             question: "How does the consultation process work?",
             answer:
-              "Start with a request through the consultation form. We follow up to discuss your property, the scope you're considering, and your timeline. Quotes are custom — based on the work, the site, and the materials that suit it. There's no obligation to proceed.",
+              "Start with a request through the quote form. We follow up to discuss your property, the scope you're considering, and your timeline. Quotes are custom — based on the work, the site, and the materials that suit it. There's no obligation to proceed.",
           },
           {
             question: "Do you handle phased renovations over time?",
@@ -84,7 +84,7 @@ const Index = () => {
 
       <Hero />
 
-      {/* ─── § I — Trust strip: 3 stat cards (replaces FAQ wall) ─────── */}
+      {/* ─── § I — Trust strip: 3 stat cards ─────────────────────────── */}
       <RevealSection
         id="trust-strip"
         aria-labelledby="trust-strip-heading"
@@ -118,101 +118,16 @@ const Index = () => {
         </Container>
       </RevealSection>
 
-      {/* ─── § II — Services preview (3 InfoCards, no walls of text) ── */}
-      <RevealSection
-        id="services-preview"
-        aria-labelledby="services-heading"
-        className={cn(SECTION_PADDING.standard, "section-wash")}
-      >
-        <Container size="wide">
-          <div className="max-w-[62ch] mb-12 md:mb-16" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow label="What we build" />
-            <h2 id="services-heading" data-drift className={cn(HEADLINE.section, "mt-5 text-foreground max-w-[20ch]")}>
-              Three services. One standard.
-            </h2>
-            <p className={cn(BODY.large, MEASURE.prose, "mt-5")}>
-              Interior finishing leads — that's where the craft is felt most clearly.
-              Exterior repairs and decking carry the same care.
-            </p>
-          </div>
+      {/* ─── § II — How it goes (replaces Approach bento) ────────────── */}
+      <HowItGoes />
 
-          <div className={cn("grid grid-cols-1 md:grid-cols-3", CONTENT_GAP.cardGrid)}>
-            {services.map((s, i) => (
-              <div
-                key={s.slug}
-                data-reveal
-                style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
-              >
-                <InfoCard
-                  eyebrow={`SERVICE ${s.numeral}`}
-                  title={s.title}
-                  body={s.promise}
-                  to={s.href}
-                  linkLabel={`See ${s.shortName.toLowerCase()}`}
-                  featured={i === 0}
-                />
-              </div>
-            ))}
-          </div>
-        </Container>
-      </RevealSection>
+      {/* ─── § III — Service marquee (signature scroll moment) ───────── */}
+      <ServiceMarquee />
 
-      {/* ─── § III — Approach (3-step bento) ─────────────────────────── */}
-      <RevealSection
-        id="approach"
-        aria-labelledby="approach-heading"
-        className={SECTION_PADDING.standard}
-        style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 1000px" }}
-      >
-        <Container size="wide">
-          <div className="max-w-[62ch] mb-12 md:mb-16" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow label="The approach" />
-            <h2 id="approach-heading" data-drift className={cn(HEADLINE.section, "mt-5 text-foreground")}>
-              A path you can see from the start.
-            </h2>
-            <p className={cn(BODY.large, MEASURE.prose, "mt-5")}>
-              Three quiet steps. No hand-offs in between.
-            </p>
-          </div>
-
-          <BentoGrid layout="auto">
-            {[
-              { n: "01", t: "Conversation", b: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan." },
-              { n: "02", t: "Planning", b: "Scope, materials, and the practical realities of working on a rural property — clarified before we lift a tool." },
-              { n: "03", t: "Hands-on completion", b: "Built with attention to fit, finish, and the small details that decide whether a renovation reads as finished." },
-            ].map((step, i) => (
-              <div
-                key={step.n}
-                data-reveal
-                style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
-              >
-                <BentoTile eyebrow={step.n} title={step.t} body={step.b} />
-              </div>
-            ))}
-          </BentoGrid>
-
-          <div
-            className="mt-10 md:mt-14 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7"
-            data-reveal
-            style={{ ["--reveal-delay" as string]: "560ms" }}
-          >
-            <Link to="/contact" className="cta-anchor group/btn">
-              <span>Start that conversation</span>
-              <span className="icon-chip icon-chip-light bg-background/15">
-                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              </span>
-            </Link>
-            <p className={cn(BODY.caption, "italic font-serif")}>
-              You talk to one person from first walk-through to final.
-            </p>
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* ─── § IV — Testimonials (kept as-is, content-vis fast) ──────── */}
+      {/* ─── § IV — Testimonials ─────────────────────────────────────── */}
       <TestimonialSpine />
 
-      {/* ─── § V — Service areas (2x2 bento, replaces long list) ─────── */}
+      {/* ─── § V — Service areas (2x2 bento) ─────────────────────────── */}
       <RevealSection
         id="areas"
         aria-labelledby="areas-heading"
@@ -225,7 +140,7 @@ const Index = () => {
             <h2 id="areas-heading" data-drift className={cn(HEADLINE.section, "mt-5 text-foreground")}>
               Local, by choice.
             </h2>
-            <p className={cn(BODY.large, MEASURE.prose, "mt-5")}>
+            <p className={cn(BODY.large, "mt-5 max-w-[58ch]")}>
               Four communities. Each one different in pace, exposure, and the kind of property care it asks for.
             </p>
           </div>
@@ -246,6 +161,22 @@ const Index = () => {
               </div>
             ))}
           </BentoGrid>
+
+          <div
+            className="mt-12 md:mt-16 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "640ms" }}
+          >
+            <Link to="/contact" className="cta-anchor group/btn">
+              <span>Get a Free Quote</span>
+              <span className="icon-chip icon-chip-light bg-background/15">
+                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              </span>
+            </Link>
+            <p className={cn(BODY.caption, "italic font-serif")}>
+              Tell us about the place — we'll write back within two business days.
+            </p>
+          </div>
         </Container>
       </RevealSection>
 
@@ -256,8 +187,6 @@ const Index = () => {
         style={{
           contentVisibility: "auto",
           containIntrinsicSize: "1200px 1200px",
-          // Layered washes: warm radial from upper-left + cool halo behind the
-          // form column + gentle bottom vignette so the silhouette reads quieter.
           backgroundImage: [
             "radial-gradient(120% 80% at 15% 0%, hsl(145 22% 22%) 0%, hsl(var(--evergreen-deep)) 70%)",
             "radial-gradient(60% 50% at 78% 32%, hsl(145 18% 30% / 0.55), transparent 70%)",
@@ -282,13 +211,8 @@ const Index = () => {
         </svg>
 
         <Container size="wide">
-          {/* Mobile: flex-col with explicit order so the form lands second.
-              Desktop: 12-col grid where text takes 6, form takes 6, and the
-              direct-contact + promise blocks live inside the text column via
-              `lg:contents` (CSS Display: contents flattens the wrapper into
-              the grid so order classes still apply on desktop). */}
           <div className="flex flex-col gap-10 lg:grid lg:grid-cols-12 lg:gap-x-20 lg:gap-y-0 lg:items-start">
-            {/* 1. Headline + lede — first on mobile, top of left column on desktop */}
+            {/* 1. Headline + lede */}
             <div
               className="order-1 lg:order-1 lg:col-span-6"
               data-reveal
@@ -298,12 +222,12 @@ const Index = () => {
               <h2
                 id="final-cta-heading"
                 data-drift
-                className="text-headline text-background mt-6 max-w-[22ch]"
+                className="text-headline text-background mt-6 max-w-[18ch]"
               >
-                Let&apos;s talk about what you&apos;re thinking.
+                Tell us about the place.
               </h2>
               <p className="mt-7 text-body text-background/85 max-w-[46ch]">
-                Tell us a little about the place and what&apos;s on your mind. We&apos;ll write
+                A few details about your property and what's on your mind. We'll write
                 back within two business days — usually the same day — with a couple of
                 clear questions, not a template quote.
               </p>
@@ -312,13 +236,67 @@ const Index = () => {
               </p>
             </div>
 
-            {/* 2. Form bezel — promoted to second position on mobile (order-2),
-                desktop keeps it on the right column (lg:col-span-6 lg:row-span-3
-                so the text column's three children stack to its left). */}
+            {/* 2. Direct-contact escape hatch — promoted ABOVE the form on mobile (order-2),
+                tucked into desktop's left column below the lede (lg:order-3). */}
             <div
-              className="order-2 lg:order-2 lg:col-span-6 lg:row-span-3"
+              className="order-2 lg:order-3 lg:col-span-6 lg:mt-10"
               data-reveal
               style={{ ["--reveal-delay" as string]: "180ms" }}
+            >
+              <div className="lg:pt-8 lg:border-t lg:border-background/20 max-w-[46ch]">
+                <p className="hidden lg:block text-minimal text-background/65">
+                  Or reach us directly
+                </p>
+                {/* Mobile: full-width tap rows */}
+                <div className="grid grid-cols-1 gap-2 sm:gap-3 lg:hidden">
+                  <a
+                    href="mailto:cory@havencreekrenovations.com"
+                    className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
+                    aria-label="Email cory@havencreekrenovations.com"
+                  >
+                    <Mail className="h-4 w-4 text-background/85 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    <span className="font-serif italic text-[0.98rem] truncate">
+                      cory@havencreekrenovations.com
+                    </span>
+                  </a>
+                  <a
+                    href="tel:+14039707691"
+                    className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
+                    aria-label="Call 403 970-7691"
+                  >
+                    <Phone className="h-4 w-4 text-background/85 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    <span className="font-serif italic text-[0.98rem] tabular-nums">
+                      403 970-7691
+                    </span>
+                  </a>
+                </div>
+                {/* Desktop only — italic inline list */}
+                <div className="hidden lg:block space-y-3 mt-3">
+                  <p>
+                    <a
+                      href="mailto:cory@havencreekrenovations.com"
+                      className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300"
+                    >
+                      cory@havencreekrenovations.com
+                    </a>
+                  </p>
+                  <p>
+                    <a
+                      href="tel:+14039707691"
+                      className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300 tabular-nums"
+                    >
+                      403 970-7691
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Form bezel — third on mobile (after escape hatch), right column desktop */}
+            <div
+              className="order-3 lg:order-2 lg:col-span-6 lg:row-span-3"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "260ms" }}
             >
               <div className="cta-bezel">
                 <div className="cta-bezel__core p-5 sm:p-7 md:p-9">
@@ -351,65 +329,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* 3. Direct-contact escape hatch — third on mobile (after form),
-                second item in the text column on desktop. Mobile renders as
-                full-width tap rows with leading icons. */}
-            <div
-              className="order-3 lg:order-3 lg:col-span-6 lg:mt-10"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "260ms" }}
-            >
-              <div className="pt-6 lg:pt-8 border-t border-background/20 max-w-[46ch]">
-                <p className="text-minimal text-background/65">
-                  Or reach us directly
-                </p>
-                {/* Mobile: full-width tap rows. Desktop: italic inline text. */}
-                <div className="mt-4 grid grid-cols-1 gap-2 sm:gap-3 lg:hidden">
-                  <a
-                    href="mailto:cory@havencreekrenovations.com"
-                    className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
-                    aria-label="Email cory@havencreekrenovations.com"
-                  >
-                    <Mail className="h-4 w-4 text-background/85 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                    <span className="font-serif italic text-[0.98rem] truncate">
-                      cory@havencreekrenovations.com
-                    </span>
-                  </a>
-                  <a
-                    href="tel:+14039707691"
-                    className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
-                    aria-label="Call 403 970-7691"
-                  >
-                    <Phone className="h-4 w-4 text-background/85 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                    <span className="font-serif italic text-[0.98rem] tabular-nums">
-                      403 970-7691
-                    </span>
-                  </a>
-                </div>
-                {/* Desktop only — original italic inline list */}
-                <div className="hidden lg:block space-y-3 mt-3">
-                  <p>
-                    <a
-                      href="mailto:cory@havencreekrenovations.com"
-                      className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300"
-                    >
-                      cory@havencreekrenovations.com
-                    </a>
-                  </p>
-                  <p>
-                    <a
-                      href="tel:+14039707691"
-                      className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300 tabular-nums"
-                    >
-                      403 970-7691
-                    </a>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* 4. Promise list — last on mobile (closing reassurance),
-                third item in the text column on desktop. */}
+            {/* 4. Promise list — last on both layouts */}
             <div
               className="order-4 lg:order-4 lg:col-span-6 lg:mt-12"
               data-reveal
@@ -442,4 +362,3 @@ const Index = () => {
 };
 
 export default Index;
-
