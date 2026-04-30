@@ -11,8 +11,8 @@ import logo from "@/assets/logo/haven-creek-horizontal.webp";
 // Drawer is interaction-only — defer it past the LCP-critical bundle.
 const MenuDrawer = lazy(() => import("@/components/nav/MenuDrawer"));
 
-const STUDIO_PHONE_TEL = "+14035550100";
-const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
+const STUDIO_PHONE_TEL = "+14039707691";
+const STUDIO_PHONE_DISPLAY = "403 970-7691";
 
 /**
  * Navigation — Round 6 "Shape Hierarchy".
