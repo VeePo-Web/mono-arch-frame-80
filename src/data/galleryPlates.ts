@@ -68,15 +68,15 @@ export const galleryPlates: GalleryPlate[] = [
     slug: "rocky-view-siding-repair",
     romanNumeral: "VI",
     figmark: "vi",
-    title: "Weather-side siding repair",
+    title: "Exterior craft & detail work",
     category: "Exterior Repairs",
     area: "Rocky View County",
     scope:
-      "Targeted siding replacement, trim repair, and detail work on the south and west exposures of an acreage home.",
+      "Beam, ceiling, and structural detail work bringing an acreage home's main volume back to a finished baseline.",
     challenge:
-      "Years of prairie weather had worn through the most exposed faces. Smaller failures were inviting bigger ones.",
+      "Years of weather and earlier patch jobs had left the structure honest but tired. Smaller failures were inviting bigger ones.",
     result:
-      "Exterior back to a maintenance baseline — sealed, repaired, and ready for the next decade of weather.",
+      "Spaces back to a maintenance baseline — repaired, sealed, and ready for the next decade.",
     whyItMattered:
       "Stewardship work that protects everything else the owner has invested in the property.",
     vignetteKey: "exterior-siding",
@@ -85,15 +85,15 @@ export const galleryPlates: GalleryPlate[] = [
     slug: "bearspaw-soffit-fascia",
     romanNumeral: "VII",
     figmark: "vii",
-    title: "Soffit, fascia & venting",
+    title: "Structural & roofline work",
     category: "Exterior Repairs",
     area: "Bearspaw",
     scope:
-      "Full soffit and fascia replacement around the gable end, with corrected vent placement for attic airflow.",
+      "Roof framing rebuild around a gable end, opened up to correct earlier work and prepare a sound deck for finish.",
     challenge:
-      "Original venting had been blocked during an earlier roof job. Moisture was beginning to find its way in.",
+      "Original roof framing had been compromised during an earlier job. Moisture was beginning to find its way in.",
     result:
-      "Eaves restored to a clean line; venting now does what it's supposed to do, quietly.",
+      "Roofline restored to a clean line; the structure ready for the next layer to land properly.",
     whyItMattered:
       "Solving the cause of a problem before the visible damage forced a much larger repair.",
     vignetteKey: "exterior-soffit",
