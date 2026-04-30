@@ -219,19 +219,16 @@ const Index = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <Eyebrow tone="light" label="Next step" />
-              <h2
+              <SectionHeader
                 id="final-cta-heading"
-                data-drift
-                className="text-headline text-background mt-6 max-w-[18ch]"
-              >
-                Tell us about the place.
-              </h2>
-              <p className="mt-7 text-body text-background/85 max-w-[46ch]">
-                A few details about your property and what's on your mind. We'll write
-                back within two business days — usually the same day — with a couple of
-                clear questions, not a template quote.
-              </p>
+                eyebrow="Next step"
+                title="Tell us about the place."
+                lede="A few details about your property and what's on your mind. We'll write back within two business days — usually the same day — with a couple of clear questions, not a template quote."
+                tone="light"
+                titleWidth="narrow"
+                bottomGap="none"
+                drift
+              />
               <p className="mt-4 text-minimal text-background/60 max-w-[46ch]">
                 A real person reads every message. No drip emails, no calls unless you ask for one.
               </p>
