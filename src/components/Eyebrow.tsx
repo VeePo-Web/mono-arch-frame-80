@@ -1,8 +1,6 @@
 import { cn } from "@/lib/utils";
 
 interface EyebrowProps {
-  /** @deprecated retained for backwards-compat; ignored. */
-  numeral?: string;
   label: string;
   align?: "left" | "center";
   className?: string;
