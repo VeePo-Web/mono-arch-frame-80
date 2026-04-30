@@ -2,7 +2,7 @@ import { lazy, Suspense, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -10,10 +10,11 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas } from "@/data/serviceAreas";
 import { projectTypeFromQuery } from "@/lib/validation/consultation";
+import { BODY } from "@/lib/typography";
+import { SECTION_PADDING } from "@/lib/spacing";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 // TODO: replace with real number when ready.
@@ -76,10 +77,12 @@ const Contact = () => {
               data-reveal
               style={{ ["--reveal-delay" as string]: "0ms" }}
             >
-              <Eyebrow numeral="I" label="WHAT HAPPENS NEXT" />
-              <h2 id="form-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
-                A calm, four-step path.
-              </h2>
+              <SectionHeader
+                id="form-heading"
+                eyebrow="What happens next"
+                title="A calm, four-step path."
+                bottomGap="none"
+              />
               <ol className="mt-10 border-l-2 border-evergreen/35 pl-6 space-y-7">
                 {STEPS.map((s) => (
                   <li key={s.n}>
@@ -129,13 +132,14 @@ const Contact = () => {
                 data-reveal
                 style={{ ["--reveal-delay" as string]: "260ms" }}
               >
-                <Eyebrow numeral="·" label="OR REACH US DIRECTLY" />
-                <h3 className="text-title text-foreground mt-5 max-w-[24ch]">
-                  Prefer to write or call?
-                </h3>
-                <p className="mt-3 text-body text-muted-foreground  max-w-[48ch]">
-                  Either reaches the same small team. We answer in the order notes arrive.
-                </p>
+                <SectionHeader
+                  as="h3"
+                  eyebrow="Or reach us directly"
+                  title="Prefer to write or call?"
+                  lede="Either reaches the same small team. We answer in the order notes arrive."
+                  titleWidth="wide"
+                  bottomGap="none"
+                />
 
                 <ul className="mt-8 divide-y divide-border/60 border-y border-border/60">
                   <li>
@@ -186,19 +190,19 @@ const Contact = () => {
       </RevealSection>
 
       {/* § II — Custom quote reassurance */}
-      <RevealSection id="quote" aria-labelledby="quote-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection id="quote" aria-labelledby="quote-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
         <Container size="wide">
-          <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow align="center" numeral="II" label="ABOUT THE QUOTE" />
-            <h2 id="quote-heading" className="text-headline text-foreground mt-6 max-w-[26ch] mx-auto">
-              Pricing is custom because the work is.
-            </h2>
-            <p className="mt-7 text-body text-muted-foreground max-w-[58ch] mx-auto">
-              We don't quote on instinct, and we don't quote without seeing the property.
-              The number we send back is built on the scope, the site, and the materials
-              that suit it — not on a template.
-            </p>
-            <p className="mt-5 text-body text-muted-foreground max-w-[58ch] mx-auto">
+          <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+            <SectionHeader
+              id="quote-heading"
+              eyebrow="About the quote"
+              title="Pricing is custom because the work is."
+              lede="We don't quote on instinct, and we don't quote without seeing the property. The number we send back is built on the scope, the site, and the materials that suit it — not on a template."
+              align="center"
+              titleWidth="wide"
+              bottomGap="none"
+            />
+            <p className={cn(BODY.standard, "mt-5 max-w-[58ch] mx-auto text-center")}>
               No obligation to proceed, either way.
             </p>
           </div>
@@ -206,18 +210,18 @@ const Contact = () => {
       </RevealSection>
 
       {/* § III — Service-area trust line */}
-      <RevealSection id="areas" aria-labelledby="areas-heading" className={cn(SECTION, "cv-auto")}>
+      <RevealSection id="areas" aria-labelledby="areas-heading" className={cn(SECTION_PADDING.standard, "cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="III" label="WHERE WE WORK" />
-              <h2 id="areas-heading" className="text-headline text-foreground mt-6">
-                Local, by choice.
-              </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-md">
-                If your property sits in or near one of these communities, we're glad to
-                talk.
-              </p>
+              <SectionHeader
+                id="areas-heading"
+                eyebrow="Where we work"
+                title="Local, by choice."
+                lede="If your property sits in or near one of these communities, we're glad to talk."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
             <div className="lg:col-span-7">
               <ul className="divide-y divide-border/60 border-y border-border/60">

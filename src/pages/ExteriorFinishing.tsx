@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -85,10 +86,13 @@ const ExteriorFinishing = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="WHAT THE WORK COVERS" />
-              <h2 id="needs-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[22ch]")}>
-                Four kinds of exterior work, handled with one standard.
-              </h2>
+              <SectionHeader
+                id="needs-heading"
+                eyebrow="What the work covers"
+                title="Four kinds of exterior work, handled with one standard."
+                titleWidth="wide"
+                bottomGap="none"
+              />
             </div>
             <div className="lg:col-span-5 lg:pt-8" data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
               <p className={cn(BODY.standard, MEASURE.prose)}>
@@ -114,15 +118,14 @@ const ExteriorFinishing = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="II" label="RURAL CONSIDERATIONS" />
-              <h2 id="rural-heading" className={cn(HEADLINE.section, "text-foreground mt-6")}>
-                Planned around the realities of the property.
-              </h2>
-              <p className={cn(BODY.standard, "mt-6", MEASURE.prose)}>
-                Exterior work on a rural acreage isn't the same as a suburban repair.
-                Weather windows, distance, access, and what's around the home all change
-                what's possible — and when.
-              </p>
+              <SectionHeader
+                id="rural-heading"
+                eyebrow="Rural considerations"
+                title="Planned around the realities of the property."
+                lede="Exterior work on a rural acreage isn't the same as a suburban repair. Weather windows, distance, access, and what's around the home all change what's possible — and when."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
 
             <div className="lg:col-span-7 lg:pl-8 relative">
@@ -168,14 +171,14 @@ const ExteriorFinishing = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="III" label="WHAT WE PROTECT" />
-              <h2 id="respect-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[22ch]")}>
-                We work around what the property already is.
-              </h2>
-              <p className={cn(BODY.standard, "mt-6", MEASURE.prose)}>
-                A rural exterior job touches more than the building. We leave the property
-                the way we found it — minus the work that needed doing.
-              </p>
+              <SectionHeader
+                id="respect-heading"
+                eyebrow="What we protect"
+                title="We work around what the property already is."
+                lede="A rural exterior job touches more than the building. We leave the property the way we found it — minus the work that needed doing."
+                titleWidth="wide"
+                bottomGap="none"
+              />
             </div>
           </div>
 
@@ -195,10 +198,12 @@ const ExteriorFinishing = () => {
           <Container size="wide">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
               <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <Eyebrow numeral="IV" label="PROJECT PROOF" />
-                <h2 id="proof-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
-                  Stewardship on a Rocky View acreage.
-                </h2>
+                <SectionHeader
+                  id="proof-heading"
+                  eyebrow="Project proof"
+                  title="Stewardship on a Rocky View acreage."
+                  bottomGap="none"
+                />
               </div>
             </div>
 

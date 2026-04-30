@@ -1,111 +1,107 @@
 ## Goal
-Lift the landing page from "well-crafted editorial site" to fantasy.co / awwwards-tier — without breaking the brand contract (rural-Alberta calm, dark-on-cream, evergreen accent, no glassmorphism, no floating FABs). Two outputs:
+Eliminate the per-page drift in section headers + spacing by introducing a single `SectionHeader` primitive and auditing every consumer to use it. Today there are two header systems running in parallel (`HEADLINE.section` token vs the legacy `text-headline` CSS utility), three different eyebrow→H2 gaps (`mt-4`/`mt-5`/`mt-6`), inconsistent `data-drift` coverage, and the deprecated `numeral` prop is still being passed in 14+ places. After this pass the entire site speaks one section-header language.
 
-1. A reworked `Index.tsx` flow with a photo-led cinematic hero, a single signature scroll moment, sharper CTA hierarchy, and tighter section rhythm.
-2. A small CTA primitive upgrade so every button on the page reads as one of three deliberate variants (Primary spring · Ghost arrow · Quiet link), used consistently top-to-bottom.
+## What's wrong today (audit findings)
 
-CTA copy stays "Get a Free Quote" / "Get a Quote" per Core memory — no "Consultation."
+Eight pages + 3 components render a section header. They split into two camps:
 
-## Hero — cinematic, photo-anchored
+**Camp A — uses the typography token (newer):**
+- `Index.tsx` → `<Eyebrow label /> + <h2 className={cn(HEADLINE.section, "mt-5 text-foreground")} data-drift>`
+- `HowItGoes.tsx`, `ServiceMarquee.tsx` (×2 inside)
+- `Services.tsx` (×3) — uses `mt-6` not `mt-5`, no `data-drift`
 
-Replace the "headline + right-column field notes" hero with an immersive split-stage hero that fantasy/awwwards juries score on:
+**Camp B — uses the legacy CSS class (older):**
+- `Contact.tsx` (×3)
+- `AreaPage.tsx` (×3)
+- `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx` (each ×3-4)
 
-```text
-┌────────────────────────────────────────────────────────┐
-│  EYEBROW · HAVEN CREEK · RURAL ALBERTA                 │
-│                                                        │
-│  One trusted contractor for                            │
-│  the property you value.                               │
-│  ─────────                                             │
-│  hands-on finishing · exterior · decking               │
-│                                                        │
-│  [ Get a Free Quote → ]   View the Work →             │
-│                                                        │
-│  ── Reply in 2 days · No obligation · No pressure ──  │
-└────────────────────────────────────────────────────────┘
-            ↑ headline column (60%)        photo column (40%, full-bleed at md+)
+Camp B sub-issues:
+- Mixes `text-headline` and `text-title` arbitrarily.
+- Still passes `numeral="I"` to `<Eyebrow />` even though `Eyebrow.tsx` documents it as deprecated and ignored.
+- Eyebrow labels are SHOUTY UPPERCASE strings ("WHAT WE BUILD") while Camp A uses sentence case ("What we build"). The Eyebrow primitive already uppercases via `.text-minimal`, so the SHOUTING in source is redundant noise.
+- Section padding is sometimes hand-rolled (`pt-20 pb-24 md:pt-32`) instead of `SECTION_PADDING.standard`.
+
+## The unification
+
+### 1. New primitive: `src/components/SectionHeader.tsx` (~50 lines)
+
+A single composable header used everywhere:
+
+```tsx
+<SectionHeader
+  eyebrow="What we build"
+  title="Three services. One standard."
+  lede="Interior finishing leads — that's where the craft is felt most clearly."
+  id="services-heading"
+  align="left"      // | "center"
+  tone="default"    // | "light" (for dark sections, swaps eyebrow + heading colors)
+  width="title"     // | "lede"  (controls max-w of which line; "title" caps headline at 20ch, lede at 58ch)
+  drift              // boolean — adds data-drift to H2
+/>
 ```
 
-Mechanics:
-- Photo column is `position: absolute; inset-y: 0; right: 0;` from `md+`, taking ~42% width with a soft left-edge fade (mask gradient, not a hard rectangle). On mobile it sits below the headline as a 16:10 plate so the H1 lands in the first viewport.
-- Single "trusted" italic word keeps its hand-drawn underline; a quiet ken-burns drift on the photo (`animation: heroDrift 18s ease-in-out infinite alternate`) — already in the system, just plumbed in.
-- H1 splits into two lines that each rise on a 60ms staggered clip-path reveal (uses existing `.reveal-up`).
-- Right-column "Field notes" promise list is **moved out of the hero** into its own §I band so the hero reads at a glance — this is the biggest UX win for a 70-year-old grandpa: one sentence, two buttons, in-frame in <2s.
-- Trust microcopy stays as a single horizontal rule below CTAs.
+Renders the canonical structure with locked spacing:
+- `<Eyebrow />` (sentence-case label, no `numeral`).
+- `mt-5` → `<h2 className={cn(HEADLINE.section, "text-foreground")} data-drift={drift}>`.
+- `mt-5` → `<p className={cn(BODY.large, "max-w-[58ch]")}>` (only if `lede` provided).
 
-## Signature scroll moment — "The Three" service marquee
+The header's wrapper is `max-w-[62ch] mb-12 md:mb-16` by default — matching the dominant pattern on Index/Services. A `compact` prop gives `mb-10 md:mb-14` for HowItGoes-style strips. A `bottomGap="none"` escape hatch removes the bottom margin for sections where the next block sets its own top spacing.
 
-Replace the current 3-card services preview with one cinematic horizontal trio that locks attention. Three full-height (60vh on desktop) panels stack vertically, each:
-- Large numeral (I · II · III) in italic Fraunces
-- Service name as a 64–88px headline
-- One-sentence promise, one short scope list (≤4 items)
-- Real photograph (`servicePhotos[slug]`) anchored right
-- A single "See [service] →" link styled as the new ghost-arrow CTA
+Light tone: H2 stays `text-background`, eyebrow auto-passes `tone="light"`. Lede goes `text-background/85`.
 
-Reveal pattern: each panel uses an `IntersectionObserver` (already wired via `data-reveal`) so the headline rises and the photo zooms-in 1.04→1.0 on enter. This is the "wow moment" jurors score.
+### 2. Lock `Eyebrow` props
 
-## Trust + Approach — collapsed into one band
+Drop the deprecated `numeral` prop from the type signature. Compiler errors flag every old call site for removal in step 4. Eyebrow stays otherwise unchanged — same hairline + label, same `tone` and `align`.
 
-Today there are TWO headers ("Three services / One standard" + "A path you can see from the start"). Consolidate the approach into a quiet horizontal "How it goes" strip directly under the hero — three numbered chips, no card chrome, one line each:
+### 3. Migrate every consumer
 
-```
-01  Conversation     We talk through the property and the scope.
-02  Planning         Materials, timeline, the practical realities.
-03  Hands-on build   Built and walked-through by the same person.
-```
+Replace the hand-built eyebrow/H2/lede trios with `<SectionHeader>` in:
+- `src/pages/Index.tsx` — Areas section + final-CTA section (final-CTA uses `tone="light"`).
+- `src/components/HowItGoes.tsx` — single header.
+- `src/components/ServiceMarquee.tsx` — top header.
+- `src/components/TestimonialSpine.tsx` — `align="center"` header.
+- `src/pages/Services.tsx` — 3 headers (drop `numeral`, lowercase labels, drop `text-foreground`/`mt-6` strings).
+- `src/pages/Contact.tsx` — 3 headers (one is `align="center"`); also normalize the "Prefer to write or call?" sub-header which currently uses `text-title` to a `SectionHeader` with `compact + bottomGap="none"` rendered as h3.
+- `src/components/AreaPage.tsx` — 3 headers (interpolated `area.name` strings stay).
+- `src/pages/InteriorFinishing.tsx` — 4 headers.
+- `src/pages/ExteriorFinishing.tsx` — 4 headers.
+- `src/pages/Decking.tsx` — 4 headers (already in spec).
 
-This drops one full section of cognitive load and frees scroll budget for the service marquee.
+Inside each migration: also normalize section padding to one of the four `SECTION_PADDING` tokens. The handful of bespoke `pt-X pb-Y` spots become `SECTION_PADDING.standard` or `.compact`. Sections that combine padding with the cream `section-wash` keep `cn(SECTION_PADDING.standard, "section-wash")` — that pattern is correct.
 
-## Service areas — keep the 2x2 bento, upgrade the tile
+### 4. Add an `as` polymorphic option
 
-Bento stays — it's already award-worthy structure. Upgrade per tile:
-- Hover tilts 1px up + reveals a hairline bottom rule animating left→right (220ms).
-- Postal eyebrow stays, body line stays.
-- Add a barely-visible micro-map dot SVG in the upper-right of each tile (4px evergreen dot + name) — pure decoration, gives jurors a "details matter" signal.
+Some headers semantically should be `<h3>` (sub-section inside a larger H2 region — Contact's "Prefer to write or call?", AreaPage's nested service cards). `SectionHeader` accepts `as="h2" | "h3"` (default h2) and downgrades the title typography to `HEADLINE.subsection` when `h3` is selected, preserving heading-level hierarchy without sacrificing the visual rhythm.
 
-## Final CTA band — keep the bezel, sharpen the choreography
+### 5. Style-guide page
 
-Keep the dark evergreen final-CTA band; it's already strong. Three precise upgrades:
-- Switch the H2 from "Let's talk about what you're thinking." to "Tell us about the place." (5 words, scan-first).
-- Move the direct-contact rows (Email / Phone) **above** the form on mobile, not below — escape hatch for users who just want to call.
-- Form bezel keeps `cta-bezel`; the submit button inside the form already uses `cta-spring`, just verify and align padding.
+Add a `SectionHeader` row to `src/pages/StyleGuide.tsx` showing the four variants (default / compact / centered / light) so future contributors see the canonical pattern instead of inventing a new one.
 
-## CTA system — three variants, used everywhere
+## Spacing audit (done as part of step 3, not separately)
 
-Add two small CSS classes to `index.css` (next to existing `.cta-anchor` / `.cta-spring`) so every CTA on the page belongs to one of three families:
-
-| Variant | Class | Where used |
+| Place | Before | After |
 |---|---|---|
-| **Primary spring** | `.cta-primary` (new — wraps `.cta-spring` + evergreen fill + 56px min height + spring press) | Hero #1, final-CTA submit, all "Get a Free Quote" |
-| **Ghost arrow** | `.cta-ghost` (new — text + animating underline rule that grows from 24px→64px on hover) | "View the Work", "See [service]", "Browse services" |
-| **Quiet link** | existing italic underline | Inline body links |
-
-All three already meet Core rules: 44×44 hit target, focus ring 2px evergreen with 2px offset, motion-reduce safe.
-
-Buttons everywhere on `Index.tsx` get migrated to one of these three classes — no more ad-hoc `inline-flex items-center gap-3 …` strings.
-
-## Performance + accessibility guardrails (non-negotiable)
-
-- Hero photo: `fetchPriority="high"` + `decoding="async"` + intrinsic `width/height` so LCP candidate is the H1, not the image.
-- Service marquee photos: lazy after the first.
-- Final-CTA section keeps `content-visibility: auto`.
-- All new motion respects `prefers-reduced-motion`: drift, ken burns, and reveal-up already gated; we'll gate the new tilt + underline-growth too.
-- All CTAs ≥ 44×44, focus ring visible, label text ≥ 14px (16px on primary).
-- Color contrast: evergreen on cream is AA verified; light-on-dark final CTA stays AAA on the H2.
-
-## File touches (scoped — no rewrite of unrelated code)
-
-- `src/pages/Index.tsx` — restructure flow per above.
-- `src/components/Hero.tsx` — split-stage rebuild, photo column added, field-notes block extracted.
-- `src/components/HowItGoes.tsx` *(new, ~50 lines)* — the 3-row "How it goes" strip that replaces the Approach bento.
-- `src/components/ServiceMarquee.tsx` *(new, ~120 lines)* — the three full-height service panels.
-- `src/index.css` — add `.cta-primary`, `.cta-ghost`, `.area-tile-hover` (≤ 60 new lines, no token changes).
-- `src/components/PrimaryCTA.tsx` — kept but updated to consume the new classes so any other page that imports it inherits the upgrade.
-
-No changes to navigation, drawer, route prefetching, performance memory rules, or section-rail conventions. Memory rule "Primary CTA copy is Get a Quote / Get a Free Quote" honored throughout.
+| Eyebrow → H2 | `mt-3` / `mt-4` / `mt-5` / `mt-6` | always `mt-5` |
+| H2 → lede | `mt-3` / `mt-5` / `mt-7` | always `mt-5` |
+| Header → first content block | `mb-8` / `mb-10` / `mb-12` / `mb-14` / `mb-16` | `mb-12 md:mb-16` (default), `mb-10 md:mb-14` (compact), `0` (none) |
+| Section padding | mix of `py-20 md:py-32`, hand-rolled, etc. | one of `SECTION_PADDING.{standard,compact,terminal,hero}` |
+| Title `max-w` | `max-w-[20ch]` / `[22ch]` / `[26ch]` / none | `max-w-[20ch]` (default), `max-w-[26ch]` for `width="wide"` |
+| Lede `max-w` | `max-w-[46ch]` / `[58ch]` / `[62ch]` / none | `max-w-[58ch]` (default) |
 
 ## Out of scope (explicitly)
-- No new dependencies (no Framer Motion, no GSAP — CSS + IntersectionObserver only).
-- No floating CTAs, no sticky bars, no glassmorphism.
-- No edits to nav, drawer, section rail, footer, or other pages.
-- No memory updates (this is a page-level pass, not a system-level rule change).
+
+- No changes to `HEADLINE` token scale (sizes stay).
+- No new keyframes / motion. `data-drift` becomes a prop, but its CSS is unchanged.
+- No `SubPageHero` or `SectionHeader` in nav / drawer / footer — those have their own type system.
+- The legacy `.text-headline` / `.text-title` CSS classes stay in `index.css` (they're consumed elsewhere) but no new code uses them.
+- `Eyebrow.tsx` keeps its `tone` and `align` props; we only remove the dead `numeral`.
+- Memory rules untouched (CTA copy, palette, drift cinematics — all preserved).
+
+## File touches
+
+- `src/components/SectionHeader.tsx` *(new)*
+- `src/components/Eyebrow.tsx` — drop `numeral` prop from type
+- `src/pages/Index.tsx`, `src/pages/Services.tsx`, `src/pages/Contact.tsx`, `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/Decking.tsx`, `src/pages/StyleGuide.tsx`
+- `src/components/HowItGoes.tsx`, `src/components/ServiceMarquee.tsx`, `src/components/TestimonialSpine.tsx`, `src/components/AreaPage.tsx`
+
+No CSS changes required. No new dependencies. No memory changes.

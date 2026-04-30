@@ -3,7 +3,7 @@ import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "./Container";
 import RevealSection from "./RevealSection";
-import Eyebrow from "./Eyebrow";
+import SectionHeader from "./SectionHeader";
 import { HEADLINE, BODY, EYEBROW } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
 import { services } from "@/data/services";
@@ -52,15 +52,14 @@ const ServiceMarquee = () => {
       style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 2400px" }}
     >
       <Container size="wide">
-        <div className="max-w-[62ch] mb-14 md:mb-20" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-          <Eyebrow label="What we build" />
-          <h2 id="services-heading" data-drift className={cn(HEADLINE.section, "mt-5 text-foreground max-w-[20ch]")}>
-            Three services. One standard.
-          </h2>
-          <p className={cn(BODY.large, "mt-5 max-w-[58ch]")}>
-            Interior finishing leads — that's where the craft is felt most clearly.
-            Exterior repairs and decking carry the same care.
-          </p>
+        <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+          <SectionHeader
+            id="services-heading"
+            eyebrow="What we build"
+            title="Three services. One standard."
+            lede="Interior finishing leads — that's where the craft is felt most clearly. Exterior repairs and decking carry the same care."
+            drift
+          />
         </div>
 
         <div className="space-y-20 md:space-y-32">

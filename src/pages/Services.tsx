@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -61,10 +61,12 @@ const Services = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="WHAT WE BUILD" />
-              <h2 id="services-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
-                In order of where the craft shows most.
-              </h2>
+              <SectionHeader
+                id="services-heading"
+                eyebrow="What we build"
+                title="In order of where the craft shows most."
+                bottomGap="none"
+              />
             </div>
           </div>
 
@@ -132,15 +134,14 @@ const Services = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="II" label="FULL-CIRCLE SUPPORT" />
-              <h2 id="circle-heading" className={cn(HEADLINE.section, "text-foreground mt-6")}>
-                One conversation. One contractor. One relationship.
-              </h2>
-              <p className={cn(BODY.standard, "mt-6", MEASURE.prose)}>
-                Most renovation friction lives in the gaps between trades. We close those
-                gaps by holding the work together — from the first walk-through to the
-                final inspection.
-              </p>
+              <SectionHeader
+                id="circle-heading"
+                eyebrow="Full-circle support"
+                title="One conversation. One contractor. One relationship."
+                lede="Most renovation friction lives in the gaps between trades. We close those gaps by holding the work together — from the first walk-through to the final inspection."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
 
             <div className="lg:col-span-7 lg:pl-8 relative">
@@ -185,10 +186,13 @@ const Services = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="III" label="ABOUT QUOTES" />
-              <h2 id="quote-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[22ch]")}>
-                Pricing is custom because the work is.
-              </h2>
+              <SectionHeader
+                id="quote-heading"
+                eyebrow="About quotes"
+                title="Pricing is custom because the work is."
+                titleWidth="wide"
+                bottomGap="none"
+              />
               <div className={cn("mt-7 space-y-6", MEASURE.prose)}>
                 <p className={BODY.large}>
                   We don't publish flat rates because rural projects don't have flat

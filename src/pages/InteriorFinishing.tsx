@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -99,16 +100,13 @@ const InteriorFinishing = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="WHAT THE WORK COVERS" />
-              <h2 id="meaning-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
-                Interior finishing is the work that holds the rest together.
-              </h2>
-              <p className={cn(BODY.large, "mt-7", MEASURE.prose)}>
-                It's the part of a renovation that decides whether a room feels resolved
-                or merely complete. Trim that lands where it should. Transitions that
-                don't fight one another. Built-ins that sit against the wall the way they
-                were drawn.
-              </p>
+              <SectionHeader
+                id="meaning-heading"
+                eyebrow="What the work covers"
+                title="Interior finishing is the work that holds the rest together."
+                lede="It's the part of a renovation that decides whether a room feels resolved or merely complete. Trim that lands where it should. Transitions that don't fight one another. Built-ins that sit against the wall the way they were drawn."
+                bottomGap="none"
+              />
             </div>
           </div>
 
@@ -127,7 +125,7 @@ const InteriorFinishing = () => {
       <RevealSection id="why" aria-labelledby="why-heading" className={cn(SECTION_PADDING.compact, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow align="center" numeral="II" label="WHY IT MATTERS" />
+            <Eyebrow align="center" label="Why it matters" />
             <h2 id="why-heading" className="sr-only">Why interior finishing matters</h2>
             <p className={cn(BODY.quote, "mt-7 max-w-[34ch] mx-auto")}>
               This is the part you see and feel every day. It either rewards a closer look,
@@ -142,10 +140,12 @@ const InteriorFinishing = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="III" label="CRAFT & DETAIL" />
-              <h2 id="craft-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
-                Three details that decide the read of a finished room.
-              </h2>
+              <SectionHeader
+                id="craft-heading"
+                eyebrow="Craft & detail"
+                title="Three details that decide the read of a finished room."
+                bottomGap="none"
+              />
             </div>
           </div>
 
@@ -178,10 +178,12 @@ const InteriorFinishing = () => {
           <Container size="wide">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
               <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <Eyebrow numeral="IV" label="PROJECT PROOF" />
-                <h2 id="proof-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
-                  A recent interior, finished as it should be.
-                </h2>
+                <SectionHeader
+                  id="proof-heading"
+                  eyebrow="Project proof"
+                  title="A recent interior, finished as it should be."
+                  bottomGap="none"
+                />
               </div>
             </div>
 

@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -83,10 +84,13 @@ const Decking = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="HOW WE PLAN A DECK" />
-              <h2 id="planning-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[22ch]")}>
-                The planning decides whether the deck gets used.
-              </h2>
+              <SectionHeader
+                id="planning-heading"
+                eyebrow="How we plan a deck"
+                title="The planning decides whether the deck gets used."
+                titleWidth="wide"
+                bottomGap="none"
+              />
             </div>
             <div className="lg:col-span-5 lg:pt-8" data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
               <p className={cn(BODY.standard, MEASURE.prose)}>
@@ -110,7 +114,7 @@ const Decking = () => {
       <RevealSection id="lifestyle" aria-labelledby="lifestyle-heading" className={cn(SECTION_PADDING.compact, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow align="center" numeral="II" label="WHY IT MATTERS" />
+            <Eyebrow align="center" label="Why it matters" />
             <h2 id="lifestyle-heading" className="sr-only">Why decking matters on rural property</h2>
             <p className={cn(BODY.quote, "mt-7 max-w-[36ch] mx-auto")}>
               On a rural property, a deck is the room you use most without realizing it.
@@ -125,15 +129,14 @@ const Decking = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="III" label="MATERIALS & SCOPE" />
-              <h2 id="materials-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[22ch]")}>
-                We recommend after we walk the site, not before.
-              </h2>
-              <p className={cn(BODY.standard, "mt-6", MEASURE.prose)}>
-                Material choices depend on how the deck will be used, the conditions of
-                the site, the budget, and how much maintenance the owner actually wants
-                to keep up with. We'll talk through the trade-offs clearly.
-              </p>
+              <SectionHeader
+                id="materials-heading"
+                eyebrow="Materials & scope"
+                title="We recommend after we walk the site, not before."
+                lede="Material choices depend on how the deck will be used, the conditions of the site, the budget, and how much maintenance the owner actually wants to keep up with. We'll talk through the trade-offs clearly."
+                titleWidth="wide"
+                bottomGap="none"
+              />
             </div>
           </div>
 
@@ -153,10 +156,12 @@ const Decking = () => {
           <Container size="wide">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
               <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <Eyebrow numeral="IV" label="PROJECT PROOF" />
-                <h2 id="proof-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
-                  A wraparound deck on a Bearspaw property.
-                </h2>
+                <SectionHeader
+                  id="proof-heading"
+                  eyebrow="Project proof"
+                  title="A wraparound deck on a Bearspaw property."
+                  bottomGap="none"
+                />
               </div>
             </div>
 

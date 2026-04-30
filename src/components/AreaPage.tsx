@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -11,8 +11,8 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas, getServiceArea } from "@/data/serviceAreas";
 import { services } from "@/data/services";
+import { SECTION_PADDING } from "@/lib/spacing";
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 const POSTAL: Record<string, string> = {
@@ -125,18 +125,18 @@ const AreaPage = ({
       />
 
       {/* § I — Local context */}
-      <RevealSection aria-labelledby="context-heading" className={SECTION}>
+      <RevealSection aria-labelledby="context-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="LOCAL CONTEXT" />
-              <h2 id="context-heading" className="text-headline text-foreground mt-6">
-                Built around what {area.name} actually is.
-              </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-md">
-                Each community has its own pace and its own quirks. We plan around the
-                ones we know — because they shape the work as much as the scope does.
-              </p>
+              <SectionHeader
+                id="context-heading"
+                eyebrow="Local context"
+                title={`Built around what ${area.name} actually is.`}
+                lede="Each community has its own pace and its own quirks. We plan around the ones we know — because they shape the work as much as the scope does."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
 
             <div className="lg:col-span-7 lg:pl-8 relative">
@@ -158,17 +158,20 @@ const AreaPage = ({
       </RevealSection>
 
       {/* § II — How we serve here */}
-      <RevealSection aria-labelledby="services-heading" className={cn(SECTION, "section-wash cv-auto")}>
+      <RevealSection aria-labelledby="services-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <div className="flex items-start justify-between gap-6">
-                <Eyebrow numeral="II" label="HOW WE SERVE HERE" />
-                <span className="coord-mark hidden md:inline-flex">Three services</span>
-              </div>
-              <h2 id="services-heading" className="text-headline text-foreground mt-6 max-w-[22ch]">
-                The same three services, with {area.name} in mind.
-              </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20 items-end">
+            <div className="lg:col-span-9" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+              <SectionHeader
+                id="services-heading"
+                eyebrow="How we serve here"
+                title={`The same three services, with ${area.name} in mind.`}
+                titleWidth="wide"
+                bottomGap="none"
+              />
+            </div>
+            <div className="lg:col-span-3 hidden lg:flex justify-end" data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
+              <span className="coord-mark">Three services</span>
             </div>
           </div>
 
@@ -216,18 +219,18 @@ const AreaPage = ({
       </RevealSection>
 
       {/* § III — Other nearby areas */}
-      <RevealSection aria-labelledby="nearby-heading" className={SECTION}>
+      <RevealSection aria-labelledby="nearby-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="III" label="ALSO NEARBY" />
-              <h2 id="nearby-heading" className="text-headline text-foreground mt-6">
-                The other communities we serve.
-              </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-md">
-                Many of our clients have property in more than one of these areas. The
-                relationship moves with them.
-              </p>
+              <SectionHeader
+                id="nearby-heading"
+                eyebrow="Also nearby"
+                title="The other communities we serve."
+                lede="Many of our clients have property in more than one of these areas. The relationship moves with them."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
 
             <div className="lg:col-span-7">

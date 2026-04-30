@@ -48,7 +48,7 @@ const NotFound = () => {
               >
                 <PremiumCard className="h-full">
                   <div className="p-8 lg:p-10 flex flex-col h-full">
-                    <Eyebrow numeral={String(i + 1).padStart(2, "0")} label="HEAD HERE" />
+                    <Eyebrow label="HEAD HERE" />
                     <h3 className="mt-7 font-serif text-[1.45rem] text-foreground group-hover:text-evergreen transition-colors duration-500">
                       {link.title}
                     </h3>

@@ -133,7 +133,7 @@ const ThankYou = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="WHAT HAPPENS NEXT" />
+              <Eyebrow label="WHAT HAPPENS NEXT" />
               <h2 id="next-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
                 A calm follow-up, on our end.
               </h2>
@@ -183,7 +183,7 @@ const ThankYou = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="II" label="WHILE YOU WAIT" />
+              <Eyebrow label="WHILE YOU WAIT" />
               <h2 id="while-heading" className="text-headline text-foreground mt-6 max-w-[22ch]">
                 A few quiet places to look.
               </h2>

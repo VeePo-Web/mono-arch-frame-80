@@ -59,7 +59,7 @@ const ServiceAreas = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="I" label="THE ROSTER" />
+              <Eyebrow label="THE ROSTER" />
               <h2 id="roster-heading" className="text-headline text-foreground mt-6">
                 Four communities we know well.
               </h2>
@@ -111,7 +111,7 @@ const ServiceAreas = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow numeral="II" label="BUILT FOR RURAL SERVICE" />
+              <Eyebrow label="BUILT FOR RURAL SERVICE" />
               <h2 id="fit-heading" className="text-headline text-foreground mt-6 max-w-[22ch]">
                 Rural property work has its own logic. We plan around it.
               </h2>
@@ -143,7 +143,6 @@ const ServiceAreas = () => {
       </RevealSection>
 
       <ClosingCta
-        numeral="·"
         eyebrow="LOCAL, FROM THE START"
         heading="Tell us about the property and where it sits."
         body="We'll know the road, the drive in, and what the season is asking for."

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import Container from "./Container";
 import RevealSection from "./RevealSection";
-import Eyebrow from "./Eyebrow";
+import SectionHeader from "./SectionHeader";
 import { HEADLINE, BODY } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
 
@@ -43,19 +43,14 @@ const HowItGoes = () => {
       className={cn(SECTION_PADDING.standard, "section-wash")}
     >
       <Container size="wide">
-        <div
-          className="max-w-[62ch] mb-10 md:mb-14"
-          data-reveal
-          style={{ ["--reveal-delay" as string]: "0ms" }}
-        >
-          <Eyebrow label="How it goes" />
-          <h2
+        <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+          <SectionHeader
             id="how-it-goes-heading"
-            data-drift
-            className={cn(HEADLINE.section, "mt-5 text-foreground max-w-[20ch]")}
-          >
-            A path you can see from the start.
-          </h2>
+            eyebrow="How it goes"
+            title="A path you can see from the start."
+            drift
+            bottomGap="compact"
+          />
         </div>
 
         <ol className="border-t border-evergreen/15">
