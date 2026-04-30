@@ -88,14 +88,14 @@ const About = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="Property respect" />
-              <h2 id="respect-heading" className="text-headline text-foreground mt-6">
-                The property is part of the deliverable.
-              </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-md">
-                Rural homeowners care about who is on their property — and how. The
-                trust isn&apos;t separate from the work. It is the work.
-              </p>
+              <SectionHeader
+                id="respect-heading"
+                eyebrow="Property respect"
+                title="The property is part of the deliverable."
+                lede="Rural homeowners care about who is on their property — and how. The trust isn't separate from the work. It is the work."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
 
             <div className="lg:col-span-7 lg:pl-8">
@@ -118,45 +118,22 @@ const About = () => {
         </Container>
       </RevealSection>
 
-      {/* § III — Hands-on continuity */}
-      <RevealSection id="continuity" aria-labelledby="continuity-heading" className={SECTION}>
-        <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="Hands-on continuity" />
-              <h2 id="continuity-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
-                The same person, from first walk-through to final.
-              </h2>
-            </div>
-          </div>
-
-          <div className={cn("grid grid-cols-1 md:grid-cols-3", CONTENT_GAP.cardGrid)}>
-            {CONTINUITY.map((c, i) => (
-              <div
-                key={c.n}
-                data-reveal
-                style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
-              >
-                <InfoCard eyebrow={c.n} title={c.title} body={c.body} />
-              </div>
-            ))}
-          </div>
-        </Container>
-      </RevealSection>
+      {/* § III previously "Hands-on continuity" — removed; the same idea is
+          carried by §II "Property respect" and §IV "Long-term horizon". */}
 
       {/* § IV — Long-term relationship */}
       <RevealSection id="longterm" aria-labelledby="longterm-heading" className={cn(SECTION, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow align="center" label="A longer horizon" />
-            <h2 id="longterm-heading" className="text-headline text-foreground mt-6 max-w-[24ch] mx-auto">
-              Most rural properties are improved a stage at a time.
-            </h2>
-            <p className="mt-7 text-body text-muted-foreground max-w-[58ch] mx-auto">
-              A deck this year. Interior finishing next. Exterior repairs the year after.
-              Working with one trusted contractor across phases means continuity —
-              someone who already knows the building, the land, and how you live on it.
-            </p>
+            <SectionHeader
+              id="longterm-heading"
+              eyebrow="A longer horizon"
+              title="Most rural properties are improved a stage at a time."
+              lede="A deck this year. Interior finishing next. Exterior repairs the year after. Working with one trusted contractor across phases means continuity — someone who already knows the building, the land, and how you live on it."
+              align="center"
+              titleWidth="wide"
+              bottomGap="none"
+            />
             <p className="mt-7 font-serif italic text-foreground/85 text-[1.1rem]">
               We're built for that pace.
             </p>
