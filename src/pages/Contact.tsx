@@ -1,6 +1,5 @@
 import { lazy, Suspense, useMemo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { useSearchParams } from "react-router-dom";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
@@ -8,26 +7,15 @@ import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
-import { serviceAreas } from "@/data/serviceAreas";
 import { projectTypeFromQuery } from "@/lib/validation/consultation";
-import { BODY } from "@/lib/typography";
-import { SECTION_PADDING } from "@/lib/spacing";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
 const SITE = "https://havencreekrenovations.ca";
 
-// TODO: replace with real number when ready.
 const STUDIO_PHONE = "403 970-7691";
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_EMAIL = "cory@havencreekrenovations.com";
-
-const POSTAL: Record<string, string> = {
-  "bragg-creek": "T0L",
-  "rocky-view-county": "T4A",
-  bearspaw: "T3R",
-  "water-valley": "T0M",
-};
 
 const STEPS = [
   { n: "01", title: "You write", body: "A few details about the property and what you're considering. Five fields, two minutes." },
@@ -42,9 +30,9 @@ const Contact = () => {
   );
 
   useSeo({
-    title: "Contact — Talk Through Your Project",
+    title: "Contact — Tell Us About Your Property",
     description:
-      "Request a consultation for renovation work in rural Alberta. We respond within two business days — no pressure, no automated funnel, just a clear conversation.",
+      "Tell us about your renovation project in rural Alberta. A real person — Cory — replies within two business days.",
     path: "/contact",
   });
 
