@@ -18,11 +18,8 @@ const RESPECT = [
   { n: "04", title: "Leave it as we found it", body: "Minus the work that needed doing. The site is part of the deliverable." },
 ];
 
-const CONTINUITY = [
-  { n: "01", title: "Personal involvement", body: "The same person who plans the work is the person doing it — and the person you call when there's a question." },
-  { n: "02", title: "Fewer handoffs", body: "Most renovation friction lives in the gaps between trades. We close those gaps by holding the work together." },
-  { n: "03", title: "A long-term relationship", body: "Many of our clients improve their property over years. We're built for that pace, and for that trust." },
-];
+
+
 
 const About = () => {
   useSeo({
