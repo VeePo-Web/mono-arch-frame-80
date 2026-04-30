@@ -1,6 +1,7 @@
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
+import { SECTION_PADDING } from "@/lib/spacing";
 
 interface Testimonial {
   quote: string;
@@ -48,21 +49,17 @@ const TESTIMONIALS: Testimonial[] = [
 const TestimonialSpine = () => (
   <RevealSection
     aria-labelledby="testimonials-heading"
-    className="py-16 md:py-32"
+    className={SECTION_PADDING.standard}
   >
     <Container size="wide">
-      <div
-        className="max-w-2xl mx-auto text-center"
-        data-reveal
-        style={{ ["--reveal-delay" as string]: "0ms" }}
-      >
-        <Eyebrow align="center" label="Words from clients" />
-        <h2
+      <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+        <SectionHeader
           id="testimonials-heading"
-          className="text-headline text-foreground mt-6 max-w-[24ch] mx-auto text-balance"
-        >
-          What it feels like to work with us.
-        </h2>
+          eyebrow="Words from clients"
+          title="What it feels like to work with us."
+          align="center"
+          titleWidth="wide"
+        />
       </div>
 
       <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
