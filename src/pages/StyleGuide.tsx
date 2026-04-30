@@ -6,6 +6,7 @@ import { SECTION_PADDING, CONTENT_GAP, MAX_WIDTH } from "@/lib/spacing";
 import StatCard from "@/components/ui/StatCard";
 import InfoCard from "@/components/ui/InfoCard";
 import BentoGrid, { BentoTile } from "@/components/ui/BentoGrid";
+import SectionHeader from "@/components/SectionHeader";
 import { cn } from "@/lib/utils";
 
 /**
@@ -272,6 +273,23 @@ const StyleGuide = () => {
             <BentoTile eyebrow="T3R" title="Bearspaw" body="Established homes, discreet work." to="/service-areas/bearspaw" />
             <BentoTile eyebrow="T0M" title="Water Valley" body="Practical work for real distance." to="/service-areas/water-valley" />
           </BentoGrid>
+
+          <h3 className={cn(HEADLINE.compact, "text-foreground mt-16 mb-5")}>SectionHeader</h3>
+          <p className={cn(BODY.standard, MEASURE.editorial, "mb-8")}>
+            The canonical eyebrow + H2 + lede trio. One header system for the whole site —
+            locks the spacing rhythm (mt-5 / mt-5) and the title/lede max-widths.
+          </p>
+          <div className="space-y-12">
+            <div className="surface-card p-7 md:p-10">
+              <SectionHeader eyebrow="Default" title="A section title sits here." lede="And the supporting lede follows on a one-line gap, capped at a comfortable 58ch reading measure." bottomGap="none" />
+            </div>
+            <div className="surface-card p-7 md:p-10">
+              <SectionHeader eyebrow="Centered" title="A centered variant for quiet pull moments." lede="Used on testimonial intros and short reassurance bands." align="center" titleWidth="wide" bottomGap="none" />
+            </div>
+            <div className="rounded-md p-7 md:p-10 bg-evergreen-deep">
+              <SectionHeader tone="light" eyebrow="Light tone" title="For dark CTA bands." lede="Eyebrow and heading colors flip to background tones automatically." bottomGap="none" />
+            </div>
+          </div>
         </Container>
       </section>
 
