@@ -864,7 +864,80 @@
     box-shadow:
       0 0 0 2px hsl(var(--background)),
       0 0 0 4px hsl(var(--evergreen)),
-      0 18px 36px -14px hsl(145 24% 8% / 0.35);
+       0 18px 36px -14px hsl(145 24% 8% / 0.35);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     CTA — Ghost arrow.
+     Quiet sibling to .cta-anchor. Text + a hairline rule that grows
+     from 24px → 64px on hover. Used for "View the Work", "See [service]",
+     and any secondary navigational link that needs more weight than a
+     plain inline link but less than the evergreen pill.
+     ────────────────────────────────────────────────────────────────────── */
+  .cta-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-height: 44px;
+    padding: 0.5rem 0.25rem;
+    color: hsl(var(--foreground) / 0.85);
+    font-family: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    transition: color 500ms var(--ease-swift);
+  }
+  .cta-ghost:hover { color: hsl(var(--evergreen)); }
+  .cta-ghost:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px hsl(var(--background)),
+      0 0 0 4px hsl(var(--evergreen));
+    border-radius: 4px;
+  }
+  .cta-ghost__rule {
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: hsl(var(--evergreen) / 0.6);
+    transition: width 500ms var(--ease-swift), background 500ms var(--ease-swift);
+  }
+  .cta-ghost:hover .cta-ghost__rule {
+    width: 64px;
+    background: hsl(var(--evergreen));
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     Hero photography — slow ken-burns drift.
+     ~18s loop, 1.0 → 1.04, alternates so it never resets visibly.
+     Honors prefers-reduced-motion.
+     ────────────────────────────────────────────────────────────────────── */
+  .photo-drift {
+    animation: photoDrift 22s ease-in-out infinite alternate;
+    transform-origin: center center;
+    will-change: transform;
+  }
+  @keyframes photoDrift {
+    0%   { transform: scale(1) translate3d(0, 0, 0); }
+    100% { transform: scale(1.04) translate3d(-1%, -1%, 0); }
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     ServiceMarquee — photo zoom-in on enter.
+     Starts at 1.04 and settles to 1.0 over 1.4s when revealed.
+     ────────────────────────────────────────────────────────────────────── */
+  .photo-zoom-in {
+    transform: scale(1.04);
+    transition: transform 1400ms var(--ease-silk);
+  }
+  [data-reveal].is-visible .photo-zoom-in,
+  .is-visible .photo-zoom-in {
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .photo-drift { animation: none; }
+    .photo-zoom-in { transition: none; transform: scale(1); }
   }
 
   /* ──────────────────────────────────────────────────────────────────────
