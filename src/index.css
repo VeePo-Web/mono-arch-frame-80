@@ -930,8 +930,9 @@
     transform: scale(1.04);
     transition: transform 1400ms var(--ease-silk);
   }
-  [data-reveal].is-visible .photo-zoom-in,
-  .is-visible .photo-zoom-in {
+  [data-reveal][data-revealed="true"] .photo-zoom-in,
+  [data-revealed="true"] [data-reveal] .photo-zoom-in,
+  [data-revealed="true"] .photo-zoom-in {
     transform: scale(1);
   }
 
