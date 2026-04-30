@@ -156,10 +156,12 @@ const Decking = () => {
           <Container size="wide">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
               <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <Eyebrow numeral="IV" label="PROJECT PROOF" />
-                <h2 id="proof-heading" className={cn(HEADLINE.section, "text-foreground mt-6 max-w-[20ch]")}>
-                  A wraparound deck on a Bearspaw property.
-                </h2>
+                <SectionHeader
+                  id="proof-heading"
+                  eyebrow="Project proof"
+                  title="A wraparound deck on a Bearspaw property."
+                  bottomGap="none"
+                />
               </div>
             </div>
 
