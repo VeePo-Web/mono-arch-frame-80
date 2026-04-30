@@ -49,7 +49,7 @@ const ServiceAreas = () => {
         headline="Local, by choice."
         accentWord="choice"
         subhead="Four communities. Each different in pace, exposure, and the kind of property care it asks for. We chose this footprint so the work could stay personal."
-        primaryCta={{ to: "/contact", label: "Discuss your area" }}
+        primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/services", label: "Our services" }}
         dossier={{ sectionNo: "IX", coord: "Foothills · West & North of Calgary", edition: "Edition I" }}
       />
@@ -146,7 +146,7 @@ const ServiceAreas = () => {
         eyebrow="LOCAL, FROM THE START"
         heading="Tell us about the property and where it sits."
         body="We'll know the road, the drive in, and what the season is asking for."
-        primary={{ to: "/contact", label: "Request a Consultation" }}
+        primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/work", label: "View Our Work" }}
       />
     </main>

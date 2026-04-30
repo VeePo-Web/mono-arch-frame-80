@@ -49,7 +49,7 @@ const About = () => {
         headline="A hands-on renovation partner for rural properties."
         accentWord="hands-on"
         subhead="Haven Creek was built for homeowners who want a more personal, less scattered way to improve the property they care about."
-        primaryCta={{ to: "/contact", label: "Talk through your project" }}
+        primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
         dossier={{ sectionNo: "II", coord: "About · Working philosophy", edition: "Edition I" }}
       />
@@ -169,7 +169,7 @@ const About = () => {
         eyebrow="START THE CONVERSATION"
         heading="Tell us about the property and what's on your mind."
         body="One project or many. We're glad to walk it through."
-        primary={{ to: "/contact", label: "Talk through your project" }}
+        primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "What we offer" }}
       />
     </main>
