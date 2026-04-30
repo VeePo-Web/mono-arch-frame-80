@@ -17,9 +17,9 @@ const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 // TODO: replace with real number when ready.
-const STUDIO_PHONE = "(403) 555-0100";
-const STUDIO_PHONE_TEL = "+14035550100";
-const STUDIO_EMAIL = "hello@havencreekrenovations.ca";
+const STUDIO_PHONE = "403 970-7691";
+const STUDIO_PHONE_TEL = "+14039707691";
+const STUDIO_EMAIL = "cory@havencreekrenovations.com";
 
 const POSTAL: Record<string, string> = {
   "bragg-creek": "T0L",

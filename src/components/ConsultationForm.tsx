@@ -263,7 +263,7 @@ const ConsultationForm = ({
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  placeholder="you@example.com  ·  or  ·  (403) 555-0100"
+                  placeholder="you@example.com  ·  or  ·  403 970-7691"
                   autoComplete="email"
                   className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                 />

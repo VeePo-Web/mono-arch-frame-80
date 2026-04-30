@@ -12,9 +12,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { detectContact } from "@/lib/validation/consultation";
 import { subscribeQuickContact } from "@/lib/quickContact";
 
-const STUDIO_PHONE_TEL = "+14035550100";
-const STUDIO_PHONE_DISPLAY = "(403) 555-0100";
-const STUDIO_EMAIL = "hello@havencreekrenovations.ca";
+const STUDIO_PHONE_TEL = "+14039707691";
+const STUDIO_PHONE_DISPLAY = "403 970-7691";
+const STUDIO_EMAIL = "cory@havencreekrenovations.com";
 
 /**
  * QuickContactSheet — mobile-only bottom-sheet contact escape hatch.
@@ -236,7 +236,7 @@ const QuickContactSheet = () => {
                   <span className="text-[0.7rem] tracking-[0.22em] uppercase font-medium text-evergreen/90">Email</span>
                 </span>
                 <span className="font-serif text-[0.95rem] text-foreground/90 truncate">
-                  hello@haven…
+                  cory@haven…
                 </span>
                 <span className="text-[0.65rem] tracking-[0.16em] uppercase text-muted-foreground">
                   Reply ≤ 2 days
@@ -305,7 +305,7 @@ const QuickContactSheet = () => {
                     enterKeyHint="next"
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
-                    placeholder="you@example.com  ·  or  ·  (403) 555-0100"
+                    placeholder="you@example.com  ·  or  ·  403 970-7691"
                     className={cn(
                       "flex h-12 w-full rounded-md border bg-background/60 px-3 py-2 text-base",
                       "border-foreground/10 ring-offset-background",

@@ -366,23 +366,23 @@ const Index = () => {
                 {/* Mobile: full-width tap rows. Desktop: italic inline text. */}
                 <div className="mt-4 grid grid-cols-1 gap-2 sm:gap-3 lg:hidden">
                   <a
-                    href="mailto:hello@havencreekrenovations.ca"
+                    href="mailto:cory@havencreekrenovations.com"
                     className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
-                    aria-label="Email hello@havencreekrenovations.ca"
+                    aria-label="Email cory@havencreekrenovations.com"
                   >
                     <Mail className="h-4 w-4 text-background/85 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                     <span className="font-serif italic text-[0.98rem] truncate">
-                      hello@havencreekrenovations.ca
+                      cory@havencreekrenovations.com
                     </span>
                   </a>
                   <a
-                    href="tel:+14035550100"
+                    href="tel:+14039707691"
                     className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/20 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
-                    aria-label="Call (403) 555-0100"
+                    aria-label="Call 403 970-7691"
                   >
                     <Phone className="h-4 w-4 text-background/85 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                     <span className="font-serif italic text-[0.98rem] tabular-nums">
-                      (403) 555-0100
+                      403 970-7691
                     </span>
                   </a>
                 </div>
@@ -390,18 +390,18 @@ const Index = () => {
                 <div className="hidden lg:block space-y-3 mt-3">
                   <p>
                     <a
-                      href="mailto:hello@havencreekrenovations.ca"
+                      href="mailto:cory@havencreekrenovations.com"
                       className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300"
                     >
-                      hello@havencreekrenovations.ca
+                      cory@havencreekrenovations.com
                     </a>
                   </p>
                   <p>
                     <a
-                      href="tel:+14035550100"
+                      href="tel:+14039707691"
                       className="font-serif italic text-background/90 hover:text-background text-[1.05rem] transition-colors duration-300 tabular-nums"
                     >
-                      (403) 555-0100
+                      403 970-7691
                     </a>
                   </p>
                 </div>
