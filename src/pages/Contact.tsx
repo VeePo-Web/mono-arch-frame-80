@@ -2,7 +2,7 @@ import { lazy, Suspense, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -10,10 +10,11 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas } from "@/data/serviceAreas";
 import { projectTypeFromQuery } from "@/lib/validation/consultation";
+import { BODY } from "@/lib/typography";
+import { SECTION_PADDING } from "@/lib/spacing";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 // TODO: replace with real number when ready.
