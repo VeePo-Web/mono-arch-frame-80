@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -11,8 +11,8 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas, getServiceArea } from "@/data/serviceAreas";
 import { services } from "@/data/services";
+import { SECTION_PADDING } from "@/lib/spacing";
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 const POSTAL: Record<string, string> = {
