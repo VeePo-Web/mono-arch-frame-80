@@ -155,7 +155,6 @@ const Contact = () => {
                     </a>
                   </li>
                   <li>
-                    {/* TODO: replace with real phone number */}
                     <a
                       href={`tel:${STUDIO_PHONE_TEL}`}
                       className="contact-row group flex items-baseline justify-between gap-6 py-5"
@@ -169,80 +168,8 @@ const Contact = () => {
                       <span className="text-minimal text-evergreen/65">PHONE</span>
                     </a>
                   </li>
-                  <li>
-                    <div className="flex items-baseline justify-between gap-6 py-5">
-                      <span className="flex items-baseline gap-4">
-                        <span className="numeral-mark tabular-nums text-evergreen/70">03</span>
-                        <span className="font-serif text-[1.1rem] md:text-[1.2rem] text-foreground/85">
-                          Reply within two business days
-                        </span>
-                      </span>
-                      <span className="text-minimal text-evergreen/65 tabular-nums">MON–FRI</span>
-                    </div>
-                  </li>
                 </ul>
               </div>
-            </div>
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* § II — Custom quote reassurance */}
-      <RevealSection id="quote" aria-labelledby="quote-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
-        <Container size="wide">
-          <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <SectionHeader
-              id="quote-heading"
-              eyebrow="About the quote"
-              title="Pricing is custom because the work is."
-              lede="We don't quote on instinct, and we don't quote without seeing the property. The number we send back is built on the scope, the site, and the materials that suit it — not on a template."
-              align="center"
-              titleWidth="wide"
-              bottomGap="none"
-            />
-            <p className={cn(BODY.standard, "mt-5 max-w-[58ch] mx-auto text-center")}>
-              No obligation to proceed, either way.
-            </p>
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* § III — Service-area trust line */}
-      <RevealSection id="areas" aria-labelledby="areas-heading" className={cn(SECTION_PADDING.standard, "cv-auto")}>
-        <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <SectionHeader
-                id="areas-heading"
-                eyebrow="Where we work"
-                title="Local, by choice."
-                lede="If your property sits in or near one of these communities, we're glad to talk."
-                titleWidth="none"
-                bottomGap="none"
-              />
-            </div>
-            <div className="lg:col-span-7">
-              <ul className="divide-y divide-border/60 border-y border-border/60">
-                {serviceAreas.map((a, i) => (
-                  <li
-                    key={a.slug}
-                    data-reveal
-                    style={{ ["--reveal-delay" as string]: `${180 + i * 80}ms` }}
-                  >
-                    <Link
-                      to={a.href}
-                      className="area-row group flex items-baseline justify-between gap-6 py-6"
-                    >
-                      <span className="font-serif text-[1.25rem] md:text-[1.4rem] text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
-                        {a.name}
-                      </span>
-                      <span className="text-minimal text-evergreen/70 tabular-nums">
-                        {POSTAL[a.slug]}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </Container>
