@@ -164,7 +164,7 @@ const Index = () => {
           </BentoGrid>
 
           <div
-            className="mt-12 md:mt-16 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7"
+            className="mt-12 md:mt-16"
             data-reveal
             style={{ ["--reveal-delay" as string]: "640ms" }}
           >
@@ -174,9 +174,6 @@ const Index = () => {
                 <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
               </span>
             </Link>
-            <p className={cn(BODY.caption, "italic font-serif")}>
-              Tell us about the place — we'll write back within two business days.
-            </p>
           </div>
         </Container>
       </RevealSection>
