@@ -274,11 +274,6 @@ const ConsultationForm = ({
         />
 
         {/* (Helper line removed — placeholder already shows email · or · phone.) */}
-        {/* spacer */}
-        <div className="hidden" />
-            </FormItem>
-          )}
-        />
 
         <FormField
           control={form.control}
@@ -429,7 +424,7 @@ const ConsultationForm = ({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep",
           )}
         >
-          <span>{isSubmitting ? "Sending…" : "Request the Conversation"}</span>
+          <span>{isSubmitting ? "Sending…" : "Send the Note"}</span>
           <span className="icon-chip icon-chip-light bg-background/15">
             <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
           </span>
