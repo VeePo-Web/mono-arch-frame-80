@@ -42,7 +42,7 @@ const Footer = () => {
             </p>
           </div>
 
-          <div className="col-span-1 md:col-span-3">
+          <div className="col-span-2 md:col-span-3">
             <p className="text-minimal text-evergreen/80 mb-5">Services</p>
             <ul className="space-y-3">
               {services.map((s) => (
