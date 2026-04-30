@@ -95,7 +95,7 @@ const InteriorFinishing = () => {
         }
       />
 
-      {/* § I — What it means + details bento */}
+      {/* § I — What it means + details bento (with the "why it matters" line folded in) */}
       <RevealSection id="meaning" aria-labelledby="meaning-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
@@ -107,6 +107,9 @@ const InteriorFinishing = () => {
                 lede="It's the part of a renovation that decides whether a room feels resolved or merely complete. Trim that lands where it should. Transitions that don't fight one another. Built-ins that sit against the wall the way they were drawn."
                 bottomGap="none"
               />
+              <p className={cn(BODY.quote, "mt-7 max-w-[44ch] italic")}>
+                This is the part you see and feel every day. It either rewards a closer look, or it doesn't.
+              </p>
             </div>
           </div>
 
@@ -121,19 +124,7 @@ const InteriorFinishing = () => {
         </Container>
       </RevealSection>
 
-      {/* § II — Why it matters (pull quote) */}
-      <RevealSection id="why" aria-labelledby="why-heading" className={cn(SECTION_PADDING.compact, "section-wash cv-auto")}>
-        <Container size="wide">
-          <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <Eyebrow align="center" label="Why it matters" />
-            <h2 id="why-heading" className="sr-only">Why interior finishing matters</h2>
-            <p className={cn(BODY.quote, "mt-7 max-w-[34ch] mx-auto")}>
-              This is the part you see and feel every day. It either rewards a closer look,
-              or it doesn't.
-            </p>
-          </div>
-        </Container>
-      </RevealSection>
+      {/* § II "Why it matters" pull-quote — folded into §I above. */}
 
       {/* § III — Craft & detail (3 InfoCards w/ vignette) */}
       <RevealSection id="craft" aria-labelledby="craft-heading" className={SECTION_PADDING.standard}>
