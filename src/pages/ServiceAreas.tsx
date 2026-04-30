@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import ClosingCta from "@/components/ClosingCta";
@@ -23,8 +23,7 @@ const POSTAL: Record<string, string> = {
 const FIT = [
   { n: "01", title: "Drive time", body: "We plan around real travel — so the work day starts on the property, not in traffic." },
   { n: "02", title: "Seasonal weather", body: "Some work has a window. We schedule the right work for the right season." },
-  { n: "03", title: "Property access", body: "Long driveways, narrow gates, snowed-in approaches — planned around, not assumed away." },
-  { n: "04", title: "Land & wildlife", body: "Trees, gardens, dogs, horses. We work with what's already there." },
+  { n: "03", title: "Property access", body: "Long driveways, narrow gates, snowed-in approaches — planned around the way the land actually behaves." },
 ];
 
 const ServiceAreas = () => {
@@ -59,14 +58,14 @@ const ServiceAreas = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="THE ROSTER" />
-              <h2 id="roster-heading" className="text-headline text-foreground mt-6">
-                Four communities we know well.
-              </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-md">
-                Each area has its own pace and its own demands. A Bearspaw renovation
-                isn't a Bragg Creek renovation — and the work should reflect that.
-              </p>
+              <SectionHeader
+                id="roster-heading"
+                eyebrow="The roster"
+                title="Four communities we know well."
+                lede="Each area has its own pace and its own demands. A Bearspaw renovation isn't a Bragg Creek renovation — and the work should reflect that."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
 
             <div className="lg:col-span-7">
@@ -111,15 +110,14 @@ const ServiceAreas = () => {
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="BUILT FOR RURAL SERVICE" />
-              <h2 id="fit-heading" className="text-headline text-foreground mt-6 max-w-[22ch]">
-                Rural property work has its own logic. We plan around it.
-              </h2>
-              <p className="mt-6 text-body text-muted-foreground max-w-[55ch]">
-                Suburban contracting habits don't transfer cleanly to acreages. The
-                distances are longer, the seasons matter more, and the property is part
-                of the day's work — not just the location.
-              </p>
+              <SectionHeader
+                id="fit-heading"
+                eyebrow="Built for rural service"
+                title="Rural property work has its own logic. We plan around it."
+                lede="Suburban contracting habits don't transfer cleanly to acreages. The distances are longer, the seasons matter more, and the property is part of the day's work — not just the location."
+                titleWidth="wide"
+                bottomGap="none"
+              />
             </div>
             <div className="lg:col-span-5 lg:pt-8" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
               <div className="figure-footnote mb-5">
