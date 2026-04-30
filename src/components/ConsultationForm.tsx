@@ -268,10 +268,14 @@ const ConsultationForm = ({
                   className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                 />
               </FormControl>
-              <p className="text-sm text-foreground/65 leading-relaxed">
-                Email or phone — whichever you prefer.
-              </p>
               <FormMessage className="text-sm" />
+            </FormItem>
+          )}
+        />
+
+        {/* (Helper line removed — placeholder already shows email · or · phone.) */}
+        {/* spacer */}
+        <div className="hidden" />
             </FormItem>
           )}
         />
