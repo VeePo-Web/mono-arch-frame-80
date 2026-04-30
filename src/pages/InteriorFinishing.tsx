@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+// Eyebrow no longer used directly — SectionHeader carries it.
 import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
