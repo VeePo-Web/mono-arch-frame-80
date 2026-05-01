@@ -281,13 +281,13 @@ const ConsultationForm = ({
           render={({ field }) => (
             <FormItem className="space-y-1.5">
               <FormLabel className="text-minimal text-foreground/70">
-                What you&apos;re considering
+                About your project
               </FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   rows={4}
-                  placeholder="A sentence is plenty. e.g. &ldquo;Replacing a deck on a 1990s walkout, looking to start in spring.&rdquo;"
+                  placeholder="e.g. New deck on a 1990s walkout, hoping for spring."
                   className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
                 />
               </FormControl>
