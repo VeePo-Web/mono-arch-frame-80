@@ -70,7 +70,8 @@ const About = () => {
               </p>
               <p className="text-body text-muted-foreground">
                 We hold both standards because the homeowner does. The job isn't finished
-                until both feel right.
+                until both feel right. Most rural properties are improved a stage at a
+                time — and we're built for that pace.
               </p>
             </div>
           </div>
