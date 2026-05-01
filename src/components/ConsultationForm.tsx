@@ -431,7 +431,7 @@ const ConsultationForm = ({
         </button>
 
         <p id={RESPONSE_NOTE_ID} className="text-minimal text-muted-foreground leading-relaxed pt-1">
-          We reply within two business days. No obligation. No automated funnel.
+          We reply within two business days. No obligation.
         </p>
       </form>
     </Form>
