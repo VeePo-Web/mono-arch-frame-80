@@ -15,18 +15,11 @@ import { SECTION_PADDING } from "@/lib/spacing";
 
 const SITE = "https://havencreekrenovations.ca";
 
-type Filter = "All" | PlateCategory | "Bragg Creek" | "Rocky View County" | "Bearspaw" | "Water Valley";
+type TypeFilter = "All" | PlateCategory;
+type AreaFilter = "All" | "Bragg Creek" | "Rocky View County" | "Bearspaw" | "Water Valley";
 
-const FILTERS: { label: Filter; group: "category" | "area" | "all" }[] = [
-  { label: "All", group: "all" },
-  { label: "Interior Finishing", group: "category" },
-  { label: "Exterior Repairs", group: "category" },
-  { label: "Decking", group: "category" },
-  { label: "Bragg Creek", group: "area" },
-  { label: "Rocky View County", group: "area" },
-  { label: "Bearspaw", group: "area" },
-  { label: "Water Valley", group: "area" },
-];
+const TYPE_FILTERS: TypeFilter[] = ["All", "Interior Finishing", "Exterior Repairs", "Decking"];
+const AREA_FILTERS: AreaFilter[] = ["All", "Bragg Creek", "Rocky View County", "Bearspaw", "Water Valley"];
 
 const Work = () => {
   useSeo({
