@@ -100,7 +100,6 @@ const Contact = () => {
                   as="h3"
                   eyebrow="Or reach us directly"
                   title="Prefer to write or call?"
-                  lede="Either reaches the same small team. We answer in the order notes arrive."
                   titleWidth="wide"
                   bottomGap="none"
                 />
