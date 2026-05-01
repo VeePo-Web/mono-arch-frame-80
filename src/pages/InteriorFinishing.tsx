@@ -12,6 +12,7 @@ import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
 import { InteriorVignette } from "@/components/ProjectVignette";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
+import { photography } from "@/assets/photography";
 import { projects } from "@/data/projects";
 import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
