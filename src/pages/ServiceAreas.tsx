@@ -20,11 +20,7 @@ const POSTAL: Record<string, string> = {
   "water-valley": "T0M",
 };
 
-const FIT = [
-  { n: "01", title: "Drive time", body: "We plan around real travel — so the work day starts on the property, not in traffic." },
-  { n: "02", title: "Seasonal weather", body: "Some work has a window. We schedule the right work for the right season." },
-  { n: "03", title: "Property access", body: "Long driveways, narrow gates, snowed-in approaches — planned around the way the land actually behaves." },
-];
+// (FIT trio removed — area pages own that detail; keeping ServiceAreas scannable.)
 
 const ServiceAreas = () => {
   useSeo({
