@@ -213,9 +213,7 @@ const Services = () => {
                 {[
                   "Scope of work, written plainly",
                   "Materials & finishes, by name",
-                  "Timeline & phasing approach",
-                  "Site access & seasonal considerations",
-                  "A clear, all-in price",
+                  "Timeline & a clear, all-in price",
                 ].map((item, i) => (
                   <BentoTile
                     key={item}
