@@ -254,7 +254,7 @@ const ConsultationForm = ({
           render={({ field }) => (
             <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
               <FormLabel className="text-minimal text-foreground/70">
-                Best way to reach you
+                Email or phone
               </FormLabel>
               <FormControl>
                 <Input
@@ -263,7 +263,7 @@ const ConsultationForm = ({
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  placeholder="you@example.com  ·  or  ·  403 970-7691"
+                  placeholder="you@example.com  ·  403 970-7691"
                   autoComplete="email"
                   className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                 />
