@@ -210,10 +210,16 @@ const ExteriorFinishing = () => {
 
             <PremiumCard className="overflow-hidden" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
               <div className="grid grid-cols-1 lg:grid-cols-12">
-                <div className="lg:col-span-5 relative aspect-[4/3] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-evergreen/10">
-                  <ExteriorVignette className="absolute inset-0 w-full h-full" />
+                <div className="lg:col-span-5 relative aspect-[4/3] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-evergreen/10 overflow-hidden">
+                  <img
+                    src={photography.serviceExterior}
+                    alt="Exterior repair work on a Rocky View acreage — eaves and weather-side trim restored."
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                   <span
-                    className="absolute top-4 left-5 text-[0.75rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
+                    className="absolute top-4 left-5 text-[0.75rem] tracking-[0.18em] text-background/90 font-serif italic drop-shadow"
                     aria-hidden="true"
                   >
                     Plate II
