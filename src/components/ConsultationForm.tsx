@@ -233,7 +233,7 @@ const ConsultationForm = ({
           render={({ field }) => (
             <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
               <FormLabel className="text-minimal text-foreground/70">
-                Your name
+                Name
               </FormLabel>
               <FormControl>
                 <Input
