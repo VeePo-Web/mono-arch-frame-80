@@ -110,8 +110,8 @@ const Work = () => {
             data-reveal
             style={{ ["--reveal-delay" as string]: "0ms" }}
           >
-            {renderRow("Type", TYPE_FILTERS, typeFilter, setTypeFilter, "type")}
-            {renderRow("Area", AREA_FILTERS, areaFilter, setAreaFilter, "area")}
+            {renderRow<TypeFilter>("Type", TYPE_FILTERS, typeFilter, setTypeFilter, "type")}
+            {renderRow<AreaFilter>("Area", AREA_FILTERS, areaFilter, setAreaFilter, "area")}
           </div>
         </Container>
       </RevealSection>
