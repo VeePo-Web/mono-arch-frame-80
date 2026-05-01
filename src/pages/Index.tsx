@@ -265,18 +265,6 @@ const Index = () => {
             >
               <div className="cta-bezel">
                 <div className="cta-bezel__core p-5 sm:p-7 md:p-9">
-                  <p
-                    data-drift
-                    className="font-serif text-foreground text-[1.25rem] sm:text-[1.3rem] md:text-[1.5rem] leading-snug"
-                  >
-                    What should we know before we reach out?
-                  </p>
-                  <p className="mt-2 text-minimal text-muted-foreground">
-                    Five fields, two minutes.
-                  </p>
-
-                  <div className="mt-6 sm:mt-7 mb-5 sm:mb-6 h-px bg-foreground/10" />
-
                   <Suspense
                     fallback={
                       <div
