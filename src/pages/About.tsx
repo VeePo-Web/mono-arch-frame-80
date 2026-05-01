@@ -70,7 +70,8 @@ const About = () => {
               </p>
               <p className="text-body text-muted-foreground">
                 We hold both standards because the homeowner does. The job isn't finished
-                until both feel right.
+                until both feel right. Most rural properties are improved a stage at a
+                time — and we're built for that pace.
               </p>
             </div>
           </div>
@@ -112,28 +113,7 @@ const About = () => {
         </Container>
       </RevealSection>
 
-      {/* § III previously "Hands-on continuity" — removed; the same idea is
-          carried by §II "Property respect" and §IV "Long-term horizon". */}
-
-      {/* § IV — Long-term relationship */}
-      <RevealSection id="longterm" aria-labelledby="longterm-heading" className={cn(SECTION, "section-wash cv-auto")}>
-        <Container size="wide">
-          <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <SectionHeader
-              id="longterm-heading"
-              eyebrow="A longer horizon"
-              title="Most rural properties are improved a stage at a time."
-              lede="A deck this year. Interior finishing next. Exterior repairs the year after. Working with one trusted contractor across phases means continuity — someone who already knows the building, the land, and how you live on it."
-              align="center"
-              titleWidth="wide"
-              bottomGap="none"
-            />
-            <p className="mt-7 font-serif italic text-foreground/85 text-[1.1rem]">
-              We're built for that pace.
-            </p>
-          </div>
-        </Container>
-      </RevealSection>
+      {/* §IV "A longer horizon" — folded into §I working philosophy. */}
 
       <ClosingCta
         numeral="V"

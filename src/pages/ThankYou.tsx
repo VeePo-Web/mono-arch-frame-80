@@ -15,8 +15,6 @@ const SECTION = "py-14 md:py-28";
 const NEXT_LINKS = [
   { to: "/work", title: "Our Work", body: "Recent plates from rural properties." },
   { to: "/services", title: "Services", body: "Three services, held to one standard." },
-  { to: "/service-areas", title: "Service Areas", body: "Four communities we know well." },
-  { to: "/about", title: "About", body: "How we work, and why." },
 ];
 
 interface ThankYouState {
@@ -190,7 +188,7 @@ const ThankYou = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-7 max-w-3xl mx-auto">
             {NEXT_LINKS.map((link, i) => (
               <Link
                 key={link.to}

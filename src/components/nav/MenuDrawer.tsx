@@ -186,14 +186,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
             className="relative z-10 border-t border-border/60 bg-background/40 backdrop-blur-sm"
             style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
           >
-            <div className="px-6 md:px-10 lg:px-16 py-4 md:py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <p className="text-foreground/70 text-sm flex items-center gap-2">
-                <span
-                  className="inline-block h-1.5 w-1.5 rounded-full bg-evergreen/80"
-                  aria-hidden="true"
-                />
-                Family-run · Foothills, AB
-              </p>
+            <div className="px-6 md:px-10 lg:px-16 py-4 md:py-5 flex md:justify-end">
 
               {/* Mobile CTA — opens QuickContactSheet */}
               <button

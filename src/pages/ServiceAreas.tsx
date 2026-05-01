@@ -20,11 +20,7 @@ const POSTAL: Record<string, string> = {
   "water-valley": "T0M",
 };
 
-const FIT = [
-  { n: "01", title: "Drive time", body: "We plan around real travel — so the work day starts on the property, not in traffic." },
-  { n: "02", title: "Seasonal weather", body: "Some work has a window. We schedule the right work for the right season." },
-  { n: "03", title: "Property access", body: "Long driveways, narrow gates, snowed-in approaches — planned around the way the land actually behaves." },
-];
+// (FIT trio removed — area pages own that detail; keeping ServiceAreas scannable.)
 
 const ServiceAreas = () => {
   useSeo({
@@ -108,34 +104,16 @@ const ServiceAreas = () => {
       {/* § II — Rural fit */}
       <RevealSection id="fit" aria-labelledby="fit-heading" className={cn(SECTION, "section-wash cv-auto")}>
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <SectionHeader
-                id="fit-heading"
-                eyebrow="Built for rural service"
-                title="Rural property work has its own logic. We plan around it."
-                lede="Suburban contracting habits don't transfer cleanly to acreages. The distances are longer, the seasons matter more, and the property is part of the day's work — not just the location."
-                titleWidth="wide"
-                bottomGap="none"
-              />
-            </div>
-            <div className="lg:col-span-5 lg:pt-8" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-              <div className="figure-footnote mb-5">
-                <span className="footnote-figmark">Fig. ii.</span>
-                <span className="flex-1">WHAT WE PLAN AROUND</span>
-              </div>
-              <ul className="divide-y divide-border/60 border-y border-border/60">
-                {FIT.map((f) => (
-                  <li key={f.n} className="flex items-baseline gap-4 py-4">
-                    <span className="numeral-mark tabular-nums text-evergreen/70 w-6">{f.n}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-body text-foreground/85 text-[0.98rem]">{f.title}</p>
-                      <p className="mt-1 text-body text-muted-foreground text-[0.9rem]">{f.body}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+            <SectionHeader
+              id="fit-heading"
+              eyebrow="Built for rural service"
+              title="Rural property work has its own logic. We plan around it."
+              lede="Suburban contracting habits don't transfer cleanly to acreages. The distances are longer, the seasons matter more, and the property is part of the day's work — not just the location."
+              align="center"
+              titleWidth="wide"
+              bottomGap="none"
+            />
           </div>
         </Container>
       </RevealSection>

@@ -12,6 +12,7 @@ import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
 import { DeckingVignette } from "@/components/ProjectVignette";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
+import { photography } from "@/assets/photography";
 import { projects } from "@/data/projects";
 import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
@@ -155,10 +156,16 @@ const Decking = () => {
 
             <PremiumCard className="overflow-hidden" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
               <div className="grid grid-cols-1 lg:grid-cols-12">
-                <div className="lg:col-span-5 relative aspect-[4/3] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-evergreen/10">
-                  <DeckingVignette className="absolute inset-0 w-full h-full" />
+                <div className="lg:col-span-5 relative aspect-[4/3] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-evergreen/10 overflow-hidden">
+                  <img
+                    src={photography.serviceDecking}
+                    alt="A wraparound deck on a Bearspaw rural property — view from the lawn at golden hour."
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                   <span
-                    className="absolute top-4 left-5 text-[0.75rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
+                    className="absolute top-4 left-5 text-[0.75rem] tracking-[0.18em] text-background/90 font-serif italic drop-shadow"
                     aria-hidden="true"
                   >
                     Plate III

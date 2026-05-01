@@ -233,7 +233,7 @@ const ConsultationForm = ({
           render={({ field }) => (
             <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
               <FormLabel className="text-minimal text-foreground/70">
-                Your name
+                Name
               </FormLabel>
               <FormControl>
                 <Input
@@ -254,7 +254,7 @@ const ConsultationForm = ({
           render={({ field }) => (
             <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
               <FormLabel className="text-minimal text-foreground/70">
-                Best way to reach you
+                Email or phone
               </FormLabel>
               <FormControl>
                 <Input
@@ -263,7 +263,7 @@ const ConsultationForm = ({
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  placeholder="you@example.com  ·  or  ·  403 970-7691"
+                  placeholder="you@example.com  ·  403 970-7691"
                   autoComplete="email"
                   className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                 />
@@ -281,13 +281,13 @@ const ConsultationForm = ({
           render={({ field }) => (
             <FormItem className="space-y-1.5">
               <FormLabel className="text-minimal text-foreground/70">
-                What you&apos;re considering
+                About your project
               </FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   rows={4}
-                  placeholder="A sentence is plenty. e.g. &ldquo;Replacing a deck on a 1990s walkout, looking to start in spring.&rdquo;"
+                  placeholder="e.g. New deck on a 1990s walkout, hoping for spring."
                   className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
                 />
               </FormControl>
@@ -431,7 +431,7 @@ const ConsultationForm = ({
         </button>
 
         <p id={RESPONSE_NOTE_ID} className="text-minimal text-muted-foreground leading-relaxed pt-1">
-          We reply within two business days. No obligation. No automated funnel.
+          We reply within two business days. No obligation.
         </p>
       </form>
     </Form>

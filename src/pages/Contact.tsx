@@ -17,10 +17,7 @@ const STUDIO_PHONE = "403 970-7691";
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_EMAIL = "cory@havencreekrenovations.com";
 
-const STEPS = [
-  { n: "01", title: "You write", body: "A few details about the property and what you're considering. Five fields, two minutes." },
-  { n: "02", title: "We reply", body: "Within two business days. A real reply from a real person — Cory — with honest questions and a clear next step." },
-];
+// (Steps removed — the form itself is the next step. Less promise, more action.)
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
@@ -57,7 +54,7 @@ const Contact = () => {
       <RevealSection id="form" aria-labelledby="form-heading" className="pb-24 md:pb-32">
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
-            {/* Sticky left rail — stays visible as the form is filled */}
+            {/* Sticky left rail — small promise, then out of the way */}
             <div
               className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start"
               data-reveal
@@ -65,25 +62,13 @@ const Contact = () => {
             >
               <SectionHeader
                 id="form-heading"
-                eyebrow="What happens next"
-                title="A calm, four-step path."
+                eyebrow="What happens"
+                title="Write. We reply."
+                lede="Within two business days, from Cory directly."
                 bottomGap="none"
               />
-              <ol className="mt-10 border-l-2 border-evergreen/35 pl-6 space-y-7">
-                {STEPS.map((s) => (
-                  <li key={s.n}>
-                    <p className="flex items-baseline gap-3 text-minimal text-evergreen mb-1.5">
-                      <span className="numeral-mark tabular-nums">{s.n}</span>
-                      <span>{s.title}</span>
-                    </p>
-                    <p className="text-body text-muted-foreground  leading-relaxed max-w-[42ch]">
-                      {s.body}
-                    </p>
-                  </li>
-                ))}
-              </ol>
               <p className="mt-10 font-serif italic text-foreground/75 text-[1.05rem] max-w-md">
-                "The form should feel like the beginning of a relationship, not a sales trap."
+                "The beginning of a relationship — not a sales trap."
               </p>
             </div>
 
@@ -91,13 +76,6 @@ const Contact = () => {
             <div className="lg:col-span-7 space-y-16" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
               <PremiumCard tone="evergreen" className="bezel-shell-closing">
                 <div className="p-7 md:p-10">
-                  <p className="font-serif text-foreground text-[1.3rem] md:text-[1.5rem] leading-snug">
-                    Tell us about the project.
-                  </p>
-                  <p className="mt-2 text-minimal text-muted-foreground">
-                    A few details so we can come prepared.
-                  </p>
-                  <div className="mt-7 mb-6 h-px w-full bg-foreground/10" />
                   <Suspense
                     fallback={
                       <div aria-hidden="true" className="h-[520px] rounded-md bg-foreground/[0.03] animate-pulse" />
@@ -122,7 +100,6 @@ const Contact = () => {
                   as="h3"
                   eyebrow="Or reach us directly"
                   title="Prefer to write or call?"
-                  lede="Either reaches the same small team. We answer in the order notes arrive."
                   titleWidth="wide"
                   bottomGap="none"
                 />

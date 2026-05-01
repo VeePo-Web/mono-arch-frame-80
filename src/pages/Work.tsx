@@ -15,18 +15,11 @@ import { SECTION_PADDING } from "@/lib/spacing";
 
 const SITE = "https://havencreekrenovations.ca";
 
-type Filter = "All" | PlateCategory | "Bragg Creek" | "Rocky View County" | "Bearspaw" | "Water Valley";
+type TypeFilter = "All" | PlateCategory;
+type AreaFilter = "All" | "Bragg Creek" | "Rocky View County" | "Bearspaw" | "Water Valley";
 
-const FILTERS: { label: Filter; group: "category" | "area" | "all" }[] = [
-  { label: "All", group: "all" },
-  { label: "Interior Finishing", group: "category" },
-  { label: "Exterior Repairs", group: "category" },
-  { label: "Decking", group: "category" },
-  { label: "Bragg Creek", group: "area" },
-  { label: "Rocky View County", group: "area" },
-  { label: "Bearspaw", group: "area" },
-  { label: "Water Valley", group: "area" },
-];
+const TYPE_FILTERS: TypeFilter[] = ["All", "Interior Finishing", "Exterior Repairs", "Decking"];
+const AREA_FILTERS: AreaFilter[] = ["All", "Bragg Creek", "Rocky View County", "Bearspaw", "Water Valley"];
 
 const Work = () => {
   useSeo({
@@ -36,14 +29,58 @@ const Work = () => {
     path: "/work",
   });
 
-  const [filter, setFilter] = useState<Filter>("All");
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>("All");
+  const [areaFilter, setAreaFilter] = useState<AreaFilter>("All");
 
   const visible = useMemo(() => {
-    if (filter === "All") return galleryPlates;
-    return galleryPlates.filter(
-      (p) => p.category === filter || p.area === filter,
-    );
-  }, [filter]);
+    return galleryPlates.filter((p) => {
+      const typeOk = typeFilter === "All" || p.category === typeFilter;
+      const areaOk = areaFilter === "All" || p.area === areaFilter;
+      return typeOk && areaOk;
+    });
+  }, [typeFilter, areaFilter]);
+
+  const renderRow = <T extends string>(
+    label: string,
+    options: T[],
+    value: T,
+    setValue: (v: T) => void,
+    rowKey: string,
+  ) => (
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+      <p className="text-[0.7rem] tracking-[0.18em] uppercase text-evergreen/70 font-medium shrink-0 w-16">
+        {label}
+      </p>
+      <div
+        role="tablist"
+        aria-label={`Filter projects by ${label.toLowerCase()}`}
+        className="flex flex-wrap gap-2 md:gap-3"
+      >
+        {options.map((opt) => {
+          const active = value === opt;
+          return (
+            <button
+              key={`${rowKey}-${opt}`}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setValue(opt)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full px-4 py-2 text-minimal",
+                "transition-all duration-500 ease-swift border",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                active
+                  ? "bg-evergreen text-evergreen-foreground border-evergreen"
+                  : "bg-transparent text-foreground/75 border-border hover:border-evergreen/40 hover:text-foreground",
+              )}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
     <main id="main">
@@ -64,39 +101,17 @@ const Work = () => {
         dossier={{ sectionNo: "VIII", coord: `${galleryPlates.length} plates · selected work`, edition: "Edition I" }}
       />
 
-      {/* § I — Filter rail */}
-      <RevealSection aria-labelledby="filter-heading" className="pt-4 pb-8 md:pt-8 md:pb-12">
+      {/* § I — Filter rail (split by axis) */}
+      <RevealSection aria-labelledby="filter-heading" className="pt-2 pb-8 md:pt-6 md:pb-12">
         <Container size="wide">
           <h2 id="filter-heading" className="sr-only">Filter projects</h2>
           <div
-            role="tablist"
-            aria-label="Filter projects by category or area"
-            className="flex flex-wrap gap-2 md:gap-3"
+            className="flex flex-col gap-4 md:gap-5"
             data-reveal
             style={{ ["--reveal-delay" as string]: "0ms" }}
           >
-            {FILTERS.map((f) => {
-              const active = filter === f.label;
-              return (
-                <button
-                  key={f.label}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setFilter(f.label)}
-                  className={cn(
-                    "inline-flex items-center gap-2 rounded-full px-4 py-2 text-minimal",
-                    "transition-all duration-500 ease-swift border",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    active
-                      ? "bg-evergreen text-evergreen-foreground border-evergreen"
-                      : "bg-transparent text-foreground/75 border-border hover:border-evergreen/40 hover:text-foreground",
-                  )}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
+            {renderRow<TypeFilter>("Type", TYPE_FILTERS, typeFilter, setTypeFilter, "type")}
+            {renderRow<AreaFilter>("Area", AREA_FILTERS, areaFilter, setAreaFilter, "area")}
           </div>
         </Container>
       </RevealSection>
