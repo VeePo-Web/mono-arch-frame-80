@@ -17,10 +17,7 @@ const STUDIO_PHONE = "403 970-7691";
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_EMAIL = "cory@havencreekrenovations.com";
 
-const STEPS = [
-  { n: "01", title: "You write", body: "A few details about the property and what you're considering. Five fields, two minutes." },
-  { n: "02", title: "We reply", body: "Within two business days. A real reply from a real person — Cory — with honest questions and a clear next step." },
-];
+// (Steps removed — the form itself is the next step. Less promise, more action.)
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
