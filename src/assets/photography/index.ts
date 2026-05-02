@@ -29,6 +29,11 @@ import workWaterValleyStepdown from "./work-water-valley-stepdown-platform.jpg";
 import areaFoothills from "./area-foothills-evening.jpg";
 import aboutToolsBench from "./about-tools-bench.jpg";
 
+import closingPhotoMoment from "./closing-photo-moment.jpg";
+import interiorDetailTrim from "./interior-detail-trim-corner.jpg";
+import exteriorDetailSoffit from "./exterior-detail-soffit.jpg";
+import deckingDetailEndgrain from "./decking-detail-endgrain.jpg";
+
 /** Hero / closing / atmospheric photography. */
 export const photography = {
   heroAcreage,
@@ -39,6 +44,10 @@ export const photography = {
   serviceDecking,
   areaFoothills,
   aboutToolsBench,
+  closingPhotoMoment,
+  interiorDetailTrim,
+  exteriorDetailSoffit,
+  deckingDetailEndgrain,
 } as const;
 
 /**
