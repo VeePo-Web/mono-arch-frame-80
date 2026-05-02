@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
@@ -61,6 +61,12 @@ const ConsultationForm = ({
 }: ConsultationFormProps) => {
   const navigate = useNavigate();
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
+  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const contactRef = useRef<HTMLInputElement | null>(null);
+  const messageRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const STEP_FIELDS = [["name"], ["contact"], ["message"]] as const;
 
   const resolvedSuccessMode: "redirect" | "inline" =
     successMode ?? (typeof window !== "undefined" && window.location.pathname === "/contact" ? "redirect" : "inline");
@@ -90,6 +96,37 @@ const ConsultationForm = ({
   }, [initialProjectType]);
 
   const isSubmitting = form.formState.isSubmitting;
+
+  const projectTypeWatch = form.watch("projectType");
+  const projectLabel = useMemo(
+    () => PROJECT_TYPES.find((p) => p.value === projectTypeWatch)?.label ?? null,
+    [projectTypeWatch],
+  );
+
+  // Auto-focus the active step's input on advance/back
+  useEffect(() => {
+    const targets = [nameRef, contactRef, messageRef] as const;
+    const id = requestAnimationFrame(() => {
+      targets[step].current?.focus();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [step]);
+
+  const goNext = async () => {
+    const ok = await form.trigger(STEP_FIELDS[step] as unknown as Parameters<typeof form.trigger>[0]);
+    if (ok && step < 2) setStep((step + 1) as 0 | 1 | 2);
+  };
+
+  const goBack = () => {
+    if (step > 0) setStep((step - 1) as 0 | 1 | 2);
+  };
+
+  const handleKeyAdvance = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      void goNext();
+    }
+  };
 
   const onSubmit = async (values: ConsultationFormValues) => {
     // Honeypot — silently succeed for bots, never hit the network
