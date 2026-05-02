@@ -175,8 +175,7 @@ const ConsultationForm = ({
           Thank you. We&apos;ll be in touch.
         </p>
         <p className="mt-3 text-body text-muted-foreground text-[0.95rem] leading-relaxed">
-          We respond within two business days. If your project is time-sensitive,
-          mention it when we reach out.
+          We reply within two business days.
         </p>
         <p className="mt-7 text-minimal text-evergreen/65 tabular-nums">
           Received · {time}
@@ -189,7 +188,7 @@ const ConsultationForm = ({
           }}
           className="group/ghost mt-6 inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
         >
-          <span>Send another note</span>
+          <span>Send another</span>
           <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
         </button>
       </div>
@@ -289,7 +288,7 @@ const ConsultationForm = ({
                   <Textarea
                     {...field}
                     rows={4}
-                    placeholder="e.g. New deck on a 1990s walkout, hoping for spring."
+                    placeholder="New deck, hoping for spring."
                     className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
                   />
                 </FormControl>
@@ -312,14 +311,14 @@ const ConsultationForm = ({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep",
           )}
         >
-          <span>{isSubmitting ? "Sending…" : "Send the Note"}</span>
+          <span>{isSubmitting ? "Sending…" : "Send"}</span>
           <span className="icon-chip icon-chip-light bg-background/15">
             <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
           </span>
         </button>
 
         <p id={RESPONSE_NOTE_ID} className="text-minimal text-muted-foreground leading-relaxed pt-1">
-          We reply within two business days. No obligation.
+          Reply within two business days.
         </p>
       </form>
     </Form>

@@ -1,52 +1,66 @@
-## Stupid-Simple Questionnaire — One Pass, No Speed Bumps
+## Trim Questionnaire Copy — Shorter Labels, Fewer Words
 
-Right now "the questionnaire" is the **ConsultationForm** — three required fields plus a collapsed `<details>` "Add timing, budget, or location context" panel that fans out into FOUR more selects/inputs (project type, budget, preferred time, location). That collapsed panel is the speed bump. Even closed it's a "do I need to open this?" decision; opened it's a 4-field cliff that re-introduces every dropdown the form was supposed to escape.
+The 3-field form already passed the speed-bump audit. What's left is **wordiness** — labels, helpers, success states, sheet headers, and validation messages all read longer than they need to. Tighten every string while keeping every input and every result the form generates.
 
-The same friction repeats in QuickContactSheet (3 fields + a "Your name" possessive label that the rest of the site already deprecated).
+### `src/components/ConsultationForm.tsx`
 
-### Fix — collapse to **3 required fields, period.**
+**Labels** (kept as nouns per memory rule, but shortened where natural):
+- `"About your project"` → keep (already noun, already short — anything shorter loses meaning)
+- `"Email or phone"` → keep (canonical site rule)
+- `"Name"` → keep
 
-Required fields stay exactly: Name · Email or phone · About your project. **Delete the collapsible "more context" panel entirely.** Budget / preferred time / location are removed from the form — Cory asks them in his reply, which is the whole point of the two-business-day promise.
+**Placeholders** (trim filler):
+- Name: `"Jane Doe"` → keep (2 words, anchor of warmth)
+- Contact: `"you@example.com  ·  403 970-7691"` → keep (one example each, already minimal)
+- Message: `"e.g. New deck on a 1990s walkout, hoping for spring."` → `"New deck, hoping for spring."` (drops the awkward "1990s walkout" specificity that was just filler)
 
-**Keep `projectType` working** because it's auto-populated from `?service=` query strings on service pages → render it as a tiny tag chip above the textarea ("About your **deck** project"), not as a dropdown the visitor has to choose. If no query param, no chip, no field — the textarea covers it.
+**Submit button**:
+- `"Send the Note"` → `"Send"` (the surrounding form context makes "the Note" redundant; matches Apple-grade form patterns)
+- Sending state: `"Sending…"` → keep
 
-### Files to change
+**Helper line under submit**:
+- `"We reply within two business days. No obligation."` → `"Reply within two business days."` (drops the over-promised "No obligation" which adds a sales-y note we don't need)
 
-**1. `src/components/ConsultationForm.tsx`**
-- Delete the entire `<details>` block (rows ~299–412) and all four optional `FormField`s inside it.
-- Drop unused imports: `ChevronDown`, `Select*` family, `BUDGET_RANGES`, `PREFERRED_TIMES`, `PROJECT_TYPES`.
-- Keep `projectTypeFromQuery` import. When `initialProjectType` resolves to a known value, render a small "Re: {label}" chip above the textarea label (read-only, submitted with form). When null, no chip.
-- Form is now 3 fields + submit. No accordion. No "OPTIONAL" pill. No second visual layer.
-- Submit insert payload: `budget: null, preferred_time: null, location: null` (DB columns stay; we just don't ask).
-- Helper line under submit: tighten to `"We reply within two business days."` (already short — keep).
+**Inline success state**:
+- Headline: `"Thank you. We'll be in touch."` → keep (already perfect)
+- Sub: `"We respond within two business days. If your project is time-sensitive, mention it when we reach out."` → `"We reply within two business days."` (one promise, one sentence)
+- `"Send another note"` → `"Send another"` (button label tightening)
 
-**2. `src/components/QuickContactSheet.tsx`**
-- Field labels become nouns to match site rule: `"Your name"` → `"Name"`. (`"Email or phone"` and `"One sentence about the project"` → keep `"Email or phone"`, change to `"About your project"`.)
-- Tighten subhead from "Tap to call or email instantly — or send a short note below and we'll reply within two business days." → `"Tap to call or email — or send a short note."` (the "two business days" promise lives in the submit footer, no need to repeat in the header).
-- Tighten contact placeholder `"you@example.com  ·  or  ·  403 970-7691"` → `"you@example.com  ·  403 970-7691"` (matches main form).
-- Tighten textarea placeholder `"A sentence is plenty."` → keep.
+**Re: chip**:
+- `"Re: {label}"` → keep (already minimal)
 
-**3. `src/lib/validation/consultation.ts`**
-- Schema stays — `budget`, `preferredTime`, `location`, `projectType` remain optional. No DB migration needed; we just stop asking.
-- Add a clarifying header comment that the visible form is now 3 fields and the optional fields are populated from URL only.
+### `src/lib/validation/consultation.ts`
 
-**4. `src/pages/Contact.tsx`** (verify after form change)
-- The form gets shorter by ~280px on mobile. The right column will now end higher. No copy change needed — left rail already trimmed in the last pass.
+Validation messages all shorten to single-line, plain-English errors:
+- `"Please share your name"` → `"Add your name."`
+- `"Email or phone — whichever you prefer"` → `"Email or phone."`
+- `"Please enter a valid email or phone number"` → `"Check the format."`
+- `"A sentence about the project is plenty"` → `"A sentence is plenty."`
+- `"Please keep this under 2,000 characters"` → `"Keep it under 2,000 characters."`
+- `"Name must be under 100 characters"` → `"Keep it under 100 characters."`
 
-**5. `src/pages/Index.tsx`** (verify)
-- Bezel form gets shorter. No layout change needed — `cv-auto` reservation already generous.
+### `src/components/QuickContactSheet.tsx`
 
-### What's preserved
-- All three required inputs (name, contact, message) — the data Cory actually needs to reply.
-- `projectType` auto-fill from `?service=` query string (chips into the message context, still saved to the DB column).
-- Inline success state, redirect-to-/thank-you, honeypot, phone-OR-email detection, Supabase insert shape, RLS contract.
-- ThankYou page receipt-stamp logic (still passes `projectType` from state).
+- Eyebrow `"Quick Contact"` → keep (canonical chip)
+- Title `"How would you like to reach us?"` → `"Reach us"` (the tile labels Call/Email already answer the question)
+- Description `"Tap to call or email — or send a short note."` → keep
+- Tile labels: `"Mon–Fri"` and `"Reply ≤ 2 days"` → keep (different facts, both informative)
+- Email tile value: `"cory@haven…"` → keep (truncated for fit)
+- Divider `"or send a short note"` → `"or"` (the form below it self-describes)
+- Form labels (already nouns): keep `"Name"`, `"Email or phone"`, `"About your project"`
+- Placeholders: keep tightened versions (already minimal from prior pass)
+- Submit `"Send a short note"` → `"Send"` (matches main form)
+- Submit footer `"Reply within 2 business days · No obligation"` → `"Reply within two business days."`
+- Success sub: `"We respond within two business days. This sheet will close automatically."` → `"We reply within two business days."` (drop the auto-close meta-instruction; users see it close)
+- Foot-rule button: `"Open the full form"` → `"Full form"`
+- Foot-rule helper: `"Add timing, budget, or property location."` → **DELETE** entirely (we no longer collect those fields anywhere — this is dead copy referring to the deleted optional panel)
 
-### What's deleted
-- The `<details>` accordion + chevron animation.
-- 4 optional dropdowns: project type, budget range, preferred time, location.
-- "Add timing, budget, or location context · OPTIONAL" disclosure copy.
-- The mental load of "should I open this?"
+### What stays untouched
+- Every form field, autocomplete attribute, inputmode, validation rule.
+- Schema `min`/`max` lengths and the email-or-phone detection.
+- Honeypot, Supabase insert payload, redirect-to-/thank-you, ThankYou state shape, RLS contract.
+- Re: chip auto-fill from `?service=` URL param.
+- Two-business-days promise — kept exactly once on each surface (helper line OR success state, not both).
 
-### Memory updates after build
-- Add constraint: "Lead-capture forms are exactly 3 fields: name, contact, message. No collapsible 'optional' panel. Project-type auto-fills from URL only — never a visible dropdown."
+### Memory after build
+Update existing `mem://constraint/three-field-lead-form` with a "Copy is terse — single-clause labels, single-clause helpers, single-clause errors. No hedging ('Please…', 'whichever you prefer'), no over-promises ('No obligation')."
