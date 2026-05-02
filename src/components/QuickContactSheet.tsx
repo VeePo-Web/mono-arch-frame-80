@@ -322,7 +322,7 @@ const QuickContactSheet = () => {
 
                 <div>
                   <label htmlFor="qc-message" className="block text-[0.7rem] tracking-[0.22em] uppercase text-foreground/70 mb-1.5">
-                    One sentence about the project
+                    About your project
                   </label>
                   <textarea
                     id="qc-message"
