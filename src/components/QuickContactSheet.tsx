@@ -304,7 +304,7 @@ const QuickContactSheet = () => {
                     enterKeyHint="next"
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
-                    placeholder="you@example.com  ·  or  ·  403 970-7691"
+                    placeholder="you@example.com  ·  403 970-7691"
                     className={cn(
                       "flex h-12 w-full rounded-md border bg-background/60 px-3 py-2 text-base",
                       "border-foreground/10 ring-offset-background",
