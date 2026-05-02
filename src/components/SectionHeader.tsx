@@ -95,6 +95,12 @@ const SectionHeader = ({
       )}
     >
       {eyebrow && <Eyebrow label={eyebrow} align={align} tone={isLight ? "light" : "default"} />}
+      <Heading
+        id={id}
+        data-drift={drift ? "" : undefined}
+        className={cn(
+          headingTypeClass,
+          eyebrow ? "mt-5" : "",
           headingColor,
           TITLE_WIDTH[titleWidth],
           isCenter && titleWidth !== "none" && "mx-auto",
