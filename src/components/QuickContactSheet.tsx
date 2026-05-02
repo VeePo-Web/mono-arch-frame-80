@@ -264,7 +264,7 @@ const QuickContactSheet = () => {
               <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
                 <div>
                   <label htmlFor="qc-name" className="block text-[0.7rem] tracking-[0.22em] uppercase text-foreground/70 mb-1.5">
-                    Your name
+                    Name
                   </label>
                   <input
                     id="qc-name"
