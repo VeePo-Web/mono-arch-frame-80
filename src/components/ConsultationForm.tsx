@@ -124,10 +124,10 @@ const ConsultationForm = ({
       name: values.name,
       email: emailForDb,
       project_type: values.projectType ?? null,
-      budget: values.budget ?? null,
-      preferred_time: values.preferredTime ?? null,
+      budget: null,
+      preferred_time: null,
       message: messageWithContact,
-      location: values.location?.trim() ? values.location.trim() : null,
+      location: null,
       source,
     });
 
