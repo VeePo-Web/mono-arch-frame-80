@@ -46,7 +46,6 @@ const ServiceAreas = () => {
         subhead="Four communities. Each different in pace, exposure, and the kind of property care it asks for. We chose this footprint so the work could stay personal."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/services", label: "Our services" }}
-        dossier={{ sectionNo: "IX", coord: "Foothills · West & North of Calgary", edition: "Edition I" }}
       />
 
       {/* § I — Roster */}

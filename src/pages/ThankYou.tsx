@@ -72,7 +72,6 @@ const ThankYou = () => {
         headline={headline}
         accentWord={accent}
         subhead="We respond within two business days. If your project is time-sensitive, mention it when we reach out."
-        dossier={{ sectionNo: "XII", coord: "Fig. iv. RECEIVED" }}
       />
 
       {/* Receipt stamp — only when arriving from a successful submission */}

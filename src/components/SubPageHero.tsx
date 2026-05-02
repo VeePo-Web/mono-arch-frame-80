@@ -115,32 +115,6 @@ const SubPageHero = ({
               </p>
             )}
 
-            {dossier && (
-              <div
-                className="dossier-strip reveal-up mt-7"
-                style={{ animationDelay: "100ms" }}
-                aria-hidden="true"
-              >
-                <span className="dossier-strip__rule" />
-                <span className="dossier-strip__inner">
-                  <span className="dossier-strip__no">
-                    Section No.{" "}
-                    <span className="font-serif italic not-italic-on-mobile text-evergreen/85">
-                      {dossier.sectionNo}
-                    </span>
-                  </span>
-                  <span className="dossier-strip__dot">·</span>
-                  <span className="dossier-strip__coord">{dossier.coord}</span>
-                  {dossier.edition && (
-                    <>
-                      <span className="dossier-strip__dot">·</span>
-                      <span className="dossier-strip__edition">{dossier.edition}</span>
-                    </>
-                  )}
-                </span>
-                <span className="dossier-strip__rule" />
-              </div>
-            )}
 
             <h1
               id="subpage-hero-heading"

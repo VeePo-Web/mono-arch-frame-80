@@ -80,7 +80,6 @@ const InteriorFinishing = () => {
         subhead="The visible part of the work — the part you'll see and feel every day. Detail, fit, and the small resolutions that decide whether a renovation reads as complete."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        dossier={{ sectionNo: "IV", coord: "Interior · Flagship craft", edition: "Edition I" }}
         vignette={
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">

@@ -66,7 +66,6 @@ const ExteriorFinishing = () => {
         subhead="Repairs, finishing, and weather-facing detail work that respects the home and the land around it. Built for prairie exposure and a long horizon."
         primaryCta={{ to: "/contact", label: "Get a Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        dossier={{ sectionNo: "V", coord: "Exterior · Stewardship", edition: "Edition I" }}
         vignette={
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">

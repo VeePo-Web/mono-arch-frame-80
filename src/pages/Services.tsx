@@ -53,7 +53,6 @@ const Services = () => {
         subhead="We chose focus over breadth on purpose. Interior finishing leads — that's where the craft is felt most clearly. Exterior repairs and decking carry the same care, scaled to what the weather and the land require."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        dossier={{ sectionNo: "III", coord: "Services · Three, one standard", edition: "Edition I" }}
       />
 
       {/* § I — Service hierarchy */}
