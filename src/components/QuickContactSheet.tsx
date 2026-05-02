@@ -191,8 +191,7 @@ const QuickContactSheet = () => {
               id={descId}
               className="mt-2 text-[0.92rem] text-muted-foreground leading-relaxed"
             >
-              Tap to call or email instantly — or send a short note below and we'll
-              reply within two business days.
+              Tap to call or email — or send a short note.
             </DialogPrimitive.Description>
 
             {/* Tier 1 — instant action tiles */}
@@ -265,7 +264,7 @@ const QuickContactSheet = () => {
               <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
                 <div>
                   <label htmlFor="qc-name" className="block text-[0.7rem] tracking-[0.22em] uppercase text-foreground/70 mb-1.5">
-                    Your name
+                    Name
                   </label>
                   <input
                     id="qc-name"
@@ -305,7 +304,7 @@ const QuickContactSheet = () => {
                     enterKeyHint="next"
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
-                    placeholder="you@example.com  ·  or  ·  403 970-7691"
+                    placeholder="you@example.com  ·  403 970-7691"
                     className={cn(
                       "flex h-12 w-full rounded-md border bg-background/60 px-3 py-2 text-base",
                       "border-foreground/10 ring-offset-background",
@@ -323,7 +322,7 @@ const QuickContactSheet = () => {
 
                 <div>
                   <label htmlFor="qc-message" className="block text-[0.7rem] tracking-[0.22em] uppercase text-foreground/70 mb-1.5">
-                    One sentence about the project
+                    About your project
                   </label>
                   <textarea
                     id="qc-message"
