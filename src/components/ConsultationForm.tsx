@@ -263,143 +263,41 @@ const ConsultationForm = ({
           )}
         />
 
-        {/* (Helper line removed — placeholder already shows email · or · phone.) */}
-
         <FormField
           control={form.control}
           name="message"
-          render={({ field }) => (
-            <FormItem className="space-y-1.5">
-              <FormLabel className="text-minimal text-foreground/70">
-                About your project
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  rows={4}
-                  placeholder="e.g. New deck on a 1990s walkout, hoping for spring."
-                  className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
-                />
-              </FormControl>
-              <FormMessage className="text-sm" />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const projectType = form.watch("projectType");
+            const projectLabel = useMemo(
+              () => PROJECT_TYPES.find((p) => p.value === projectType)?.label ?? null,
+              [projectType],
+            );
+            return (
+              <FormItem className="space-y-1.5">
+                <div className="flex items-baseline justify-between gap-3 flex-wrap">
+                  <FormLabel className="text-minimal text-foreground/70">
+                    About your project
+                  </FormLabel>
+                  {projectLabel && (
+                    <span className="inline-flex items-center gap-1.5 text-[0.7rem] tracking-[0.18em] uppercase text-evergreen/80">
+                      <span className="block w-1 h-1 rounded-full bg-evergreen/60" aria-hidden="true" />
+                      Re: {projectLabel}
+                    </span>
+                  )}
+                </div>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    rows={4}
+                    placeholder="e.g. New deck on a 1990s walkout, hoping for spring."
+                    className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
+                  />
+                </FormControl>
+                <FormMessage className="text-sm" />
+              </FormItem>
+            );
+          }}
         />
-
-        {/* Optional context — collapsed by default to reduce form anxiety */}
-        <details className="group/details pt-1">
-          <summary
-            className={cn(
-              "list-none cursor-pointer select-none",
-              "inline-flex items-center gap-2 text-minimal text-foreground/65 hover:text-evergreen transition-colors duration-300",
-              "focus-visible:outline-none focus-visible:underline focus-visible:underline-offset-4 focus-visible:decoration-evergreen/70",
-            )}
-          >
-            <ChevronDown
-              className="h-3.5 w-3.5 transition-transform duration-300 group-open/details:rotate-180"
-              strokeWidth={1.5}
-              aria-hidden="true"
-            />
-            <span>Add timing, budget, or location context</span>
-            <span className="text-[0.7rem] tracking-[0.18em] text-muted-foreground/70">OPTIONAL</span>
-          </summary>
-
-          <div className="mt-5 pt-5 border-t border-evergreen/10 space-y-5">
-            <FormField
-              control={form.control}
-              name="projectType"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-minimal text-foreground/70">Project type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen">
-                        <SelectValue placeholder="If you'd like to flag one" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {PROJECT_TYPES.map((p) => (
-                        <SelectItem key={p.value} value={p.value}>
-                          {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage className="text-sm" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="budget"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-minimal text-foreground/70">Budget range</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen">
-                        <SelectValue placeholder="Not sure yet — we'll discuss" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {BUDGET_RANGES.map((b) => (
-                        <SelectItem key={b.value} value={b.value}>
-                          {b.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage className="text-sm" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="preferredTime"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-minimal text-foreground/70">Best time to walk the property</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger className="h-11 bg-background/60 border-foreground/10 focus:ring-evergreen">
-                        <SelectValue placeholder="Anytime" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {PREFERRED_TIMES.map((p) => (
-                        <SelectItem key={p.value} value={p.value}>
-                          {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage className="text-sm" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="text-minimal text-foreground/70">Property location</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g. Bragg Creek · acreage near Water Valley"
-                      autoComplete="address-level2"
-                      className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm" />
-                </FormItem>
-              )}
-            />
-          </div>
-        </details>
 
         <button
           type="submit"
