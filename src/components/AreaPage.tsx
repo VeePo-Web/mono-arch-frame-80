@@ -117,11 +117,6 @@ const AreaPage = ({
         subhead={area.page.intro}
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        dossier={{
-          sectionNo: NUMERAL_BY_SLUG[slug],
-          coord: `${area.name} · ${POSTAL[slug]}`,
-          edition: "Edition I",
-        }}
       />
 
       {/* § I — Local context */}
