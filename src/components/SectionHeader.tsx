@@ -32,7 +32,8 @@ type BottomGap = "default" | "compact" | "none";
 type As = "h2" | "h3";
 
 interface SectionHeaderProps {
-  eyebrow: string;
+  /** Optional — omit when the title carries the section by itself (e.g. final close CTA). */
+  eyebrow?: string;
   title: string;
   lede?: string;
   /** id for the heading — also wire as `aria-labelledby` on the surrounding section. */
@@ -93,13 +94,13 @@ const SectionHeader = ({
         className,
       )}
     >
-      <Eyebrow label={eyebrow} align={align} tone={isLight ? "light" : "default"} />
+      {eyebrow && <Eyebrow label={eyebrow} align={align} tone={isLight ? "light" : "default"} />}
       <Heading
         id={id}
         data-drift={drift ? "" : undefined}
         className={cn(
           headingTypeClass,
-          "mt-5",
+          eyebrow ? "mt-5" : "",
           headingColor,
           TITLE_WIDTH[titleWidth],
           isCenter && titleWidth !== "none" && "mx-auto",

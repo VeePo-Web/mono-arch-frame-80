@@ -47,7 +47,6 @@ const Contact = () => {
         headline="Let's talk through your property."
         accentWord="talk"
         subhead="This is the beginning of a relationship, not a sales trap. Share a few details and we'll come prepared."
-        dossier={{ sectionNo: "XI", coord: "Contact · Bragg Creek · Bearspaw · Rocky View · Water Valley" }}
       />
 
       {/* § I — What happens + form + direct-contact panel */}
