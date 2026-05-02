@@ -71,13 +71,13 @@ const QuickContactSheet = () => {
 
   const validate = () => {
     const next: typeof errors = {};
-    if (!name.trim() || name.trim().length < 1) next.name = "Your name, please.";
-    if (name.trim().length > 100) next.name = "Just first + last is plenty.";
+    if (!name.trim() || name.trim().length < 1) next.name = "Add your name.";
+    if (name.trim().length > 100) next.name = "Keep it under 100 characters.";
     const detected = detectContact(contact);
-    if (!detected) next.contact = "Email or phone, please.";
+    if (!detected) next.contact = "Check the format.";
     const msg = message.trim();
     if (msg.length === 0) next.message = "A sentence is plenty.";
-    if (msg.length > 2000) next.message = "Shorter, please — we'll ask follow-ups.";
+    if (msg.length > 2000) next.message = "Keep it under 2,000 characters.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
