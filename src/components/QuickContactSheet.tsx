@@ -191,8 +191,7 @@ const QuickContactSheet = () => {
               id={descId}
               className="mt-2 text-[0.92rem] text-muted-foreground leading-relaxed"
             >
-              Tap to call or email instantly — or send a short note below and we'll
-              reply within two business days.
+              Tap to call or email — or send a short note.
             </DialogPrimitive.Description>
 
             {/* Tier 1 — instant action tiles */}
