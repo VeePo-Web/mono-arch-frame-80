@@ -185,7 +185,7 @@ const QuickContactSheet = () => {
               id={titleId}
               className="mt-2 font-serif text-foreground text-[1.55rem] leading-tight"
             >
-              How would you like to reach us?
+              Reach us
             </DialogPrimitive.Title>
             <DialogPrimitive.Description
               id={descId}
@@ -246,7 +246,7 @@ const QuickContactSheet = () => {
             {/* Hairline + italic "or" */}
             <div className="mt-6 flex items-center gap-3" aria-hidden="true">
               <span className="flex-1 h-px bg-border" />
-              <span className="font-serif italic text-foreground/60 text-[0.95rem]">or send a short note</span>
+              <span className="font-serif italic text-foreground/60 text-[0.95rem]">or</span>
               <span className="flex-1 h-px bg-border" />
             </div>
 
@@ -257,7 +257,7 @@ const QuickContactSheet = () => {
                   Thank you. We'll be in touch.
                 </p>
                 <p className="mt-2 text-[0.92rem] text-muted-foreground leading-relaxed">
-                  We respond within two business days. This sheet will close automatically.
+                  We reply within two business days.
                 </p>
               </div>
             ) : (
@@ -359,14 +359,14 @@ const QuickContactSheet = () => {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   )}
                 >
-                  <span>{submitting ? "Sending…" : "Send a short note"}</span>
+                  <span>{submitting ? "Sending…" : "Send"}</span>
                   <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-background/15">
                     <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                   </span>
                 </button>
 
                 <p className="text-[0.7rem] tracking-[0.18em] uppercase text-muted-foreground leading-relaxed pt-1">
-                  Reply within 2 business days · No obligation
+                  Reply within two business days.
                 </p>
               </form>
             )}
@@ -386,12 +386,9 @@ const QuickContactSheet = () => {
                   "focus-visible:outline-none focus-visible:underline focus-visible:underline-offset-4 focus-visible:decoration-evergreen",
                 )}
               >
-                <span>Open the full form</span>
+                <span>Full form</span>
                 <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
               </button>
-              <p className="text-[0.75rem] text-muted-foreground mt-1">
-                Add timing, budget, or property location.
-              </p>
             </div>
           </div>
         </DialogPrimitive.Content>

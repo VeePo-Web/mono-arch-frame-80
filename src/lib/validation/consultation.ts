@@ -68,23 +68,23 @@ export const consultationSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Please share your name")
-    .max(100, "Name must be under 100 characters"),
+    .min(1, "Add your name.")
+    .max(100, "Keep it under 100 characters."),
   /** Email OR phone — single field, detected at submit time. */
   contact: z
     .string()
     .trim()
-    .min(3, "Email or phone — whichever you prefer")
+    .min(3, "Email or phone.")
     .max(255)
     .refine((v) => detectContact(v) !== null, {
-      message: "Please enter a valid email or phone number",
+      message: "Check the format.",
     }),
   /** Required — the homeowner's note about the project, in their own words. */
   message: z
     .string()
     .trim()
-    .min(1, "A sentence about the project is plenty")
-    .max(2000, "Please keep this under 2,000 characters"),
+    .min(1, "A sentence is plenty.")
+    .max(2000, "Keep it under 2,000 characters."),
   /** Optional — free-text property location (e.g. "Bragg Creek"). */
   location: z.string().trim().max(200, "Please keep this short").optional(),
   /** Optional — used when the visitor lands from a service page. */
