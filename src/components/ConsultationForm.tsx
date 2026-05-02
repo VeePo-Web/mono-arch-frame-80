@@ -233,11 +233,13 @@ const ConsultationForm = ({
   }
 
   // ── Form ───────────────────────────────────────────────────────────────
+  const progressPct = ((step + 1) / 3) * 100;
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("space-y-5", className)}
+        className={cn("space-y-0", className)}
         noValidate
         aria-busy={isSubmitting}
       >
@@ -253,108 +255,176 @@ const ConsultationForm = ({
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
-              <FormLabel className="text-minimal text-foreground/70">
-                Name
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Jane Doe"
-                  autoComplete="name"
-                  className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
-                />
-              </FormControl>
-              <FormMessage className="text-sm" />
-            </FormItem>
+        {/* Progress rail */}
+        <div className="mb-7">
+          <div
+            className="h-[2px] w-full bg-evergreen/10 rounded-full overflow-hidden"
+            role="progressbar"
+            aria-valuemin={1}
+            aria-valuemax={3}
+            aria-valuenow={step + 1}
+            aria-label={`Step ${step + 1} of 3`}
+          >
+            <div
+              className="h-full bg-evergreen transition-[width] duration-500 ease-swift"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <div className="mt-2 flex items-baseline justify-between gap-3">
+            <span className="text-minimal text-foreground/60 tabular-nums">
+              Step {step + 1} of 3
+            </span>
+            {projectLabel && step === 2 && (
+              <span className="inline-flex items-center gap-1.5 text-[0.7rem] tracking-[0.18em] uppercase text-evergreen/80">
+                <span className="block w-1 h-1 rounded-full bg-evergreen/60" aria-hidden="true" />
+                Re: {projectLabel}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Active step */}
+        <div key={step} className="animate-in fade-in slide-in-from-bottom-1 duration-300">
+          {step === 0 && (
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-minimal text-foreground/70">Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      ref={(el) => {
+                        field.ref(el);
+                        nameRef.current = el;
+                      }}
+                      placeholder="Jane Doe"
+                      autoComplete="name"
+                      enterKeyHint="next"
+                      onKeyDown={handleKeyAdvance}
+                      className="h-14 text-base bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
           )}
-        />
 
-        <FormField
-          control={form.control}
-          name="contact"
-          render={({ field }) => (
-            <FormItem className="space-y-1.5 pb-4 border-b border-evergreen/10">
-              <FormLabel className="text-minimal text-foreground/70">
-                Email or phone
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  inputMode="email"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  placeholder="you@example.com  ·  403 970-7691"
-                  autoComplete="email"
-                  className="h-11 bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
-                />
-              </FormControl>
-              <FormMessage className="text-sm" />
-            </FormItem>
+          {step === 1 && (
+            <FormField
+              control={form.control}
+              name="contact"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-minimal text-foreground/70">Email or phone</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      ref={(el) => {
+                        field.ref(el);
+                        contactRef.current = el;
+                      }}
+                      inputMode="email"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      placeholder="you@example.com  ·  403 970-7691"
+                      autoComplete="email"
+                      enterKeyHint="next"
+                      onKeyDown={handleKeyAdvance}
+                      className="h-14 text-base bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
+                    />
+                  </FormControl>
+                  <p className="text-minimal text-muted-foreground/80 pt-1">
+                    Only used to reply.
+                  </p>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
           )}
-        />
 
-        <FormField
-          control={form.control}
-          name="message"
-          render={({ field }) => {
-            const projectType = form.watch("projectType");
-            const projectLabel = useMemo(
-              () => PROJECT_TYPES.find((p) => p.value === projectType)?.label ?? null,
-              [projectType],
-            );
-            return (
-              <FormItem className="space-y-1.5">
-                <div className="flex items-baseline justify-between gap-3 flex-wrap">
-                  <FormLabel className="text-minimal text-foreground/70">
-                    About your project
-                  </FormLabel>
-                  {projectLabel && (
-                    <span className="inline-flex items-center gap-1.5 text-[0.7rem] tracking-[0.18em] uppercase text-evergreen/80">
-                      <span className="block w-1 h-1 rounded-full bg-evergreen/60" aria-hidden="true" />
-                      Re: {projectLabel}
-                    </span>
-                  )}
-                </div>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    rows={4}
-                    placeholder="New deck, hoping for spring."
-                    className="min-h-[120px] bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
-                  />
-                </FormControl>
-                <FormMessage className="text-sm" />
-              </FormItem>
-            );
-          }}
-        />
-
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          aria-describedby={RESPONSE_NOTE_ID}
-          className={cn(
-            "group/btn mt-2 flex items-center justify-between gap-4 w-full",
-            "bg-evergreen text-evergreen-foreground rounded-full pl-7 pr-1.5 py-1.5 min-h-[56px] text-minimal",
-            "transition-all duration-500 ease-swift",
-            "hover:bg-evergreen-hover active:scale-[0.98]",
-            "disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-evergreen",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep",
+          {step === 2 && (
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-minimal text-foreground/70">About your project</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      ref={(el) => {
+                        field.ref(el);
+                        messageRef.current = el;
+                      }}
+                      rows={5}
+                      placeholder="New deck, hoping for spring."
+                      enterKeyHint="send"
+                      className="min-h-[150px] text-base bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
           )}
-        >
-          <span>{isSubmitting ? "Sending…" : "Send"}</span>
-          <span className="icon-chip icon-chip-light bg-background/15">
-            <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-          </span>
-        </button>
+        </div>
 
-        <p id={RESPONSE_NOTE_ID} className="text-minimal text-muted-foreground leading-relaxed pt-1">
+        {/* Action row */}
+        <div className="mt-7 flex items-center justify-between gap-4">
+          {step > 0 ? (
+            <button
+              type="button"
+              onClick={goBack}
+              className="text-minimal text-foreground/65 hover:text-evergreen transition-colors duration-300"
+            >
+              ‹ Back
+            </button>
+          ) : (
+            <span aria-hidden="true" />
+          )}
+
+          {step < 2 ? (
+            <button
+              type="button"
+              onClick={goNext}
+              className={cn(
+                "cta-spring inline-flex items-center gap-3",
+                "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 min-h-[52px] text-minimal",
+                "transition-all duration-500 ease-swift hover:bg-evergreen-hover active:scale-[0.98]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep",
+              )}
+            >
+              <span>Next</span>
+              <span className="icon-chip icon-chip-light bg-background/15">
+                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              </span>
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              aria-describedby={RESPONSE_NOTE_ID}
+              className={cn(
+                "cta-spring inline-flex items-center gap-3",
+                "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 min-h-[52px] text-minimal",
+                "transition-all duration-500 ease-swift hover:bg-evergreen-hover active:scale-[0.98]",
+                "disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-evergreen",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep",
+              )}
+            >
+              <span>{isSubmitting ? "Sending…" : "Send"}</span>
+              <span className="icon-chip icon-chip-light bg-background/15">
+                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              </span>
+            </button>
+          )}
+        </div>
+
+        <p id={RESPONSE_NOTE_ID} className="mt-4 text-minimal text-muted-foreground leading-relaxed">
           Reply within two business days.
         </p>
       </form>
