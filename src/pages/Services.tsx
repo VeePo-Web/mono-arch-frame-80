@@ -12,7 +12,7 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
 import { servicePhotos } from "@/assets/photography";
-import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { HEADLINE, BODY, MEASURE } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
 
 const SITE = "https://havencreekrenovations.ca";
