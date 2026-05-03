@@ -87,19 +87,8 @@ const Services = () => {
                         photoSrc={servicePhotos[s.slug]}
                         className="h-full border-b-0 transition-transform duration-700 ease-weighted group-hover:scale-[1.005]"
                       />
-                      <span
-                        className="absolute top-4 right-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
-                        aria-hidden="true"
-                      >
-                        Plate {s.numeral}
-                      </span>
                     </div>
                     <div className="lg:col-span-7 p-8 md:p-12 flex flex-col">
-                      <div className="figure-footnote mb-5">
-                        <span className="footnote-figmark">Fig. {s.numeral.toLowerCase()}.</span>
-                        <span className="flex-1">{s.title.toUpperCase()}</span>
-                        <span className="text-evergreen/80 normal-case tracking-[0.18em]">Service No. {s.numeral}</span>
-                      </div>
                       <div className="flex items-center gap-4 mb-6">
                         <span className="numeral-disc">{s.numeral}</span>
                         <span className="h-px w-8 bg-evergreen/30 group-hover:w-20 transition-all duration-700 ease-weighted" />
