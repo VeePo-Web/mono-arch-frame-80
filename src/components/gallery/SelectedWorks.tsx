@@ -220,23 +220,13 @@ const SelectedWorks = () => {
                     photoSrc={workPhotos[active.slug]}
                     className="border-b-0"
                   />
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-4 right-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
-                  >
-                    Plate {active.romanNumeral}
-                  </span>
                 </div>
 
                 {/* Caption */}
                 <div className="px-8 lg:px-9 pt-6">
-                  <div className="figure-footnote">
-                    <span className="footnote-figmark">Fig. {active.figmark}.</span>
-                    <span className="flex-1">{active.category.toUpperCase()}</span>
-                    <span className="text-evergreen/80 tabular-nums normal-case tracking-[0.18em]">
-                      {active.area}
-                    </span>
-                  </div>
+                  <p className="text-[0.7rem] tracking-[0.18em] uppercase text-evergreen/70">
+                    {active.category} · <span className="text-evergreen/55">{active.area}</span>
+                  </p>
                 </div>
 
                 {/* Title + scope summary */}

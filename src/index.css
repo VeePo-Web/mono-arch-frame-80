@@ -732,7 +732,16 @@
     }
   }
 
-
+  /* Light variant for dark backgrounds */
+  .cta-ghost--light { color: hsl(var(--background) / 0.85); }
+  .cta-ghost--light:hover { color: hsl(var(--background)); }
+  .cta-ghost--light .cta-ghost__rule { background: hsl(var(--background) / 0.6); }
+  .cta-ghost--light:hover .cta-ghost__rule { background: hsl(var(--background)); }
+  .cta-ghost--light:focus-visible {
+    box-shadow:
+      0 0 0 2px hsl(var(--evergreen-deep)),
+      0 0 0 4px hsl(var(--background));
+  }
   /* Section coordinates — RETIRED. Kept as a no-op for legacy markup. */
   .coord-mark { display: none !important; }
   .coord-mark-light { display: none !important; }

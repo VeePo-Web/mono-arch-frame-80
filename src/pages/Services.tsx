@@ -6,14 +6,13 @@ import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
-import ClosingCta from "@/components/ClosingCta";
+import BigCloseCTA from "@/components/BigCloseCTA";
 import ServicePlate from "@/components/gallery/ServicePlate";
-import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
 import { servicePhotos } from "@/assets/photography";
-import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { BODY, MEASURE } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
 
 const SITE = "https://havencreekrenovations.ca";
@@ -87,19 +86,8 @@ const Services = () => {
                         photoSrc={servicePhotos[s.slug]}
                         className="h-full border-b-0 transition-transform duration-700 ease-weighted group-hover:scale-[1.005]"
                       />
-                      <span
-                        className="absolute top-4 right-5 text-[0.7rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
-                        aria-hidden="true"
-                      >
-                        Plate {s.numeral}
-                      </span>
                     </div>
                     <div className="lg:col-span-7 p-8 md:p-12 flex flex-col">
-                      <div className="figure-footnote mb-5">
-                        <span className="footnote-figmark">Fig. {s.numeral.toLowerCase()}.</span>
-                        <span className="flex-1">{s.title.toUpperCase()}</span>
-                        <span className="text-evergreen/80 normal-case tracking-[0.18em]">Service No. {s.numeral}</span>
-                      </div>
                       <div className="flex items-center gap-4 mb-6">
                         <span className="numeral-disc">{s.numeral}</span>
                         <span className="h-px w-8 bg-evergreen/30 group-hover:w-20 transition-all duration-700 ease-weighted" />
@@ -128,60 +116,8 @@ const Services = () => {
         </Container>
       </RevealSection>
 
-      {/* § II — Full-circle support */}
-      <RevealSection id="circle" aria-labelledby="circle-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
-        <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <SectionHeader
-                id="circle-heading"
-                eyebrow="Full-circle support"
-                title="One conversation. One contractor. One relationship."
-                lede="Most renovation friction lives in the gaps between trades. We close those gaps by holding the work together — from the first walk-through to the final inspection."
-                titleWidth="none"
-                bottomGap="none"
-              />
-            </div>
-
-            <div className="lg:col-span-7 lg:pl-8 relative">
-              <div className="surveyor-frame relative">
-                <span className="surveyor-tr" aria-hidden="true" />
-                <span className="surveyor-bl" aria-hidden="true" />
-                <div
-                  aria-hidden="true"
-                  className="absolute left-[15px] top-3 bottom-3 w-px"
-                  data-line-draw
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(to bottom, hsl(var(--evergreen) / 0.45) 0 3px, transparent 3px 7px)",
-                  }}
-                />
-                <ol className="space-y-10 lg:space-y-12">
-                  {[
-                    { n: "01", title: "Conversation", body: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan." },
-                    { n: "02", title: "Planning", body: "Scope, materials, design considerations, and the practical realities of working on a rural property — clarified before we lift a tool." },
-                    { n: "03", title: "Hands-On Completion", body: "The work is completed with attention to fit, finish, durability, and the small details that decide whether a renovation reads as finished." },
-                  ].map((step, i) => (
-                    <li
-                      key={step.n}
-                      className="relative pl-12"
-                      data-reveal
-                      style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
-                    >
-                      <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey">{step.n}</span>
-                      <h3 className={cn(HEADLINE.card, "text-foreground")}>{step.title}</h3>
-                      <p className={cn(BODY.card, "mt-3", MEASURE.prose)}>{step.body}</p>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* § III — Custom quote */}
-      <RevealSection id="quote" aria-labelledby="quote-heading" className={SECTION_PADDING.standard}>
+      {/* § II — Custom quote */}
+      <RevealSection id="quote" aria-labelledby="quote-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
@@ -203,36 +139,20 @@ const Services = () => {
                   We'll talk through what's possible, what's worth it, and what isn't.
                   No pressure either way.
                 </p>
+                <p className={cn(BODY.standard, "text-foreground/70 italic font-serif")}>
+                  Every quote includes scope, materials by name, timeline, and an all-in price.
+                </p>
               </div>
-            </div>
-
-            <div className="lg:col-span-12" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-              <p className={cn(EYEBROW.quiet, "mb-5 mt-4")}>What a quote includes</p>
-              <BentoGrid layout="auto">
-                {[
-                  "Scope of work, written plainly",
-                  "Materials & finishes, by name",
-                  "Timeline & a clear, all-in price",
-                ].map((item, i) => (
-                  <BentoTile
-                    key={item}
-                    eyebrow={String(i + 1).padStart(2, "0")}
-                    title={item}
-                    compact
-                  />
-                ))}
-              </BentoGrid>
             </div>
           </div>
         </Container>
       </RevealSection>
 
-      <ClosingCta
-        numeral="IV"
-        eyebrow="DISCUSS YOUR PROJECT"
-        heading="Tell us what you're considering. We'll come prepared."
+      <BigCloseCTA
+        variant="compact"
+        heading="Tell us about the project. We'll come prepared."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
-        secondary={{ to: "/work", label: "View Our Work" }}
+        secondary={{ to: "/work", label: "View our work" }}
       />
     </main>
   );

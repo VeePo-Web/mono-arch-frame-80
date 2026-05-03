@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
@@ -7,11 +8,9 @@ interface Testimonial {
   quote: string;
   attribution: string;
   area: string;
-  /** TODO marker — flips a tiny visual indicator until the real quote lands. */
   pending?: boolean;
 }
 
-// TODO: replace with real client copy when collected.
 const TESTIMONIALS: Testimonial[] = [
   {
     quote:
@@ -36,63 +35,71 @@ const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-/**
- * TestimonialSpine — three quiet attributed quotes.
- *
- * Sam's persona doc names testimonials as required trust evidence.
- * Until real client quotes are collected, each card carries
- * data-status="placeholder" so a single grep can find them.
- *
- * Editorial pattern: hairline-bordered card, italic Fraunces quote,
- * Inter attribution. Three columns at lg+, stacked on mobile.
- */
-const TestimonialSpine = () => (
-  <RevealSection
-    aria-labelledby="testimonials-heading"
-    className={SECTION_PADDING.standard}
-  >
-    <Container size="wide">
-      <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-        <SectionHeader
-          id="testimonials-heading"
-          eyebrow="Words from clients"
-          title="What it feels like to work with us."
-          align="center"
-          titleWidth="wide"
-        />
-      </div>
+interface TestimonialSpineProps {
+  tone?: "light" | "dark";
+}
 
-      <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-        {TESTIMONIALS.map((t, i) => (
-          <figure
-            key={`${t.attribution}-${t.area}`}
+const TestimonialSpine = ({ tone = "light" }: TestimonialSpineProps) => {
+  const dark = tone === "dark";
+  return (
+    <RevealSection
+      aria-labelledby="testimonials-heading"
+      className={cn(SECTION_PADDING.standard, dark && "bg-evergreen-deep text-background")}
+    >
+      <Container size="wide">
+        <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+          <SectionHeader
+            id="testimonials-heading"
+            eyebrow="Words from clients"
+            title="What it feels like to work with us."
+            align="center"
+            titleWidth="wide"
+            tone={dark ? "light" : undefined}
+          />
+        </div>
+
+        <div className="mt-16 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          {TESTIMONIALS.map((t, i) => (
+            <figure
+              key={`${t.attribution}-${t.area}`}
+              data-reveal
+              data-status={t.pending ? "placeholder" : undefined}
+              style={{ ["--reveal-delay" as string]: `${180 + i * 120}ms` }}
+              className={cn(
+                "testimonial-card",
+                dark && "!bg-background/[0.04] !border-background/15 !text-background/90",
+              )}
+            >
+              <blockquote>
+                <span aria-hidden="true" className={cn("mr-1", dark ? "text-background/40" : "text-evergreen/40")}>&ldquo;</span>
+                {t.quote}
+                <span aria-hidden="true" className={cn("ml-1", dark ? "text-background/40" : "text-evergreen/40")}>&rdquo;</span>
+              </blockquote>
+              <figcaption
+                className={cn(
+                  "mt-7 pt-5 flex items-baseline justify-between gap-3 text-minimal border-t",
+                  dark ? "border-background/15" : "border-evergreen/15",
+                )}
+              >
+                <span className={dark ? "text-background/85" : "text-foreground/85"}>— {t.attribution}</span>
+                <span className={cn("tabular-nums", dark ? "text-background/65" : "text-evergreen/70")}>{t.area}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        {!dark && (
+          <p
+            className="mt-12 text-center text-minimal text-muted-foreground"
             data-reveal
-            data-status={t.pending ? "placeholder" : undefined}
-            style={{ ["--reveal-delay" as string]: `${180 + i * 120}ms` }}
-            className="testimonial-card"
+            style={{ ["--reveal-delay" as string]: "560ms" }}
           >
-            <blockquote>
-              <span aria-hidden="true" className="text-evergreen/40 mr-1">&ldquo;</span>
-              {t.quote}
-              <span aria-hidden="true" className="text-evergreen/40 ml-1">&rdquo;</span>
-            </blockquote>
-            <figcaption className="mt-7 pt-5 border-t border-evergreen/15 flex items-baseline justify-between gap-3 text-minimal">
-              <span className="text-foreground/85">— {t.attribution}</span>
-              <span className="text-evergreen/70 tabular-nums">{t.area}</span>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-
-      <p
-        className="mt-12 text-center text-minimal text-muted-foreground"
-        data-reveal
-        style={{ ["--reveal-delay" as string]: "560ms" }}
-      >
-        More on the way as projects wrap.
-      </p>
-    </Container>
-  </RevealSection>
-);
+            More on the way as projects wrap.
+          </p>
+        )}
+      </Container>
+    </RevealSection>
+  );
+};
 
 export default TestimonialSpine;

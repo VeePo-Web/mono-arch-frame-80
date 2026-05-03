@@ -99,7 +99,7 @@ const Hero = () => {
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         className="vignette-stroke"
-                        style={{ animationDelay: "1.0s" }}
+                        style={{ animationDelay: "0.7s" }}
                       />
                     </svg>
                   </span>{" "}
@@ -118,7 +118,7 @@ const Hero = () => {
               style={{ animationDelay: "380ms" }}
             >
               Hands-on finishing, repairs, and decks across rural Alberta. One
-              person plans the work, does the work, and walks the finish with you.
+              person plans the work and walks the finish with you.
             </p>
 
             {/* CTA pair — primary spring + ghost arrow */}
@@ -142,15 +142,6 @@ const Hero = () => {
                 <span className="cta-ghost__rule" aria-hidden="true" />
               </Link>
             </div>
-
-            {/* Trust microcopy */}
-            <p
-              className="trust-microcopy mt-7 reveal-up"
-              style={{ animationDelay: "620ms" }}
-            >
-              <span>No automated funnel</span>
-              <span>No obligation</span>
-            </p>
 
             {/* Trusted-in line — small, calm, links to area pages */}
             <p
