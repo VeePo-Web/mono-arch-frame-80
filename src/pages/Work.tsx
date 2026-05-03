@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
-import ClosingCta from "@/components/ClosingCta";
+import BigCloseCTA from "@/components/BigCloseCTA";
 import ProjectPlaceholder from "@/components/gallery/ProjectPlaceholder";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
@@ -31,6 +32,8 @@ const Work = () => {
 
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("All");
   const [areaFilter, setAreaFilter] = useState<AreaFilter>("All");
+  const totalPlates = galleryPlates.length;
+  const [filtersOpen, setFiltersOpen] = useState(totalPlates >= 8);
 
   const visible = useMemo(() => {
     return galleryPlates.filter((p) => {
@@ -100,17 +103,37 @@ const Work = () => {
         secondaryCta={{ to: "/services", label: "Our services" }}
       />
 
-      {/* § I — Filter rail (split by axis) */}
+      {/* § I — Filter rail (collapsible) */}
       <RevealSection aria-labelledby="filter-heading" className="pt-2 pb-8 md:pt-6 md:pb-12">
         <Container size="wide">
           <h2 id="filter-heading" className="sr-only">Filter projects</h2>
-          <div
-            className="flex flex-col gap-4 md:gap-5"
-            data-reveal
-            style={{ ["--reveal-delay" as string]: "0ms" }}
-          >
-            {renderRow<TypeFilter>("Type", TYPE_FILTERS, typeFilter, setTypeFilter, "type")}
-            {renderRow<AreaFilter>("Area", AREA_FILTERS, areaFilter, setAreaFilter, "area")}
+          <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+            <button
+              type="button"
+              onClick={() => setFiltersOpen((v) => !v)}
+              aria-expanded={filtersOpen}
+              aria-controls="filter-rows"
+              className="inline-flex items-center gap-2 text-[0.78rem] tracking-[0.18em] uppercase text-evergreen/80 hover:text-evergreen transition-colors duration-300 focus-visible:outline-none focus-visible:underline focus-visible:underline-offset-4"
+            >
+              <span>Filter</span>
+              <span className="text-evergreen/55 normal-case tracking-normal tabular-nums">
+                ({visible.length} of {totalPlates})
+              </span>
+              <ChevronDown
+                className={cn(
+                  "h-3.5 w-3.5 transition-transform duration-300",
+                  filtersOpen && "rotate-180",
+                )}
+                strokeWidth={1.75}
+                aria-hidden="true"
+              />
+            </button>
+            {filtersOpen && (
+              <div id="filter-rows" className="mt-5 flex flex-col gap-4 md:gap-5">
+                {renderRow<TypeFilter>("Type", TYPE_FILTERS, typeFilter, setTypeFilter, "type")}
+                {renderRow<AreaFilter>("Area", AREA_FILTERS, areaFilter, setAreaFilter, "area")}
+              </div>
+            )}
           </div>
         </Container>
       </RevealSection>
@@ -179,12 +202,10 @@ const Work = () => {
         </Container>
       </RevealSection>
 
-      <ClosingCta
-        numeral="·"
-        eyebrow="WORK LIKE THIS"
-        heading="See a project that resembles yours? Let's talk through it."
-        body="Most of our work begins with a homeowner pointing at a plate and saying — that one, but for our property."
-        primary={{ to: "/contact", label: "Get a Quote" }}
+      <BigCloseCTA
+        variant="compact"
+        heading="See a project that resembles yours? Let's talk it through."
+        primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "Browse services" }}
       />
     </main>
