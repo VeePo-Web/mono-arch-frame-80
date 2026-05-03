@@ -85,7 +85,7 @@ const ThankYou = () => {
               role="status"
               aria-live="polite"
             >
-              <div className="figure-footnote flex items-center gap-3">
+              <div className="flex items-center gap-3 text-[0.78rem] tracking-[0.18em] uppercase text-evergreen">
                 <svg
                   className="receipt-check-svg shrink-0"
                   width="22"
@@ -111,9 +111,8 @@ const ThankYou = () => {
                     fill="none"
                   />
                 </svg>
-                <span className="footnote-figmark">Fig. iv.</span>
-                <span className="flex-1">RECEIVED</span>
-                <span className="text-evergreen/60 tabular-nums normal-case tracking-[0.18em]">
+                <span className="flex-1">Received</span>
+                <span className="text-evergreen/60 tabular-nums normal-case">
                   {receivedAt}
                 </span>
               </div>

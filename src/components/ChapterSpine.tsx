@@ -22,7 +22,7 @@ const ChapterSpine = () => (
       }}
     >
       <span className="block text-[9px] tracking-[0.32em] text-evergreen/45 font-sans uppercase">
-        Haven Creek · Edition I · Home
+        Haven Creek · Rural Alberta
       </span>
     </div>
 

@@ -84,12 +84,6 @@ const InteriorFinishing = () => {
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">
               <InteriorVignette className="absolute inset-0 w-full h-full" />
-              <span
-                className="absolute top-5 left-5 text-[0.75rem] tracking-[0.18em] text-evergreen/70 font-serif italic"
-                aria-hidden="true"
-              >
-                Plate I · Cabinetry section
-              </span>
             </div>
           </div>
         }
@@ -188,12 +182,6 @@ const InteriorFinishing = () => {
                     decoding="async"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  <span
-                    className="absolute top-4 left-5 text-[0.75rem] tracking-[0.18em] text-background/90 font-serif italic drop-shadow"
-                    aria-hidden="true"
-                  >
-                    Plate I
-                  </span>
                 </div>
                 <div className="lg:col-span-7 p-8 md:p-12">
                   <p className={cn(EYEBROW.standard, "mb-4")}>
