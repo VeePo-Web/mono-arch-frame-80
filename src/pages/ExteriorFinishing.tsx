@@ -206,7 +206,6 @@ const ExteriorFinishing = () => {
                 <div className="lg:col-span-5 relative aspect-[4/3] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-evergreen/10 overflow-hidden">
                   <img
                     src={photography.serviceExterior}
-                    src={photography.serviceExterior}
                     alt="Exterior repair work on a Rocky View acreage — eaves and weather-side trim restored."
                     loading="lazy"
                     decoding="async"
