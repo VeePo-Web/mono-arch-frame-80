@@ -71,16 +71,10 @@ export const getPageSections = (pathname: string): PageSection[] =>
   pageSections[pathname] ?? [];
 
 /**
- * Routes whose hero is dark photography behind the fixed nav.
- * Used by Navigation to (a) decide if a mobile-only legibility scrim is
- * needed when the nav is transparent at top, and (b) skip painting a
- * border under a hero photo. Service-detail and area routes use a
- * dynamic prefix match.
+ * Routes where the nav should be transparent at the very top of the page.
+ * Excludes form-centric routes where a clear bar reads as more trustworthy.
  */
-export const routeHasDarkHero = (pathname: string): boolean => {
-  if (pathname === "/") return true;
-  if (pathname.startsWith("/services/")) return true;
-  if (pathname.startsWith("/service-areas/")) return true;
-  if (pathname === "/about" || pathname === "/work") return true;
-  return false;
+export const routeHasTransparentTop = (pathname: string): boolean => {
+  if (pathname === "/contact" || pathname === "/thank-you") return false;
+  return true;
 };
