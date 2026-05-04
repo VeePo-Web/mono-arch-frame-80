@@ -42,7 +42,7 @@ const SectionRail = () => {
       aria-label="Page sections"
       className="section-rail section-rail-mask hidden md:flex items-center min-w-0 max-w-full"
     >
-      <div className="flex items-center gap-0.5">
+      <div className="flex items-center gap-1">
         {sections.map((section) => {
           const isActive = active === section.anchor;
           return (
@@ -53,11 +53,11 @@ const SectionRail = () => {
               onClick={(e) => handleClick(e, section.anchor)}
               aria-current={isActive ? "location" : undefined}
               className={cn(
-                "nav-tab relative inline-flex items-center px-3 py-2 whitespace-nowrap shrink-0",
-                "text-sm transition-colors duration-300",
+                "nav-tab relative inline-flex items-center px-3.5 py-2 whitespace-nowrap shrink-0",
+                "text-sm font-medium transition-colors duration-300",
                 isActive
-                  ? "text-foreground font-semibold"
-                  : "text-foreground/75 font-medium hover:text-foreground",
+                  ? "text-foreground"
+                  : "text-foreground/65 hover:text-foreground",
               )}
             >
               <span>{section.name}</span>
