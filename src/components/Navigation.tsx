@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
+import { useScrolled } from "@/hooks/useScrolled";
+import { routeHasDarkHero } from "@/lib/pageSections";
 import HamburgerButton from "@/components/nav/HamburgerButton";
 import SectionRail from "@/components/nav/SectionRail";
 import Container from "@/components/Container";
