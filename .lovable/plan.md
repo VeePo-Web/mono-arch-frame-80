@@ -1,66 +1,94 @@
-# Nav Bar Refresh — Flex × Royal Aesthetic
+# Nav v2 — Transparent-to-Glass, Award-Grade Polish
 
-The current `Navigation.tsx` is a solid 60/64-px bar with a centered `SectionRail` and a Phone · Quote · Menu cluster. It works, but reads heavier than the references:
+The transparent → frosted morph is wired up. This pass closes the remaining gaps that separate "good" from Fantasy/Royal-grade craft: the spacer cancels the transparency on every route, the morph is a binary jump (no easing-in of the blur), the logo + icons have no contrast strategy when sitting over photography, and the section-rail underline lacks the FLIP slide that Royal uses.
 
-- **FlexServices** uses a **transparent header that morphs to glass on scroll** (`bg-white/98 backdrop-blur-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.08)]` past 50px), tight 64–72px height, one centered nav with hover underline, an outline CTA, and a single icon-only hamburger on mobile.
-- **RoyalMechanical** keeps the bar **transparent over the hero**, fades a soft mobile scrim for legibility, runs a centered section rail with a 0.5px sliding underline, and right-aligns Phone-icon · solid CTA · hamburger.
+## What's wrong right now
 
-Both feel lighter than ours because (a) they don't paint a border under the hero, (b) the right cluster collapses to icons earlier on mobile, and (c) the section rail has no weight bump on the active anchor — only the underline moves.
+1. **Spacer kills transparency.** `<div className="h-[60px] sm:h-16" />` is rendered on every route, so the hero starts *below* the nav. The "transparent over hero" promise is invisible to the user. Sub-page heroes (`pt-28 md:pt-44`) already account for the bar; Hero.tsx does too. The spacer is only needed on Contact/ThankYou.
+2. **Binary morph.** The shell jumps from transparent → opaque at scrollY > 24. Flex/Royal interpolate opacity smoothly across a 0–80px window so the bar *grows* a backdrop instead of snapping one on.
+3. **No contrast on transparent state.** Logo, phone icon, hamburger lines all use `text-foreground` (dark espresso). Over a cream hero this is fine; over the dark `photography.heroAcreage` slice in the right column it's still fine because the gradient mask cleans it up — but on small viewports where the photo crops in further, the right cluster can sit on a darker patch. We need a soft top scrim on `<sm` only when transparent (the Royal trick) so we never bet on "the gradient will save us."
+4. **No FLIP underline.** SectionRail uses per-tab `scaleX` toggles. Royal's underline *slides* between tabs because all tabs share one indicator positioned via `--ind-x` / `--ind-w`. Memory already records this as the canon, but the implementation never landed.
+5. **Hover state on Quote CTA is flat.** Memory says primary CTAs use `.cta-spring` (1px lift + halo + spring press). The nav Quote button has `hover:bg-evergreen-hover active:scale-[0.98]` only — no lift, no halo. Inconsistent with the rest of the site.
+6. **Phone link mobile-tap is silent.** On mobile, tapping Phone fires `tel:` but a 0.97 active scale would confirm the press the way the Quote button does.
+7. **Drawer open ↔ nav opacity collision.** When the drawer opens, the nav stays visible underneath. On the transparent state this looks correct; on the scrolled state it double-stacks two opaque surfaces. Fade the nav's `bg/border/shadow` to 0 while drawer is open (220ms) so the drawer reads as the only chrome.
+8. **No reduced-transparency honoring.** A user who sets `prefers-reduced-transparency` (Apple a11y setting, increasingly respected) should get the opaque shell from scroll = 0. We should honor it.
 
-## What we'll change
+## The plan
 
-### 1. `Navigation.tsx` — scroll-aware transparency
-- Add a throttled scroll subscription (`useThrottledScroll` hook, new — 50px threshold, 16ms throttle, rAF-based, mirrors Flex/Royal).
-- Header classes:
-  - **At top** (`!scrolled`): `bg-transparent border-transparent shadow-none`.
-  - **Scrolled**: `bg-background/95 backdrop-blur-md border-b border-border/50 shadow-[0_4px_24px_rgba(15,23,42,0.04)]`.
-- Apply a one-shot opacity transition (300ms ease) on `background-color, border-color, box-shadow`.
-- **Mobile-only top scrim** (Royal trick): when transparent and on a route whose hero is dark (Index, Areas, Service detail), render a `sm:hidden absolute inset-0 bg-gradient-to-b from-background/80 via-background/30 to-transparent` so the logo + icons stay legible over photography. Detection = simple route allow-list in `lib/pageSections.ts` (export `routeHasDarkHero(pathname)`).
-- Height: keep `h-[60px] sm:h-16`. Drop the always-on `border-b` from the header element (the scrolled state owns it).
+### 1. Smooth opacity interpolation (replace `useScrolled` boolean with `useScrollProgress`)
+- New hook `src/hooks/useScrollProgress.ts`: returns a 0..1 number based on `Math.min(window.scrollY / 80, 1)`, rAF-throttled, passive.
+- Navigation reads progress and applies `style={{ ['--nav-bg' as any]: progress, ['--nav-shadow' as any]: progress }}` on the header.
+- Header uses CSS vars for bg/border/shadow alpha:
+  ```css
+  .nav-shell {
+    background: hsl(var(--background) / calc(var(--nav-bg, 0) * 0.95));
+    border-bottom: 1px solid hsl(var(--border) / calc(var(--nav-bg, 0) * 0.5));
+    box-shadow: 0 4px 24px -8px hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.10));
+    backdrop-filter: blur(calc(var(--nav-bg, 0) * 12px));
+    -webkit-backdrop-filter: blur(calc(var(--nav-bg, 0) * 12px));
+  }
+  ```
+- Result: as the user scrolls 0 → 80px the backdrop *grows*. No layout thrash, no jump.
+- On `/contact` and `/thank-you`: skip the hook, set `--nav-bg: 1` always.
 
-### 2. Right cluster — quieter on mobile
-- **Phone**: stays icon-only `<lg`, full number `lg+`. Stroke 1.75 (was 1.85) for a hair more refinement.
-- **Quote CTA**: shrink mobile padding (`px-3.5` instead of `px-4 sm:px-5`); keep `h-11` and the square 8px radius. Copy stays "Get a Quote".
-- **Hamburger**: unchanged shape, but its hover state becomes `hover:bg-foreground/[0.06]` for a touch more contrast on the transparent state.
-- Gap: `gap-1` mobile → `gap-2 lg:gap-3`.
+### 2. Drop the spacer on transparent routes
+- Replace the always-rendered spacer with `{!routeHasTransparentTop(pathname) && <div className="h-[60px] sm:h-16" />}`.
+- Audit `Hero.tsx`, `SubPageHero.tsx`, and `Index.tsx` first beat: confirm they already pad for the 60/64px bar (`pt-28 md:pt-44` covers it). If not, bump `pt` only on the offending file — do not introduce a global spacer crutch.
 
-### 3. `SectionRail.tsx` — underline-only active state
-- Remove the `font-semibold` weight bump on active. Active anchor is signalled **only** by the underline (`scaleX(1)`), matching Royal. Inactive labels gain `font-medium text-foreground/70`; active gets `text-foreground`.
-- Tighten padding `px-3 py-2` → `px-3.5 py-2`, gap `gap-0.5` → `gap-1` for a calmer rhythm.
-- Underline: thin to 1.5px, position `bottom-1.5`, `bg-evergreen` (was generic). Add `transition-transform duration-400 ease-out` so when sections change, it slides via the existing FLIP shared-indicator CSS vars (already present in `index.css`).
-- Hide rail entirely when scrolled is `false` and the route has a dark hero — let the logo breathe over the hero (Royal does this with the footer-progress fade; we do it with the hero-state flag).
+### 3. Mobile-only top scrim when transparent
+- Inside `<header>`, render a `<div aria-hidden className="lg:hidden absolute inset-0 -z-10 pointer-events-none bg-gradient-to-b from-background/70 via-background/25 to-transparent" style={{ opacity: 1 - progress }} />`.
+- Costs one paint, no compositing layer. Disappears as the real backdrop fades in. Fixes legibility on cropped mobile heroes.
 
-### 4. `MenuDrawer.tsx` — small polish only
-- Tighten the close-button hover to match new hamburger hover token (`hover:bg-foreground/[0.06]`).
-- No structural changes — the round-6 drawer is already correct per memory.
+### 4. FLIP shared-underline on SectionRail
+- Wrap the link list in a positioned container; render ONE absolutely-positioned `<span className="rail-indicator" />` driven by `style={{ '--ind-x': `${rect.left}px`, '--ind-w': `${rect.width}px` }}`.
+- `useLayoutEffect`: when `active` changes, measure the active anchor's offsetLeft + offsetWidth (relative to the scroll container), set CSS vars. The underline slides via `transform: translateX(var(--ind-x))` + `width: var(--ind-w)` with `transition: transform 420ms var(--ease-swift), width 420ms var(--ease-swift)`.
+- Remove per-tab `nav-tab-rule` spans.
+- Hide indicator (`opacity: 0`) when `active` is null (e.g. above the first section).
+- This finally honors the `mem://` core: "Section rail uses ONE shared sliding underline (FLIP indicator with CSS vars `--ind-x`/`--ind-w`)."
 
-### 5. `index.css` — supporting tokens
-- Add `.nav-shell--transparent` and `.nav-shell--scrolled` utility classes that consolidate the bg/border/shadow trio so the JSX stays terse.
-- Update `.nav-tab-rule` to the thinner 1.5px evergreen underline with the slower 400ms transition.
+### 5. Quote CTA gets `.cta-spring` parity
+- Add `.cta-spring` class alongside the existing classes on the nav Quote `<Link>`.
+- Confirms: 1px lift on hover, soft evergreen halo (box-shadow), 0.97 spring press. Consistent with every other primary CTA on the site.
 
-### 6. New tiny hook: `src/hooks/useScrolled.ts`
-```ts
-// Returns boolean; rAF-throttled scroll listener with passive option.
-// Threshold prop, default 24. Initial value computed from window.scrollY
-// so SSR/first-paint match.
-```
-Used by `Navigation.tsx` only — keep it scoped, no global state.
+### 6. Phone link tactile feedback
+- Add `active:scale-[0.96]` and a 150ms `transition-transform` to the Phone `<a>` so the tap registers visually on touch.
 
-## Out of scope
-- No changes to Footer, drawer structure, or section-rail anchor lists.
-- No new copy on the CTA. No reintroduction of social icons (Flex has them; we don't — tradesman persona).
-- No sticky mobile CTA bar (constraint: `mem://constraint/no-floating-fab`).
+### 7. Drawer-open dims the nav backdrop
+- Track `drawerOpen` (already in state). When true, force `--nav-bg: 0` via inline style with a 220ms transition. Logo and right cluster stay visible above the drawer overlay (z-index already correct), but no double-glass stack.
+- Already covered by the CSS-var setup — just gate the var.
 
-## Memory updates
-- Append to **Core**: "Nav bar is transparent over the hero on Index/Areas/Service-detail; gains `bg-background/95` + soft shadow only past 24px scroll. Mobile-only top scrim provides legibility — never apply on desktop."
-- Append to **Core**: "Section-rail active state is underline-only — never bump font-weight."
+### 8. Honor `prefers-reduced-transparency`
+- In CSS:
+  ```css
+  @media (prefers-reduced-transparency: reduce) {
+    .nav-shell { --nav-bg: 1 !important; backdrop-filter: none !important; }
+  }
+  ```
+- Users with the Apple a11y setting get the opaque shell immediately. No backdrop-filter cost.
+
+### 9. Section-rail visibility refinement
+- Currently `hidden lg:flex`. Keep that — but on transparent routes (over hero), fade the rail in only after `progress > 0.4`. Reason: at the very top of the home page the rail competes with the hero headline. Once the user starts scrolling, the rail joins the conversation. `style={{ opacity: Math.max(0, progress * 1.6 - 0.4) }}`.
+
+### 10. Logo crispness
+- The logo is a 160×28 PNG/WebP. On the transparent state, add a barely-perceptible `drop-shadow(0 1px 2px hsl(var(--background) / 0.4))` so the wordmark holds against any photography behind it. Removed once `progress > 0.3` (the real backdrop takes over).
+
+### 11. Edge case: route-change flash
+- When navigating from `/contact` (opaque) to `/` (transparent), the bar should *fade out* its backdrop, not snap. The CSS-var approach handles this for free since `--nav-bg` transitions on a regular CSS transition. Add `transition: --nav-bg 320ms ease-out` via `@property --nav-bg { syntax: '<number>'; inherits: false; initial-value: 0; }` registration. (Falls back gracefully on browsers without `@property`.)
 
 ## Files touched
-- `src/components/Navigation.tsx` (refactor)
-- `src/components/nav/SectionRail.tsx` (active state, padding, hide-on-hero)
-- `src/components/nav/HamburgerButton.tsx` (hover token)
-- `src/components/MenuDrawer.tsx` (close-button hover token)
-- `src/hooks/useScrolled.ts` (new)
-- `src/lib/pageSections.ts` (add `routeHasDarkHero`)
-- `src/index.css` (`.nav-shell--*`, `.nav-tab-rule` refinements)
-- `mem://index.md` (two Core lines)
+
+- `src/hooks/useScrollProgress.ts` — new (replaces `useScrolled` for nav; keep `useScrolled` if anything else imports it — `rg` confirms it's only used by Navigation, so delete).
+- `src/components/Navigation.tsx` — switch to progress, drop spacer, add scrim, add `.cta-spring`, gate var on drawerOpen, add logo drop-shadow.
+- `src/components/nav/SectionRail.tsx` — FLIP indicator refactor + opacity gate from progress (read via context or prop).
+- `src/index.css` — `.nav-shell` styles, `@property --nav-bg`, `prefers-reduced-transparency` block, `.rail-indicator` styles, drop legacy `.nav-tab-rule`.
+- No memory edits — every change reinforces existing core rules.
+
+## Out of scope
+
+- No change to drawer structure, anchor lists, copy, or CTA target.
+- No additional animations on the logo wordmark itself (Royal-style "morph" reads as gimmicky for a contractor).
+- No sticky mobile CTA, no scroll-up reveal trick — both violate `mem://constraint/no-floating-fab` and the round-6 simplification ethos.
+
+## Why this is the right level of detail
+
+The brief is "transparent-to-glass like Flex/Royal." Flex achieves it with a binary `isScrolled` jump and a hard shadow; Royal achieves it with smooth CSS-var interpolation, a mobile scrim, and a sliding underline. We're choosing the Royal path because it's the higher-craft reference and matches the existing memory canon ("FLIP indicator", "soft evergreen halo", "300ms ease-out"). Every step above is the minimum work needed to make the canon real on screen.
