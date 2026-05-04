@@ -37,6 +37,10 @@ const Navigation = () => {
   const [drawerTouched, setDrawerTouched] = useState(false);
   const { pathname } = useLocation();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
+  const scrolled = useScrolled(24);
+  const darkHero = routeHasDarkHero(pathname);
+  // Transparent only at the very top of routes that have a dark hero photo.
+  const transparent = !scrolled && darkHero;
 
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onContactRoute) return;
@@ -64,11 +68,14 @@ const Navigation = () => {
 
       <header
         role="banner"
+        data-transparent={transparent}
         className={cn(
           "havencreek-nav fixed inset-x-0 top-0 z-50",
           "h-[60px] sm:h-16",
-          "bg-background/95 backdrop-blur-sm",
-          "border-b border-border/60",
+          "transition-[background-color,border-color,box-shadow] duration-300 ease-out",
+          transparent
+            ? "bg-transparent border-b border-transparent shadow-none"
+            : "bg-background/95 backdrop-blur-md border-b border-border/50 shadow-[0_4px_24px_-8px_hsl(var(--evergreen)/0.10)]",
         )}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
