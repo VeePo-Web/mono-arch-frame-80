@@ -110,7 +110,7 @@ const Navigation = () => {
             <div className="lg:hidden" aria-hidden="true" />
 
             {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
-            <div className="flex items-center gap-1 sm:gap-2 justify-end">
+            <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 justify-end">
               {/* Phone — flat ghost icon. No background chip ever. */}
               <a
                 href={`tel:${STUDIO_PHONE_TEL}`}
@@ -123,7 +123,7 @@ const Navigation = () => {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md",
                 )}
               >
-                <Phone className="h-[18px] w-[18px] lg:h-4 lg:w-4" strokeWidth={1.85} aria-hidden="true" />
+                <Phone className="h-[18px] w-[18px] lg:h-4 lg:w-4" strokeWidth={1.75} aria-hidden="true" />
                 <span className="hidden lg:inline">{STUDIO_PHONE_DISPLAY}</span>
               </a>
 
@@ -135,8 +135,8 @@ const Navigation = () => {
                 className={cn(
                   "shrink-0 inline-flex items-center justify-center rounded-lg",
                   "bg-evergreen text-evergreen-foreground",
-                  "text-[15px] font-semibold whitespace-nowrap",
-                  "h-11 px-4 sm:px-5",
+                  "text-[14px] sm:text-[15px] font-semibold whitespace-nowrap",
+                  "h-10 sm:h-11 px-3.5 sm:px-5",
                   "transition-colors duration-300",
                   "hover:bg-evergreen-hover active:scale-[0.98]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
