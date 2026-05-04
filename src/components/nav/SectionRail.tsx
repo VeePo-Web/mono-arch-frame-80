@@ -1,18 +1,15 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { getPageSections } from "@/lib/pageSections";
 import { useActiveSection } from "@/hooks/useActiveSection";
 
 /**
- * SectionRail — Round 5: one cue, not three.
+ * SectionRail — Round 7: FLIP shared underline.
  *
- * Active anchor: 2px center-anchored evergreen underline + font-semibold
- * weight bump. No background chip — calmer, easier to scan.
- *
- * Always renders in scroll-x mode with an edge-fade mask. The mask is
- * harmless when content fits; when it doesn't, the user can scroll the
- * rail without a UI hint about overflow detection. No ResizeObserver.
+ * One absolutely-positioned `.rail-indicator` slides between tabs via
+ * --ind-x / --ind-w CSS vars. Active tab change animates the bar in
+ * place; no per-tab toggles.
  */
 const HEADER_OFFSET = 72;
 
@@ -20,6 +17,31 @@ const SectionRail = () => {
   const { pathname } = useLocation();
   const sections = useMemo(() => getPageSections(pathname), [pathname]);
   const active = useActiveSection(sections, HEADER_OFFSET + 24);
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const tabRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
+  const [indicator, setIndicator] = useState<{ x: number; w: number; visible: boolean }>({
+    x: 0,
+    w: 0,
+    visible: false,
+  });
+
+  useLayoutEffect(() => {
+    if (!active) {
+      setIndicator((prev) => ({ ...prev, visible: false }));
+      return;
+    }
+    const el = tabRefs.current.get(active);
+    const container = containerRef.current;
+    if (!el || !container) return;
+    const elRect = el.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    setIndicator({
+      x: elRect.left - containerRect.left + 14, // +padding-x to span text only
+      w: elRect.width - 28,
+      visible: true,
+    });
+  }, [active, sections]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, anchor: string) => {
@@ -42,12 +64,16 @@ const SectionRail = () => {
       aria-label="Page sections"
       className="section-rail section-rail-mask hidden md:flex items-center min-w-0 max-w-full"
     >
-      <div className="flex items-center gap-1">
+      <div ref={containerRef} className="relative flex items-center gap-1">
         {sections.map((section) => {
           const isActive = active === section.anchor;
           return (
             <a
               key={section.anchor}
+              ref={(node) => {
+                if (node) tabRefs.current.set(section.anchor, node);
+                else tabRefs.current.delete(section.anchor);
+              }}
               data-anchor={section.anchor}
               href={`#${section.anchor}`}
               onClick={(e) => handleClick(e, section.anchor)}
@@ -60,15 +86,21 @@ const SectionRail = () => {
                   : "text-foreground/65 hover:text-foreground",
               )}
             >
-              <span>{section.name}</span>
-              <span
-                aria-hidden="true"
-                className="nav-tab-rule"
-                style={{ transform: isActive ? "scaleX(1)" : "scaleX(0)" }}
-              />
+              {section.name}
             </a>
           );
         })}
+        <span
+          aria-hidden="true"
+          className="rail-indicator"
+          style={
+            {
+              ["--ind-x" as string]: `${indicator.x}px`,
+              ["--ind-w" as string]: `${indicator.w}px`,
+              opacity: indicator.visible ? 1 : 0,
+            } as React.CSSProperties
+          }
+        />
       </div>
     </nav>
   );
