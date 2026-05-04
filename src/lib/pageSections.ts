@@ -69,3 +69,12 @@ const pageSections: Record<string, PageSection[]> = {
 /** Returns the section anchors for the current page, or [] if none. */
 export const getPageSections = (pathname: string): PageSection[] =>
   pageSections[pathname] ?? [];
+
+/**
+ * Routes where the nav should be transparent at the very top of the page.
+ * Excludes form-centric routes where a clear bar reads as more trustworthy.
+ */
+export const routeHasTransparentTop = (pathname: string): boolean => {
+  if (pathname === "/contact" || pathname === "/thank-you") return false;
+  return true;
+};

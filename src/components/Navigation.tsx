@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
+import { useScrolled } from "@/hooks/useScrolled";
+import { routeHasTransparentTop } from "@/lib/pageSections";
 import HamburgerButton from "@/components/nav/HamburgerButton";
 import SectionRail from "@/components/nav/SectionRail";
 import Container from "@/components/Container";
@@ -35,6 +37,9 @@ const Navigation = () => {
   const [drawerTouched, setDrawerTouched] = useState(false);
   const { pathname } = useLocation();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
+  const scrolled = useScrolled(24);
+  // Transparent only at the very top of routes whose hero owns the canvas.
+  const transparent = !scrolled && routeHasTransparentTop(pathname);
 
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onContactRoute) return;
@@ -62,11 +67,14 @@ const Navigation = () => {
 
       <header
         role="banner"
+        data-transparent={transparent}
         className={cn(
           "havencreek-nav fixed inset-x-0 top-0 z-50",
           "h-[60px] sm:h-16",
-          "bg-background/95 backdrop-blur-sm",
-          "border-b border-border/60",
+          "transition-[background-color,border-color,box-shadow] duration-300 ease-out",
+          transparent
+            ? "bg-transparent border-b border-transparent shadow-none"
+            : "bg-background/95 backdrop-blur-md border-b border-border/50 shadow-[0_4px_24px_-8px_hsl(var(--evergreen)/0.10)]",
         )}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
@@ -102,7 +110,7 @@ const Navigation = () => {
             <div className="lg:hidden" aria-hidden="true" />
 
             {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
-            <div className="flex items-center gap-1 sm:gap-2 justify-end">
+            <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 justify-end">
               {/* Phone — flat ghost icon. No background chip ever. */}
               <a
                 href={`tel:${STUDIO_PHONE_TEL}`}
@@ -115,7 +123,7 @@ const Navigation = () => {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md",
                 )}
               >
-                <Phone className="h-[18px] w-[18px] lg:h-4 lg:w-4" strokeWidth={1.85} aria-hidden="true" />
+                <Phone className="h-[18px] w-[18px] lg:h-4 lg:w-4" strokeWidth={1.75} aria-hidden="true" />
                 <span className="hidden lg:inline">{STUDIO_PHONE_DISPLAY}</span>
               </a>
 
@@ -127,8 +135,8 @@ const Navigation = () => {
                 className={cn(
                   "shrink-0 inline-flex items-center justify-center rounded-lg",
                   "bg-evergreen text-evergreen-foreground",
-                  "text-[15px] font-semibold whitespace-nowrap",
-                  "h-11 px-4 sm:px-5",
+                  "text-[14px] sm:text-[15px] font-semibold whitespace-nowrap",
+                  "h-10 sm:h-11 px-3.5 sm:px-5",
                   "transition-colors duration-300",
                   "hover:bg-evergreen-hover active:scale-[0.98]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
