@@ -4,7 +4,7 @@ import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
 import { useScrolled } from "@/hooks/useScrolled";
-import { routeHasDarkHero } from "@/lib/pageSections";
+import { routeHasTransparentTop } from "@/lib/pageSections";
 import HamburgerButton from "@/components/nav/HamburgerButton";
 import SectionRail from "@/components/nav/SectionRail";
 import Container from "@/components/Container";
@@ -38,9 +38,8 @@ const Navigation = () => {
   const { pathname } = useLocation();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
   const scrolled = useScrolled(24);
-  const darkHero = routeHasDarkHero(pathname);
-  // Transparent only at the very top of routes that have a dark hero photo.
-  const transparent = !scrolled && darkHero;
+  // Transparent only at the very top of routes whose hero owns the canvas.
+  const transparent = !scrolled && routeHasTransparentTop(pathname);
 
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onContactRoute) return;
