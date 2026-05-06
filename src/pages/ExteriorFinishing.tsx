@@ -122,39 +122,28 @@ const ExteriorFinishing = () => {
               />
             </div>
 
-            <div className="lg:col-span-7 lg:pl-8 relative">
-              <div className="surveyor-frame relative">
-                <span className="surveyor-tr" aria-hidden="true" />
-                <span className="surveyor-bl" aria-hidden="true" />
-                <div
-                  aria-hidden="true"
-                  className="absolute left-[15px] top-3 bottom-3 w-px"
-                  data-line-draw
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(to bottom, hsl(var(--evergreen) / 0.45) 0 3px, transparent 3px 7px)",
-                  }}
-                />
-                <ol className="space-y-10 lg:space-y-12">
-                  {[
-                    { n: "01", title: "Weather exposure", body: "South and west faces wear differently than north and east. We plan repairs for the exposure, not the average." },
-                    { n: "02", title: "Seasonal timing", body: "Some work has a window. We schedule against the season so the finish has time to set up before the next snowfall." },
-                    { n: "03", title: "Access & distance", body: "Equipment, materials, and travel are part of the planning — not surprises that show up on the invoice." },
-                    { n: "04", title: "Surroundings", body: "Trees, landscaping, animal routines — what surrounds the work shapes how the work gets done." },
-                  ].map((step, i) => (
-                    <li
-                      key={step.n}
-                      className="relative pl-12"
-                      data-reveal
-                      style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
-                    >
-                      <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey">{step.n}</span>
+            <div className="lg:col-span-7 lg:pl-8">
+              <ol className="space-y-10 lg:space-y-12">
+                {[
+                  { n: "01", title: "Weather exposure", body: "South and west faces wear differently than north and east. We plan repairs for the exposure, not the average." },
+                  { n: "02", title: "Seasonal timing", body: "Some work has a window. We schedule against the season so the finish has time to set up before the next snowfall." },
+                  { n: "03", title: "Access & distance", body: "Equipment, materials, and travel are part of the planning — not surprises that show up on the invoice." },
+                  { n: "04", title: "Surroundings", body: "Trees, landscaping, animal routines — what surrounds the work shapes how the work gets done." },
+                ].map((step, i) => (
+                  <li
+                    key={step.n}
+                    className="grid grid-cols-[auto_1fr] gap-x-5 sm:gap-x-7"
+                    data-reveal
+                    style={{ ["--reveal-delay" as string]: `${300 + i * 140}ms` }}
+                  >
+                    <span className={cn(EYEBROW.standard, "pt-1 tabular-nums text-evergreen/70")}>{step.n}</span>
+                    <div>
                       <h3 className={cn(HEADLINE.card, "text-foreground")}>{step.title}</h3>
                       <p className={cn(BODY.card, "mt-3", MEASURE.prose)}>{step.body}</p>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
         </Container>
