@@ -137,38 +137,27 @@ const ThankYou = () => {
                 <p className="thread-tag mt-5">Re: {projectLabel}. We'll come prepared.</p>
               )}
             </div>
-            <div className="lg:col-span-7 lg:pl-8 relative">
-              <div className="surveyor-frame relative">
-                <span className="surveyor-tr" aria-hidden="true" />
-                <span className="surveyor-bl" aria-hidden="true" />
-                <div
-                  aria-hidden="true"
-                  className="absolute left-[15px] top-3 bottom-3 w-px"
-                  data-line-draw
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(to bottom, hsl(var(--evergreen) / 0.45) 0 3px, transparent 3px 7px)",
-                  }}
-                />
-                <ol className="space-y-10">
-                  {[
-                    { n: "01", title: "We read your note", body: "Carefully — not at the bottom of an automated queue." },
-                    { n: "02", title: "We reply", body: "Within two business days, with honest questions and a clear next step." },
-                    { n: "03", title: "We walk it through", body: "On the property if it makes sense, or by phone if that's easier." },
-                  ].map((step, i) => (
-                    <li
-                      key={step.n}
-                      className="relative pl-12"
-                      data-reveal
-                      style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
-                    >
-                      <span className="absolute left-0 top-1 numeral-disc numeral-disc-survey">{step.n}</span>
+            <div className="lg:col-span-7 lg:pl-8">
+              <ol className="space-y-10">
+                {[
+                  { n: "01", title: "We read your note", body: "Carefully — not at the bottom of an automated queue." },
+                  { n: "02", title: "We reply", body: "Within two business days, with honest questions and a clear next step." },
+                  { n: "03", title: "We walk it through", body: "On the property if it makes sense, or by phone if that's easier." },
+                ].map((step, i) => (
+                  <li
+                    key={step.n}
+                    className="grid grid-cols-[auto_1fr] gap-x-5 sm:gap-x-7"
+                    data-reveal
+                    style={{ ["--reveal-delay" as string]: `${300 + i * 140}ms` }}
+                  >
+                    <span className="pt-1 tabular-nums text-minimal text-evergreen/70">{step.n}</span>
+                    <div>
                       <h3 className="text-title text-foreground">{step.title}</h3>
                       <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">{step.body}</p>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
         </Container>
