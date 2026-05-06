@@ -6,7 +6,7 @@ import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
-import ClosingCta from "@/components/ClosingCta";
+import BigCloseCTA from "@/components/BigCloseCTA";
 import InfoCard from "@/components/ui/InfoCard";
 import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
 import { DeckingVignette } from "@/components/ProjectVignette";
