@@ -25,7 +25,6 @@ const Bearspaw = lazy(() => import("./pages/areas/Bearspaw"));
 const WaterValley = lazy(() => import("./pages/areas/WaterValley"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
-const StyleGuide = lazy(() => import("./pages/StyleGuide"));
 
 // QuickContactSheet only renders after a user interaction (custom event fired
 // by the drawer / mobile triggers). Defer it past the LCP-critical bundle.
