@@ -8,7 +8,7 @@ import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
-import { ExteriorVignette } from "@/components/ProjectVignette";
+
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { photography } from "@/assets/photography";
@@ -19,10 +19,10 @@ import { SECTION_PADDING } from "@/lib/spacing";
 const SITE = "https://havencreekrenovations.ca";
 
 const NEEDS = [
-  { n: "01", title: "Siding & trim repair", body: "Targeted replacement on the faces that have seen the most weather, blended back into the existing line." },
-  { n: "02", title: "Soffit, fascia & venting", body: "Eaves restored to a clean line; airflow corrected so the attic dries the way it should." },
-  { n: "03", title: "Entrances, stairs & rails", body: "The high-touch exterior details — rebuilt to feel solid and to last another decade." },
-  { n: "04", title: "Weather protection", body: "Sealing, flashing, and the small repairs that keep small failures from becoming big ones." },
+  { title: "Siding & trim repair", body: "Targeted replacement on the faces that have seen the most weather, blended back into the existing line." },
+  { title: "Soffit, fascia & venting", body: "Eaves restored to a clean line; airflow corrected so the attic dries the way it should." },
+  { title: "Entrances, stairs & rails", body: "The high-touch exterior details — rebuilt to feel solid and to last another decade." },
+  { title: "Weather protection", body: "Sealing, flashing, and the small repairs that keep small failures from becoming big ones." },
 ];
 
 const RESPECT = [
@@ -69,7 +69,13 @@ const ExteriorFinishing = () => {
         vignette={
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">
-              <ExteriorVignette className="absolute inset-0 w-full h-full" />
+              <img
+                src={photography.serviceExterior}
+                alt="Exterior repair on a rural Alberta home — eaves and weather-side trim restored."
+                loading="eager"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
             </div>
           </div>
         }
@@ -99,8 +105,8 @@ const ExteriorFinishing = () => {
 
           <BentoGrid layout="2x2">
             {NEEDS.map((n, i) => (
-              <div key={n.n} data-reveal style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }} className="h-full">
-                <BentoTile eyebrow={n.n} title={n.title} body={n.body} />
+              <div key={n.title} data-reveal style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }} className="h-full">
+                <BentoTile title={n.title} body={n.body} />
               </div>
             ))}
           </BentoGrid>
@@ -168,7 +174,7 @@ const ExteriorFinishing = () => {
           <BentoGrid layout="auto">
             {RESPECT.map((r, i) => (
               <div key={r} data-reveal style={{ ["--reveal-delay" as string]: `${180 + i * 80}ms` }} className="h-full">
-                <BentoTile eyebrow={String(i + 1).padStart(2, "0")} title={r} compact />
+                <BentoTile title={r} compact />
               </div>
             ))}
           </BentoGrid>
