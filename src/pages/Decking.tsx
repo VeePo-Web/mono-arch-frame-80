@@ -188,12 +188,11 @@ const Decking = () => {
         </RevealSection>
       )}
 
-      <ClosingCta
-        numeral="V"
-        eyebrow="DISCUSS THE WORK"
+      <BigCloseCTA
+        variant="compact"
         heading="A new deck, a rebuild, or something planned for next season."
-        body="Tell us how you'd like to use the back of the property. We'll plan around the site and the way you actually live there."
-        primary={{ to: "/contact", label: "Get a Quote" }}
+        lede="Cory replies within two business days."
+        primary={{ to: "/contact?service=decking", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "All services" }}
       />
     </main>
