@@ -34,24 +34,6 @@ const CRAFT = [
       "Built-ins and millwork that sit against the wall the way they should — even when the wall, floor, or ceiling won't quite cooperate.",
   },
 ];
-    n: "01",
-    title: "Transitions",
-    body:
-      "Where one material meets another — flooring to tile, trim to wall, casing to baseboard. Resolved cleanly so the eye doesn't catch.",
-  },
-  {
-    n: "02",
-    title: "Edges",
-    body:
-      "Mitres that close, reveals that read straight, returns that resolve. The edges are where careless work shows up first.",
-  },
-  {
-    n: "03",
-    title: "Fit",
-    body:
-      "Built-ins and millwork that sit against the wall the way they should — even when the wall, floor, or ceiling won't quite cooperate.",
-  },
-];
 
 const InteriorFinishing = () => {
   useSeo({
