@@ -1,36 +1,68 @@
-# Fix broken section-rail anchors so every label maps to a real element
+# Visual cleanup pass — "less going on, easier to navigate"
 
-The rail measurement and scroll-spy logic are correct. The bug is purely in `src/lib/pageSections.ts` — several anchors point to ids that don't exist on the rendered page, so those tabs never highlight on scroll and do nothing on click. Fix by **either** (a) renaming the entries to real ids, or (b) adding the missing `id` to the corresponding section. Recommendation per route below — chosen to keep the rail anchors stable English (avoid renaming UI labels to match implementation noise like `how-it-goes`) and to add a real anchor where the section truly exists.
+Goal: keep every page reading like ONE quiet idea per section, the way FlexServices does. Strip ornamental chrome, remove dead components, collapse the busy service-page rhythm.
 
-## Per-route fixes
+## Tier-0 guardrails (non-negotiable, from questionnaire 1.3)
+- ✅ KEEP: Home · About · Project Gallery (Work) · Services · Contact · Service Areas
+- ❌ NEVER add: Testimonials section, FAQ section, Process/How-It-Works as a nav page, sticky mobile CTA, urgency timers, hard-sell copy, pricing
+- Mood targets: warm, calm, simple, elegant, durable, clear. Avoid: busy, over-designed, generic, corporate.
 
-### `/` (Home)
-- `approach` → **rename in pageSections to `how-it-goes`** (matches `HowItGoes.tsx` id).
-- `work-preview` → **drop**. There is no work preview section on Home; the rail entry is dead. New rail: `services-preview` · `how-it-goes` · `areas` (3 items, still ≥2 so rail renders).
+What FlexServices does that we **will** borrow:
+- One section = one idea = one CTA. Generous vertical breathing room.
+- Below-the-fold lazy-loading (we already do this).
+- A single short hero, then a quiet trust strip, then services, then proof, then contact.
 
-### `/services`
-- `circle` → **drop**. No corresponding section exists. New rail: `services-three` · `quote` (2 items).
+What FlexServices does that we **will NOT** borrow:
+- FAQ accordion, Testimonials carousel, Sticky mobile CTA, Urgency banner, Guarantee panel.
 
-### `/services/interior-finishing`
-- `why` → **drop**. No "Why It Matters" section on the page. New rail: `meaning` · `craft` · `proof`.
+## 1. Service-detail page rhythm — strip the surveyor scaffolding
+The exterior/interior/decking pages are the worst offenders for "lots going on": every section uses a different visual device (bento, surveyor frame with dotted line + numeral discs, premium card). Standardize to ONE pattern per service page:
 
-### `/services/decking`
-- `lifestyle` → **drop**. No "Outdoor Living" section. New rail: `planning` · `materials` · `proof`.
+For each of `/services/interior-finishing`, `/services/exterior-finishing`, `/services/decking`:
+- **Hero** (SubPageHero) — keep.
+- **§ I What it covers** — keep BentoGrid 2x2. Remove the redundant intro grid (col-7 header + col-5 paragraph). The lede already lives in SectionHeader.
+- **§ II Considerations / Materials / Why** — convert from "surveyor-frame + dotted line + numeral-disc" ornament to a clean 2-column list (label · body) inside SectionHeader. This is the single biggest source of visual noise.
+- **§ III Property respect / extra block** — keep BentoGrid (auto). Already calm.
+- **§ IV Project proof** — keep PremiumCard.
+- **Closing** — replace remaining `<ClosingCta numeral="V">` with `<BigCloseCTA variant="compact" />` (memory rule already says this; ExteriorFinishing still uses the old one).
 
-### `/about`
-- `continuity` → **drop**. No section.
-- `longterm` → **drop**. No section. New rail: `philosophy` · `respect` (2 items).
+Net result: 4 sections, 3 visual archetypes (hero · bento · proof card), 1 close. Consistent across all three service pages.
 
-### `/contact`
-- `quote` → **drop**.
-- `areas` → **drop**. With only `form` left the rail has <2 entries and won't render — that's correct (Contact is a single-purpose form route). New rail: `[]` (or single `form`, which the renderer hides).
+## 2. Retire dead/duplicate components
+Search-and-remove imports, then delete the files:
+- `src/components/ClosingCta.tsx` — superseded by `BigCloseCTA`. Memory already says "ClosingCta is retired"; the file just hasn't been deleted.
+- `src/components/ChapterSpine.tsx` — confirm zero imports; delete if so.
+- `src/pages/StyleGuide.tsx` — internal route; remove from router and delete (it's dev cruft that ships).
 
-## File to change
-- `src/lib/pageSections.ts` — update the records as above.
+## 3. Home page — tighten the trust strip
+`/` has Hero → trust-strip (3 stat cards) → HowItGoes → ServiceMarquee → PhotoMoment → TestimonialSpine → areas → BigCloseCTA. That's 7 sections before the close. FlexServices uses 5.
 
-## Out of scope
-- No changes to `SectionRail.tsx`, `useActiveSection.ts`, or `Navigation.tsx`. Measurement, spy, and scroll math are already verified correct.
-- No new sections will be added to pages — if Home eventually grows a "Selected work" preview block, re-add `work-preview` then.
+- Drop the "Cory · Owner-builder / Replies personally" stat card — it duplicates what BigCloseCTA already says ("Cory replies personally"). Trust strip becomes 2 cards (Reply · Areas served), centered.
+- Keep TestimonialSpine — it's framed as a single quote, not a carousel, so it doesn't violate the "no testimonials section" rule (it's editorial proof, not a testimonials page). But re-label memory note to clarify.
+  - **If you'd rather honor the questionnaire literally and remove TestimonialSpine entirely, say so and I'll cut it.** This is the one judgement call I want explicit approval on.
 
-## Verification after edit
-- Visit `/`, `/services`, `/services/interior-finishing`, `/services/decking`, `/about`, `/contact` and confirm: every visible rail tab (a) underlines as you scroll past its section, and (b) smooth-scrolls to that section on click.
+## 4. Section rhythm — kill the `surveyor-frame` ornament globally
+Grep `surveyor-frame|surveyor-tr|surveyor-bl|numeral-disc-survey|data-line-draw` and remove. These are art-school chrome (tier-0 forbids "over-designed"). Replace usages on Interior/Decking with the same clean 2-col list.
+
+## 5. Spacing & typography normalisation
+- Audit `SECTION_PADDING` usage — every page should use `.standard` or `.compact`, never inline `py-*`.
+- Confirm every section hero uses `SectionHeader` (drop any leftover hand-rolled eyebrow + h2 stacks).
+
+## 6. Navigation — already cleaned in prior turns
+No changes. Glass-on-scroll nav, mobile scrim, FLIP underline, real-anchor section rail are all in place.
+
+## Files to edit
+- `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/Decking.tsx` — replace surveyor sections with clean 2-col lists; swap `ClosingCta` → `BigCloseCTA variant="compact"`; drop the redundant intro-grid pattern in § I.
+- `src/pages/Index.tsx` — drop the third stat card.
+- `src/components/ClosingCta.tsx` — delete.
+- `src/components/ChapterSpine.tsx` — delete if unused.
+- `src/pages/StyleGuide.tsx` + `src/App.tsx` route — delete + remove route.
+- `src/index.css` — remove `.surveyor-frame`, `.surveyor-tr`, `.surveyor-bl`, `.numeral-disc-survey`, `[data-line-draw]` blocks.
+
+## Out of scope (future passes)
+- Photography swap-in for the typographic vignettes.
+- Work/Project Gallery filter UX.
+- Footer cleanup.
+
+## Decision I need from you
+Question 1 above: do you want **TestimonialSpine kept** as editorial proof, or **removed** to honor the literal "no testimonials" line in the questionnaire? Default if you don't answer: keep (single quote, not a section). Either way I'll proceed with everything else.
