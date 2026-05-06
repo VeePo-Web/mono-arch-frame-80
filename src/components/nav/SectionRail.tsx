@@ -26,22 +26,46 @@ const SectionRail = () => {
     visible: false,
   });
 
-  useLayoutEffect(() => {
-    if (!active) {
+  const measure = useCallback(() => {
+    const container = containerRef.current;
+    const el = active ? tabRefs.current.get(active) : null;
+    if (!container || !el) {
       setIndicator((prev) => ({ ...prev, visible: false }));
       return;
     }
-    const el = tabRefs.current.get(active);
+    const cs = window.getComputedStyle(el);
+    const padL = parseFloat(cs.paddingLeft) || 0;
+    const padR = parseFloat(cs.paddingRight) || 0;
+    // offsetLeft is relative to containerRef (position: relative).
+    const x = el.offsetLeft + padL;
+    const w = Math.max(0, el.offsetWidth - padL - padR);
+    setIndicator({ x, w, visible: true });
+  }, [active]);
+
+  useLayoutEffect(() => {
+    const id = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(id);
+  }, [measure, sections]);
+
+  useEffect(() => {
     const container = containerRef.current;
-    if (!el || !container) return;
-    const elRect = el.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-    setIndicator({
-      x: elRect.left - containerRect.left + 14, // +padding-x to span text only
-      w: elRect.width - 28,
-      visible: true,
+    if (!container || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => measure());
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [measure]);
+
+  useEffect(() => {
+    const fonts = (document as Document & { fonts?: { ready: Promise<unknown> } }).fonts;
+    if (!fonts?.ready) return;
+    let cancelled = false;
+    fonts.ready.then(() => {
+      if (!cancelled) measure();
     });
-  }, [active, sections]);
+    return () => {
+      cancelled = true;
+    };
+  }, [measure]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, anchor: string) => {
