@@ -88,9 +88,8 @@ const Services = () => {
                       />
                     </div>
                     <div className="lg:col-span-7 p-8 md:p-12 flex flex-col">
-                      <div className="flex items-center gap-4 mb-6">
-                        <span className="numeral-disc">{s.numeral}</span>
-                        <span className="h-px w-8 bg-evergreen/30 group-hover:w-20 transition-all duration-700 ease-weighted" />
+                      <div className="mb-6">
+                        <span className="block h-px w-12 bg-evergreen/30 group-hover:w-24 transition-all duration-700 ease-weighted" />
                       </div>
                       <h3 className="text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
                         {s.title}

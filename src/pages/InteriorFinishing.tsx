@@ -8,41 +8,27 @@ import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import InfoCard from "@/components/ui/InfoCard";
-import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
-import { InteriorVignette } from "@/components/ProjectVignette";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { photography } from "@/assets/photography";
 import { projects } from "@/data/projects";
-import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { HEADLINE, BODY, EYEBROW } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
 
 const SITE = "https://havencreekrenovations.ca";
 
-const DETAILS = [
-  { n: "01", label: "Trim & casings" },
-  { n: "02", label: "Door & window transitions" },
-  { n: "03", label: "Baseboard returns" },
-  { n: "04", label: "Hardware fit" },
-  { n: "05", label: "Edge alignment" },
-  { n: "06", label: "Built-in joinery" },
-];
-
 const CRAFT = [
   {
-    n: "01",
     title: "Transitions",
     body:
       "Where one material meets another — flooring to tile, trim to wall, casing to baseboard. Resolved cleanly so the eye doesn't catch.",
   },
   {
-    n: "02",
     title: "Edges",
     body:
       "Mitres that close, reveals that read straight, returns that resolve. The edges are where careless work shows up first.",
   },
   {
-    n: "03",
     title: "Fit",
     body:
       "Built-ins and millwork that sit against the wall the way they should — even when the wall, floor, or ceiling won't quite cooperate.",
@@ -83,13 +69,19 @@ const InteriorFinishing = () => {
         vignette={
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">
-              <InteriorVignette className="absolute inset-0 w-full h-full" />
+              <img
+                src={photography.serviceInterior}
+                alt="Interior finishing — trim and transition detail in a rural home."
+                loading="eager"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
             </div>
           </div>
         }
       />
 
-      {/* § I — What it means + details bento (with the "why it matters" line folded in) */}
+      {/* § I — What it means + craft details */}
       <RevealSection id="meaning" aria-labelledby="meaning-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
@@ -107,50 +99,14 @@ const InteriorFinishing = () => {
             </div>
           </div>
 
-          <div data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-            <p className={cn(EYEBROW.quiet, "mb-5")}>Details we obsess over</p>
-            <BentoGrid layout="auto">
-              {DETAILS.map((d) => (
-                <BentoTile key={d.n} eyebrow={d.n} title={d.label} compact />
-              ))}
-            </BentoGrid>
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* § II "Why it matters" pull-quote — folded into §I above. */}
-
-      {/* § III — Craft & detail (3 InfoCards w/ vignette) */}
-      <RevealSection id="craft" aria-labelledby="craft-heading" className={SECTION_PADDING.standard}>
-        <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <SectionHeader
-                id="craft-heading"
-                eyebrow="Craft & detail"
-                title="Three details that decide the read of a finished room."
-                bottomGap="none"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8" id="craft">
             {CRAFT.map((c, i) => (
               <div
-                key={c.n}
+                key={c.title}
                 data-reveal
                 style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}
               >
-                <InfoCard
-                  eyebrow={`Detail ${c.n}`}
-                  title={c.title}
-                  body={c.body}
-                  media={
-                    <div className="relative aspect-[4/3]">
-                      <InteriorVignette className="absolute inset-0 w-full h-full" />
-                    </div>
-                  }
-                />
+                <InfoCard title={c.title} body={c.body} />
               </div>
             ))}
           </div>

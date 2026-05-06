@@ -1,15 +1,10 @@
-import { Link } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import Hero from "@/components/Hero";
 import HowItGoes from "@/components/HowItGoes";
-import ServiceMarquee from "@/components/ServiceMarquee";
+import ServicesGrid from "@/components/ServicesGrid";
 import RevealSection from "@/components/RevealSection";
-import TestimonialSpine from "@/components/TestimonialSpine";
-import SectionTransition from "@/components/SectionTransition";
-import PhotoMoment from "@/components/PhotoMoment";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import StatCard from "@/components/ui/StatCard";
 import BentoGrid, { BentoTile } from "@/components/ui/BentoGrid";
@@ -104,25 +99,13 @@ const Index = () => {
         </Container>
       </RevealSection>
 
-      {/* ─── § II — How it goes ───────────────────────────────────────── */}
+      {/* ─── § II — Services grid ────────────────────────────────────── */}
+      <ServicesGrid />
+
+      {/* ─── § III — How it goes ─────────────────────────────────────── */}
       <HowItGoes />
 
-      <SectionTransition from="cream" to="evergreen" intensity="dramatic" />
-
-      {/* ─── § III — Service marquee ─────────────────────────────────── */}
-      <ServiceMarquee />
-
-      <SectionTransition from="evergreen" to="cream" intensity="dramatic" />
-
-      {/* ─── § IV — Photo moment ─────────────────────────────────────── */}
-      <PhotoMoment />
-
-      {/* ─── § V — Testimonials (dark) ───────────────────────────────── */}
-      <TestimonialSpine tone="dark" />
-
-      <SectionTransition from="evergreen" to="cream" intensity="dramatic" />
-
-      {/* ─── § VI — Service areas (2x2 bento) ────────────────────────── */}
+      {/* ─── § IV — Service areas (2x2 bento) ────────────────────────── */}
       <RevealSection
         id="areas"
         aria-labelledby="areas-heading"
@@ -160,7 +143,7 @@ const Index = () => {
         </Container>
       </RevealSection>
 
-      {/* ─── § VII — Big close ────────────────────────────────────────── */}
+      {/* ─── § V — Big close ─────────────────────────────────────────── */}
       <BigCloseCTA />
     </main>
   );
