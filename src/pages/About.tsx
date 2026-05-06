@@ -4,7 +4,7 @@ import Eyebrow from "@/components/Eyebrow";
 import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
-import ClosingCta from "@/components/ClosingCta";
+import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 
@@ -114,11 +114,10 @@ const About = () => {
 
       {/* §IV "A longer horizon" — folded into §I working philosophy. */}
 
-      <ClosingCta
-        numeral="V"
-        eyebrow="START THE CONVERSATION"
+      <BigCloseCTA
+        variant="compact"
         heading="Tell us about the property and what's on your mind."
-        body="One project or many. We're glad to walk it through."
+        lede="Cory replies within two business days."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "What we offer" }}
       />

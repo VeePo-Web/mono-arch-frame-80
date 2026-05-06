@@ -85,7 +85,7 @@ const Index = () => {
       >
         <Container size="wide">
           <h2 id="trust-strip-heading" className="sr-only">What working with Haven Creek looks like</h2>
-          <div className={cn("grid grid-cols-1 sm:grid-cols-3", CONTENT_GAP.cardGrid)}>
+          <div className={cn("grid grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto", CONTENT_GAP.cardGrid)}>
             <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <StatCard
                 label="Reply"
@@ -98,13 +98,6 @@ const Index = () => {
                 label="Areas served"
                 value="4"
                 caption="Foothills, west & north of Calgary."
-              />
-            </div>
-            <div data-reveal style={{ ["--reveal-delay" as string]: "240ms" }}>
-              <StatCard
-                label="Cory · Owner-builder"
-                value="Replies personally"
-                caption="Cory replies personally."
               />
             </div>
           </div>

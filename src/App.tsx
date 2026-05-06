@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
-import ChapterSpine from "./components/ChapterSpine";
 import PageSlug from "./components/PageSlug";
 import RoutePrefetcher from "./components/RoutePrefetcher";
 
@@ -26,7 +25,6 @@ const Bearspaw = lazy(() => import("./pages/areas/Bearspaw"));
 const WaterValley = lazy(() => import("./pages/areas/WaterValley"));
 const Contact = lazy(() => import("./pages/Contact"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
-const StyleGuide = lazy(() => import("./pages/StyleGuide"));
 
 // QuickContactSheet only renders after a user interaction (custom event fired
 // by the drawer / mobile triggers). Defer it past the LCP-critical bundle.
@@ -83,7 +81,6 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <RoutePrefetcher />
-        <ChapterSpine />
         <PageSlug />
         <Navigation />
         <Suspense fallback={<RouteFallback />}>
@@ -102,7 +99,6 @@ const App = () => (
             <Route path="/service-areas/water-valley" element={<WaterValley />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/thank-you" element={<ThankYou />} />
-            <Route path="/style-guide" element={<StyleGuide />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

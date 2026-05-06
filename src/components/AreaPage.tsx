@@ -6,7 +6,7 @@ import SectionHeader from "@/components/SectionHeader";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
-import ClosingCta from "@/components/ClosingCta";
+import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas, getServiceArea } from "@/data/serviceAreas";
@@ -134,18 +134,14 @@ const AreaPage = ({
               />
             </div>
 
-            <div className="lg:col-span-7 lg:pl-8 relative">
-              <div className="surveyor-frame relative" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-                <span className="surveyor-tr" aria-hidden="true" />
-                <span className="surveyor-bl" aria-hidden="true" />
-                <div className="px-8 lg:px-12 py-12 lg:py-14">
-                  <p className="pull-quote text-[1.3rem] md:text-[1.55rem] leading-snug max-w-[34ch]">
-                    {area.context}
-                  </p>
-                  <p className="mt-7 font-serif italic text-foreground/70 text-[1.05rem]">
-                    — {area.page.fitNote}
-                  </p>
-                </div>
+            <div className="lg:col-span-7 lg:pl-8">
+              <div data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
+                <p className="pull-quote text-[1.3rem] md:text-[1.55rem] leading-snug max-w-[34ch]">
+                  {area.context}
+                </p>
+                <p className="mt-7 font-serif italic text-foreground/70 text-[1.05rem]">
+                  — {area.page.fitNote}
+                </p>
               </div>
             </div>
           </div>
@@ -265,11 +261,10 @@ const AreaPage = ({
         </Container>
       </RevealSection>
 
-      <ClosingCta
-        numeral="IV"
-        eyebrow={`${area.name.toUpperCase()} · NEXT STEP`}
+      <BigCloseCTA
+        variant="compact"
         heading={closingHeading}
-        body="No pressure. Just a clear conversation about your property."
+        lede="Cory replies within two business days."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/service-areas", label: "All service areas" }}
       />

@@ -5,7 +5,7 @@ import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
-import ClosingCta from "@/components/ClosingCta";
+import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas } from "@/data/serviceAreas";
@@ -117,10 +117,10 @@ const ServiceAreas = () => {
         </Container>
       </RevealSection>
 
-      <ClosingCta
-        eyebrow="LOCAL, FROM THE START"
+      <BigCloseCTA
+        variant="compact"
         heading="Tell us about the property and where it sits."
-        body="We'll know the road, the drive in, and what the season is asking for."
+        lede="Cory replies within two business days."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/work", label: "View Our Work" }}
       />
