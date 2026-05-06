@@ -9,7 +9,7 @@ import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import InfoCard from "@/components/ui/InfoCard";
 import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
-import { DeckingVignette } from "@/components/ProjectVignette";
+
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { photography } from "@/assets/photography";
@@ -20,9 +20,9 @@ import { SECTION_PADDING } from "@/lib/spacing";
 const SITE = "https://havencreekrenovations.ca";
 
 const PLANNING = [
-  { n: "01", title: "Use & layout", body: "Where the family actually sits, eats, watches the dog, watches the weather. The deck should follow the use." },
-  { n: "02", title: "Site & exposure", body: "Sun, wind, view, privacy, grade, and the trees you'd never cut down. The site decides more than the materials do." },
-  { n: "03", title: "Materials & longevity", body: "Composite, cedar, treated lumber — chosen for the use, the climate, and how much maintenance the owner actually wants." },
+  { title: "Use & layout", body: "Where the family actually sits, eats, watches the dog, watches the weather. The deck should follow the use." },
+  { title: "Site & exposure", body: "Sun, wind, view, privacy, grade, and the trees you'd never cut down. The site decides more than the materials do." },
+  { title: "Materials & longevity", body: "Composite, cedar, treated lumber — chosen for the use, the climate, and how much maintenance the owner actually wants." },
 ];
 
 const SCOPES = [
@@ -67,7 +67,13 @@ const Decking = () => {
         vignette={
           <div className="bezel-shell">
             <div className="bezel-core relative aspect-[3/4] overflow-hidden">
-              <DeckingVignette className="absolute inset-0 w-full h-full" />
+              <img
+                src={photography.serviceDecking}
+                alt="A deck on a rural Alberta property — view across the lawn at golden hour."
+                loading="eager"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
             </div>
           </div>
         }
@@ -96,8 +102,8 @@ const Decking = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {PLANNING.map((p, i) => (
-              <div key={p.n} data-reveal style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}>
-                <InfoCard eyebrow={p.n} title={p.title} body={p.body} featured={i === 0} />
+              <div key={p.title} data-reveal style={{ ["--reveal-delay" as string]: `${220 + i * 110}ms` }}>
+                <InfoCard title={p.title} body={p.body} featured={i === 0} />
               </div>
             ))}
           </div>
