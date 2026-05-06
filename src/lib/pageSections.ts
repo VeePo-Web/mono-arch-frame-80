@@ -22,18 +22,15 @@ export interface PageSection {
 const pageSections: Record<string, PageSection[]> = {
   "/": [
     { name: "Services", anchor: "services-preview" },
-    { name: "How We Work", anchor: "approach" },
-    { name: "Our Work", anchor: "work-preview" },
+    { name: "How We Work", anchor: "how-it-goes" },
     { name: "Where We Work", anchor: "areas" },
   ],
   "/services": [
     { name: "Services", anchor: "services-three" },
-    { name: "How It Works", anchor: "circle" },
     { name: "Get a Quote", anchor: "quote" },
   ],
   "/services/interior-finishing": [
     { name: "What It Is", anchor: "meaning" },
-    { name: "Why It Matters", anchor: "why" },
     { name: "How We Build", anchor: "craft" },
     { name: "Our Work", anchor: "proof" },
   ],
@@ -45,7 +42,6 @@ const pageSections: Record<string, PageSection[]> = {
   ],
   "/services/decking": [
     { name: "Planning", anchor: "planning" },
-    { name: "Outdoor Living", anchor: "lifestyle" },
     { name: "Materials", anchor: "materials" },
     { name: "Our Work", anchor: "proof" },
   ],
@@ -56,13 +52,6 @@ const pageSections: Record<string, PageSection[]> = {
   "/about": [
     { name: "Our Approach", anchor: "philosophy" },
     { name: "Care for Land", anchor: "respect" },
-    { name: "Relationships", anchor: "continuity" },
-    { name: "Built to Last", anchor: "longterm" },
-  ],
-  "/contact": [
-    { name: "Get in Touch", anchor: "form" },
-    { name: "How It Works", anchor: "quote" },
-    { name: "Where We Work", anchor: "areas" },
   ],
 };
 
