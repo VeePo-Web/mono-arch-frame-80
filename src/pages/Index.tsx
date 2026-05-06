@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
