@@ -265,11 +265,10 @@ const AreaPage = ({
         </Container>
       </RevealSection>
 
-      <ClosingCta
-        numeral="IV"
-        eyebrow={`${area.name.toUpperCase()} · NEXT STEP`}
+      <BigCloseCTA
+        variant="compact"
         heading={closingHeading}
-        body="No pressure. Just a clear conversation about your property."
+        lede="Cory replies within two business days."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/service-areas", label: "All service areas" }}
       />
