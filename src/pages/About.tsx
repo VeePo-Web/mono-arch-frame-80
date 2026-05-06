@@ -114,11 +114,10 @@ const About = () => {
 
       {/* §IV "A longer horizon" — folded into §I working philosophy. */}
 
-      <ClosingCta
-        numeral="V"
-        eyebrow="START THE CONVERSATION"
+      <BigCloseCTA
+        variant="compact"
         heading="Tell us about the property and what's on your mind."
-        body="One project or many. We're glad to walk it through."
+        lede="Cory replies within two business days."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "What we offer" }}
       />
