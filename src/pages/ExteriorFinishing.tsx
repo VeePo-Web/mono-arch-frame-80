@@ -244,12 +244,11 @@ const ExteriorFinishing = () => {
         </RevealSection>
       )}
 
-      <ClosingCta
-        numeral="V"
-        eyebrow="DISCUSS THE WORK"
+      <BigCloseCTA
+        variant="compact"
         heading="A weather-side repair, a full-property refresh, or somewhere in between."
-        body="Reach out and we'll plan around the property — the access, the season, and what the home actually needs."
-        primary={{ to: "/contact", label: "Get a Quote" }}
+        lede="Cory replies within two business days."
+        primary={{ to: "/contact?service=exterior-finishing", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "All services" }}
       />
     </main>
