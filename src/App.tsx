@@ -81,7 +81,6 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <RoutePrefetcher />
-        <ChapterSpine />
         <PageSlug />
         <Navigation />
         <Suspense fallback={<RouteFallback />}>
