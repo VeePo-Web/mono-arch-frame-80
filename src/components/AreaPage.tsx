@@ -134,18 +134,14 @@ const AreaPage = ({
               />
             </div>
 
-            <div className="lg:col-span-7 lg:pl-8 relative">
-              <div className="surveyor-frame relative" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-                <span className="surveyor-tr" aria-hidden="true" />
-                <span className="surveyor-bl" aria-hidden="true" />
-                <div className="px-8 lg:px-12 py-12 lg:py-14">
-                  <p className="pull-quote text-[1.3rem] md:text-[1.55rem] leading-snug max-w-[34ch]">
-                    {area.context}
-                  </p>
-                  <p className="mt-7 font-serif italic text-foreground/70 text-[1.05rem]">
-                    — {area.page.fitNote}
-                  </p>
-                </div>
+            <div className="lg:col-span-7 lg:pl-8">
+              <div data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
+                <p className="pull-quote text-[1.3rem] md:text-[1.55rem] leading-snug max-w-[34ch]">
+                  {area.context}
+                </p>
+                <p className="mt-7 font-serif italic text-foreground/70 text-[1.05rem]">
+                  — {area.page.fitNote}
+                </p>
               </div>
             </div>
           </div>
