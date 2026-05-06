@@ -4,7 +4,7 @@ import Eyebrow from "@/components/Eyebrow";
 import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
-import ClosingCta from "@/components/ClosingCta";
+import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 
