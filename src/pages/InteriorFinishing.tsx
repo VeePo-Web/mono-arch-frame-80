@@ -8,28 +8,32 @@ import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import InfoCard from "@/components/ui/InfoCard";
-import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
-import { InteriorVignette } from "@/components/ProjectVignette";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { photography } from "@/assets/photography";
 import { projects } from "@/data/projects";
-import { HEADLINE, BODY, EYEBROW, MEASURE } from "@/lib/typography";
+import { HEADLINE, BODY, EYEBROW } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
 
 const SITE = "https://havencreekrenovations.ca";
 
-const DETAILS = [
-  { n: "01", label: "Trim & casings" },
-  { n: "02", label: "Door & window transitions" },
-  { n: "03", label: "Baseboard returns" },
-  { n: "04", label: "Hardware fit" },
-  { n: "05", label: "Edge alignment" },
-  { n: "06", label: "Built-in joinery" },
-];
-
 const CRAFT = [
   {
+    title: "Transitions",
+    body:
+      "Where one material meets another — flooring to tile, trim to wall, casing to baseboard. Resolved cleanly so the eye doesn't catch.",
+  },
+  {
+    title: "Edges",
+    body:
+      "Mitres that close, reveals that read straight, returns that resolve. The edges are where careless work shows up first.",
+  },
+  {
+    title: "Fit",
+    body:
+      "Built-ins and millwork that sit against the wall the way they should — even when the wall, floor, or ceiling won't quite cooperate.",
+  },
+];
     n: "01",
     title: "Transitions",
     body:
