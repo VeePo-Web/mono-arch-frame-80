@@ -1,77 +1,32 @@
-# SectionRail indicator — robust measurement
+# Section rail timing + mobile nav scrim — verify & tighten
 
-Replace the current fragile measurement (getBoundingClientRect + magic `+14/-28` padding offsets) with a layout-driven approach that reads the active tab's real geometry from the DOM and survives viewport changes, font swaps, and route reflows.
+Audit shows most of this work is **already shipped**; only one small CSS tweak remains.
 
-## Changes — `src/components/nav/SectionRail.tsx`
+## Status of each ask
 
-### 1. Replace `useLayoutEffect` body with a memoised `measure()` helper
+### 1. Underline-only active state, thinner timing, no font-weight bump
+- **Underline-only** ✅ Already in place. `SectionRail.tsx` renders one shared `.rail-indicator` (1.5px evergreen bar) — no background pill, no chip.
+- **No font-weight bump** ✅ Already in place. Both active and inactive tabs use `font-medium`; only `text-foreground` vs `text-foreground/65` differs.
+- **Thinner timing** ⚠️ Currently `transform/width 420ms`. Tighten to **360ms** — snappier without losing the FLIP glide. Opacity 220ms → 200ms to match.
 
-```ts
-const measure = useCallback(() => {
-  const container = containerRef.current;
-  const el = active ? tabRefs.current.get(active) : null;
-  if (!container || !el) {
-    setIndicator((p) => ({ ...p, visible: false }));
-    return;
-  }
-  const cs = window.getComputedStyle(el);
-  const padL = parseFloat(cs.paddingLeft) || 0;
-  const padR = parseFloat(cs.paddingRight) || 0;
-  // offsetLeft is relative to the nearest positioned ancestor — containerRef is `relative`.
-  const x = el.offsetLeft + padL;
-  const w = Math.max(0, el.offsetWidth - padL - padR);
-  setIndicator({ x, w, visible: true });
-}, [active]);
+### 2. Mobile-only top scrim over dark heroes
+- ✅ Already shipped in `Navigation.tsx` (lines 83–88): a `lg:hidden` absolutely-positioned `bg-gradient-to-b from-background/70 via-background/25 to-transparent` layer behind the bar, with `opacity: 1 - navBg` so it fades out as the real glass backdrop fades in on scroll. Exactly the Flex/Royal pattern.
+
+## The one change
+
+**`src/index.css`** — `.rail-indicator` transition block (lines 535–538):
+
+```css
+transition:
+  transform 360ms var(--ease-swift),
+  width 360ms var(--ease-swift),
+  opacity 200ms var(--ease-swift);
 ```
 
-### 2. Drive `measure()` from layout effects + observers
-
-Inside the component, after `measure` is defined:
-
-```ts
-// Re-measure whenever the active tab or section list changes.
-useLayoutEffect(() => {
-  // rAF coalesces back-to-back active changes (scroll spy + click).
-  const id = requestAnimationFrame(measure);
-  return () => cancelAnimationFrame(id);
-}, [measure, sections]);
-
-// Re-measure on container width changes (responsive, font-load, zoom).
-useEffect(() => {
-  const container = containerRef.current;
-  if (!container || typeof ResizeObserver === "undefined") return;
-  const ro = new ResizeObserver(() => measure());
-  ro.observe(container);
-  return () => ro.disconnect();
-}, [measure]);
-
-// Late web-font swap can change tab widths after first paint.
-useEffect(() => {
-  if (typeof document === "undefined" || !(document as any).fonts?.ready) return;
-  let cancelled = false;
-  (document as any).fonts.ready.then(() => {
-    if (!cancelled) measure();
-  });
-  return () => { cancelled = true; };
-}, [measure]);
-```
-
-### 3. Remove the magic numbers
-Delete the `+14` / `-28` literals from the previous `useLayoutEffect` block — padding now comes from `getComputedStyle`, so any future change to the tab's `px-3.5` (or switching to a different padding scale) will Just Work.
-
-### 4. Initial render unchanged
-- `indicator` initial state stays `{ x: 0, w: 0, visible: false }` so the bar is opacity-0 until the first `measure()` runs.
-- The active/inactive className branch stays untouched (still `font-medium` in both states — no weight bump).
-
-## No CSS changes
-`.rail-indicator` already animates `transform` + `width` with `var(--ind-x)` / `var(--ind-w)` — the same vars are still being set, just with correct values now.
-
-## No memory changes needed
-The existing Core rule already states the rail uses ONE shared sliding underline via `--ind-x`/`--ind-w`. Measurement mechanics are an implementation detail.
-
-## Files touched
-- `src/components/nav/SectionRail.tsx` — measurement helper + ResizeObserver + fonts.ready hook; remove magic-number padding offsets.
+Update memory `mem://index.md` Core line to reflect the new timing:
+> Section-rail active state is underline-only (1.5px evergreen, **360ms** slide) — never bump font-weight on the active tab.
 
 ## Out of scope
-- No changes to timing, CSS, route prefetch, or hamburger/drawer logic.
-- No first-paint "instant" flag — current opacity-gate already prevents the visible glitch on mount.
+- No structural changes to `SectionRail.tsx` (measurement was hardened in the previous turn).
+- No changes to the mobile scrim — it already matches the reference behaviour and renders only on `<lg` breakpoints.
+- No changes to `Navigation.tsx`.

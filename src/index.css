@@ -533,9 +533,9 @@
     border-radius: 1px;
     pointer-events: none;
     transition:
-      transform 420ms var(--ease-swift),
-      width 420ms var(--ease-swift),
-      opacity 220ms var(--ease-swift);
+      transform 360ms var(--ease-swift),
+      width 360ms var(--ease-swift),
+      opacity 200ms var(--ease-swift);
   }
 
   /* Section rail — always scroll-x with edge-fade mask. */
