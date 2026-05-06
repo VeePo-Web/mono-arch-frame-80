@@ -145,7 +145,7 @@ const Index = () => {
         </Container>
       </RevealSection>
 
-      {/* ─── § VII — Big close ────────────────────────────────────────── */}
+      {/* ─── § V — Big close ─────────────────────────────────────────── */}
       <BigCloseCTA />
     </main>
   );
