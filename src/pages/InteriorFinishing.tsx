@@ -217,12 +217,11 @@ const InteriorFinishing = () => {
         </RevealSection>
       )}
 
-      <ClosingCta
-        numeral="V"
-        eyebrow="DISCUSS THE WORK"
+      <BigCloseCTA
+        variant="compact"
         heading="Tell us about the interior finishing on your mind."
-        body="Whether it's a single room or a whole-floor finish, we're glad to walk through the property and talk it through."
-        primary={{ to: "/contact", label: "Get a Quote" }}
+        lede="Cory replies within two business days."
+        primary={{ to: "/contact?service=interior-finishing", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "All services" }}
       />
     </main>
