@@ -1,13 +1,11 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import { useSeo } from "@/hooks/useSeo";
 import { PROJECT_TYPES } from "@/lib/validation/consultation";
 
-const SECTION = "py-14 md:py-28";
 
 interface ThankYouState {
   name?: string;
