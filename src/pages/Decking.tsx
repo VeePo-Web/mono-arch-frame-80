@@ -73,7 +73,6 @@ const Decking = () => {
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <SectionHeader
                 id="planning-heading"
-                eyebrow="How we plan a deck"
                 title="The planning decides whether the deck gets used."
                 titleWidth="wide"
                 bottomGap="none"
