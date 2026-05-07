@@ -66,9 +66,6 @@ const Services = () => {
                   We'll talk through what's possible, what's worth it, and what isn't.
                   No pressure either way.
                 </p>
-                <p className={cn(BODY.standard, "text-foreground/70 italic font-serif")}>
-                  Every quote includes scope, materials by name, timeline, and an all-in price.
-                </p>
               </div>
             </div>
           </div>
