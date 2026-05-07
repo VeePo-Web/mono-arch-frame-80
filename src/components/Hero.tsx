@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import Container from "./Container";
-import Eyebrow from "./Eyebrow";
 import { useDrift } from "@/hooks/useDrift";
 import { serviceAreas } from "@/data/serviceAreas";
 import { photography } from "@/assets/photography";
@@ -72,38 +71,15 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           {/* Headline column — wider so the H1 reads first */}
           <div className="lg:col-span-7">
-            <div className="reveal-up" style={{ animationDelay: "0ms" }}>
-              <Eyebrow label="Haven Creek · Rural Alberta" />
-            </div>
-
             <h1
               ref={headlineRef}
               id="hero-heading"
               data-drift
-              className="text-display text-foreground mt-8 max-w-[18ch] text-balance"
+              className="text-display text-foreground max-w-[18ch] text-balance"
             >
               <span className="block overflow-hidden">
                 <span className="block reveal-up" style={{ animationDelay: "120ms" }}>
-                  One{" "}
-                  <span className="relative inline-block text-display-italic text-evergreen">
-                    trusted
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 200 12"
-                      className="absolute left-0 right-0 -bottom-2 w-full h-2.5 overflow-visible"
-                      fill="none"
-                    >
-                      <path
-                        d="M 4 8 C 50 2, 110 10, 196 5"
-                        stroke="hsl(var(--evergreen) / 0.55)"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        className="vignette-stroke"
-                        style={{ animationDelay: "0.7s" }}
-                      />
-                    </svg>
-                  </span>{" "}
-                  contractor
+                  One <span className="text-display-italic text-evergreen">trusted</span> contractor
                 </span>
               </span>
               <span className="block overflow-hidden">
@@ -143,14 +119,12 @@ const Hero = () => {
               </Link>
             </div>
 
-            {/* Trusted-in line — small, calm, links to area pages */}
+            {/* Trusted-in line — single calm serif sentence */}
             <p
-              className="mt-9 font-serif italic text-foreground/75 text-[0.98rem] leading-relaxed reveal-up max-w-[52ch]"
+              className="mt-9 font-serif italic text-foreground/75 text-[0.98rem] leading-relaxed reveal-up max-w-[58ch]"
               style={{ animationDelay: "740ms" }}
             >
-              <span className="not-italic font-sans text-xs uppercase tracking-[0.18em] text-evergreen/80 mr-3">
-                Trusted in
-              </span>
+              Working across{" "}
               {serviceAreas.map((a, i) => (
                 <span key={a.slug}>
                   <Link
@@ -159,9 +133,7 @@ const Hero = () => {
                   >
                     {a.name}
                   </Link>
-                  {i < serviceAreas.length - 1 && (
-                    <span className="text-evergreen/35" aria-hidden="true">{" · "}</span>
-                  )}
+                  {i < serviceAreas.length - 2 ? ", " : i === serviceAreas.length - 2 ? ", and " : "."}
                 </span>
               ))}
             </p>
