@@ -6,7 +6,6 @@ import HowItGoes from "@/components/HowItGoes";
 import ServicesGrid from "@/components/ServicesGrid";
 import RevealSection from "@/components/RevealSection";
 import BigCloseCTA from "@/components/BigCloseCTA";
-import StatCard from "@/components/ui/StatCard";
 import BentoGrid, { BentoTile } from "@/components/ui/BentoGrid";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
@@ -72,34 +71,7 @@ const Index = () => {
 
       <Hero />
 
-      {/* ─── § I — Trust strip ─────────────────────────────────────────── */}
-      <RevealSection
-        id="trust-strip"
-        aria-labelledby="trust-strip-heading"
-        className={SECTION_PADDING.compact}
-      >
-        <Container size="wide">
-          <h2 id="trust-strip-heading" className="sr-only">What working with Haven Creek looks like</h2>
-          <div className={cn("grid grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto", CONTENT_GAP.cardGrid)}>
-            <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <StatCard
-                label="Reply"
-                value="2 days"
-                caption="Within two business days."
-              />
-            </div>
-            <div data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
-              <StatCard
-                label="Areas served"
-                value="4"
-                caption="Foothills, west & north of Calgary."
-              />
-            </div>
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* ─── § II — Services grid ────────────────────────────────────── */}
+      {/* ─── § I — Services grid ─────────────────────────────────────── */}
       <ServicesGrid />
 
       {/* ─── § III — How it goes ─────────────────────────────────────── */}
