@@ -145,19 +145,12 @@ const Decking = () => {
                 <div className="lg:col-span-7 p-8 md:p-12">
                   <p className={cn(EYEBROW.standard, "mb-4")}>{proof.category} · {proof.area}</p>
                   <h3 className={cn(HEADLINE.subsection, "text-foreground")}>{proof.title}</h3>
-                  <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {[
-                      { label: "Scope", body: proof.scope },
-                      { label: "Challenge", body: proof.challenge },
-                      { label: "Result", body: proof.result },
-                      { label: "Why it mattered", body: proof.whyItMattered, italic: true },
-                    ].map((row) => (
-                      <div key={row.label}>
-                        <p className={cn(EYEBROW.standard, "mb-2")}>{row.label}</p>
-                        <p className={cn(BODY.card, row.italic && "italic")}>{row.body}</p>
-                      </div>
-                    ))}
-                  </div>
+                  <p className={cn(BODY.card, "mt-6 max-w-[58ch]")}>
+                    {proof.scope} {proof.challenge} {proof.result}
+                  </p>
+                  <p className={cn(BODY.card, "mt-5 italic text-foreground/85 border-l-2 border-evergreen/35 pl-4 max-w-[58ch]")}>
+                    {proof.whyItMattered}
+                  </p>
                   <Link
                     to="/work"
                     className="group/ghost mt-8 inline-flex items-center gap-3 text-foreground/85 hover:text-evergreen transition-colors duration-500"
