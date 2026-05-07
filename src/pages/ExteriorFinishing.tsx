@@ -66,19 +66,6 @@ const ExteriorFinishing = () => {
         subhead="Repairs, finishing, and weather-facing detail work that respects the home and the land around it. Built for prairie exposure and a long horizon."
         primaryCta={{ to: "/contact", label: "Get a Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        vignette={
-          <div className="bezel-shell">
-            <div className="bezel-core relative aspect-[3/4] overflow-hidden">
-              <img
-                src={photography.serviceExterior}
-                alt="Exterior repair on a rural Alberta home — eaves and weather-side trim restored."
-                loading="eager"
-                decoding="async"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        }
       />
 
       {/* § I — Common needs (2x2 bento) */}
@@ -88,7 +75,6 @@ const ExteriorFinishing = () => {
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <SectionHeader
                 id="needs-heading"
-                eyebrow="What the work covers"
                 title="Four kinds of exterior work, handled with one standard."
                 titleWidth="wide"
                 bottomGap="none"
