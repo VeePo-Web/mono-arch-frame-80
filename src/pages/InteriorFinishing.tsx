@@ -100,16 +100,9 @@ const InteriorFinishing = () => {
       {proof && (
         <RevealSection id="proof" aria-labelledby="proof-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
           <Container size="wide">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
-              <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <SectionHeader
-                  id="proof-heading"
-                  eyebrow="Project proof"
-                  title="A recent interior, finished as it should be."
-                  bottomGap="none"
-                />
-              </div>
-            </div>
+            <h2 id="proof-heading" className={cn(EYEBROW.standard, "mb-8")} data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+              Recent work
+            </h2>
 
             <PremiumCard className="overflow-hidden" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
               <div className="grid grid-cols-1 lg:grid-cols-12">
