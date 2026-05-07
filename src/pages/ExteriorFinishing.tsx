@@ -129,24 +129,21 @@ const ExteriorFinishing = () => {
             </div>
 
             <div className="lg:col-span-7 lg:pl-8">
-              <ol className="space-y-10 lg:space-y-12">
+              <ol className="divide-y divide-border/60 border-y border-border/60">
                 {[
-                  { n: "01", title: "Weather exposure", body: "South and west faces wear differently than north and east. We plan repairs for the exposure, not the average." },
-                  { n: "02", title: "Seasonal timing", body: "Some work has a window. We schedule against the season so the finish has time to set up before the next snowfall." },
-                  { n: "03", title: "Access & distance", body: "Equipment, materials, and travel are part of the planning — not surprises that show up on the invoice." },
-                  { n: "04", title: "Surroundings", body: "Trees, landscaping, animal routines — what surrounds the work shapes how the work gets done." },
+                  { title: "Weather exposure", body: "South and west faces wear differently than north and east. We plan repairs for the exposure, not the average." },
+                  { title: "Seasonal timing", body: "Some work has a window. We schedule against the season so the finish has time to set up before the next snowfall." },
+                  { title: "Access & distance", body: "Equipment, materials, and travel are part of the planning — not surprises that show up on the invoice." },
+                  { title: "Surroundings", body: "Trees, landscaping, animal routines — what surrounds the work shapes how the work gets done." },
                 ].map((step, i) => (
                   <li
-                    key={step.n}
-                    className="grid grid-cols-[auto_1fr] gap-x-5 sm:gap-x-7"
+                    key={step.title}
+                    className="py-7 lg:py-8"
                     data-reveal
                     style={{ ["--reveal-delay" as string]: `${300 + i * 140}ms` }}
                   >
-                    <span className={cn(EYEBROW.standard, "pt-1 tabular-nums text-evergreen/70")}>{step.n}</span>
-                    <div>
-                      <h3 className={cn(HEADLINE.card, "text-foreground")}>{step.title}</h3>
-                      <p className={cn(BODY.card, "mt-3", MEASURE.prose)}>{step.body}</p>
-                    </div>
+                    <h3 className={cn(HEADLINE.card, "text-foreground")}>{step.title}</h3>
+                    <p className={cn(BODY.card, "mt-3", MEASURE.prose)}>{step.body}</p>
                   </li>
                 ))}
               </ol>

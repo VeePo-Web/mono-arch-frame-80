@@ -138,23 +138,20 @@ const ThankYou = () => {
               )}
             </div>
             <div className="lg:col-span-7 lg:pl-8">
-              <ol className="space-y-10">
+              <ol className="divide-y divide-border/60 border-y border-border/60">
                 {[
-                  { n: "01", title: "We read your note", body: "Carefully — not at the bottom of an automated queue." },
-                  { n: "02", title: "We reply", body: "Within two business days, with honest questions and a clear next step." },
-                  { n: "03", title: "We walk it through", body: "On the property if it makes sense, or by phone if that's easier." },
+                  { title: "We read your note", body: "Carefully — not at the bottom of an automated queue." },
+                  { title: "We reply", body: "Within two business days, with honest questions and a clear next step." },
+                  { title: "We walk it through", body: "On the property if it makes sense, or by phone if that's easier." },
                 ].map((step, i) => (
                   <li
-                    key={step.n}
-                    className="grid grid-cols-[auto_1fr] gap-x-5 sm:gap-x-7"
+                    key={step.title}
+                    className="py-7 lg:py-8"
                     data-reveal
                     style={{ ["--reveal-delay" as string]: `${300 + i * 140}ms` }}
                   >
-                    <span className="pt-1 tabular-nums text-minimal text-evergreen/70">{step.n}</span>
-                    <div>
-                      <h3 className="text-title text-foreground">{step.title}</h3>
-                      <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">{step.body}</p>
-                    </div>
+                    <h3 className="text-title text-foreground">{step.title}</h3>
+                    <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">{step.body}</p>
                   </li>
                 ))}
               </ol>
