@@ -1,62 +1,76 @@
-## Cleanup pass — calm the rhythm, honor the questionnaire
+## Why another pass
 
-The site currently layers a lot of editorial scaffolding on top of work that the questionnaire wants kept plain (no testimonials, no "Service No." chrome, no over-design, no hard sell). FlexServices reads cleaner because each section does one job and the page moves Hero → Trust → Services → Process → Work → Areas → Close without ornamental detours. We'll mirror that cadence while keeping our editorial type voice.
+The home page is now calm, but the supporting pages still wear the old "editorial magazine" costume the questionnaire forbids:
 
-### What changes
+- `Services`, `Work`, `AreaPage`, `About`, `ThankYou`, `Contact` still render numeral discs, "HC" monograms, "Plate IV / V / VI", "Detail 01 · Scope / 02 · Challenge / 03 · Result / 04 · Why" grids, and the same "Cory replies within two business days" line shown twice on the same screen.
+- `SelectedWorks.tsx`, `ServicePlate.tsx`, and `ProjectPlaceholder.tsx` still ship Roman-numeral overlays, and `SelectedWorks` is fully orphaned (zero imports).
+- `index.css` still carries `.numeral-disc`, `.card-monogram`, `.coord-mark`, `.numeral-mark`, `plate-fade`, etc. that the cleanup leaves dangling.
 
-**1. Home (`src/pages/Index.tsx`) — fewer sections, clearer arc**
+The fix is mechanical: title-only rows, real photography or plain cards, and one promise per page.
 
-New order:
-```text
-Hero
-Trust strip (2 cards — keep)
-ServicesGrid (NEW — replaces ServiceMarquee)
-HowItGoes (keep)
-Areas bento (keep)
-BigCloseCTA (keep, full variant)
-```
+## What changes (file by file)
 
-Drop: `ServiceMarquee` (huge 3-panel scroll moment), `PhotoMoment`, `TestimonialSpine`, the cream↔evergreen `SectionTransition` pair around them.
+**Home (`src/pages/Index.tsx`)**
+- Drop the two-card "Trust strip" (`Reply 2 days` / `Areas served 4`). Both facts already live in Hero copy + footer + service-area bento. Section flow becomes: Hero → ServicesGrid → HowItGoes → Areas → BigCloseCTA. (Update `src/lib/pageSections.ts` to remove `#trust-strip` if listed.)
 
-Why: the marquee + photo moment + testimonial dark band is the bulk of the "lots going on" feel. FlexServices uses one tight `ServicesOverview` card grid in the same slot. The questionnaire explicitly says no testimonials — `TestimonialSpine` retires.
+**Services (`src/pages/Services.tsx`)**
+- Replace the bespoke "ServicePlate + featured card" rendering with the same `ServicesGrid` layout used on Home (3 photo cards, side-by-side). Keep the §II "Pricing is custom" prose block. Remove the `import ServicePlate` line.
+- Update the page intro: `eyebrow="What we build"`, `title="Three services. One standard."` (drop "In order of where the craft shows most.").
 
-**2. New `src/components/ServicesGrid.tsx`**
+**Work (`src/pages/Work.tsx` + `src/data/galleryPlates.ts` + `src/components/gallery/ProjectPlaceholder.tsx`)**
+- Remove `romanNumeral` from `galleryPlates` data entirely.
+- Update `ProjectPlaceholder` to stop rendering the Roman numeral overlay; show only the photograph (or a calm fallback tile when `photoSrc` is absent — title + area, no numerals, no `Fig.` text).
+- In `Work.tsx`, drop the `romanNumeral` prop from the `<ProjectPlaceholder>` call.
+- Filter rail stays; copy is fine.
 
-Three side-by-side cards (stack on mobile) — one per service. Each card: small photo (16:10), service title, one-line promise, three-bullet scope, "See [service]" ghost arrow. No big numerals, no "Service I/II/III" eyebrow, no alternating left/right layout. This is the questionnaire's "three services, plain" shown plainly.
+**Area page (`src/components/AreaPage.tsx`)**
+- Remove `<span className="card-monogram">HC</span>` and `<span className="coord-mark">Three services</span>`.
+- In the "How we serve here" cards: drop `<span className="numeral-disc">{s.numeral}</span>` and the adjacent expanding rule. Title + promise + body + ghost link only.
 
-**3. Service detail pages (`InteriorFinishing`, `ExteriorFinishing`, `Decking`)**
+**About (`src/pages/About.tsx`)**
+- Property-respect list: remove the absolute-positioned `numeral-disc` badge; render as a clean `<dl>` or stripped `<ol>` with title + body, divider line between rows. Reads like FlexServices' principles list.
 
-Collapse from 4 sections to 3:
-- §I "Meaning" + §III "Craft" merge → one section with the lede + a 3-card craft row underneath. Drop the separate "Details we obsess over" bento (the craft cards already cover it).
-- Strip "Detail 01 / Detail 02" eyebrows on InfoCards (matches the no-editorial-cosplay rule). Cards get a short title only.
-- Keep §IV Proof and the compact `BigCloseCTA`.
-- `SubPageHero` vignette: swap the typographic `InteriorVignette` bezel for the real `photography.serviceInterior` (resp. exterior/decking) photo. Less abstract chrome up top.
+**ThankYou (`src/pages/ThankYou.tsx`)**
+- "While you wait" cards: drop the `numeral-disc 01/02` badge. Card title + body + "Open" arrow only.
 
-**4. `Services.tsx` index page**
+**Contact (`src/pages/Contact.tsx`)**
+- Direct-contact rows: remove the `numeral-mark 01 / 02` glyphs. Two clean baseline rows (label left, EMAIL/PHONE right) — same restraint as the area roster on `ServiceAreas.tsx`.
 
-Same simplification: drop the `numeral-disc` + animated rule on each row, drop "in order of where the craft shows most" framing (reads as ranking sales-talk), keep three plain `PremiumCard` rows with photo + title + promise + detail paragraph + arrow. Keep the "About quotes" section and the close.
+**Service detail pages (`InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`)**
+- Project-proof card: replace the 4-cell `01 · Scope / 02 · Challenge / 03 · Result / 04 · Why it mattered` grid with a quieter labelled list — eyebrow = the label only ("Scope", "Challenge", "Result", "Why it mattered"), no leading "0N ·". Memory rule: title-only on detail rows.
+- Drop the `lede="Cory replies within two business days."` prop on `BigCloseCTA` calls (the component already defaults to that exact line — passing it just re-states the same constraint and risks the "twice on one page" rule the next time the default changes).
 
-**5. Retire / prune**
+**Service Areas (`src/pages/ServiceAreas.tsx`) and About**
+- Same `lede` cleanup on their `BigCloseCTA` calls.
 
-- Delete `src/components/TestimonialSpine.tsx` and remove its imports.
-- Delete `src/components/PhotoMoment.tsx` (no longer referenced).
-- Delete `src/components/ServiceMarquee.tsx` (replaced by `ServicesGrid`).
-- Remove the now-unused `numeral-disc` styles from `src/index.css` and any leftover `.surveyor-frame` / `[data-line-draw]` declarations flagged earlier.
-- `src/lib/pageSections.ts`: home rail anchors become `services-preview`, `how-it-goes`, `areas` (the new `ServicesGrid` keeps the `services-preview` id so the rail keeps working).
+**Dead code removal**
+- Delete `src/components/gallery/SelectedWorks.tsx` (zero imports).
+- Delete `src/components/gallery/ServicePlate.tsx` once `Services.tsx` stops using it.
+- (Keep `ProjectPlaceholder.tsx` — still used by `Work.tsx`.)
 
-### Guardrails (questionnaire + memory)
+**CSS cleanup (`src/index.css`)**
+Remove the now-dead utility classes and their dark-mode disables:
+- `.numeral-disc` (and `.numeral-disc-survey` variants)
+- `.numeral-mark`
+- `.card-monogram`
+- `.coord-mark`, `.coord-mark-light`
+- `plate-fade` keyframes if only `SelectedWorks` used them
+- Stale comments referencing "Plate", "Fig.", "Section No."
 
-- No testimonials anywhere. No FAQ block on home (we keep the JSON-LD only, for SEO; no visible FAQ accordion).
-- No "Service No.", "Plate", "Edition", "Fig." labels reintroduced.
-- No floating CTA, no sticky mobile bar (memory rule).
-- Two-business-day reply line stays only in the allowed spots (Hero, ConsultationForm helper, ThankYou hero, Contact rail, QuickContactSheet, BigCloseCTA, meta).
-- Cream↔evergreen handoffs that remain still go through `SectionTransition`.
-- Lead form stays the 3-field wizard; not touched in this pass.
+**Memory**
+- Append a new core rule: *"Detail rows on service pages use the label as the entire eyebrow — never `01 · Label`."* (Already implied by the `no-editorial-cosplay` constraint memory; promote to Core for visibility.)
 
-### Files touched
+## Out of scope (do not touch this turn)
 
-Edit: `src/pages/Index.tsx`, `src/pages/Services.tsx`, `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/Decking.tsx`, `src/components/SubPageHero.tsx` (allow photo prop if needed), `src/lib/pageSections.ts`, `src/index.css`, `mem://index.md` (note testimonial retirement + grid replaces marquee).
-Add: `src/components/ServicesGrid.tsx`.
-Delete: `src/components/TestimonialSpine.tsx`, `src/components/PhotoMoment.tsx`, `src/components/ServiceMarquee.tsx`.
+- Hero animation, navigation, drawer, route fade, ConsultationForm wizard — all already locked-in by memory.
+- Photography swaps — current images stay.
+- Gallery filter behaviour and copy.
 
-Approve and I'll execute.
+## Acceptance check (visual QA after build)
+
+1. Search the rendered DOM for "Plate", "Fig.", "Section No.", "0N ·", "HC" monogram — zero hits.
+2. No page renders the words "Cory replies within two business days" more than once.
+3. Home, Services, Work, ServiceAreas, About, Thank You, Contact, and the three service-detail pages all close with `BigCloseCTA` and contain no numbered discs anywhere in body content.
+4. `rg "numeral-disc|card-monogram|coord-mark|numeral-mark|romanNumeral"` returns nothing in `src/`.
+
+Approve and I will execute in one pass.
