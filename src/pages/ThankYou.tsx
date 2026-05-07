@@ -1,21 +1,13 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
-import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
-import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import { useSeo } from "@/hooks/useSeo";
 import { PROJECT_TYPES } from "@/lib/validation/consultation";
 
 const SECTION = "py-14 md:py-28";
-
-const NEXT_LINKS = [
-  { to: "/work", title: "Our Work", body: "Recent plates from rural properties." },
-  { to: "/services", title: "Services", body: "Three services, held to one standard." },
-];
 
 interface ThankYouState {
   name?: string;
@@ -160,73 +152,34 @@ const ThankYou = () => {
         </Container>
       </RevealSection>
 
-      {/* § II — While you wait */}
-      <RevealSection aria-labelledby="while-heading" className={cn(SECTION, "section-wash cv-auto")}>
-        <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="WHILE YOU WAIT" />
-              <h2 id="while-heading" className="text-headline text-foreground mt-6 max-w-[22ch]">
-                A few quiet places to look.
-              </h2>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-7 max-w-3xl mx-auto">
-            {NEXT_LINKS.map((link, i) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-[var(--r-shell)]"
-                data-reveal
-                style={{ ["--reveal-delay" as string]: `${180 + i * 90}ms` }}
-              >
-                <PremiumCard className="h-full">
-                  <div className="p-6 lg:p-7 flex flex-col h-full">
-                    <h3 className="font-serif text-[1.2rem] text-foreground group-hover:text-evergreen transition-colors duration-500">
-                      {link.title}
-                    </h3>
-                    <p className="mt-3 text-body text-muted-foreground text-[0.92rem] leading-relaxed flex-1">
-                      {link.body}
-                    </p>
-                    <span className="mt-5 inline-flex items-center gap-3 text-minimal text-evergreen self-start">
-                      <span>Open</span>
-                      <span className="icon-chip bg-evergreen/[0.06]">
-                        <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
-                      </span>
-                    </span>
-                  </div>
-                </PremiumCard>
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </RevealSection>
-
-      {/* § III — Quiet sign-off (different copy for direct visits) */}
-      <RevealSection className="py-20 md:py-28">
+      {/* § II — Quiet sign-off + while-you-wait links */}
+      <RevealSection className="py-16 md:py-24">
         <Container size="wide">
           <div className="max-w-2xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
             {personalized ? (
-              <p className="font-serif italic font-light text-foreground/75 text-[1.4rem] md:text-[1.6rem] leading-snug">
+              <p className="font-serif italic font-light text-foreground/75 text-[1.3rem] md:text-[1.5rem] leading-snug">
                 No need to refresh — we'll come to you.
               </p>
             ) : (
-              <>
-                <p className="font-serif italic font-light text-foreground/75 text-[1.4rem] md:text-[1.6rem] leading-snug">
-                  Looking for the contact form?
-                </p>
-                <Link
-                  to="/contact"
-                  className="group/ghost mt-6 inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
-                >
-                  <span>Open Contact</span>
-                  <span className="icon-chip bg-evergreen/[0.06]">
-                    <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
-                  </span>
+              <p className="font-serif italic font-light text-foreground/75 text-[1.3rem] md:text-[1.5rem] leading-snug">
+                Looking for the contact form?{" "}
+                <Link to="/contact" className="not-italic underline decoration-evergreen/40 underline-offset-4 hover:text-evergreen transition-colors">
+                  Open Contact
                 </Link>
-              </>
+                .
+              </p>
             )}
+            <p className="mt-8 text-minimal text-evergreen/70">
+              While you wait —{" "}
+              <Link to="/work" className="hover:text-evergreen transition-colors underline decoration-evergreen/30 underline-offset-4">
+                see the work
+              </Link>
+              {" "}or{" "}
+              <Link to="/services" className="hover:text-evergreen transition-colors underline decoration-evergreen/30 underline-offset-4">
+                browse services
+              </Link>
+              .
+            </p>
           </div>
         </Container>
       </RevealSection>

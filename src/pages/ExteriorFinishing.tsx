@@ -25,15 +25,6 @@ const NEEDS = [
   { title: "Weather protection", body: "Sealing, flashing, and the small repairs that keep small failures from becoming big ones." },
 ];
 
-const RESPECT = [
-  "Land",
-  "Driveway access",
-  "Equipment management",
-  "Landscaping",
-  "Animals",
-  "Family routines",
-  "Privacy",
-];
 
 const ExteriorFinishing = () => {
   useSeo({
@@ -66,19 +57,6 @@ const ExteriorFinishing = () => {
         subhead="Repairs, finishing, and weather-facing detail work that respects the home and the land around it. Built for prairie exposure and a long horizon."
         primaryCta={{ to: "/contact", label: "Get a Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        vignette={
-          <div className="bezel-shell">
-            <div className="bezel-core relative aspect-[3/4] overflow-hidden">
-              <img
-                src={photography.serviceExterior}
-                alt="Exterior repair on a rural Alberta home — eaves and weather-side trim restored."
-                loading="eager"
-                decoding="async"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        }
       />
 
       {/* § I — Common needs (2x2 bento) */}
@@ -88,7 +66,6 @@ const ExteriorFinishing = () => {
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <SectionHeader
                 id="needs-heading"
-                eyebrow="What the work covers"
                 title="Four kinds of exterior work, handled with one standard."
                 titleWidth="wide"
                 bottomGap="none"
@@ -147,51 +124,21 @@ const ExteriorFinishing = () => {
                   </li>
                 ))}
               </ol>
+              <p className={cn(BODY.standard, "mt-7 italic text-foreground/75 max-w-[58ch]")}>
+                We work around the land, animals, and family routines — and leave the property the way we found it, minus the work that needed doing.
+              </p>
             </div>
           </div>
         </Container>
       </RevealSection>
 
-      {/* § III — Property respect (bento) */}
-      <RevealSection id="respect" aria-labelledby="respect-heading" className={SECTION_PADDING.standard}>
-        <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <SectionHeader
-                id="respect-heading"
-                eyebrow="What we protect"
-                title="We work around what the property already is."
-                lede="A rural exterior job touches more than the building. We leave the property the way we found it — minus the work that needed doing."
-                titleWidth="wide"
-                bottomGap="none"
-              />
-            </div>
-          </div>
-
-          <BentoGrid layout="auto">
-            {RESPECT.map((r, i) => (
-              <div key={r} data-reveal style={{ ["--reveal-delay" as string]: `${180 + i * 80}ms` }} className="h-full">
-                <BentoTile title={r} compact />
-              </div>
-            ))}
-          </BentoGrid>
-        </Container>
-      </RevealSection>
-
-      {/* § IV — Project proof */}
+      {/* § III — Project proof */}
       {proof && (
         <RevealSection id="proof" aria-labelledby="proof-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
           <Container size="wide">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
-              <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <SectionHeader
-                  id="proof-heading"
-                  eyebrow="Project proof"
-                  title="Stewardship on a Rocky View acreage."
-                  bottomGap="none"
-                />
-              </div>
-            </div>
+            <h2 id="proof-heading" className={cn(EYEBROW.standard, "mb-8")} data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+              Recent work
+            </h2>
 
             <PremiumCard className="overflow-hidden" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
               <div className="grid grid-cols-1 lg:grid-cols-12">

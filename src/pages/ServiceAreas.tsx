@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
-import { cn } from "@/lib/utils";
+
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
@@ -100,22 +100,6 @@ const ServiceAreas = () => {
         </Container>
       </RevealSection>
 
-      {/* § II — Rural fit */}
-      <RevealSection id="fit" aria-labelledby="fit-heading" className={cn(SECTION, "section-wash cv-auto")}>
-        <Container size="wide">
-          <div className="max-w-3xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <SectionHeader
-              id="fit-heading"
-              eyebrow="Built for rural service"
-              title="Rural property work has its own logic. We plan around it."
-              lede="Suburban contracting habits don't transfer cleanly to acreages. The distances are longer, the seasons matter more, and the property is part of the day's work — not just the location."
-              align="center"
-              titleWidth="wide"
-              bottomGap="none"
-            />
-          </div>
-        </Container>
-      </RevealSection>
 
       <BigCloseCTA
         variant="compact"

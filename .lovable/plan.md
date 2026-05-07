@@ -1,76 +1,72 @@
-## Why another pass
+# Quiet-down Pass — Round 2
 
-The home page is now calm, but the supporting pages still wear the old "editorial magazine" costume the questionnaire forbids:
+The structural cleanup is done (no more Plate/Edition/Roman numerals, no testimonials, ServicesGrid in place). What's still "busy" is **section chrome density** and **decorative typography**. FlexServices reads calm because each section has one job, one visible label, one heading, one body. Haven Creek currently stacks Eyebrow + SectionHeader.eyebrow + lede + pull-quote + bento + InfoCards on the same page repeatedly. This pass removes that.
 
-- `Services`, `Work`, `AreaPage`, `About`, `ThankYou`, `Contact` still render numeral discs, "HC" monograms, "Plate IV / V / VI", "Detail 01 · Scope / 02 · Challenge / 03 · Result / 04 · Why" grids, and the same "Cory replies within two business days" line shown twice on the same screen.
-- `SelectedWorks.tsx`, `ServicePlate.tsx`, and `ProjectPlaceholder.tsx` still ship Roman-numeral overlays, and `SelectedWorks` is fully orphaned (zero imports).
-- `index.css` still carries `.numeral-disc`, `.card-monogram`, `.coord-mark`, `.numeral-mark`, `plate-fade`, etc. that the cleanup leaves dangling.
+Nothing here contradicts the questionnaire — still no testimonials, still property-respect, still 3 services + 4 areas, still "two business days," still "Get a Free Quote."
 
-The fix is mechanical: title-only rows, real photography or plain cards, and one promise per page.
+## What changes (page-by-page)
 
-## What changes (file by file)
+### Home (`Index.tsx`)
+- No structural change. (Hero → ServicesGrid → HowItGoes → Areas → BigClose stays.)
+- Tighten Areas bento intro: drop the "Where we work" eyebrow (the title "Local, by choice." plus the postal-code chips are enough of a signal).
 
-**Home (`src/pages/Index.tsx`)**
-- Drop the two-card "Trust strip" (`Reply 2 days` / `Areas served 4`). Both facts already live in Hero copy + footer + service-area bento. Section flow becomes: Hero → ServicesGrid → HowItGoes → Areas → BigCloseCTA. (Update `src/lib/pageSections.ts` to remove `#trust-strip` if listed.)
+### Hero (`Hero.tsx`)
+- Remove the small "Haven Creek · Rural Alberta" eyebrow above the H1 — the logo already brands the page; this just adds noise.
+- Remove the hand-drawn SVG underline under "trusted." Keep the italic evergreen word — that's the entire decoration budget.
+- "Trusted in" line: drop the dual-typeface "TRUSTED IN" sans label + italic serif. Replace with one calm serif sentence: *"Working across Bragg Creek, Rocky View County, Bearspaw, and Water Valley."* Each area still links.
+- Result: Hero shows H1 + subhead + 2 CTAs + one quiet trust line. Photo + drift untouched.
 
-**Services (`src/pages/Services.tsx`)**
-- Replace the bespoke "ServicePlate + featured card" rendering with the same `ServicesGrid` layout used on Home (3 photo cards, side-by-side). Keep the §II "Pricing is custom" prose block. Remove the `import ServicePlate` line.
-- Update the page intro: `eyebrow="What we build"`, `title="Three services. One standard."` (drop "In order of where the craft shows most.").
+### Service detail pages (`InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`)
+The hero photo plate inside `bezel-shell` is a second hero competing with the H1. Each detail page also runs 3–4 sectionheaders with eyebrow+title+lede before the project-proof card.
 
-**Work (`src/pages/Work.tsx` + `src/data/galleryPlates.ts` + `src/components/gallery/ProjectPlaceholder.tsx`)**
-- Remove `romanNumeral` from `galleryPlates` data entirely.
-- Update `ProjectPlaceholder` to stop rendering the Roman numeral overlay; show only the photograph (or a calm fallback tile when `photoSrc` is absent — title + area, no numerals, no `Fig.` text).
-- In `Work.tsx`, drop the `romanNumeral` prop from the `<ProjectPlaceholder>` call.
-- Filter rail stays; copy is fine.
+- **Remove `vignette` from SubPageHero on all three service pages.** Hero becomes type-led + CTAs. The subsequent `PremiumCard` proof block already carries the photography.
+- **Drop redundant section eyebrows** when the title is self-explanatory:
+  - InteriorFinishing §I: keep title "Interior finishing is the work that holds the rest together." — drop "What the work covers" eyebrow and the italic pull-quote ("This is the part you see and feel every day...").
+  - ExteriorFinishing §I: drop "What the work covers" eyebrow. §II keeps "Rural considerations" (it's load-bearing). §III "Property respect" — fold into §II as a final two-line note instead of its own bento section. Removes one full screen of repeated grid pattern.
+  - Decking §I: drop "How we plan a deck" eyebrow. §III "Materials & scope" loses the bento of one-word chips ("New deck builds", "Multi-tier…") — those are scope items, not feature cards. Convert to a quiet two-column list under the §I planning trio. Removes one full section.
+- **Project-proof block**: drop the standalone SectionHeader above the `PremiumCard` ("A recent interior, finished as it should be." / "Stewardship on a Rocky View acreage." / "A wraparound deck on a Bearspaw property."). The proof card already names project + area + scope. Replace with a single quiet eyebrow row above the card: `RECENT WORK`.
 
-**Area page (`src/components/AreaPage.tsx`)**
-- Remove `<span className="card-monogram">HC</span>` and `<span className="coord-mark">Three services</span>`.
-- In the "How we serve here" cards: drop `<span className="numeral-disc">{s.numeral}</span>` and the adjacent expanding rule. Title + promise + body + ghost link only.
+### Services index (`Services.tsx`)
+- §II "Pricing is custom because the work is." — keep, but trim. Drop the italic-serif "Every quote includes…" line (it competes with the BigClose CTA below).
 
-**About (`src/pages/About.tsx`)**
-- Property-respect list: remove the absolute-positioned `numeral-disc` badge; render as a clean `<dl>` or stripped `<ol>` with title + body, divider line between rows. Reads like FlexServices' principles list.
+### About (`About.tsx`)
+- §I Working philosophy: remove the entire pull-quote panel ("The experience of quality. The quality of experience." + "— The work, in one line."). It reads as a tagline shrine. Replace with a single SectionHeader on the left ("Working philosophy" eyebrow + "Held to two standards.") and the existing 2-paragraph body on the right. Cleaner, same content.
 
-**ThankYou (`src/pages/ThankYou.tsx`)**
-- "While you wait" cards: drop the `numeral-disc 01/02` badge. Card title + body + "Open" arrow only.
+### ServiceAreas (`ServiceAreas.tsx`)
+- Drop §II "Rural fit" entirely — it's a filler section (one centred SectionHeader, no list, no card). The roster + BigClose are enough.
 
-**Contact (`src/pages/Contact.tsx`)**
-- Direct-contact rows: remove the `numeral-mark 01 / 02` glyphs. Two clean baseline rows (label left, EMAIL/PHONE right) — same restraint as the area roster on `ServiceAreas.tsx`.
+### Contact (`Contact.tsx`)
+- Drop the italic pull-quote on the sticky left rail ("The beginning of a relationship — not a sales trap."). The hero subhead already says this. Left rail keeps SectionHeader only.
 
-**Service detail pages (`InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`)**
-- Project-proof card: replace the 4-cell `01 · Scope / 02 · Challenge / 03 · Result / 04 · Why it mattered` grid with a quieter labelled list — eyebrow = the label only ("Scope", "Challenge", "Result", "Why it mattered"), no leading "0N ·". Memory rule: title-only on detail rows.
-- Drop the `lede="Cory replies within two business days."` prop on `BigCloseCTA` calls (the component already defaults to that exact line — passing it just re-states the same constraint and risks the "twice on one page" rule the next time the default changes).
+### ThankYou (`ThankYou.tsx`)
+- Collapse §II "While you wait" two-card grid and §III italic sign-off into one quieter footer block: a single line *"While you wait — see the work or browse services."* with two text links. Removes a full PremiumCard grid section that adds visual weight to a confirmation page.
+- Keep the receipt stamp + "What happens next" ordered list — those are the page's job.
 
-**Service Areas (`src/pages/ServiceAreas.tsx`) and About**
-- Same `lede` cleanup on their `BigCloseCTA` calls.
+### Components touched (no new files)
+- `Hero.tsx` — strip eyebrow, SVG underline, hybrid trust line
+- `SubPageHero` usage — pass no `vignette` on the three service pages
+- `Index.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`, `Services.tsx`, `About.tsx`, `ServiceAreas.tsx`, `Contact.tsx`, `ThankYou.tsx` — content/structure trims as above
+- No deletions, no new components, no schema/route changes
 
-**Dead code removal**
-- Delete `src/components/gallery/SelectedWorks.tsx` (zero imports).
-- Delete `src/components/gallery/ServicePlate.tsx` once `Services.tsx` stops using it.
-- (Keep `ProjectPlaceholder.tsx` — still used by `Work.tsx`.)
+## What does NOT change
+- Three services, four service areas, all routes, all CTAs, "Get a Free Quote" wording
+- Two-business-days promise (kept where the rules allow)
+- ServicesGrid layout, HowItGoes, BigCloseCTA structure
+- Navigation, drawer, section rail, footer
+- Photography assets, color tokens, typography scale
+- Memory rules — none broken
 
-**CSS cleanup (`src/index.css`)**
-Remove the now-dead utility classes and their dark-mode disables:
-- `.numeral-disc` (and `.numeral-disc-survey` variants)
-- `.numeral-mark`
-- `.card-monogram`
-- `.coord-mark`, `.coord-mark-light`
-- `plate-fade` keyframes if only `SelectedWorks` used them
-- Stale comments referencing "Plate", "Fig.", "Section No."
+## Memory updates
+Add one new constraint after the pass:
 
-**Memory**
-- Append a new core rule: *"Detail rows on service pages use the label as the entire eyebrow — never `01 · Label`."* (Already implied by the `no-editorial-cosplay` constraint memory; promote to Core for visibility.)
+> Service-detail SubPageHero is type-only — never pass `vignette`. Photography lives in the proof block lower down.
 
-## Out of scope (do not touch this turn)
+And:
 
-- Hero animation, navigation, drawer, route fade, ConsultationForm wizard — all already locked-in by memory.
-- Photography swaps — current images stay.
-- Gallery filter behaviour and copy.
+> Sections render either an eyebrow OR a body lede, never both unless the eyebrow names a different category from the title.
 
-## Acceptance check (visual QA after build)
-
-1. Search the rendered DOM for "Plate", "Fig.", "Section No.", "0N ·", "HC" monogram — zero hits.
-2. No page renders the words "Cory replies within two business days" more than once.
-3. Home, Services, Work, ServiceAreas, About, Thank You, Contact, and the three service-detail pages all close with `BigCloseCTA` and contain no numbered discs anywhere in body content.
-4. `rg "numeral-disc|card-monogram|coord-mark|numeral-mark|romanNumeral"` returns nothing in `src/`.
-
-Approve and I will execute in one pass.
+## Acceptance check
+- Each route, scrolled top-to-bottom, has ≥1 fewer "section with eyebrow + title + lede + grid" repetition than today
+- No service-detail page shows two hero-scale photos (vignette + proof)
+- About page has no standalone tagline panel
+- ThankYou page is one continuous calm column, not three carded sections

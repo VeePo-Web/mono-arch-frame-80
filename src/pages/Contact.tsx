@@ -66,9 +66,6 @@ const Contact = () => {
                 lede="Within two business days, from Cory directly."
                 bottomGap="none"
               />
-              <p className="mt-10 font-serif italic text-foreground/75 text-[1.05rem] max-w-md">
-                "The beginning of a relationship — not a sales trap."
-              </p>
             </div>
 
             {/* Right column — form, then direct-contact panel below */}

@@ -88,7 +88,6 @@ const Index = () => {
           <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
             <SectionHeader
               id="areas-heading"
-              eyebrow="Where we work"
               title="Local, by choice."
               lede="Four communities. Each one different in pace, exposure, and the kind of property care it asks for."
               titleWidth="none"
