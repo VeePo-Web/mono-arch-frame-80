@@ -1,13 +1,11 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import { useSeo } from "@/hooks/useSeo";
 import { PROJECT_TYPES } from "@/lib/validation/consultation";
 
-const SECTION = "py-14 md:py-28";
 
 interface ThankYouState {
   name?: string;
@@ -116,41 +114,7 @@ const ThankYou = () => {
         </RevealSection>
       )}
 
-      {/* § I — What happens next */}
-      <RevealSection aria-labelledby="next-heading" className={SECTION}>
-        <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
-            <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="WHAT HAPPENS NEXT" />
-              <h2 id="next-heading" className="text-headline text-foreground mt-6 max-w-[20ch]">
-                A calm follow-up, on our end.
-              </h2>
-              {projectLabel && (
-                <p className="thread-tag mt-5">Re: {projectLabel}. We'll come prepared.</p>
-              )}
-            </div>
-            <div className="lg:col-span-7 lg:pl-8">
-              <ol className="divide-y divide-border/60 border-y border-border/60">
-                {[
-                  { title: "We read your note", body: "Carefully — not at the bottom of an automated queue." },
-                  { title: "We reply", body: "Within two business days, with honest questions and a clear next step." },
-                  { title: "We walk it through", body: "On the property if it makes sense, or by phone if that's easier." },
-                ].map((step, i) => (
-                  <li
-                    key={step.title}
-                    className="py-7 lg:py-8"
-                    data-reveal
-                    style={{ ["--reveal-delay" as string]: `${300 + i * 140}ms` }}
-                  >
-                    <h3 className="text-title text-foreground">{step.title}</h3>
-                    <p className="mt-3 text-body text-muted-foreground max-w-[52ch]">{step.body}</p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        </Container>
-      </RevealSection>
+      {/* §I 3-step list retired — the hero subhead already promises the reply window. */}
 
       {/* § II — Quiet sign-off + while-you-wait links */}
       <RevealSection className="py-16 md:py-24">

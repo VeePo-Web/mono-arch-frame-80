@@ -1,72 +1,71 @@
-# Quiet-down Pass — Round 2
+## Cleanup pass — round 8 ("less to navigate")
 
-The structural cleanup is done (no more Plate/Edition/Roman numerals, no testimonials, ServicesGrid in place). What's still "busy" is **section chrome density** and **decorative typography**. FlexServices reads calm because each section has one job, one visible label, one heading, one body. Haven Creek currently stacks Eyebrow + SectionHeader.eyebrow + lede + pull-quote + bento + InfoCards on the same page repeatedly. This pass removes that.
+The reference (`FlexServices.Org`) wins on **one feeling**: every screen has one job, and the eye never has to choose between three competing CTAs or two overlapping headers. Our site has already been trimmed twice, but a survey shows seven remaining sources of "noise" that are still making it feel busier than the reference. None of these touch the questionnaire's content rules (no testimonials, no industry jargon, two-business-day promise, three-field lead form, etc.) — they're all structural and visual.
 
-Nothing here contradicts the questionnaire — still no testimonials, still property-respect, still 3 services + 4 areas, still "two business days," still "Get a Free Quote."
+---
 
-## What changes (page-by-page)
+### 1. Hero — drop the third paragraph
 
-### Home (`Index.tsx`)
-- No structural change. (Hero → ServicesGrid → HowItGoes → Areas → BigClose stays.)
-- Tighten Areas bento intro: drop the "Where we work" eyebrow (the title "Local, by choice." plus the postal-code chips are enough of a signal).
+Currently the hero stacks: H1 → subhead → CTA pair → italic "Working across Bragg Creek, Rocky View County, Bearspaw, and Water Valley." line. That italic sentence repeats what the Areas bento says lower on the page and competes with the CTAs for the first eye-fix.
 
-### Hero (`Hero.tsx`)
-- Remove the small "Haven Creek · Rural Alberta" eyebrow above the H1 — the logo already brands the page; this just adds noise.
-- Remove the hand-drawn SVG underline under "trusted." Keep the italic evergreen word — that's the entire decoration budget.
-- "Trusted in" line: drop the dual-typeface "TRUSTED IN" sans label + italic serif. Replace with one calm serif sentence: *"Working across Bragg Creek, Rocky View County, Bearspaw, and Water Valley."* Each area still links.
-- Result: Hero shows H1 + subhead + 2 CTAs + one quiet trust line. Photo + drift untouched.
+**Action:** Remove the italic "Working across…" sentence from `Hero.tsx`. The areas already render in their own §IV.
 
-### Service detail pages (`InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`)
-The hero photo plate inside `bezel-shell` is a second hero competing with the H1. Each detail page also runs 3–4 sectionheaders with eyebrow+title+lede before the project-proof card.
+### 2. Sub-page heroes — one CTA, not two
 
-- **Remove `vignette` from SubPageHero on all three service pages.** Hero becomes type-led + CTAs. The subsequent `PremiumCard` proof block already carries the photography.
-- **Drop redundant section eyebrows** when the title is self-explanatory:
-  - InteriorFinishing §I: keep title "Interior finishing is the work that holds the rest together." — drop "What the work covers" eyebrow and the italic pull-quote ("This is the part you see and feel every day...").
-  - ExteriorFinishing §I: drop "What the work covers" eyebrow. §II keeps "Rural considerations" (it's load-bearing). §III "Property respect" — fold into §II as a final two-line note instead of its own bento section. Removes one full screen of repeated grid pattern.
-  - Decking §I: drop "How we plan a deck" eyebrow. §III "Materials & scope" loses the bento of one-word chips ("New deck builds", "Multi-tier…") — those are scope items, not feature cards. Convert to a quiet two-column list under the §I planning trio. Removes one full section.
-- **Project-proof block**: drop the standalone SectionHeader above the `PremiumCard` ("A recent interior, finished as it should be." / "Stewardship on a Rocky View acreage." / "A wraparound deck on a Bearspaw property."). The proof card already names project + area + scope. Replace with a single quiet eyebrow row above the card: `RECENT WORK`.
+`SubPageHero` is rendering both `primaryCta` (Get a Free Quote) and `secondaryCta` (See the work / Our services / Browse services) on every detail page. Two heavy buttons under every page title is the single biggest source of "lots going on." The nav already exposes a permanent Quote button.
 
-### Services index (`Services.tsx`)
-- §II "Pricing is custom because the work is." — keep, but trim. Drop the italic-serif "Every quote includes…" line (it competes with the BigClose CTA below).
+**Action:** Stop passing `secondaryCta` from `Services.tsx`, `About.tsx`, `Work.tsx`, `ServiceAreas.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`. Keep one primary CTA per hero (and none on Contact / ThankYou — already correct).
 
-### About (`About.tsx`)
-- §I Working philosophy: remove the entire pull-quote panel ("The experience of quality. The quality of experience." + "— The work, in one line."). It reads as a tagline shrine. Replace with a single SectionHeader on the left ("Working philosophy" eyebrow + "Held to two standards.") and the existing 2-paragraph body on the right. Cleaner, same content.
+### 3. HowItGoes — drop the `01 / 02 / 03` italic numerals
 
-### ServiceAreas (`ServiceAreas.tsx`)
-- Drop §II "Rural fit" entirely — it's a filler section (one centred SectionHeader, no list, no card). The roster + BigClose are enough.
+Memory rule (now site-wide): "All numbered ordered-list rows render label-only — never `01 ·` prefixes." HowItGoes still paints italic `01`, `02`, `03` numerals in a left column. They're the last surviving numeral chrome on the site.
 
-### Contact (`Contact.tsx`)
-- Drop the italic pull-quote on the sticky left rail ("The beginning of a relationship — not a sales trap."). The hero subhead already says this. Left rail keeps SectionHeader only.
+**Action:** Remove the numeral column from `HowItGoes.tsx`. Each row becomes title + body, separated by the existing rule line.
 
-### ThankYou (`ThankYou.tsx`)
-- Collapse §II "While you wait" two-card grid and §III italic sign-off into one quieter footer block: a single line *"While you wait — see the work or browse services."* with two text links. Removes a full PremiumCard grid section that adds visual weight to a confirmation page.
-- Keep the receipt stamp + "What happens next" ordered list — those are the page's job.
+### 4. Areas bento — drop the postal-code eyebrow
 
-### Components touched (no new files)
-- `Hero.tsx` — strip eyebrow, SVG underline, hybrid trust line
-- `SubPageHero` usage — pass no `vignette` on the three service pages
-- `Index.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`, `Services.tsx`, `About.tsx`, `ServiceAreas.tsx`, `Contact.tsx`, `ThankYou.tsx` — content/structure trims as above
-- No deletions, no new components, no schema/route changes
+`Index.tsx` passes `eyebrow={AREA_POSTAL[area.slug]}` (e.g. `T0L`, `T3R`) into each BentoTile. Postal-code chrome is the same "look-at-our-system" tic that Plate-N / Edition was. Real homeowners don't think in FSAs.
 
-## What does NOT change
-- Three services, four service areas, all routes, all CTAs, "Get a Free Quote" wording
-- Two-business-days promise (kept where the rules allow)
-- ServicesGrid layout, HowItGoes, BigCloseCTA structure
-- Navigation, drawer, section rail, footer
-- Photography assets, color tokens, typography scale
-- Memory rules — none broken
+**Action:** Drop the `eyebrow` prop on the four BentoTiles in `Index.tsx`. Title + body line is enough. Delete the `AREA_POSTAL` map. Same edit on `ServiceAreas.tsx` — remove the `T0L` chip from the right side of each row.
 
-## Memory updates
-Add one new constraint after the pass:
+### 5. Service-detail proof blocks — collapse the 4-cell grid
 
-> Service-detail SubPageHero is type-only — never pass `vignette`. Photography lives in the proof block lower down.
+InteriorFinishing / ExteriorFinishing / Decking each render a "Recent work" block with a photo half and a 2×2 grid of Scope / Challenge / Result / Why-it-mattered cells. Four eyebrowed cells under a card title is dense and reads like a spec sheet.
 
-And:
+**Action:** In all three detail pages, replace the 2×2 grid with two short stacked paragraphs:
+- A scope+challenge sentence ("`{scope}` `{challenge}`")
+- An italic "why it mattered" sentence
 
-> Sections render either an eyebrow OR a body lede, never both unless the eyebrow names a different category from the title.
+Drop the four `<p>EYEBROW</p>` labels.
 
-## Acceptance check
-- Each route, scrolled top-to-bottom, has ≥1 fewer "section with eyebrow + title + lede + grid" repetition than today
-- No service-detail page shows two hero-scale photos (vignette + proof)
-- About page has no standalone tagline panel
-- ThankYou page is one continuous calm column, not three carded sections
+### 6. Services page — make it actually different from Home
+
+`Services.tsx` is currently: SubPageHero → `<ServicesGrid>` (identical to Home) → "Pricing is custom" blurb → CTA. So a visitor who clicks "Services" sees the same three cards they just left. The page needs to add value, not duplicate it.
+
+**Action:** On `Services.tsx`, replace the duplicated `<ServicesGrid>` with a tighter "service rail" — three full-width rows (no photo, just title + promise + scope-bullets + arrow link). The photo cards stay on Home; Services becomes the deeper read with full scope per service.
+
+### 7. ThankYou — fold the "what happens next" list into the hero
+
+ThankYou currently runs SubPageHero → receipt stamp → "What happens next" 3-step list → quiet sign-off. Three sequential blocks for a confirmation page is one too many; FlexServices's confirmation pattern is hero + one line.
+
+**Action:** Remove §I "A calm follow-up" 3-step list from `ThankYou.tsx`. The hero's subhead ("We respond within two business days…") already says it. Keep the receipt stamp (it's the proof) and the quiet sign-off.
+
+---
+
+### Memory updates
+
+- Add a Core line: **"Sub-page heroes carry exactly one CTA — the primary 'Get a Free Quote'. The secondary CTA slot is retired."**
+- Add a Core line: **"No postal codes / FSA chips in UI. Areas are named, not coded."**
+- Add a Core line: **"HowItGoes (and any future ordered process) is title + body only — no numeral column."**
+
+### Out of scope (intentionally)
+
+- No nav, drawer, or section-rail changes — that surface is in good shape after round 7.
+- No copy rewrites beyond the deletions above.
+- No new components. Everything is an in-place trim.
+
+---
+
+### Files touched
+
+`src/components/Hero.tsx`, `src/components/HowItGoes.tsx`, `src/pages/Index.tsx`, `src/pages/Services.tsx`, `src/pages/About.tsx`, `src/pages/Work.tsx`, `src/pages/ServiceAreas.tsx`, `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/Decking.tsx`, `src/pages/ThankYou.tsx`, `mem://index.md`.

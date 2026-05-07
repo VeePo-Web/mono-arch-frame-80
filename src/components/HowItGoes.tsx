@@ -59,14 +59,8 @@ const HowItGoes = () => {
               key={step.n}
               data-reveal
               style={{ ["--reveal-delay" as string]: `${180 + i * 110}ms` }}
-              className="group/row grid grid-cols-[3.25rem_1fr] md:grid-cols-[4rem_minmax(0,16rem)_1fr] items-start gap-5 md:gap-8 py-7 md:py-9 border-b border-evergreen/15 transition-colors duration-500 hover:bg-evergreen/[0.025]"
+              className="group/row grid grid-cols-1 md:grid-cols-[minmax(0,16rem)_1fr] items-start gap-3 md:gap-8 py-7 md:py-9 border-b border-evergreen/15 transition-colors duration-500 hover:bg-evergreen/[0.025]"
             >
-              <span
-                aria-hidden="true"
-                className="font-serif italic text-evergreen/70 text-2xl md:text-3xl tabular-nums leading-none pt-1 transition-colors duration-500 group-hover/row:text-evergreen"
-              >
-                {step.n}
-              </span>
               <h3
                 className={cn(
                   HEADLINE.subsection,
@@ -75,14 +69,7 @@ const HowItGoes = () => {
               >
                 {step.t}
               </h3>
-              <p
-                className={cn(
-                  BODY.standard,
-                  "max-w-[58ch] col-span-2 md:col-span-1",
-                )}
-              >
-                {step.b}
-              </p>
+              <p className={cn(BODY.standard, "max-w-[58ch]")}>{step.b}</p>
             </li>
           ))}
         </ol>

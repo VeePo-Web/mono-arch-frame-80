@@ -44,7 +44,6 @@ const About = () => {
         accentWord="hands-on"
         subhead="Haven Creek was built for homeowners who want a more personal, less scattered way to improve the property they care about."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
-        secondaryCta={{ to: "/work", label: "See the work" }}
       />
 
       {/* § I — Working philosophy */}

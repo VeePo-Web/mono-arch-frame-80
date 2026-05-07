@@ -55,8 +55,7 @@ const ExteriorFinishing = () => {
         headline="Practical protection for the property you keep."
         accentWord="protection"
         subhead="Repairs, finishing, and weather-facing detail work that respects the home and the land around it. Built for prairie exposure and a long horizon."
-        primaryCta={{ to: "/contact", label: "Get a Quote" }}
-        secondaryCta={{ to: "/work", label: "See the work" }}
+        primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
       />
 
       {/* § I — Common needs (2x2 bento) */}
@@ -156,19 +155,12 @@ const ExteriorFinishing = () => {
                     {proof.category} · {proof.area}
                   </p>
                   <h3 className={cn(HEADLINE.subsection, "text-foreground")}>{proof.title}</h3>
-                  <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {[
-                      { label: "Scope", body: proof.scope },
-                      { label: "Challenge", body: proof.challenge },
-                      { label: "Result", body: proof.result },
-                      { label: "Why it mattered", body: proof.whyItMattered, italic: true },
-                    ].map((row) => (
-                      <div key={row.label}>
-                        <p className={cn(EYEBROW.standard, "mb-2")}>{row.label}</p>
-                        <p className={cn(BODY.card, row.italic && "italic")}>{row.body}</p>
-                      </div>
-                    ))}
-                  </div>
+                  <p className={cn(BODY.card, "mt-6 max-w-[58ch]")}>
+                    {proof.scope} {proof.challenge} {proof.result}
+                  </p>
+                  <p className={cn(BODY.card, "mt-5 italic text-foreground/85 border-l-2 border-evergreen/35 pl-4 max-w-[58ch]")}>
+                    {proof.whyItMattered}
+                  </p>
                   <Link
                     to="/work"
                     className="group/ghost mt-8 inline-flex items-center gap-3 text-foreground/85 hover:text-evergreen transition-colors duration-500"
