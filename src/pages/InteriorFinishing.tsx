@@ -66,19 +66,6 @@ const InteriorFinishing = () => {
         subhead="The visible part of the work — the part you'll see and feel every day. Detail, fit, and the small resolutions that decide whether a renovation reads as complete."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        vignette={
-          <div className="bezel-shell">
-            <div className="bezel-core relative aspect-[3/4] overflow-hidden">
-              <img
-                src={photography.serviceInterior}
-                alt="Interior finishing — trim and transition detail in a rural home."
-                loading="eager"
-                decoding="async"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        }
       />
 
       {/* § I — What it means + craft details */}
@@ -88,14 +75,10 @@ const InteriorFinishing = () => {
             <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <SectionHeader
                 id="meaning-heading"
-                eyebrow="What the work covers"
                 title="Interior finishing is the work that holds the rest together."
                 lede="It's the part of a renovation that decides whether a room feels resolved or merely complete. Trim that lands where it should. Transitions that don't fight one another. Built-ins that sit against the wall the way they were drawn."
                 bottomGap="none"
               />
-              <p className={cn(BODY.quote, "mt-7 max-w-[44ch] italic")}>
-                This is the part you see and feel every day. It either rewards a closer look, or it doesn't.
-              </p>
             </div>
           </div>
 
