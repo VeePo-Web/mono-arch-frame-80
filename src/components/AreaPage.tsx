@@ -152,7 +152,7 @@ const AreaPage = ({
       <RevealSection aria-labelledby="services-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-14 md:mb-20 items-end">
-            <div className="lg:col-span-9" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+            <div className="lg:col-span-12" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <SectionHeader
                 id="services-heading"
                 eyebrow="How we serve here"
@@ -160,9 +160,6 @@ const AreaPage = ({
                 titleWidth="wide"
                 bottomGap="none"
               />
-            </div>
-            <div className="lg:col-span-3 hidden lg:flex justify-end" data-reveal style={{ ["--reveal-delay" as string]: "120ms" }}>
-              <span className="coord-mark">Three services</span>
             </div>
           </div>
 
@@ -178,21 +175,16 @@ const AreaPage = ({
               >
                 <PremiumCard featured={i === 0} className="h-full">
                   <div className="relative p-8 lg:p-10 flex flex-col h-full">
-                    <span className="card-monogram" aria-hidden="true">HC</span>
-                    <div className="flex items-center gap-4 mb-7">
-                      <span className="numeral-disc">{s.numeral}</span>
-                      <span className="h-px w-8 bg-evergreen/30 group-hover:w-20 transition-all duration-700 ease-weighted" />
-                    </div>
                     <h3 className="text-title text-foreground group-hover:text-evergreen transition-colors duration-500">
                       {s.title}
                     </h3>
                     <p className="mt-3 text-subhead text-foreground/70 text-[1.02rem]">
                       {s.promise}
                     </p>
-                    <p className="mt-5 text-body text-muted-foreground  leading-relaxed flex-1">
+                    <p className="mt-5 text-body text-muted-foreground leading-relaxed flex-1">
                       {s.cardBody}
                     </p>
-                    <p className="mt-6 pl-4 border-l-2 border-evergreen/30 text-body text-foreground/75 italic  leading-relaxed">
+                    <p className="mt-6 pl-4 border-l-2 border-evergreen/30 text-body text-foreground/75 italic leading-relaxed">
                       {serviceLines[s.slug]}
                     </p>
                     <div className="mt-6 inline-flex items-center gap-3 text-minimal text-evergreen">
@@ -264,7 +256,6 @@ const AreaPage = ({
       <BigCloseCTA
         variant="compact"
         heading={closingHeading}
-        lede="Cory replies within two business days."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/service-areas", label: "All service areas" }}
       />

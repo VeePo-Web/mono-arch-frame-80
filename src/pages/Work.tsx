@@ -171,7 +171,6 @@ const Work = () => {
                           title: p.title,
                           area: p.area,
                           category: p.category,
-                          romanNumeral: p.romanNumeral,
                         }}
                         index={i}
                         photoSrc={workPhotos[p.slug]}

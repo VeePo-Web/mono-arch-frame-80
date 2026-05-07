@@ -120,7 +120,6 @@ const ServiceAreas = () => {
       <BigCloseCTA
         variant="compact"
         heading="Tell us about the property and where it sits."
-        lede="Cory replies within two business days."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/work", label: "View Our Work" }}
       />
