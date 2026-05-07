@@ -214,13 +214,13 @@ const ExteriorFinishing = () => {
                   <h3 className={cn(HEADLINE.subsection, "text-foreground")}>{proof.title}</h3>
                   <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {[
-                      { n: "01", label: "Scope", body: proof.scope },
-                      { n: "02", label: "Challenge", body: proof.challenge },
-                      { n: "03", label: "Result", body: proof.result },
-                      { n: "04", label: "Why it mattered", body: proof.whyItMattered, italic: true },
+                      { label: "Scope", body: proof.scope },
+                      { label: "Challenge", body: proof.challenge },
+                      { label: "Result", body: proof.result },
+                      { label: "Why it mattered", body: proof.whyItMattered, italic: true },
                     ].map((row) => (
-                      <div key={row.n}>
-                        <p className={cn(EYEBROW.standard, "mb-2")}>{row.n} · {row.label}</p>
+                      <div key={row.label}>
+                        <p className={cn(EYEBROW.standard, "mb-2")}>{row.label}</p>
                         <p className={cn(BODY.card, row.italic && "italic")}>{row.body}</p>
                       </div>
                     ))}
@@ -242,7 +242,6 @@ const ExteriorFinishing = () => {
       <BigCloseCTA
         variant="compact"
         heading="A weather-side repair, a full-property refresh, or somewhere in between."
-        lede="Cory replies within two business days."
         primary={{ to: "/contact?service=exterior-finishing", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "All services" }}
       />

@@ -131,7 +131,7 @@ const Decking = () => {
           <BentoGrid layout="auto">
             {SCOPES.map((s, i) => (
               <div key={s} data-reveal style={{ ["--reveal-delay" as string]: `${180 + i * 80}ms` }} className="h-full">
-                <BentoTile eyebrow={String(i + 1).padStart(2, "0")} title={s} compact />
+                <BentoTile title={s} compact />
               </div>
             ))}
           </BentoGrid>
@@ -169,13 +169,13 @@ const Decking = () => {
                   <h3 className={cn(HEADLINE.subsection, "text-foreground")}>{proof.title}</h3>
                   <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {[
-                      { n: "01", label: "Scope", body: proof.scope },
-                      { n: "02", label: "Challenge", body: proof.challenge },
-                      { n: "03", label: "Result", body: proof.result },
-                      { n: "04", label: "Why it mattered", body: proof.whyItMattered, italic: true },
+                      { label: "Scope", body: proof.scope },
+                      { label: "Challenge", body: proof.challenge },
+                      { label: "Result", body: proof.result },
+                      { label: "Why it mattered", body: proof.whyItMattered, italic: true },
                     ].map((row) => (
-                      <div key={row.n}>
-                        <p className={cn(EYEBROW.standard, "mb-2")}>{row.n} · {row.label}</p>
+                      <div key={row.label}>
+                        <p className={cn(EYEBROW.standard, "mb-2")}>{row.label}</p>
                         <p className={cn(BODY.card, row.italic && "italic")}>{row.body}</p>
                       </div>
                     ))}
@@ -197,7 +197,6 @@ const Decking = () => {
       <BigCloseCTA
         variant="compact"
         heading="A new deck, a rebuild, or something planned for next season."
-        lede="Cory replies within two business days."
         primary={{ to: "/contact?service=decking", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "All services" }}
       />
