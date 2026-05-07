@@ -55,8 +55,7 @@ const ExteriorFinishing = () => {
         headline="Practical protection for the property you keep."
         accentWord="protection"
         subhead="Repairs, finishing, and weather-facing detail work that respects the home and the land around it. Built for prairie exposure and a long horizon."
-        primaryCta={{ to: "/contact", label: "Get a Quote" }}
-        secondaryCta={{ to: "/work", label: "See the work" }}
+        primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
       />
 
       {/* § I — Common needs (2x2 bento) */}

@@ -62,8 +62,7 @@ const Decking = () => {
         headline="Outdoor space that earns its place."
         accentWord="earns"
         subhead="A deck is a way to live better on the property. We plan it around how you actually use the back of your home — and build it to stay there."
-        primaryCta={{ to: "/contact", label: "Get a Quote" }}
-        secondaryCta={{ to: "/work", label: "See the work" }}
+        primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
       />
 
       {/* § I — Planning (3 InfoCards) */}
