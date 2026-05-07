@@ -64,19 +64,6 @@ const Decking = () => {
         subhead="A deck is a way to live better on the property. We plan it around how you actually use the back of your home — and build it to stay there."
         primaryCta={{ to: "/contact", label: "Get a Quote" }}
         secondaryCta={{ to: "/work", label: "See the work" }}
-        vignette={
-          <div className="bezel-shell">
-            <div className="bezel-core relative aspect-[3/4] overflow-hidden">
-              <img
-                src={photography.serviceDecking}
-                alt="A deck on a rural Alberta property — view across the lawn at golden hour."
-                loading="eager"
-                decoding="async"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        }
       />
 
       {/* § I — Planning (3 InfoCards) */}
