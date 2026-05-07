@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
+
 import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
