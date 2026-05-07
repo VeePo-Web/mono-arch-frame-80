@@ -12,14 +12,6 @@ import { useSeo } from "@/hooks/useSeo";
 import { SECTION_PADDING, CONTENT_GAP } from "@/lib/spacing";
 import { serviceAreas } from "@/data/serviceAreas";
 
-/** Postal-code prefixes for the four areas — drawn from Canada Post FSAs. */
-const AREA_POSTAL: Record<string, string> = {
-  "bragg-creek": "T0L",
-  "rocky-view-county": "T4A",
-  bearspaw: "T3R",
-  "water-valley": "T0M",
-};
-
 const AREA_BENTO_LINE: Record<string, string> = {
   "bragg-creek": "Wooded lots and quiet drives.",
   "rocky-view-county": "Acreages cared for over years.",
@@ -103,7 +95,6 @@ const Index = () => {
                 style={{ ["--reveal-delay" as string]: `${180 + i * 100}ms` }}
               >
                 <BentoTile
-                  eyebrow={AREA_POSTAL[area.slug]}
                   title={area.name}
                   body={AREA_BENTO_LINE[area.slug]}
                   to={area.href}

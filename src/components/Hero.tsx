@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import Container from "./Container";
 import { useDrift } from "@/hooks/useDrift";
-import { serviceAreas } from "@/data/serviceAreas";
 import { photography } from "@/assets/photography";
 
 /**
@@ -119,24 +118,6 @@ const Hero = () => {
               </Link>
             </div>
 
-            {/* Trusted-in line — single calm serif sentence */}
-            <p
-              className="mt-9 font-serif italic text-foreground/75 text-[0.98rem] leading-relaxed reveal-up max-w-[58ch]"
-              style={{ animationDelay: "740ms" }}
-            >
-              Working across{" "}
-              {serviceAreas.map((a, i) => (
-                <span key={a.slug}>
-                  <Link
-                    to={a.href}
-                    className="rounded-sm hover:text-evergreen focus-visible:outline-none focus-visible:underline focus-visible:decoration-evergreen focus-visible:underline-offset-4 focus-visible:text-evergreen transition-colors duration-300"
-                  >
-                    {a.name}
-                  </Link>
-                  {i < serviceAreas.length - 2 ? ", " : i === serviceAreas.length - 2 ? ", and " : "."}
-                </span>
-              ))}
-            </p>
           </div>
 
           {/* Mobile photo plate — single 16:10 image below H1 */}
