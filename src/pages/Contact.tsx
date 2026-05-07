@@ -109,11 +109,8 @@ const Contact = () => {
                       href={`mailto:${STUDIO_EMAIL}`}
                       className="contact-row group flex items-baseline justify-between gap-6 py-5"
                     >
-                      <span className="flex items-baseline gap-4">
-                        <span className="numeral-mark tabular-nums text-evergreen/70">01</span>
-                        <span className="font-serif text-[1.1rem] md:text-[1.2rem] text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
-                          {STUDIO_EMAIL}
-                        </span>
+                      <span className="font-serif text-[1.1rem] md:text-[1.2rem] text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2">
+                        {STUDIO_EMAIL}
                       </span>
                       <span className="text-minimal text-evergreen/65">EMAIL</span>
                     </a>
@@ -123,11 +120,8 @@ const Contact = () => {
                       href={`tel:${STUDIO_PHONE_TEL}`}
                       className="contact-row group flex items-baseline justify-between gap-6 py-5"
                     >
-                      <span className="flex items-baseline gap-4">
-                        <span className="numeral-mark tabular-nums text-evergreen/70">02</span>
-                        <span className="font-serif text-[1.1rem] md:text-[1.2rem] text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2 tabular-nums">
-                          {STUDIO_PHONE}
-                        </span>
+                      <span className="font-serif text-[1.1rem] md:text-[1.2rem] text-foreground transition-all duration-500 ease-swift group-hover:text-evergreen group-hover:translate-x-2 tabular-nums">
+                        {STUDIO_PHONE}
                       </span>
                       <span className="text-minimal text-evergreen/65">PHONE</span>
                     </a>

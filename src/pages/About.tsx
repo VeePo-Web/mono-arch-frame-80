@@ -93,15 +93,14 @@ const About = () => {
             </div>
 
             <div className="lg:col-span-7 lg:pl-8">
-              <ol className="space-y-12 lg:space-y-14">
+              <ol className="divide-y divide-border/60 border-y border-border/60">
                 {RESPECT.map((step, i) => (
                   <li
                     key={step.n}
-                    className="relative pl-14"
+                    className="py-8 lg:py-10"
                     data-reveal
-                    style={{ ["--reveal-delay" as string]: `${300 + i * 180}ms` }}
+                    style={{ ["--reveal-delay" as string]: `${300 + i * 140}ms` }}
                   >
-                    <span className="absolute left-0 top-1 numeral-disc">{step.n}</span>
                     <h3 className="text-title text-foreground">{step.title}</h3>
                     <p className="mt-3 text-body text-muted-foreground max-w-[58ch]">{step.body}</p>
                   </li>
@@ -117,7 +116,6 @@ const About = () => {
       <BigCloseCTA
         variant="compact"
         heading="Tell us about the property and what's on your mind."
-        lede="Cory replies within two business days."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
         secondary={{ to: "/services", label: "What we offer" }}
       />

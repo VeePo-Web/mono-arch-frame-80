@@ -186,8 +186,7 @@ const ThankYou = () => {
               >
                 <PremiumCard className="h-full">
                   <div className="p-6 lg:p-7 flex flex-col h-full">
-                    <span className="numeral-disc">{String(i + 1).padStart(2, "0")}</span>
-                    <h3 className="mt-6 font-serif text-[1.2rem] text-foreground group-hover:text-evergreen transition-colors duration-500">
+                    <h3 className="font-serif text-[1.2rem] text-foreground group-hover:text-evergreen transition-colors duration-500">
                       {link.title}
                     </h3>
                     <p className="mt-3 text-body text-muted-foreground text-[0.92rem] leading-relaxed flex-1">
