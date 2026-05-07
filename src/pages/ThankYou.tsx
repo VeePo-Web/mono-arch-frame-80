@@ -1,21 +1,13 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
-import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import Eyebrow from "@/components/Eyebrow";
-import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import { useSeo } from "@/hooks/useSeo";
 import { PROJECT_TYPES } from "@/lib/validation/consultation";
 
 const SECTION = "py-14 md:py-28";
-
-const NEXT_LINKS = [
-  { to: "/work", title: "Our Work", body: "Recent plates from rural properties." },
-  { to: "/services", title: "Services", body: "Three services, held to one standard." },
-];
 
 interface ThankYouState {
   name?: string;
