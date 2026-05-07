@@ -51,16 +51,17 @@ const About = () => {
       <RevealSection id="philosophy" aria-labelledby="philosophy-heading" className={SECTION}>
         <Container size="wide">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
-            <div className="lg:col-span-6" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <Eyebrow label="Working philosophy" />
-              <h2 id="philosophy-heading" className="sr-only">Working philosophy</h2>
-              <p className="pull-quote text-[1.5rem] md:text-[1.85rem] mt-7 leading-snug max-w-[22ch]">
-                &ldquo;The experience of quality. The quality of experience.&rdquo;
-              </p>
-              <p className="mt-6 text-minimal text-evergreen/70">— The work, in one line.</p>
+            <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+              <SectionHeader
+                id="philosophy-heading"
+                eyebrow="Working philosophy"
+                title="Held to two standards."
+                titleWidth="none"
+                bottomGap="none"
+              />
             </div>
 
-            <div className="lg:col-span-6 space-y-7" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
+            <div className="lg:col-span-7 space-y-7" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
               <p className="text-body text-foreground/85">
                 A finished renovation is judged twice. Once when it's done, and again every
                 day after. The first judgement is about quality — does the work fit, does
