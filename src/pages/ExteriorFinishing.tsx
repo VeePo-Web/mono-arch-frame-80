@@ -133,6 +133,9 @@ const ExteriorFinishing = () => {
                   </li>
                 ))}
               </ol>
+              <p className={cn(BODY.standard, "mt-7 italic text-foreground/75 max-w-[58ch]")}>
+                We work around the land, animals, and family routines — and leave the property the way we found it, minus the work that needed doing.
+              </p>
             </div>
           </div>
         </Container>
