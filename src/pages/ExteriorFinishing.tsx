@@ -25,15 +25,6 @@ const NEEDS = [
   { title: "Weather protection", body: "Sealing, flashing, and the small repairs that keep small failures from becoming big ones." },
 ];
 
-const RESPECT = [
-  "Land",
-  "Driveway access",
-  "Equipment management",
-  "Landscaping",
-  "Animals",
-  "Family routines",
-  "Privacy",
-];
 
 const ExteriorFinishing = () => {
   useSeo({
