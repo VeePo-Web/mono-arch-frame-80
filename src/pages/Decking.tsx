@@ -8,7 +8,7 @@ import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import InfoCard from "@/components/ui/InfoCard";
-import { BentoGrid, BentoTile } from "@/components/ui/BentoGrid";
+
 
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
