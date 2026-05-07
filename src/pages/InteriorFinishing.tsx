@@ -65,7 +65,6 @@ const InteriorFinishing = () => {
         accentWord="finished"
         subhead="The visible part of the work — the part you'll see and feel every day. Detail, fit, and the small resolutions that decide whether a renovation reads as complete."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
-        secondaryCta={{ to: "/work", label: "See the work" }}
       />
 
       {/* § I — What it means + craft details */}

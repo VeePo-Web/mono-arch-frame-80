@@ -100,7 +100,6 @@ const Work = () => {
         accentWord="closer"
         subhead="Each plate is a record of a real project — what we found, what we did, and what changed for the homeowner."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
-        secondaryCta={{ to: "/services", label: "Our services" }}
       />
 
       {/* § I — Filter rail (collapsible) */}
