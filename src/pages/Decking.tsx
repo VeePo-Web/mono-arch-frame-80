@@ -98,46 +98,39 @@ const Decking = () => {
 
       {/* § II "Why it matters" pull-quote — folded into §I; removed for less scroll. */}
 
-      {/* § III — Scopes (bento) */}
+      {/* § II — Materials & scope (quiet two-column list) */}
       <RevealSection id="materials" aria-labelledby="materials-heading" className={SECTION_PADDING.standard}>
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
-            <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+            <div className="lg:col-span-6" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
               <SectionHeader
                 id="materials-heading"
-                eyebrow="Materials & scope"
                 title="We recommend after we walk the site, not before."
-                lede="Material choices depend on how the deck will be used, the conditions of the site, the budget, and how much maintenance the owner actually wants to keep up with. We'll talk through the trade-offs clearly."
+                lede="Material choices depend on how the deck will be used, the conditions of the site, the budget, and how much maintenance the owner actually wants to keep up with."
                 titleWidth="wide"
                 bottomGap="none"
               />
             </div>
+            <div className="lg:col-span-6" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 divide-y divide-border/60 sm:divide-y-0 border-y border-border/60 sm:border-y-0">
+                {SCOPES.map((s) => (
+                  <li key={s} className={cn(BODY.standard, "py-4 sm:py-3 sm:border-b sm:border-border/60 text-foreground/85")}>
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-
-          <BentoGrid layout="auto">
-            {SCOPES.map((s, i) => (
-              <div key={s} data-reveal style={{ ["--reveal-delay" as string]: `${180 + i * 80}ms` }} className="h-full">
-                <BentoTile title={s} compact />
-              </div>
-            ))}
-          </BentoGrid>
         </Container>
       </RevealSection>
 
-      {/* § IV — Project proof */}
+      {/* § III — Project proof */}
       {proof && (
         <RevealSection id="proof" aria-labelledby="proof-heading" className={cn(SECTION_PADDING.standard, "section-wash cv-auto")}>
           <Container size="wide">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-12 md:mb-16">
-              <div className="lg:col-span-7" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-                <SectionHeader
-                  id="proof-heading"
-                  eyebrow="Project proof"
-                  title="A wraparound deck on a Bearspaw property."
-                  bottomGap="none"
-                />
-              </div>
-            </div>
+            <h2 id="proof-heading" className={cn(EYEBROW.standard, "mb-8")} data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+              Recent work
+            </h2>
 
             <PremiumCard className="overflow-hidden" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
               <div className="grid grid-cols-1 lg:grid-cols-12">
