@@ -15,12 +15,6 @@ import { SECTION_PADDING } from "@/lib/spacing";
 
 const SITE = "https://havencreekrenovations.ca";
 
-const POSTAL: Record<string, string> = {
-  "bragg-creek": "T0L",
-  "rocky-view-county": "T4A",
-  bearspaw: "T3R",
-  "water-valley": "T0M",
-};
 
 const NUMERAL_BY_SLUG: Record<string, string> = {
   "bragg-creek": "V.i",
@@ -111,12 +105,11 @@ const AreaPage = ({
 
       <SubPageHero
         eyebrowLabel={area.name.toUpperCase()}
-        folio={`${POSTAL[slug]} · ${area.name}, AB`}
+        folio={`${area.name}, AB`}
         headline={computedHeadline}
         accentWord={accentWord}
         subhead={area.page.intro}
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
-        secondaryCta={{ to: "/work", label: "See the work" }}
       />
 
       {/* § I — Local context */}
@@ -236,14 +229,9 @@ const AreaPage = ({
                           {other.shortLine}
                         </p>
                       </div>
-                      <div className="flex items-center gap-4 shrink-0">
-                        <span className="text-minimal text-evergreen/70 tabular-nums">
-                          {POSTAL[other.slug]}
-                        </span>
-                        <span className="icon-chip bg-evergreen/[0.06]">
-                          <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
-                        </span>
-                      </div>
+                      <span className="icon-chip bg-evergreen/[0.06] shrink-0">
+                        <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
+                      </span>
                     </Link>
                   </li>
                 ))}
