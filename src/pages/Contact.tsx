@@ -2,6 +2,7 @@ import { lazy, Suspense, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
+import { EYEBROW } from "@/lib/typography";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
