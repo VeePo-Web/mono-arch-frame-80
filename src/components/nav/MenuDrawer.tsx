@@ -29,9 +29,6 @@ const COMPANY = [
   { label: "Contact", to: "/contact" },
 ];
 
-const STUDIO_PHONE_TEL = "+14039707691";
-const STUDIO_PHONE_DISPLAY = "403 970-7691";
-const STUDIO_EMAIL = "cory@havencreekrenovations.com";
 
 /**
  * MenuDrawer — Round 6: tighter, one close affordance.
@@ -158,27 +155,6 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
               </DrawerColumn>
             </div>
 
-            {/* Tiny secondary contact row beneath the columns */}
-            <div
-              className="menu-drawer__label mt-8 md:mt-12 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-foreground/70"
-              style={{ animationDelay: "560ms" }}
-            >
-              <a
-                href={`tel:${STUDIO_PHONE_TEL}`}
-                onClick={() => onOpenChange(false)}
-                className="hover:text-evergreen transition-colors min-h-[44px] inline-flex items-center font-medium"
-              >
-                {STUDIO_PHONE_DISPLAY}
-              </a>
-              <span className="text-foreground/25" aria-hidden="true">·</span>
-              <a
-                href={`mailto:${STUDIO_EMAIL}`}
-                onClick={() => onOpenChange(false)}
-                className="hover:text-evergreen transition-colors min-h-[44px] inline-flex items-center break-all"
-              >
-                {STUDIO_EMAIL}
-              </a>
-            </div>
           </div>
 
           {/* Bottom rail — trust line + ONE CTA */}

@@ -1,71 +1,71 @@
-## Cleanup pass — round 8 ("less to navigate")
+## Round 9 — final declutter sweep
 
-The reference (`FlexServices.Org`) wins on **one feeling**: every screen has one job, and the eye never has to choose between three competing CTAs or two overlapping headers. Our site has already been trimmed twice, but a survey shows seven remaining sources of "noise" that are still making it feel busier than the reference. None of these touch the questionnaire's content rules (no testimonials, no industry jargon, two-business-day promise, three-field lead form, etc.) — they're all structural and visual.
+After round 8, the structural noise is gone. What remains is a thinner layer of **duplicate CTAs, decorative flourishes, and "spec-sheet" detail bleed** — the same micro-busyness that separates FlexServices's calm read from a "lots going on" read. Seven small trims, all surgical, none touching the questionnaire.
 
 ---
 
-### 1. Hero — drop the third paragraph
+### 1. Hero — collapse the CTA pair into a single primary
 
-Currently the hero stacks: H1 → subhead → CTA pair → italic "Working across Bragg Creek, Rocky View County, Bearspaw, and Water Valley." line. That italic sentence repeats what the Areas bento says lower on the page and competes with the CTAs for the first eye-fix.
+Hero currently stacks **two** buttons under the H1: solid "Get a Free Quote" + ghost "View the Work". The nav already pins a permanent Quote button at all times, and "View the Work" is one click away in the menu / footer. Two side-by-side CTAs at viewport 0 is the loudest thing on the page.
 
-**Action:** Remove the italic "Working across…" sentence from `Hero.tsx`. The areas already render in their own §IV.
+**Action:** In `Hero.tsx`, remove the secondary "View the Work" ghost link. Keep only the primary "Get a Free Quote" anchor.
 
-### 2. Sub-page heroes — one CTA, not two
+### 2. ServicesGrid cards — drop the 3-bullet scope list
 
-`SubPageHero` is rendering both `primaryCta` (Get a Free Quote) and `secondaryCta` (See the work / Our services / Browse services) on every detail page. Two heavy buttons under every page title is the single biggest source of "lots going on." The nav already exposes a permanent Quote button.
+Each home/Services-shared card currently renders: photo → eyebrow (`Interior`) → H3 → promise → **vertical scope `<ul>` (3 bullets)** → arrow row. Those three bullets are a duplicate of what the service-detail page already covers — and on mobile they push the third card off the first scroll. The card's job is "tease the service," not "spec it."
 
-**Action:** Stop passing `secondaryCta` from `Services.tsx`, `About.tsx`, `Work.tsx`, `ServiceAreas.tsx`, `InteriorFinishing.tsx`, `ExteriorFinishing.tsx`, `Decking.tsx`. Keep one primary CTA per hero (and none on Contact / ThankYou — already correct).
+**Action:** In `ServicesGrid.tsx`, delete the `SCOPE` map and the `<ul>` block. Card becomes: photo → eyebrow → title → one-line promise → arrow row. (The `SCOPE` constant is preserved on the new `Services.tsx` row rail, where it belongs.)
 
-### 3. HowItGoes — drop the `01 / 02 / 03` italic numerals
+### 3. Areas section — drop the lede sentence
 
-Memory rule (now site-wide): "All numbered ordered-list rows render label-only — never `01 ·` prefixes." HowItGoes still paints italic `01`, `02`, `03` numerals in a left column. They're the last surviving numeral chrome on the site.
+The Home `#areas` section currently runs a `SectionHeader` with both `title="Local, by choice."` and `lede="Four communities. Each one different in pace, exposure…"`. The four BentoTiles below already describe each area in one line — the lede is restating what the grid is about to show.
 
-**Action:** Remove the numeral column from `HowItGoes.tsx`. Each row becomes title + body, separated by the existing rule line.
+**Action:** In `Index.tsx`, remove the `lede` prop from the `#areas` SectionHeader. Title alone.
 
-### 4. Areas bento — drop the postal-code eyebrow
+### 4. BigCloseCTA (full variant) — retire the decorative SVG ridge
 
-`Index.tsx` passes `eyebrow={AREA_POSTAL[area.slug]}` (e.g. `T0L`, `T3R`) into each BentoTile. Postal-code chrome is the same "look-at-our-system" tic that Plate-N / Edition was. Real homeowners don't think in FSAs.
+The full-variant home close currently paints a hand-drawn ridge silhouette `<svg>` along the bottom of the evergreen band. It doesn't carry information — it's just a decorative flourish layered on top of an already-busy band that contains a heading, a contact-row, AND an embedded form.
 
-**Action:** Drop the `eyebrow` prop on the four BentoTiles in `Index.tsx`. Title + body line is enough. Delete the `AREA_POSTAL` map. Same edit on `ServiceAreas.tsx` — remove the `T0L` chip from the right side of each row.
+**Action:** In `BigCloseCTA.tsx`, delete the `{!compact && <svg…>}` block entirely. The radial-gradient background is enough atmosphere.
 
-### 5. Service-detail proof blocks — collapse the 4-cell grid
+### 5. BigCloseCTA (full variant) — text-link contact row, not chip buttons
 
-InteriorFinishing / ExteriorFinishing / Decking each render a "Recent work" block with a photo half and a 2×2 grid of Scope / Challenge / Result / Why-it-mattered cells. Four eyebrowed cells under a card title is dense and reads like a spec sheet.
+The full variant currently renders two big rounded chip buttons (mail + phone) directly across from the embedded form. That's three CTA clusters in one viewport (form submit + email button + phone button), and it visually competes with the form's own submit.
 
-**Action:** In all three detail pages, replace the 2×2 grid with two short stacked paragraphs:
-- A scope+challenge sentence ("`{scope}` `{challenge}`")
-- An italic "why it mattered" sentence
+**Action:** Replace the two chip-button anchors with a quiet two-line text-link block:
+```
+Or write —  cory@havencreekrenovations.com
+Or call  —  403 970-7691
+```
+No background, no chip, no border. Underline-on-hover only. Same info, fraction of the visual weight.
 
-Drop the four `<p>EYEBROW</p>` labels.
+### 6. Footer — drop the contact-column descriptive sentence
 
-### 6. Services page — make it actually different from Home
+Footer's "Contact" column currently has: label → "We're a small team — every note reaches Cory directly." → CTA. The descriptive sentence is friendly but the sentiment already runs through the Home hero, About page, ConsultationForm helper, and BigCloseCTA. In the footer it's just noise above the CTA.
 
-`Services.tsx` is currently: SubPageHero → `<ServicesGrid>` (identical to Home) → "Pricing is custom" blurb → CTA. So a visitor who clicks "Services" sees the same three cards they just left. The page needs to add value, not duplicate it.
+**Action:** In `Footer.tsx`, remove the `<p>We're a small team…</p>` line. Column becomes: label → CTA.
 
-**Action:** On `Services.tsx`, replace the duplicated `<ServicesGrid>` with a tighter "service rail" — three full-width rows (no photo, just title + promise + scope-bullets + arrow link). The photo cards stay on Home; Services becomes the deeper read with full scope per service.
+### 7. MenuDrawer — remove the duplicate phone/email row
 
-### 7. ThankYou — fold the "what happens next" list into the hero
+Below the three drawer columns sits a tiny `STUDIO_PHONE_DISPLAY · STUDIO_EMAIL` row. Phone is already in the persistent header (icon at <lg, full number at lg+), email is on the Contact page, and the drawer's bottom rail already has a "Get a Free Quote" CTA. Three places to surface contact in one drawer is one too many.
 
-ThankYou currently runs SubPageHero → receipt stamp → "What happens next" 3-step list → quiet sign-off. Three sequential blocks for a confirmation page is one too many; FlexServices's confirmation pattern is hero + one line.
-
-**Action:** Remove §I "A calm follow-up" 3-step list from `ThankYou.tsx`. The hero's subhead ("We respond within two business days…") already says it. Keep the receipt stamp (it's the proof) and the quiet sign-off.
+**Action:** In `MenuDrawer.tsx`, delete the phone+email row beneath the columns (the `menu-drawer__label mt-8 md:mt-12 …` block). The bottom-rail CTA carries the action.
 
 ---
 
 ### Memory updates
 
-- Add a Core line: **"Sub-page heroes carry exactly one CTA — the primary 'Get a Free Quote'. The secondary CTA slot is retired."**
-- Add a Core line: **"No postal codes / FSA chips in UI. Areas are named, not coded."**
-- Add a Core line: **"HowItGoes (and any future ordered process) is title + body only — no numeral column."**
+Add to Core:
+- **"Hero (and any landing-style hero) carries one primary CTA only — never a primary + ghost pair. Nav surfaces the secondary."**
+- **"ServicesGrid cards are tease-only — photo + eyebrow + title + one-line promise + arrow. Scope bullets live on the Services row rail and the service-detail pages, never the card."**
+- **"BigCloseCTA full variant: no decorative ridge SVG. Contact alternates render as quiet text links beside the form, never chip-buttons."**
 
 ### Out of scope (intentionally)
 
-- No nav, drawer, or section-rail changes — that surface is in good shape after round 7.
-- No copy rewrites beyond the deletions above.
-- No new components. Everything is an in-place trim.
-
----
+- No content rewrites — every trim is a deletion or a swap of treatment, not new copy.
+- No nav, hamburger, drawer-motion, or section-rail changes — that surface settled in round 7.
+- No new components, no new dependencies.
 
 ### Files touched
 
-`src/components/Hero.tsx`, `src/components/HowItGoes.tsx`, `src/pages/Index.tsx`, `src/pages/Services.tsx`, `src/pages/About.tsx`, `src/pages/Work.tsx`, `src/pages/ServiceAreas.tsx`, `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/Decking.tsx`, `src/pages/ThankYou.tsx`, `mem://index.md`.
+`src/components/Hero.tsx`, `src/components/ServicesGrid.tsx`, `src/pages/Index.tsx`, `src/components/BigCloseCTA.tsx`, `src/components/Footer.tsx`, `src/components/nav/MenuDrawer.tsx`, `mem://index.md`.
