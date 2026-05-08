@@ -1,50 +1,57 @@
-## Round 10 — chrome-off-the-headlines pass
+# Round 11 — Single button language: solid evergreen, cream text
 
-Round 9 cleared the duplicate CTAs and decorative bands. The remaining noise is **header chrome that restates what the page already announces** — page-name eyebrows above page-name H1s, hand-drawn accent underlines that compete with the type, and SectionHeader stacks above one-line lists. Three surgical trims.
+The site has two flavours of evergreen button living side-by-side and the pale-tint flavour reads as "dark green with black text" against the cream page. We collapse the language to one: **dark evergreen fill + cream foreground**, matching the home hero's "Get a Free Quote" pill. No more pale-tint-with-dark-text tap targets.
 
----
+## What changes
 
-### 1. `SubPageHero` — retire the page-name eyebrow + accent-word SVG underline
+### 1. `src/components/QuickContactSheet.tsx` — the two big bottom-sheet pills
+Currently (lines 200-235) the **Text us** and **Call us** tap targets render as:
+```
+bg-evergreen/[0.06] border border-evergreen/15 text-foreground
+```
+That's a 6%-opacity evergreen wash with dark text — exactly the offender.
 
-Every non-home route currently opens with `EYEBROW (CONTACT / ABOUT / SERVICES / DECKING…) → H1`. The eyebrow restates what the H1 and the nav already announce. On a calm editorial page the eyebrow reads as nameplate noise — exactly the "lots going on" feeling the user keeps flagging.
+Promote both to the primary CTA language:
+- `bg-evergreen text-evergreen-foreground` (solid dark green + cream text)
+- `border-transparent` (drop the hairline border — solid fill carries the shape)
+- `hover:bg-evergreen-hover` (replace `hover:bg-evergreen/[0.10]`)
+- Keep the rounded-2xl radius, min-height, and icon layout — only the colour pair changes.
+- The `MessageCircle` / `Phone` icon and any helper text inside the pill must inherit cream — change `text-evergreen` → `text-evergreen-foreground` for icons sitting on the new dark fill, and any `text-muted-foreground` sub-label inside the pill → `text-evergreen-foreground/75`.
 
-Separately, `SubPageHero` paints a hand-drawn `<svg>` underline beneath any `accentWord` — same decorative-flourish category we just killed on `BigCloseCTA`. The italic evergreen treatment alone carries plenty of accent.
+### 2. `src/components/PrimaryCTA.tsx` `secondary` variant — retire the bordered green-outline-with-dark-text style
+Lines 33-35 currently render:
+```
+border border-evergreen/40 text-foreground hover:bg-evergreen/[0.04]
+```
+This is the "outline button" sibling that also reads as a green-edged button with black text on hover. Two options, picking the cleaner one to match the user's "only solid-green-with-white-text" rule:
+- **Replace the `secondary` variant body with the same solid evergreen + cream pair as `primary`**, but at a slightly tighter scale (e.g. `min-h-[48px]` vs primary's `56px`, no shadow stack) so it still reads as the quieter sibling — *colour-wise identical, weight-wise lighter*.
+- Audit current `<PrimaryCTA variant="secondary" />` callers (rg) and make sure the demoted-to-solid-green look doesn't create two competing primary CTAs in the same viewport. If any caller is just a quiet "learn more" link, swap it to `variant="ghost"` (the underline-arrow one) instead — that variant stays as-is.
 
-**Action:**
-- In `SubPageHero.tsx`: make `eyebrowLabel` optional and stop rendering it (drop the `<Eyebrow />` block + `reveal-up` wrapper). Remove the `<svg>` accent underline; keep the italic-evergreen `accentWord` span.
-- Delete the `eyebrowLabel="…"` prop from every caller: `About.tsx`, `Contact.tsx`, `Decking.tsx`, `ExteriorFinishing.tsx`, `InteriorFinishing.tsx`, `NotFound.tsx`, `ServiceAreas.tsx`, `Services.tsx`, `ThankYou.tsx`, `Work.tsx`, and `AreaPage.tsx`.
-- Keep the `folio` prop intact — it's used by area pages for "T0L · Bragg Creek" locator text and that *does* add information, not restate it.
+### 3. Sweep — anywhere `bg-evergreen/[0.0x]` meets `text-foreground` on an interactive element
+Run a final pass against the file list below and apply the same rule: if the element is a **button or link tap-target**, lift it to solid evergreen + cream. If it's a **decorative chip / icon halo** (non-interactive), leave the pale tint — those aren't buttons and the user's rule doesn't apply.
 
-### 2. `Contact.tsx` — strip the SectionHeader stacks around form + direct-contact
+Files to audit (already mapped):
+- `src/components/QuickContactSheet.tsx` lines 205, 227 → **buttons, lift**
+- `src/components/PrimaryCTA.tsx` line 34 → **button, lift via variant rewrite above**
+- `src/pages/Services.tsx` line 73 → row hover wash on a `<Link>`. This is a *list-row* hover, not a button — leave it (changing it to solid evergreen would invert the whole Services page row rail). Note as an explicit exception in memory.
+- `src/components/HowItGoes.tsx` line 59 → row hover, same exception, leave.
+- `src/pages/ServiceAreas.tsx` 78, `NotFound.tsx` 58, `Footer.tsx` 84, `AreaPage.tsx` 184/231 → these are `icon-chip` halos around `ArrowUpRight` glyphs, **not buttons** — leave.
+- `src/components/ServicesGrid.tsx` line 53 → image-plate placeholder bg, leave.
 
-Currently:
-- Left rail: `eyebrow="What happens" → title="Write. We reply." → lede="Within two business days, from Cory directly."` — eyebrow restates the title's topic (memory rule says either/or).
-- Below the form: `eyebrow="Or reach us directly" → title="Prefer to write or call?" → ul of email + phone` — three rows of header chrome above two contact rows.
+### 4. Memory update — codify the rule
+Add one new core rule to `mem://index.md`:
 
-**Action:**
-- Drop the `eyebrow="What happens"` prop from the form-heading SectionHeader. Title + lede only.
-- Replace the lower SectionHeader entirely with a single small label line: `<p className={EYEBROW.standard}>Or reach us directly</p>` above the existing `<ul>` (no H3, no italic restatement). The two contact rows are self-evidently the alternative.
+> Any interactive element on a cream surface uses ONE button language: solid `bg-evergreen` + `text-evergreen-foreground` (cream). Never pair a pale evergreen wash (`bg-evergreen/[0.0x]`) with `text-foreground` on a button or link tap-target — that combo reads as "dark green with black text." Pale evergreen washes are reserved for **non-interactive** chrome: icon-chip halos, image-plate placeholders, and full-row hover states on list rails.
 
-### 3. `HowItGoes.tsx` — drop dead `n: "01"` field from STEPS data
+## Files touched
+- `src/components/QuickContactSheet.tsx` — re-skin two step pills
+- `src/components/PrimaryCTA.tsx` — rewrite `secondary` variant body
+- `mem://index.md` — add the one-button-language rule
 
-The `STEPS` array still carries `n: "01" / "02" / "03"` even though the JSX no longer renders the numerals (we killed that in round 8). Dead data drift — easy to revive by accident.
+## Files explicitly NOT touched
+- `Services.tsx`, `HowItGoes.tsx` row-hover washes (full-row hovers, not buttons)
+- All `icon-chip` halos (decorative, not interactive)
+- `ServicesGrid.tsx` image plate (placeholder, not a button)
 
-**Action:** Remove the `n` field from each entry. Keep `t` + `b`. Drop the `key={step.n}` and use `key={step.t}` instead.
-
----
-
-### Memory updates
-
-Add to Core:
-- **"Sub-page heroes do NOT carry a page-name eyebrow (CONTACT, ABOUT, SERVICES…) — the H1 + nav already name the page. `eyebrowLabel` is retired from `SubPageHero` callers; only `folio` survives, for genuine locator info."**
-- **"`SubPageHero` accent words use italic-evergreen treatment only — no hand-drawn SVG underline. Same constraint as the BigCloseCTA decorative-ridge ban."**
-
-### Out of scope
-
-- No nav, drawer, hamburger, section-rail, or motion changes.
-- No copy rewrites — only deletions of duplicative header chrome.
-- No new components, no new dependencies. `Eyebrow.tsx` stays (still used by `ServicesGrid`, project-proof rows, etc.).
-
-### Files touched
-
-`src/components/SubPageHero.tsx`, `src/components/HowItGoes.tsx`, `src/pages/Contact.tsx`, `src/pages/About.tsx`, `src/pages/Services.tsx`, `src/pages/ServiceAreas.tsx`, `src/pages/Work.tsx`, `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/Decking.tsx`, `src/pages/ThankYou.tsx`, `src/pages/NotFound.tsx`, `src/components/AreaPage.tsx`, `mem://index.md`.
+## Verification
+After the patch, grep `rg "bg-evergreen/\[0\.|bg-evergreen-soft" src --glob '!*.css'` and confirm every remaining hit is on a non-interactive element or a row-hover. Then load `/` and `/contact` in the preview, open the QuickContactSheet on mobile width, and confirm both pills now match the solid dark-green pill language of the hero CTA.
