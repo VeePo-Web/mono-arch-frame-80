@@ -90,13 +90,7 @@ const Contact = () => {
                 data-reveal
                 style={{ ["--reveal-delay" as string]: "260ms" }}
               >
-                <SectionHeader
-                  as="h3"
-                  eyebrow="Or reach us directly"
-                  title="Prefer to write or call?"
-                  titleWidth="wide"
-                  bottomGap="none"
-                />
+                <p className={EYEBROW.standard}>Or reach us directly</p>
 
                 <ul className="mt-8 divide-y divide-border/60 border-y border-border/60">
                   <li>
