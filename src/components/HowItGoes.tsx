@@ -53,7 +53,7 @@ const HowItGoes = () => {
         <ol className="border-t border-evergreen/15">
           {STEPS.map((step, i) => (
             <li
-              key={step.n}
+              key={step.t}
               data-reveal
               style={{ ["--reveal-delay" as string]: `${180 + i * 110}ms` }}
               className="group/row grid grid-cols-1 md:grid-cols-[minmax(0,16rem)_1fr] items-start gap-3 md:gap-8 py-7 md:py-9 border-b border-evergreen/15 transition-colors duration-500 hover:bg-evergreen/[0.025]"
