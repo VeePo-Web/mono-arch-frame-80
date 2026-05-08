@@ -84,9 +84,6 @@ const SubPageHero = ({
           )}
         >
           <div className={cn(vignette ? "lg:col-span-7" : "max-w-3xl")}>
-            <div className="reveal-up" style={{ animationDelay: "0ms" }}>
-              <Eyebrow label={eyebrowLabel} />
-            </div>
 
             {folio && (
               <p
