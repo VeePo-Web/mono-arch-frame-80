@@ -104,7 +104,6 @@ const AreaPage = ({
       <AreaLocalBusinessJsonLd name={area.name} area={area.slug} />
 
       <SubPageHero
-        eyebrowLabel={area.name.toUpperCase()}
         folio={`${area.name}, AB`}
         headline={computedHeadline}
         accentWord={accentWord}

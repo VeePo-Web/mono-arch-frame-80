@@ -25,7 +25,6 @@ const NotFound = () => {
     <main id="main">
       <SubPageHero
         compact
-        eyebrowLabel="OFF MAP"
         folio="404 · Page not found"
         headline="This page seems to have wandered off."
         accentWord="wandered"

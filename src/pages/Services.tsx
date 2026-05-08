@@ -50,7 +50,6 @@ const Services = () => {
       />
 
       <SubPageHero
-        eyebrowLabel="SERVICES"
         headline="Three services, held to one standard."
         accentWord="held"
         subhead="We chose focus over breadth on purpose. Interior finishing leads — that's where the craft is felt most clearly. Exterior repairs and decking carry the same care, scaled to what the weather and the land require."

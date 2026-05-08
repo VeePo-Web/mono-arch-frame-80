@@ -39,7 +39,6 @@ const About = () => {
       />
 
       <SubPageHero
-        eyebrowLabel="ABOUT"
         headline="A hands-on renovation partner for rural properties."
         accentWord="hands-on"
         subhead="Haven Creek was built for homeowners who want a more personal, less scattered way to improve the property they care about."

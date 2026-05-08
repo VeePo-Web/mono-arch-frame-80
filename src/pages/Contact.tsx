@@ -2,6 +2,7 @@ import { lazy, Suspense, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";
+import { EYEBROW } from "@/lib/typography";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -43,7 +44,6 @@ const Contact = () => {
       />
 
       <SubPageHero
-        eyebrowLabel="CONTACT"
         headline="Let's talk through your property."
         accentWord="talk"
         subhead="This is the beginning of a relationship, not a sales trap. Share a few details and we'll come prepared."
@@ -61,7 +61,6 @@ const Contact = () => {
             >
               <SectionHeader
                 id="form-heading"
-                eyebrow="What happens"
                 title="Write. We reply."
                 lede="Within two business days, from Cory directly."
                 bottomGap="none"
@@ -92,13 +91,7 @@ const Contact = () => {
                 data-reveal
                 style={{ ["--reveal-delay" as string]: "260ms" }}
               >
-                <SectionHeader
-                  as="h3"
-                  eyebrow="Or reach us directly"
-                  title="Prefer to write or call?"
-                  titleWidth="wide"
-                  bottomGap="none"
-                />
+                <p className={EYEBROW.standard}>Or reach us directly</p>
 
                 <ul className="mt-8 divide-y divide-border/60 border-y border-border/60">
                   <li>
