@@ -19,7 +19,7 @@ export interface GalleryPlate {
 export const galleryPlates: GalleryPlate[] = [
   {
     slug: "bragg-creek-trim-transitions",
-    title: "Trim & transition rework",
+    title: "Interior trim & room transitions",
     category: "Interior Finishing",
     area: "Bragg Creek",
     scope:
@@ -47,7 +47,7 @@ export const galleryPlates: GalleryPlate[] = [
   },
   {
     slug: "rocky-view-siding-repair",
-    title: "Exterior craft & detail work",
+    title: "Cedar siding repair & refinish",
     category: "Exterior Repairs",
     area: "Rocky View County",
     scope:
@@ -61,7 +61,7 @@ export const galleryPlates: GalleryPlate[] = [
   },
   {
     slug: "bearspaw-soffit-fascia",
-    title: "Structural & roofline work",
+    title: "Soffit & fascia rebuild",
     category: "Exterior Repairs",
     area: "Bearspaw",
     scope:
@@ -75,7 +75,7 @@ export const galleryPlates: GalleryPlate[] = [
   },
   {
     slug: "bearspaw-wraparound-deck",
-    title: "Wraparound deck rebuild",
+    title: "Wraparound cedar deck",
     category: "Decking",
     area: "Bearspaw",
     scope:
@@ -89,7 +89,7 @@ export const galleryPlates: GalleryPlate[] = [
   },
   {
     slug: "water-valley-stepdown-platform",
-    title: "Step-down platform & stair",
+    title: "Step-down deck & stair",
     category: "Decking",
     area: "Water Valley",
     scope:
