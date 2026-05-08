@@ -1,7 +1,5 @@
 import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
-import Mail from "lucide-react/dist/esm/icons/mail";
-import Phone from "lucide-react/dist/esm/icons/phone";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import Container from "@/components/Container";
 import SectionHeader from "@/components/SectionHeader";

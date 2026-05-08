@@ -29,9 +29,6 @@ const COMPANY = [
   { label: "Contact", to: "/contact" },
 ];
 
-const STUDIO_PHONE_TEL = "+14039707691";
-const STUDIO_PHONE_DISPLAY = "403 970-7691";
-const STUDIO_EMAIL = "cory@havencreekrenovations.com";
 
 /**
  * MenuDrawer — Round 6: tighter, one close affordance.
