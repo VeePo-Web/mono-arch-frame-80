@@ -27,9 +27,8 @@ const Services = () => {
       />
 
       <SubPageHero
-        headline="Three services, held to one standard."
-        accentWord="held"
-        subhead="We chose focus over breadth on purpose. Interior finishing leads — that's where the craft is felt most clearly. Exterior repairs and decking carry the same care, scaled to what the weather and the land require."
+        headline="Three services. One standard."
+        subhead="Three focused services, held to the same hands-on standard."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
       />
 
@@ -52,11 +51,7 @@ const Services = () => {
         </Container>
       </RevealSection>
 
-      <BigCloseCTA
-        variant="compact"
-        heading="Tell us about the project. We'll come prepared."
-        primary={{ to: "/contact", label: "Get a Free Quote" }}
-      />
+      <BigCloseCTA />
     </main>
   );
 };

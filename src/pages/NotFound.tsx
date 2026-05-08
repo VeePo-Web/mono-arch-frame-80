@@ -25,12 +25,9 @@ const NotFound = () => {
     <main id="main">
       <SubPageHero
         compact
-        folio="404 · Page not found"
         headline="This page seems to have wandered off."
-        accentWord="wandered"
         subhead="It may have moved, been renamed, or never quite made it onto the map. A few honest places to head next."
         primaryCta={{ to: "/", label: "Return home" }}
-        secondaryCta={{ to: "/contact", label: "Talk to us" }}
       />
 
       <RevealSection className="pb-24 md:pb-32">

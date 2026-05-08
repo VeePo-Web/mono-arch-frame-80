@@ -113,39 +113,6 @@ const ThankYou = () => {
         </RevealSection>
       )}
 
-      {/* §I 3-step list retired — the hero subhead already promises the reply window. */}
-
-      {/* § II — Quiet sign-off + while-you-wait links */}
-      <RevealSection className="py-16 md:py-24">
-        <Container size="wide">
-          <div className="max-w-2xl mx-auto text-center" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            {personalized ? (
-              <p className="font-serif italic font-light text-foreground/75 text-[1.3rem] md:text-[1.5rem] leading-snug">
-                No need to refresh — we'll come to you.
-              </p>
-            ) : (
-              <p className="font-serif italic font-light text-foreground/75 text-[1.3rem] md:text-[1.5rem] leading-snug">
-                Looking for the contact form?{" "}
-                <Link to="/contact" className="not-italic underline decoration-evergreen/40 underline-offset-4 hover:text-evergreen transition-colors">
-                  Open Contact
-                </Link>
-                .
-              </p>
-            )}
-            <p className="mt-8 text-minimal text-evergreen/70">
-              While you wait —{" "}
-              <Link to="/work" className="hover:text-evergreen transition-colors underline decoration-evergreen/30 underline-offset-4">
-                see the work
-              </Link>
-              {" "}or{" "}
-              <Link to="/services" className="hover:text-evergreen transition-colors underline decoration-evergreen/30 underline-offset-4">
-                browse services
-              </Link>
-              .
-            </p>
-          </div>
-        </Container>
-      </RevealSection>
     </main>
   );
 };

@@ -4,44 +4,23 @@ import { cn } from "@/lib/utils";
 import Container from "./Container";
 
 /**
- * Hero — type-only home opener.
- *
- * Same typographic grammar as `SubPageHero`: eyebrow + H1 + subhead + one CTA.
- * No side photograph, no radial bloom, no ken-burns drift. Photography lives
- * in the inline Work preview below the fold, never in the hero.
+ * Hero — type-only home opener. H1 + subhead + one CTA. No eyebrow, no accent.
  */
 const Hero = () => {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative pt-28 md:pt-44 pb-16 md:pb-28 overflow-hidden"
+      className="relative pt-28 md:pt-44 pb-16 md:pb-28"
     >
-      {/* Soft radial bloom — same warm evergreen wash as SubPageHero, kept for cream continuity */}
-      <div
-        aria-hidden="true"
-        className="absolute -top-40 -right-40 w-[640px] h-[640px] rounded-full -z-10"
-        style={{
-          background:
-            "radial-gradient(closest-side, hsl(145 18% 28% / 0.08), transparent 70%)",
-        }}
-      />
-
       <Container size="wide">
         <div className="max-w-4xl">
-          <p
-            className="text-minimal text-evergreen/80 reveal-up"
-            style={{ animationDelay: "60ms" }}
-          >
-            Hands-on renovation for rural Alberta
-          </p>
-
           <h1
             id="hero-heading"
-            className="text-display text-foreground mt-7 max-w-[18ch] text-balance leading-[1.05]"
+            className="text-display text-foreground max-w-[18ch] text-balance leading-[1.05]"
           >
             <span className="block overflow-hidden">
               <span className="block reveal-up" style={{ animationDelay: "120ms" }}>
-                One <span className="text-display-italic text-evergreen">trusted</span> contractor
+                One trusted contractor
               </span>
             </span>
             <span className="block overflow-hidden">
@@ -59,10 +38,7 @@ const Hero = () => {
             person plans the work and walks the finish with you.
           </p>
 
-          <div
-            className="mt-10 reveal-up"
-            style={{ animationDelay: "500ms" }}
-          >
+          <div className="mt-10 reveal-up" style={{ animationDelay: "500ms" }}>
             <Link
               to="/contact"
               className={cn(

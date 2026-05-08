@@ -31,8 +31,6 @@ const Work = () => {
 
       <SubPageHero
         headline="Real properties. Real outcomes."
-        accentWord="Real"
-        subhead="A quiet record of recent work across rural Alberta."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
       />
 
@@ -72,11 +70,7 @@ const Work = () => {
         </Container>
       </RevealSection>
 
-      <BigCloseCTA
-        variant="compact"
-        heading="See a project that resembles yours? Let's talk it through."
-        primary={{ to: "/contact", label: "Get a Free Quote" }}
-      />
+      <BigCloseCTA heading="See a project that resembles yours?" />
     </main>
   );
 };

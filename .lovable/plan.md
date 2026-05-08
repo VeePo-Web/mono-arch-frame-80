@@ -1,98 +1,123 @@
-# Round 13 — The next layer of simplification
+# Round 14 — Cut to the bone
 
-Round 12 collapsed the route map (8 → 5 routes, no per-service / per-area pages, single Work gallery). This round goes after the **section-level chrome** that's still making each page feel busier than Fantasy.co or RoyalMechanical. The throughline: one visual grammar across every page — type-led heroes, no decorative photo splits, no numbered ordered lists, fewer sections per page.
+The site is already 5 routes (R12) and type-only with inline gallery (R13). Compared to fantasy.co and RoyalMechanical.com, what's still "too much" is **section chrome**: every block has an eyebrow + title + lede + body, every page closes with a big dark green CTA wall, and the home page still shows 6 distinct sections. This round removes the chrome, not the content.
 
-## What's still busy (and what we change)
+## Guiding rule
 
-### 1. Home `Hero` — type-only, kill the split-stage photo
+A section earns a `SectionHeader` (eyebrow + title + lede) only if it introduces something the visitor cannot identify on sight. A grid of project tiles does not need a title. A 3-column text grid of services does not need a lede. The page itself is the title.
 
-Current `src/components/Hero.tsx` (150 lines) is a **two-column cinematic split**: H1 + CTA on the left, a 44%-wide right-anchored acreage photograph with mask gradient + radial bloom + ken-burns drift on the right. That's three layers of decoration before the user reads a word. Fantasy and RoyalMechanical lead with **type alone** — the photography lives below the fold in the gallery.
+## Home (`Index.tsx`) — 6 sections → 3
 
-Replace `Hero.tsx` body with the same grammar as `SubPageHero`: type-only, single `Get a Free Quote` CTA, generous top padding. Drop the desktop photo stage, the radial bloom, the `useDrift` ref, the `photo-drift` ken-burns, the `photography.heroAcreage` import. Keep:
-- Eyebrow line ("Hands-on renovation for rural Alberta")
-- Italic-evergreen accent on the H1
-- One primary CTA → `/contact`
-- Existing `.reveal-up` clip-path stagger (it's the same motion `SubPageHero` uses)
+New flow:
 
-Result: ~150 lines → ~55 lines, and home opens with the same calm typographic grammar as `/about`, `/services`, `/work`, `/contact`.
-
-### 2. Home `ServicesGrid` — type-only, matches `/services`
-
-Current `src/components/ServicesGrid.tsx` renders 3 large photo cards (16:10 imagery + eyebrow + title + promise + arrow) all linking to `/services`. That's the **only place left on the site** still using big photo cards, and it duplicates the `/services` page layout one breakpoint up.
-
-Replace with the same 3-up text grid as `Services.tsx`: title + promise + cardBody, no photos, no border, no arrow. Eyebrow `What we do` + section heading `Three services. One standard.` stays. Card content is non-clickable (matches the new "services live as text, not links" rule). One-screen worth of content, half the bytes.
-
-This retires the `servicePhotos` map usage in `ServicesGrid` and lets us prune the `serviceX.jpg/.webp` imports from `src/assets/photography/index.ts`.
-
-### 3. Home — inline a 6-tile Work preview between Services and HowItGoes
-
-Fantasy and RoyalMechanical both surface the gallery on the homepage so the visitor sees the work without a click. Add a new Home section **`Recent work`** that renders the first 6 plates from `galleryPlates` in the same 3-col grid as `/work`, with a quiet "See all work →" text link below the grid. Reuses `ProjectPlaceholder` + `workPhotos` — no new asset work.
-
-Section order becomes: Hero → Services (type) → **Recent work (6 tiles)** → How it goes → Local, by choice → BigCloseCTA. Five typographic sections, one gallery section, one CTA. That's it.
-
-### 4. About — fold "Property respect" into one paragraph
-
-Current `/about` carries a **4-row numbered ordered list** ("Access", "Animals & family routines", "Equipment & materials", "Leave it as we found it") under a "Property respect" heading. That's a second list pattern after the Working Philosophy block — repetitive shape.
-
-Replace the `<ol>` with a single 2-paragraph block under the same `Property respect` SectionHeader. Same content, distilled — one paragraph on what property respect means in practice (access, animals, equipment), one paragraph on the "leave it as we found it" close. Drops the `RESPECT` array + the `<ol>` chrome entirely.
-
-Page becomes: Hero → Working philosophy (existing) → Property respect (now prose) → Where we work (existing rail) → BigCloseCTA. Four blocks, all consistent.
-
-### 5. `Footer` — single horizontal row on `md+`
-
-Current footer is a 4-column grid (brand · Pages · Where we work · Contact CTA) with a separate copyright row underneath — six visual chunks. Fantasy/Royal have a one-line footer. Collapse to:
-
-```
-[ logo + name ]    Pages: About · Services · Work · Contact    [ Get a Free Quote → ]
-                              © 2026 Haven Creek Renovations · Alberta, Canada
+```text
+1. Hero            — H1 + subhead + 1 CTA  (no eyebrow line)
+2. Recent work     — 6-tile grid, no header, "See all work →" below
+3. Big close CTA   — compact variant (no embedded form)
 ```
 
-Single flex row at `md+`, stack into 3 rows on mobile (brand → pages inline → CTA). The "Where we work" column moves out of the footer entirely — it already lives on `/about` and `/`. The brand tagline ("Hands-on renovation for rural and acreage homes…") moves to the copyright line as a faint right-side note, or is dropped (it's said in the Hero).
+Cut from home: `ServicesGrid`, `HowItGoes`, the named-area rail. Services live on `/services`, process lives on `/about`, areas live on `/about`. The home page is now a 30-second pitch: *who, work, contact*.
 
-### 6. Retire orphan components + assets
+## Sub-page heroes — drop the radial bloom + folio + accent-italic
 
-After the Hero + ServicesGrid simplification, these files have no callers and can be deleted:
-- `src/components/HeroVignette.tsx` (only consumed by old Hero)
-- `src/components/ProjectVignette.tsx` (only consumed by old Hero / retired plate components per memory)
-- `src/components/PremiumCard.tsx` — verify with `rg`; if only `Contact.tsx` still imports it, leave; otherwise delete
-- `useDrift` hook — verify no other consumers; if Hero was the only one, delete `src/hooks/useDrift.ts`
-- The `heroAcreage` and `serviceX` photo imports in `src/assets/photography/index.ts` (keep `workPhotos` — gallery still uses it)
-- The `.photo-drift` keyframes in `index.css` if they're only used by the retired Hero photo stage
+`SubPageHero` keeps: H1, optional subhead, optional one CTA. Removed: `accentWord` italic-evergreen treatment, `folio`, `vignette`, the radial-bloom div, the unused `secondaryCta`, the `eyebrowLabel` deprecated prop. Headlines render as one calm sentence in `text-foreground` — no green accent word. Same change applied to home `Hero` (no italic-evergreen "trusted").
 
-I'll run `rg -l` per symbol before each delete to make sure I'm not orphaning anything live.
+This is the fantasy.co move: the type itself is the design.
 
-### 7. Memory updates
+## About (`About.tsx`) — 3 sections → 2
 
-Add to `mem://index.md` core:
+- Merge "Working philosophy" + "Property respect" into one section titled simply **"How we work"** with a 12-col layout: short title left, two prose paragraphs right (the philosophy paragraphs first, then the property-respect paragraphs run together).
+- Keep the "Where we work" rail (named list, no header eyebrow — just `Where we work` as a small label above the names).
+- Compact `BigCloseCTA` at the bottom stays.
 
-> Home `Hero` is type-only — no side photograph, no radial bloom, no ken-burns drift. Same typographic grammar as every `SubPageHero`. Photography lives in the inline Work preview below, never in the hero.
+## Services (`Services.tsx`) — drop chrome around the 3 blocks
 
-> Home renders an inline 6-tile Work preview (first 6 of `galleryPlates` in the same 3-col grid as `/work`) so visitors see the work without a click. Below it: a single "See all work →" text link, never a button.
+- `SubPageHero` subhead trimmed to one sentence: *"Three focused services. One standard."*
+- The grid stays (3 text blocks). No `<h2 class="sr-only">` change needed.
+- Compact `BigCloseCTA` stays.
 
-> Home `ServicesGrid` is type-only — three text blocks (title + promise + cardBody), no photo cards, no per-card link. One service treatment site-wide: identical on `/` and `/services`.
+## Work (`Work.tsx`) — drop the SubPageHero subhead
 
-> About `Property respect` renders as 2 prose paragraphs — never a 4-row numbered ordered list. The "all numbered ordered-list rows render label-only" rule already covers this; this is the explicit follow-through.
+Headline only. The grid is the page.
 
-> Footer is a single horizontal row at `md+` (brand mark · Pages inline · CTA) + one copyright line below. Never a 4-column grid. The "Where we work" rail belongs on `/about` and `/`, not in the footer.
+## Contact (`Contact.tsx`) — drop the sticky left rail
 
-Update the existing rule that says "Home now uses the calmer `ServicesGrid` (3 photo cards, side-by-side)" — it's now type-only, no photo cards.
+- Single column at all breakpoints. `SubPageHero` headline + subhead, then the form, then the "Or reach us directly" rail. No 5/7 sticky split.
+- Form card stays.
 
-## Files touched
+## ThankYou (`ThankYou.tsx`) — drop the "while you wait" sign-off
 
-**Edited:** `src/components/Hero.tsx`, `src/components/ServicesGrid.tsx`, `src/components/Footer.tsx`, `src/pages/Index.tsx`, `src/pages/About.tsx`, `src/assets/photography/index.ts`, `src/index.css` (only if `.photo-drift` is now orphan), `mem://index.md`
+Hero + receipt stamp only. The footer already exposes Work / Services for anyone who wants to keep browsing.
 
-**Deleted (after orphan-check):** `src/components/HeroVignette.tsx`, `src/components/ProjectVignette.tsx`, `src/hooks/useDrift.ts` (conditional)
+## `BigCloseCTA` — retire the `full` variant + the dark-green slab
 
-## Out of scope — explicitly held back
-- Pruning unused `scope/challenge/result/whyItMattered` fields from `galleryPlates.ts` (still untouched from R12; not visible in UI either way).
-- Trimming `services.ts` to just the four fields the new Services page consumes.
-- Real photography for `ProjectPlaceholder` (placeholder pattern stays).
-- `/contact` and `/thank-you` — already match the simplified grammar.
-- `HowItGoes` — kept as-is; it's already the right shape (3 quiet rows, no numerals).
+Both `full` and `compact` rendered an evergreen-deep wall. Replace with a single quiet variant on cream:
 
-## Verification
-1. `rg -n "photography\.heroAcreage|photo-drift|servicePhotos|HeroVignette|ProjectVignette" src` → zero matches outside the asset index after pruning.
-2. Home page renders in this order: Hero (type-only) → Services (text) → Recent work (6 tiles) → How it goes → Local, by choice → BigCloseCTA.
-3. About page renders: Hero → Working philosophy → Property respect (prose, no `<ol>`) → Where we work → BigCloseCTA.
-4. Footer is one horizontal row at `≥768px`, 3 stacked rows below.
-5. `npm run` build (auto) reports no TS errors from removed exports.
+- Cream background (no dark slab, no radial gradients).
+- Centered: short headline (`text-headline`), one-line lede, one solid evergreen CTA.
+- Drop the embedded `ConsultationForm`, drop the "Or write / Or call" panel, drop the secondary CTA, drop the `tone="light"` codepath.
+- All callers (`Index`, `About`, `Services`, `Work`) use the same one variant — no `variant` prop.
+
+This eliminates the most visually heavy element on the site and matches RoyalMechanical's quiet closing rhythm. The `/contact` page is one click away from any CTA, so the home page does not need to embed the form.
+
+## Footer — drop the second row
+
+Remove the `border-t` "© ... Alberta, Canada" sub-row. Move the copyright into the existing single horizontal row, replacing the brand wordmark's right-side text. Result: one row, one rule above it from the page.
+
+## Memory updates (`mem://index.md`)
+
+Add to Core:
+- Home is exactly 3 sections: Hero, Recent work (6 tiles), BigCloseCTA. Never re-add ServicesGrid, HowItGoes, or the area rail to `/`.
+- `BigCloseCTA` is one quiet cream variant — never the dark evergreen slab, never embeds the form, never carries a secondary CTA.
+- Headlines on Hero + SubPageHero are plain `text-foreground` — no `accentWord` italic-evergreen treatment.
+- About is exactly 2 prose sections + the area rail.
+
+Drop superseded rules:
+- "Home `Hero` is type-only — eyebrow + H1 + subhead + one solid evergreen CTA" → eyebrow line removed.
+- "BigCloseCTA full variant: no decorative ridge SVG" → entire `full` variant retired, rule moot.
+- "`SubPageHero` accent words use italic-evergreen treatment only" → accent treatment retired entirely.
+- "Home renders an inline 6-tile Recent Work preview" → keep, but home no longer has Services or Areas above it.
+- "Sub-pages close with `<BigCloseCTA variant="compact" />`" → no variant prop now.
+
+## Component deletions / orphans to clean
+
+After this round, audit and delete if unreferenced:
+- `HowItGoes.tsx` (no longer used anywhere)
+- `ServicesGrid.tsx` (no longer used anywhere — `/services` renders its own grid inline)
+- `RecentWorkPreview.tsx` stays
+- `SectionTransition.tsx` — verify still used; if only home used it, delete
+- `Eyebrow.tsx` — verify usage; likely still used on About area rail label
+
+## Out of scope (for this round)
+
+- Photography swap — `ProjectPlaceholder` keeps its current image-plate look.
+- `ConsultationForm` internals — still 3-step wizard.
+- Navigation drawer / header — already R12-clean, untouched.
+- `/contact` form fields — still Name / Email or phone / About your project.
+
+## Files to edit
+
+```text
+src/pages/Index.tsx              — drop 3 sections, keep 3
+src/pages/About.tsx              — merge philosophy+respect into "How we work"
+src/pages/Services.tsx           — trim SubPageHero subhead
+src/pages/Work.tsx               — drop SubPageHero subhead
+src/pages/Contact.tsx            — drop sticky left rail, single column
+src/pages/ThankYou.tsx           — drop sign-off section
+src/components/Hero.tsx          — drop eyebrow line + italic-evergreen accent
+src/components/SubPageHero.tsx   — drop bloom, folio, accentWord, vignette, secondaryCta
+src/components/BigCloseCTA.tsx   — replace with one quiet cream variant
+src/components/Footer.tsx        — collapse to one row
+mem://index.md                   — Core rules updated
+```
+
+Files to delete after orphan check:
+```text
+src/components/HowItGoes.tsx
+src/components/ServicesGrid.tsx
+(maybe) src/components/SectionTransition.tsx
+```
+
+## Result
+
+Home page reads top to bottom in roughly 4 screens: the promise, the work, the close. Sub-pages each carry one job (who, what, where, contact) with no decorative scaffolding around it. The whole site shares one CTA shape, one headline shape, and one closing rhythm — the level of restraint Fantasy.co and RoyalMechanical earn through omission rather than addition.
