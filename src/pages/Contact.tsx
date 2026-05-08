@@ -60,7 +60,6 @@ const Contact = () => {
             >
               <SectionHeader
                 id="form-heading"
-                eyebrow="What happens"
                 title="Write. We reply."
                 lede="Within two business days, from Cory directly."
                 bottomGap="none"
