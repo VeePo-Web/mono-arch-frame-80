@@ -39,7 +39,7 @@ const ServicesGrid = () => {
             return (
               <Link
                 key={s.slug}
-                to={s.href}
+                to="/services"
                 data-reveal
                 style={{ ["--reveal-delay" as string]: `${180 + i * 100}ms` }}
                 className={cn(
@@ -71,14 +71,6 @@ const ServicesGrid = () => {
                   <p className={cn(BODY.standard, "mt-3 max-w-[34ch]")}>
                     {s.promise}
                   </p>
-                  <span className="mt-6 inline-flex items-center gap-2 text-minimal text-evergreen">
-                    <span>See {s.shortName.toLowerCase()}</span>
-                    <ArrowUpRight
-                      className="h-4 w-4 transition-transform duration-500 ease-swift group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                    />
-                  </span>
                 </div>
               </Link>
             );

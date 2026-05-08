@@ -6,18 +6,10 @@ import HowItGoes from "@/components/HowItGoes";
 import ServicesGrid from "@/components/ServicesGrid";
 import RevealSection from "@/components/RevealSection";
 import BigCloseCTA from "@/components/BigCloseCTA";
-import BentoGrid, { BentoTile } from "@/components/ui/BentoGrid";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
-import { SECTION_PADDING, CONTENT_GAP } from "@/lib/spacing";
+import { SECTION_PADDING } from "@/lib/spacing";
 import { serviceAreas } from "@/data/serviceAreas";
-
-const AREA_BENTO_LINE: Record<string, string> = {
-  "bragg-creek": "Wooded lots and quiet drives.",
-  "rocky-view-county": "Acreages cared for over years.",
-  bearspaw: "Established homes, discreet work.",
-  "water-valley": "Practical work, real distance.",
-};
 
 const Index = () => {
   useSeo({
@@ -69,38 +61,30 @@ const Index = () => {
       {/* ─── § III — How it goes ─────────────────────────────────────── */}
       <HowItGoes />
 
-      {/* ─── § IV — Service areas (2x2 bento) ────────────────────────── */}
+      {/* ─── § IV — Service areas (named-list rail) ─────────────────── */}
       <RevealSection
         id="areas"
         aria-labelledby="areas-heading"
         className={cn(SECTION_PADDING.standard, "section-wash")}
-        style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 900px" }}
+        style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 600px" }}
       >
         <Container size="wide">
           <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
             <SectionHeader
               id="areas-heading"
+              eyebrow="Where we work"
               title="Local, by choice."
               titleWidth="none"
               drift
             />
           </div>
-
-          <BentoGrid layout="2x2">
-            {serviceAreas.map((area, i) => (
-              <div
-                key={area.slug}
-                data-reveal
-                style={{ ["--reveal-delay" as string]: `${180 + i * 100}ms` }}
-              >
-                <BentoTile
-                  title={area.name}
-                  body={AREA_BENTO_LINE[area.slug]}
-                  to={area.href}
-                />
-              </div>
-            ))}
-          </BentoGrid>
+          <p
+            className="mt-8 md:mt-10 text-headline-sm font-serif text-foreground/85 leading-snug max-w-3xl"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "180ms" }}
+          >
+            {serviceAreas.map((a) => a.name).join(" · ")}
+          </p>
         </Container>
       </RevealSection>
 

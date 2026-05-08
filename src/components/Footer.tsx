@@ -2,8 +2,14 @@ import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import Container from "./Container";
 import logo from "@/assets/logo/haven-creek-mark.webp";
-import { services } from "@/data/services";
 import { serviceAreas } from "@/data/serviceAreas";
+
+const PAGES = [
+  { label: "About", to: "/about" },
+  { label: "Services", to: "/services" },
+  { label: "Work", to: "/work" },
+  { label: "Contact", to: "/contact" },
+];
 
 /**
  * Footer — calm, useful colophon.
@@ -43,15 +49,15 @@ const Footer = () => {
           </div>
 
           <div className="col-span-2 md:col-span-3">
-            <p className="text-minimal text-evergreen/80 mb-5">Services</p>
+            <p className="text-minimal text-evergreen/80 mb-5">Pages</p>
             <ul className="space-y-3">
-              {services.map((s) => (
-                <li key={s.slug}>
+              {PAGES.map((p) => (
+                <li key={p.to}>
                   <Link
-                    to={s.href}
+                    to={p.to}
                     className="inline-flex min-h-[44px] items-center text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-base"
                   >
-                    {s.shortName}
+                    {p.label}
                   </Link>
                 </li>
               ))}
@@ -59,19 +65,10 @@ const Footer = () => {
           </div>
 
           <div className="hidden md:block md:col-span-3">
-            <p className="text-minimal text-evergreen/80 mb-5">Service areas</p>
-            <ul className="space-y-3">
-              {serviceAreas.map((a) => (
-                <li key={a.slug}>
-                  <Link
-                    to={a.href}
-                    className="inline-flex min-h-[44px] items-center text-body text-foreground/75 hover:text-evergreen transition-colors duration-300 text-base"
-                  >
-                    {a.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <p className="text-minimal text-evergreen/80 mb-5">Where we work</p>
+            <p className="text-body text-foreground/75 text-base leading-relaxed">
+              {serviceAreas.map((a) => a.name).join(" · ")}
+            </p>
           </div>
 
           <div className="col-span-2 md:col-span-3">
