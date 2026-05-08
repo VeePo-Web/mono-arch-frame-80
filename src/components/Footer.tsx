@@ -12,8 +12,7 @@ const PAGES = [
 
 /**
  * Footer — single horizontal row at md+ (brand · Pages inline · CTA),
- * stacked into 3 rows on mobile. Plus one quiet copyright line below.
- * The "Where we work" rail belongs on /about and /, not the footer.
+ * stacked on mobile. Copyright sits inline with the brand mark.
  */
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -22,7 +21,6 @@ const Footer = () => {
     <footer className="relative mt-20 md:mt-28 border-t border-border/70 bg-card">
       <Container size="wide">
         <div className="py-10 md:py-12 flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-10">
-          {/* Brand mark */}
           <Link
             to="/"
             aria-label="Haven Creek Renovations — home"
@@ -40,9 +38,11 @@ const Footer = () => {
             <span className="font-serif text-foreground/85 text-[1rem] leading-tight">
               Haven Creek Renovations
             </span>
+            <span className="text-minimal text-muted-foreground hidden md:inline">
+              © {year}
+            </span>
           </Link>
 
-          {/* Pages — inline list */}
           <nav aria-label="Footer">
             <ul className="flex flex-wrap items-center gap-x-7 md:gap-x-8 gap-y-3">
               {PAGES.map((p) => (
@@ -58,7 +58,6 @@ const Footer = () => {
             </ul>
           </nav>
 
-          {/* CTA */}
           <Link
             to="/contact"
             className="inline-flex items-center gap-3 min-h-[44px] text-minimal text-foreground hover:text-evergreen transition-colors duration-300 shrink-0"
@@ -68,14 +67,9 @@ const Footer = () => {
               <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
             </span>
           </Link>
-        </div>
 
-        <div className="footer-bottom-row border-t border-border/60 py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
-          <p className="text-minimal text-muted-foreground">
+          <p className="text-minimal text-muted-foreground md:hidden">
             © {year} Haven Creek Renovations
-          </p>
-          <p className="text-minimal text-muted-foreground">
-            Alberta, Canada
           </p>
         </div>
       </Container>
