@@ -202,20 +202,20 @@ const QuickContactSheet = () => {
                 onClick={() => setOpen(false)}
                 className={cn(
                   "group/btn flex flex-col gap-1 min-h-[68px] px-4 py-3 rounded-2xl",
-                  "bg-evergreen/[0.06] border border-evergreen/15 text-foreground",
-                  "active:scale-[0.98] hover:bg-evergreen/[0.10] transition-all duration-200",
+                  "bg-evergreen text-evergreen-foreground border border-transparent",
+                  "active:scale-[0.98] hover:bg-evergreen-hover transition-all duration-200",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
                 aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
               >
                 <span className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-evergreen shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                  <span className="text-[0.7rem] tracking-[0.22em] uppercase font-medium text-evergreen/90">Call</span>
+                  <Phone className="h-4 w-4 text-evergreen-foreground shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  <span className="text-[0.7rem] tracking-[0.22em] uppercase font-medium text-evergreen-foreground/85">Call</span>
                 </span>
-                <span className="font-serif text-[0.98rem] tabular-nums text-foreground/90">
+                <span className="font-serif text-[0.98rem] tabular-nums text-evergreen-foreground">
                   {STUDIO_PHONE_DISPLAY}
                 </span>
-                <span className="text-[0.65rem] tracking-[0.16em] uppercase text-muted-foreground">
+                <span className="text-[0.65rem] tracking-[0.16em] uppercase text-evergreen-foreground/70">
                   Mon–Fri
                 </span>
               </a>
@@ -224,20 +224,20 @@ const QuickContactSheet = () => {
                 onClick={() => setOpen(false)}
                 className={cn(
                   "group/btn flex flex-col gap-1 min-h-[68px] px-4 py-3 rounded-2xl",
-                  "bg-evergreen/[0.06] border border-evergreen/15 text-foreground",
-                  "active:scale-[0.98] hover:bg-evergreen/[0.10] transition-all duration-200",
+                  "bg-evergreen text-evergreen-foreground border border-transparent",
+                  "active:scale-[0.98] hover:bg-evergreen-hover transition-all duration-200",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
                 aria-label={`Email ${STUDIO_EMAIL}`}
               >
                 <span className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-evergreen shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                  <span className="text-[0.7rem] tracking-[0.22em] uppercase font-medium text-evergreen/90">Email</span>
+                  <Mail className="h-4 w-4 text-evergreen-foreground shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  <span className="text-[0.7rem] tracking-[0.22em] uppercase font-medium text-evergreen-foreground/85">Email</span>
                 </span>
-                <span className="font-serif text-[0.95rem] text-foreground/90 truncate">
+                <span className="font-serif text-[0.95rem] text-evergreen-foreground truncate">
                   cory@haven…
                 </span>
-                <span className="text-[0.65rem] tracking-[0.16em] uppercase text-muted-foreground">
+                <span className="text-[0.65rem] tracking-[0.16em] uppercase text-evergreen-foreground/70">
                   Reply ≤ 2 days
                 </span>
               </a>
