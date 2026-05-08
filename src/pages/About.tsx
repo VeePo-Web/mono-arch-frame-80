@@ -7,6 +7,7 @@ import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
+import { serviceAreas } from "@/data/serviceAreas";
 
 const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
@@ -110,13 +111,32 @@ const About = () => {
         </Container>
       </RevealSection>
 
-      {/* §IV "A longer horizon" — folded into §I working philosophy. */}
+      {/* § III — Where we work (named-list rail; replaces /service-areas) */}
+      <RevealSection id="areas" aria-labelledby="areas-heading" className={SECTION}>
+        <Container size="wide">
+          <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
+            <SectionHeader
+              id="areas-heading"
+              eyebrow="Where we work"
+              title="Local, by choice."
+              titleWidth="none"
+              bottomGap="none"
+            />
+          </div>
+          <p
+            className="mt-8 md:mt-10 text-headline-sm font-serif text-foreground/85 leading-snug max-w-3xl"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "180ms" }}
+          >
+            {serviceAreas.map((a) => a.name).join(" · ")}
+          </p>
+        </Container>
+      </RevealSection>
 
       <BigCloseCTA
         variant="compact"
         heading="Tell us about the property and what's on your mind."
         primary={{ to: "/contact", label: "Get a Free Quote" }}
-        secondary={{ to: "/services", label: "What we offer" }}
       />
     </main>
   );

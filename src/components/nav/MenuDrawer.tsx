@@ -10,22 +10,10 @@ interface MenuDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const SERVICES = [
-  { label: "Interior Finishing", to: "/services/interior-finishing" },
-  { label: "Exterior Repairs", to: "/services/exterior-finishing" },
-  { label: "Decking", to: "/services/decking" },
-];
-
-const AREAS = [
-  { label: "Bragg Creek", to: "/service-areas/bragg-creek" },
-  { label: "Rocky View County", to: "/service-areas/rocky-view-county" },
-  { label: "Bearspaw", to: "/service-areas/bearspaw" },
-  { label: "Water Valley", to: "/service-areas/water-valley" },
-];
-
-const COMPANY = [
+const PAGES = [
   { label: "About", to: "/about" },
-  { label: "Selected Work", to: "/work" },
+  { label: "Services", to: "/services" },
+  { label: "Work", to: "/work" },
   { label: "Contact", to: "/contact" },
 ];
 
@@ -113,43 +101,17 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
               Home
             </Link>
 
-            {/* Three same-shape columns: Services · Service Areas · Company */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 lg:gap-16 max-w-5xl">
-              <DrawerColumn label="Services" delay={200}>
-                {SERVICES.map((s) => (
+            {/* One Pages column — top-level routes only */}
+            <div className="max-w-md">
+              <DrawerColumn label="Pages" delay={200}>
+                {PAGES.map((p) => (
                   <DrawerLink
-                    key={s.to}
-                    to={s.to}
+                    key={p.to}
+                    to={p.to}
                     onClick={() => onOpenChange(false)}
-                    active={pathname === s.to}
+                    active={pathname === p.to}
                   >
-                    {s.label}
-                  </DrawerLink>
-                ))}
-              </DrawerColumn>
-
-              <DrawerColumn label="Service Areas" delay={300}>
-                {AREAS.map((a) => (
-                  <DrawerLink
-                    key={a.to}
-                    to={a.to}
-                    onClick={() => onOpenChange(false)}
-                    active={pathname === a.to}
-                  >
-                    {a.label}
-                  </DrawerLink>
-                ))}
-              </DrawerColumn>
-
-              <DrawerColumn label="Company" delay={400}>
-                {COMPANY.map((c) => (
-                  <DrawerLink
-                    key={c.to}
-                    to={c.to}
-                    onClick={() => onOpenChange(false)}
-                    active={pathname === c.to}
-                  >
-                    {c.label}
+                    {p.label}
                   </DrawerLink>
                 ))}
               </DrawerColumn>
