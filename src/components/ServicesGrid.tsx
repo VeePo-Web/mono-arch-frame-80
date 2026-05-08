@@ -1,80 +1,46 @@
-import { Link } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
-import { cn } from "@/lib/utils";
 import Container from "./Container";
 import RevealSection from "./RevealSection";
 import SectionHeader from "./SectionHeader";
-import { BODY, EYEBROW } from "@/lib/typography";
 import { SECTION_PADDING } from "@/lib/spacing";
 import { services } from "@/data/services";
-import { servicePhotos } from "@/assets/photography";
 
 /**
- * ServicesGrid — three quiet service cards, side-by-side on lg+, stacked
- * on mobile. Replaces the cinematic ServiceMarquee. One job per card:
- * photo, name, one-line promise, three-bullet scope, ghost arrow.
+ * ServicesGrid — type-only home preview of the three services.
+ *
+ * Identical content treatment to `/services` (title + promise + cardBody).
+ * No photo cards, no per-card link — services are non-clickable text on
+ * both `/` and `/services`. One service treatment site-wide.
  */
-
 const ServicesGrid = () => {
   return (
     <RevealSection
       id="services-preview"
       aria-labelledby="services-preview-heading"
       className={SECTION_PADDING.standard}
-      style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 900px" }}
+      style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 700px" }}
     >
       <Container size="wide">
         <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
           <SectionHeader
             id="services-preview-heading"
-            eyebrow="What we build"
+            eyebrow="What we do"
             title="Three services. One standard."
             lede="Interior finishing leads — that's where the craft is felt most clearly. Exterior repairs and decking carry the same care."
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {services.map((s, i) => {
-            const photo = servicePhotos[s.slug];
-            return (
-              <Link
-                key={s.slug}
-                to="/services"
-                data-reveal
-                style={{ ["--reveal-delay" as string]: `${180 + i * 100}ms` }}
-                className={cn(
-                  "group block rounded-sm overflow-hidden",
-                  "border border-evergreen/10 bg-background/40",
-                  "transition-colors duration-500 hover:border-evergreen/30",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-4 focus-visible:ring-offset-background",
-                )}
-                aria-label={`${s.title} — ${s.promise}`}
-              >
-                <div className="relative aspect-[16/10] overflow-hidden bg-evergreen/5">
-                  {photo && (
-                    <img
-                      src={photo}
-                      alt={s.title}
-                      width={1280}
-                      height={800}
-                      loading={i === 0 ? "eager" : "lazy"}
-                      decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-700 ease-weighted group-hover:scale-[1.02]"
-                    />
-                  )}
-                </div>
-                <div className="p-6 md:p-7">
-                  <p className={EYEBROW.standard}>{s.shortName}</p>
-                  <h3 className="mt-3 text-headline-sm font-serif text-foreground">
-                    {s.title}
-                  </h3>
-                  <p className={cn(BODY.standard, "mt-3 max-w-[34ch]")}>
-                    {s.promise}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+          {services.map((s, i) => (
+            <article
+              key={s.slug}
+              data-reveal
+              style={{ ["--reveal-delay" as string]: `${180 + i * 110}ms` }}
+            >
+              <h3 className="text-headline-sm font-serif text-foreground">{s.title}</h3>
+              <p className="mt-4 text-body text-foreground/85 leading-relaxed">{s.promise}</p>
+              <p className="mt-3 text-body text-muted-foreground leading-relaxed">{s.cardBody}</p>
+            </article>
+          ))}
         </div>
       </Container>
     </RevealSection>
