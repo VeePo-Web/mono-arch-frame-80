@@ -19,17 +19,14 @@ import { SECTION_PADDING } from "@/lib/spacing";
 
 const STEPS = [
   {
-    n: "01",
     t: "Conversation",
     b: "We talk through the property — priorities, timeline, and whether the work is one project or part of a longer plan.",
   },
   {
-    n: "02",
     t: "Planning",
     b: "Scope, materials, and the practical realities of working on a rural property — clarified before we lift a tool.",
   },
   {
-    n: "03",
     t: "Hands-on build",
     b: "Built and walked-through by the same person. Fit, finish, and the small details that decide whether it reads as finished.",
   },
