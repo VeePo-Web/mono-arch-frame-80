@@ -112,10 +112,6 @@ const Hero = () => {
                 </span>
               </Link>
 
-              <Link to="/work" className="cta-ghost group/ghost">
-                <span>View the Work</span>
-                <span className="cta-ghost__rule" aria-hidden="true" />
-              </Link>
             </div>
 
           </div>

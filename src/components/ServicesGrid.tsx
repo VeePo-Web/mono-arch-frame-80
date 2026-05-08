@@ -15,24 +15,6 @@ import { servicePhotos } from "@/assets/photography";
  * photo, name, one-line promise, three-bullet scope, ghost arrow.
  */
 
-const SCOPE: Record<string, string[]> = {
-  "interior-finishing": [
-    "Trim, casing, transitions",
-    "Built-ins & finish carpentry",
-    "Doors, hardware, fit-and-finish",
-  ],
-  "exterior-finishing": [
-    "Siding, soffit, fascia",
-    "Entrances, stairs, railings",
-    "Weather-side detail & rebuild",
-  ],
-  decking: [
-    "Site-aware planning",
-    "Composite, cedar, treated",
-    "Built for rural exposure",
-  ],
-};
-
 const ServicesGrid = () => {
   return (
     <RevealSection
@@ -89,13 +71,6 @@ const ServicesGrid = () => {
                   <p className={cn(BODY.standard, "mt-3 max-w-[34ch]")}>
                     {s.promise}
                   </p>
-                  <ul className="mt-5 space-y-2 border-l border-evergreen/15 pl-4">
-                    {(SCOPE[s.slug] ?? []).map((line) => (
-                      <li key={line} className="text-sm text-foreground/75 leading-relaxed">
-                        {line}
-                      </li>
-                    ))}
-                  </ul>
                   <span className="mt-6 inline-flex items-center gap-2 text-minimal text-evergreen">
                     <span>See {s.shortName.toLowerCase()}</span>
                     <ArrowUpRight

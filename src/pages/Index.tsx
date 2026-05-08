@@ -81,7 +81,6 @@ const Index = () => {
             <SectionHeader
               id="areas-heading"
               title="Local, by choice."
-              lede="Four communities. Each one different in pace, exposure, and the kind of property care it asks for."
               titleWidth="none"
               drift
             />

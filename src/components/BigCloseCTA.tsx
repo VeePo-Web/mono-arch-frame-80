@@ -51,23 +51,6 @@ const BigCloseCTA = ({
         ].join(", "),
       }}
     >
-      {!compact && (
-        <svg
-          aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 w-full h-16 md:h-[120px] text-background/[0.06] pointer-events-none"
-          viewBox="0 0 1440 120"
-          preserveAspectRatio="none"
-          fill="none"
-        >
-          <path
-            d="M 0 100 L 120 100 L 160 70 L 200 100 L 360 100 L 400 75 L 440 50 L 480 75 L 520 100 L 700 100 L 760 60 L 820 100 L 980 100 L 1020 80 L 1080 65 L 1140 80 L 1180 100 L 1440 100"
-            stroke="currentColor"
-            strokeWidth="1"
-          />
-          <line x1="0" y1="100" x2="1440" y2="100" stroke="currentColor" strokeWidth="1" />
-        </svg>
-      )}
-
       <Container size="wide">
         {compact ? (
           <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
@@ -120,29 +103,25 @@ const BigCloseCTA = ({
                 drift
               />
 
-              <div className="mt-12 lg:pt-10 lg:border-t lg:border-background/15 max-w-[46ch]">
-                <div className="grid grid-cols-1 gap-2 sm:gap-3">
+              <div className="mt-10 lg:pt-8 lg:border-t lg:border-background/15 max-w-[46ch] space-y-2 text-background/75 text-[0.95rem]">
+                <p>
+                  <span className="text-background/55">Or write —</span>{" "}
                   <a
                     href="mailto:cory@havencreekrenovations.com"
-                    className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/15 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
-                    aria-label="Email cory@havencreekrenovations.com"
+                    className="font-serif italic underline-offset-4 hover:underline hover:text-background transition-colors"
                   >
-                    <Mail className="h-4 w-4 text-background/80 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                    <span className="font-serif italic text-[0.98rem] truncate">
-                      cory@havencreekrenovations.com
-                    </span>
+                    cory@havencreekrenovations.com
                   </a>
+                </p>
+                <p>
+                  <span className="text-background/55">Or call &nbsp;—</span>{" "}
                   <a
                     href="tel:+14039707691"
-                    className="group/btn flex items-center gap-3 min-h-[56px] px-4 rounded-full bg-background/[0.06] text-background border border-background/15 hover:bg-background/[0.10] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep"
-                    aria-label="Call 403 970-7691"
+                    className="font-serif italic tabular-nums underline-offset-4 hover:underline hover:text-background transition-colors"
                   >
-                    <Phone className="h-4 w-4 text-background/80 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                    <span className="font-serif italic text-[0.98rem] tabular-nums">
-                      403 970-7691
-                    </span>
+                    403 970-7691
                   </a>
-                </div>
+                </p>
               </div>
             </div>
 
