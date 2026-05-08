@@ -4,6 +4,7 @@ import SectionHeader from "@/components/SectionHeader";
 import Hero from "@/components/Hero";
 import HowItGoes from "@/components/HowItGoes";
 import ServicesGrid from "@/components/ServicesGrid";
+import RecentWorkPreview from "@/components/RecentWorkPreview";
 import RevealSection from "@/components/RevealSection";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import { LocalBusinessJsonLd, WebSiteJsonLd, FAQJsonLd } from "@/components/JsonLd";
@@ -55,8 +56,11 @@ const Index = () => {
 
       <Hero />
 
-      {/* ─── § I — Services grid ─────────────────────────────────────── */}
+      {/* ─── § I — Services (type-only) ──────────────────────────────── */}
       <ServicesGrid />
+
+      {/* ─── § II — Recent work (inline 6-tile gallery) ──────────────── */}
+      <RecentWorkPreview />
 
       {/* ─── § III — How it goes ─────────────────────────────────────── */}
       <HowItGoes />

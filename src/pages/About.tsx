@@ -12,12 +12,7 @@ import { serviceAreas } from "@/data/serviceAreas";
 const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
-const RESPECT = [
-  { n: "01", title: "Access", body: "We arrive when we said we would, take the route that respects the property, and leave gates the way we found them." },
-  { n: "02", title: "Animals & family routines", body: "Dogs, horses, kids, work-from-home — the day on the property goes on. We work around it, not through it." },
-  { n: "03", title: "Equipment & materials", body: "Staged where they belong, off the lawn, off the drive. Cleaned up at the end of every day, not the end of the job." },
-  { n: "04", title: "Leave it as we found it", body: "Minus the work that needed doing. The site is part of the deliverable." },
-];
+// "Property respect" is now prose — no `RESPECT` array, no `<ol>`.
 
 
 
@@ -92,20 +87,19 @@ const About = () => {
               />
             </div>
 
-            <div className="lg:col-span-7 lg:pl-8">
-              <ol className="divide-y divide-border/60 border-y border-border/60">
-                {RESPECT.map((step, i) => (
-                  <li
-                    key={step.n}
-                    className="py-8 lg:py-10"
-                    data-reveal
-                    style={{ ["--reveal-delay" as string]: `${300 + i * 140}ms` }}
-                  >
-                    <h3 className="text-title text-foreground">{step.title}</h3>
-                    <p className="mt-3 text-body text-muted-foreground max-w-[58ch]">{step.body}</p>
-                  </li>
-                ))}
-              </ol>
+            <div className="lg:col-span-7 lg:pl-8 space-y-7" data-reveal style={{ ["--reveal-delay" as string]: "260ms" }}>
+              <p className="text-body text-foreground/85 leading-relaxed max-w-[58ch]">
+                In practice this means careful access — the route, the gates, the
+                hours. It means working around dogs, horses, kids, and the
+                rhythm of a working acreage. Equipment and materials stay where
+                they belong, off the lawn and off the drive, and we clean up at
+                the end of every day, not the end of the job.
+              </p>
+              <p className="text-body text-muted-foreground leading-relaxed max-w-[58ch]">
+                When the project closes we leave the property the way we found
+                it — minus the work that needed doing. The site is part of the
+                deliverable.
+              </p>
             </div>
           </div>
         </Container>
