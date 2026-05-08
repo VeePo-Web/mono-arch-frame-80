@@ -95,7 +95,6 @@ const Work = () => {
       />
 
       <SubPageHero
-        eyebrowLabel="THE WORK"
         headline="Real properties. Real outcomes. Worth a closer look."
         accentWord="closer"
         subhead="Each plate is a record of a real project — what we found, what we did, and what changed for the homeowner."

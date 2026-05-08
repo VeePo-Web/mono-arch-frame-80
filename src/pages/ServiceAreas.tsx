@@ -34,7 +34,6 @@ const ServiceAreas = () => {
       />
 
       <SubPageHero
-        eyebrowLabel="WHERE WE WORK"
         headline="Local, by choice."
         accentWord="choice"
         subhead="Four communities. Each different in pace, exposure, and the kind of property care it asks for. We chose this footprint so the work could stay personal."

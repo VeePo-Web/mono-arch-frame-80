@@ -51,7 +51,6 @@ const ExteriorFinishing = () => {
       />
 
       <SubPageHero
-        eyebrowLabel="EXTERIOR FINISHING & REPAIRS"
         headline="Practical protection for the property you keep."
         accentWord="protection"
         subhead="Repairs, finishing, and weather-facing detail work that respects the home and the land around it. Built for prairie exposure and a long horizon."

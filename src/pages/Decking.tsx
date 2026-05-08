@@ -58,7 +58,6 @@ const Decking = () => {
       />
 
       <SubPageHero
-        eyebrowLabel="DECKING"
         headline="Outdoor space that earns its place."
         accentWord="earns"
         subhead="A deck is a way to live better on the property. We plan it around how you actually use the back of your home — and build it to stay there."

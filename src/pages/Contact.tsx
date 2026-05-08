@@ -43,7 +43,6 @@ const Contact = () => {
       />
 
       <SubPageHero
-        eyebrowLabel="CONTACT"
         headline="Let's talk through your property."
         accentWord="talk"
         subhead="This is the beginning of a relationship, not a sales trap. Share a few details and we'll come prepared."
