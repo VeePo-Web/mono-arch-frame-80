@@ -32,7 +32,6 @@ interface SubPageHeroProps {
  * Eyebrow + headline + optional subhead + CTA pair. Single anchor across pages.
  */
 const SubPageHero = ({
-  eyebrowLabel,
   headline,
   accentWord,
   subhead,
@@ -43,7 +42,7 @@ const SubPageHero = ({
   compact = false,
 }: SubPageHeroProps) => {
   // Split the headline around accentWord (first occurrence) so we can render
-  // the accent inline with the italic + underline treatment.
+  // the accent inline with the italic-evergreen treatment.
   const renderedHeadline = (() => {
     if (!accentWord) return <span>{headline}</span>;
     const idx = headline.indexOf(accentWord);
@@ -53,24 +52,7 @@ const SubPageHero = ({
     return (
       <>
         {before}
-        <span className="relative inline-block text-display-italic text-evergreen">
-          {accentWord}
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 200 12"
-            className="absolute left-0 right-0 -bottom-2 w-full h-2.5 overflow-visible"
-            fill="none"
-          >
-            <path
-              d="M 4 8 C 50 2, 110 10, 196 5"
-              stroke="hsl(var(--evergreen) / 0.55)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              className="vignette-stroke"
-              style={{ animationDelay: "1.0s" }}
-            />
-          </svg>
-        </span>
+        <span className="text-display-italic text-evergreen">{accentWord}</span>
         {after}
       </>
     );
