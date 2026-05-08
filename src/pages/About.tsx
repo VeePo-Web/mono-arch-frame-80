@@ -12,12 +12,7 @@ import { serviceAreas } from "@/data/serviceAreas";
 const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
-const RESPECT = [
-  { n: "01", title: "Access", body: "We arrive when we said we would, take the route that respects the property, and leave gates the way we found them." },
-  { n: "02", title: "Animals & family routines", body: "Dogs, horses, kids, work-from-home — the day on the property goes on. We work around it, not through it." },
-  { n: "03", title: "Equipment & materials", body: "Staged where they belong, off the lawn, off the drive. Cleaned up at the end of every day, not the end of the job." },
-  { n: "04", title: "Leave it as we found it", body: "Minus the work that needed doing. The site is part of the deliverable." },
-];
+// "Property respect" is now prose — no `RESPECT` array, no `<ol>`.
 
 
 
