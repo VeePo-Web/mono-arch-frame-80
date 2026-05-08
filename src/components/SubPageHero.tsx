@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "./Container";
-import Eyebrow from "./Eyebrow";
 
 interface CtaSpec {
   to: string;
@@ -11,7 +10,8 @@ interface CtaSpec {
 }
 
 interface SubPageHeroProps {
-  eyebrowLabel: string;
+  /** Optional — retired in usage. Kept for backwards compat; never rendered. */
+  eyebrowLabel?: string;
   /** Plain headline. Use `accentWord` to italicize+underline a single word. */
   headline: string;
   /** Optional accent word — italicized in evergreen with hand-drawn underline. */

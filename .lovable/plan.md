@@ -1,71 +1,50 @@
-## Round 9 — final declutter sweep
+## Round 10 — chrome-off-the-headlines pass
 
-After round 8, the structural noise is gone. What remains is a thinner layer of **duplicate CTAs, decorative flourishes, and "spec-sheet" detail bleed** — the same micro-busyness that separates FlexServices's calm read from a "lots going on" read. Seven small trims, all surgical, none touching the questionnaire.
+Round 9 cleared the duplicate CTAs and decorative bands. The remaining noise is **header chrome that restates what the page already announces** — page-name eyebrows above page-name H1s, hand-drawn accent underlines that compete with the type, and SectionHeader stacks above one-line lists. Three surgical trims.
 
 ---
 
-### 1. Hero — collapse the CTA pair into a single primary
+### 1. `SubPageHero` — retire the page-name eyebrow + accent-word SVG underline
 
-Hero currently stacks **two** buttons under the H1: solid "Get a Free Quote" + ghost "View the Work". The nav already pins a permanent Quote button at all times, and "View the Work" is one click away in the menu / footer. Two side-by-side CTAs at viewport 0 is the loudest thing on the page.
+Every non-home route currently opens with `EYEBROW (CONTACT / ABOUT / SERVICES / DECKING…) → H1`. The eyebrow restates what the H1 and the nav already announce. On a calm editorial page the eyebrow reads as nameplate noise — exactly the "lots going on" feeling the user keeps flagging.
 
-**Action:** In `Hero.tsx`, remove the secondary "View the Work" ghost link. Keep only the primary "Get a Free Quote" anchor.
+Separately, `SubPageHero` paints a hand-drawn `<svg>` underline beneath any `accentWord` — same decorative-flourish category we just killed on `BigCloseCTA`. The italic evergreen treatment alone carries plenty of accent.
 
-### 2. ServicesGrid cards — drop the 3-bullet scope list
+**Action:**
+- In `SubPageHero.tsx`: make `eyebrowLabel` optional and stop rendering it (drop the `<Eyebrow />` block + `reveal-up` wrapper). Remove the `<svg>` accent underline; keep the italic-evergreen `accentWord` span.
+- Delete the `eyebrowLabel="…"` prop from every caller: `About.tsx`, `Contact.tsx`, `Decking.tsx`, `ExteriorFinishing.tsx`, `InteriorFinishing.tsx`, `NotFound.tsx`, `ServiceAreas.tsx`, `Services.tsx`, `ThankYou.tsx`, `Work.tsx`, and `AreaPage.tsx`.
+- Keep the `folio` prop intact — it's used by area pages for "T0L · Bragg Creek" locator text and that *does* add information, not restate it.
 
-Each home/Services-shared card currently renders: photo → eyebrow (`Interior`) → H3 → promise → **vertical scope `<ul>` (3 bullets)** → arrow row. Those three bullets are a duplicate of what the service-detail page already covers — and on mobile they push the third card off the first scroll. The card's job is "tease the service," not "spec it."
+### 2. `Contact.tsx` — strip the SectionHeader stacks around form + direct-contact
 
-**Action:** In `ServicesGrid.tsx`, delete the `SCOPE` map and the `<ul>` block. Card becomes: photo → eyebrow → title → one-line promise → arrow row. (The `SCOPE` constant is preserved on the new `Services.tsx` row rail, where it belongs.)
+Currently:
+- Left rail: `eyebrow="What happens" → title="Write. We reply." → lede="Within two business days, from Cory directly."` — eyebrow restates the title's topic (memory rule says either/or).
+- Below the form: `eyebrow="Or reach us directly" → title="Prefer to write or call?" → ul of email + phone` — three rows of header chrome above two contact rows.
 
-### 3. Areas section — drop the lede sentence
+**Action:**
+- Drop the `eyebrow="What happens"` prop from the form-heading SectionHeader. Title + lede only.
+- Replace the lower SectionHeader entirely with a single small label line: `<p className={EYEBROW.standard}>Or reach us directly</p>` above the existing `<ul>` (no H3, no italic restatement). The two contact rows are self-evidently the alternative.
 
-The Home `#areas` section currently runs a `SectionHeader` with both `title="Local, by choice."` and `lede="Four communities. Each one different in pace, exposure…"`. The four BentoTiles below already describe each area in one line — the lede is restating what the grid is about to show.
+### 3. `HowItGoes.tsx` — drop dead `n: "01"` field from STEPS data
 
-**Action:** In `Index.tsx`, remove the `lede` prop from the `#areas` SectionHeader. Title alone.
+The `STEPS` array still carries `n: "01" / "02" / "03"` even though the JSX no longer renders the numerals (we killed that in round 8). Dead data drift — easy to revive by accident.
 
-### 4. BigCloseCTA (full variant) — retire the decorative SVG ridge
-
-The full-variant home close currently paints a hand-drawn ridge silhouette `<svg>` along the bottom of the evergreen band. It doesn't carry information — it's just a decorative flourish layered on top of an already-busy band that contains a heading, a contact-row, AND an embedded form.
-
-**Action:** In `BigCloseCTA.tsx`, delete the `{!compact && <svg…>}` block entirely. The radial-gradient background is enough atmosphere.
-
-### 5. BigCloseCTA (full variant) — text-link contact row, not chip buttons
-
-The full variant currently renders two big rounded chip buttons (mail + phone) directly across from the embedded form. That's three CTA clusters in one viewport (form submit + email button + phone button), and it visually competes with the form's own submit.
-
-**Action:** Replace the two chip-button anchors with a quiet two-line text-link block:
-```
-Or write —  cory@havencreekrenovations.com
-Or call  —  403 970-7691
-```
-No background, no chip, no border. Underline-on-hover only. Same info, fraction of the visual weight.
-
-### 6. Footer — drop the contact-column descriptive sentence
-
-Footer's "Contact" column currently has: label → "We're a small team — every note reaches Cory directly." → CTA. The descriptive sentence is friendly but the sentiment already runs through the Home hero, About page, ConsultationForm helper, and BigCloseCTA. In the footer it's just noise above the CTA.
-
-**Action:** In `Footer.tsx`, remove the `<p>We're a small team…</p>` line. Column becomes: label → CTA.
-
-### 7. MenuDrawer — remove the duplicate phone/email row
-
-Below the three drawer columns sits a tiny `STUDIO_PHONE_DISPLAY · STUDIO_EMAIL` row. Phone is already in the persistent header (icon at <lg, full number at lg+), email is on the Contact page, and the drawer's bottom rail already has a "Get a Free Quote" CTA. Three places to surface contact in one drawer is one too many.
-
-**Action:** In `MenuDrawer.tsx`, delete the phone+email row beneath the columns (the `menu-drawer__label mt-8 md:mt-12 …` block). The bottom-rail CTA carries the action.
+**Action:** Remove the `n` field from each entry. Keep `t` + `b`. Drop the `key={step.n}` and use `key={step.t}` instead.
 
 ---
 
 ### Memory updates
 
 Add to Core:
-- **"Hero (and any landing-style hero) carries one primary CTA only — never a primary + ghost pair. Nav surfaces the secondary."**
-- **"ServicesGrid cards are tease-only — photo + eyebrow + title + one-line promise + arrow. Scope bullets live on the Services row rail and the service-detail pages, never the card."**
-- **"BigCloseCTA full variant: no decorative ridge SVG. Contact alternates render as quiet text links beside the form, never chip-buttons."**
+- **"Sub-page heroes do NOT carry a page-name eyebrow (CONTACT, ABOUT, SERVICES…) — the H1 + nav already name the page. `eyebrowLabel` is retired from `SubPageHero` callers; only `folio` survives, for genuine locator info."**
+- **"`SubPageHero` accent words use italic-evergreen treatment only — no hand-drawn SVG underline. Same constraint as the BigCloseCTA decorative-ridge ban."**
 
-### Out of scope (intentionally)
+### Out of scope
 
-- No content rewrites — every trim is a deletion or a swap of treatment, not new copy.
-- No nav, hamburger, drawer-motion, or section-rail changes — that surface settled in round 7.
-- No new components, no new dependencies.
+- No nav, drawer, hamburger, section-rail, or motion changes.
+- No copy rewrites — only deletions of duplicative header chrome.
+- No new components, no new dependencies. `Eyebrow.tsx` stays (still used by `ServicesGrid`, project-proof rows, etc.).
 
 ### Files touched
 
-`src/components/Hero.tsx`, `src/components/ServicesGrid.tsx`, `src/pages/Index.tsx`, `src/components/BigCloseCTA.tsx`, `src/components/Footer.tsx`, `src/components/nav/MenuDrawer.tsx`, `mem://index.md`.
+`src/components/SubPageHero.tsx`, `src/components/HowItGoes.tsx`, `src/pages/Contact.tsx`, `src/pages/About.tsx`, `src/pages/Services.tsx`, `src/pages/ServiceAreas.tsx`, `src/pages/Work.tsx`, `src/pages/InteriorFinishing.tsx`, `src/pages/ExteriorFinishing.tsx`, `src/pages/Decking.tsx`, `src/pages/ThankYou.tsx`, `src/pages/NotFound.tsx`, `src/components/AreaPage.tsx`, `mem://index.md`.
