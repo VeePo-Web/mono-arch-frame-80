@@ -31,7 +31,9 @@ const PrimaryCTA = ({ to, children, variant = "primary", className, ariaLabel }:
         aria-label={ariaLabel}
         className={cn(
           base,
-          "px-7 py-3.5 rounded-md border border-evergreen/40 text-foreground hover:border-evergreen hover:bg-evergreen/[0.04] hover:-translate-y-px",
+          "bg-evergreen text-evergreen-foreground px-6 py-3 rounded-md min-h-[48px]",
+          "hover:bg-evergreen-hover hover:-translate-y-px",
+          "active:translate-y-0",
           className,
         )}
       >
