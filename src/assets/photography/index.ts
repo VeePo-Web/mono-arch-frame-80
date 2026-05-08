@@ -11,13 +11,8 @@
  * extending the relevant export.
  */
 
-import heroAcreage from "./hero-acreage-morning.jpg";
 import heroDetail from "./hero-detail-trim.jpg";
 import closingPrairie from "./closing-prairie-light.jpg";
-
-import serviceInterior from "./service-interior-finishing.jpg";
-import serviceExterior from "./service-exterior-finishing.jpg";
-import serviceDecking from "./service-decking.jpg";
 
 import workBraggCreekTrim from "./work-bragg-creek-trim-transitions.jpg";
 import workWaterValleyShelving from "./work-water-valley-builtin-shelving.jpg";
@@ -36,12 +31,8 @@ import deckingDetailEndgrain from "./decking-detail-endgrain.jpg";
 
 /** Hero / closing / atmospheric photography. */
 export const photography = {
-  heroAcreage,
   heroDetail,
   closingPrairie,
-  serviceInterior,
-  serviceExterior,
-  serviceDecking,
   areaFoothills,
   aboutToolsBench,
   closingPhotoMoment,
