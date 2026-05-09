@@ -52,7 +52,6 @@ const ThankYou = () => {
   const headline = personalized
     ? `Thank you, ${firstName}. We've got your note.`
     : "Thank you. We've got your note.";
-  const accent = personalized ? firstName : "got";
 
   return (
     <main id="main">
