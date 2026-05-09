@@ -1480,11 +1480,11 @@
 @layer components {
   /* Fluid type tokens — Fly4Me-style clamp scale, no breakpoint jumps. */
   :root {
-    --fs-display:  clamp(44px, 8.4vw, 104px);
-    --fs-headline: clamp(34px, 5.2vw, 76px);
-    --fs-section:  clamp(28px, 3.6vw, 56px);
-    --fs-title:    clamp(20px, 1.6vw, 26px);
-    --fs-lede:     clamp(17px, 1.1vw, 21px);
+    --fs-display:  clamp(44px, 6.6vw, 88px);
+    --fs-headline: clamp(34px, 5.0vw, 72px);
+    --fs-section:  clamp(26px, 3.2vw, 48px);
+    --fs-title:    clamp(19px, 1.4vw, 24px);
+    --fs-lede:     clamp(16px, 1.05vw, 20px);
     --space-section:    clamp(96px, 14vw, 192px);
     --space-section-sm: clamp(64px, 10vw, 128px);
   }
