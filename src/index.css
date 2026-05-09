@@ -1471,3 +1471,120 @@
     box-shadow: inset 0 -2px 0 hsl(var(--evergreen) / 0.55);
   }
 }
+
+/* ==========================================================================
+   Round 16 — Magazine audit. One typography system, one section rhythm,
+   one motion cadence, one Apple-soft photo plate, one row-wash hover.
+   ========================================================================== */
+
+@layer components {
+  /* Fluid type tokens — Fly4Me-style clamp scale, no breakpoint jumps. */
+  :root {
+    --fs-display:  clamp(44px, 8.4vw, 104px);
+    --fs-headline: clamp(34px, 5.2vw, 76px);
+    --fs-section:  clamp(28px, 3.6vw, 56px);
+    --fs-title:    clamp(20px, 1.6vw, 26px);
+    --fs-lede:     clamp(17px, 1.1vw, 21px);
+    --space-section:    clamp(96px, 14vw, 192px);
+    --space-section-sm: clamp(64px, 10vw, 128px);
+  }
+
+  .t-display {
+    font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
+    font-size: var(--fs-display);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  .t-headline {
+    font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
+    font-size: var(--fs-headline);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  .t-section {
+    font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
+    font-size: var(--fs-section);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  .t-title {
+    font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
+    font-size: var(--fs-title);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    font-weight: 400;
+  }
+  .t-lede {
+    font-family: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+    font-size: var(--fs-lede);
+    line-height: 1.55;
+    letter-spacing: -0.011em;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+  }
+  .t-body {
+    font-family: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+    font-size: 16.5px;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+  .t-eyebrow {
+    font-family: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+  }
+  .t-micro {
+    font-family: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Section rhythm — single source of truth. */
+  .section-y    { padding-top: var(--space-section);    padding-bottom: var(--space-section); }
+  .section-y-sm { padding-top: var(--space-section-sm); padding-bottom: var(--space-section-sm); }
+  .section-yt   { padding-top: var(--space-section); }
+  .section-yb   { padding-bottom: var(--space-section); }
+
+  /* Apple-soft hero plate — replaces the chunky inset shadow. */
+  .hero-plate {
+    border: 1px solid hsl(var(--foreground) / 0.08);
+    box-shadow: 0 30px 60px -28px hsl(20 8% 14% / 0.22);
+    background: hsl(var(--evergreen) / 0.04);
+  }
+
+  /* Row-wash hover — the Fly4Me/FlexServices list move. */
+  .row-wash {
+    transition: background-color 360ms var(--ease-weighted);
+  }
+  .row-wash:hover {
+    background-color: hsl(var(--evergreen) / 0.04);
+  }
+
+  /* Editorial wrap — preserve explicit <br/> line breaks at the rhythm. */
+  .wrap-editorial { text-wrap: pretty; }
+}
+
+/* Calmer, Apple-clean reveal — softer blur, slightly faster than 900ms. */
+@layer utilities {
+  [data-reveal] {
+    filter: blur(6px);
+    transform: translateY(20px);
+    transition:
+      opacity 800ms var(--ease-weighted),
+      transform 800ms var(--ease-weighted),
+      filter 800ms var(--ease-weighted);
+  }
+}
+
