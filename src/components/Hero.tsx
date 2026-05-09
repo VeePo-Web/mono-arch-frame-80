@@ -34,7 +34,7 @@ const Hero = () => {
 
             <h1
               id="hero-heading"
-              className="mt-7 t-display wrap-editorial text-foreground max-w-[14ch]"
+              className="mt-7 t-display wrap-editorial text-foreground"
             >
               <span className="block overflow-hidden">
                 <span className="block reveal-up" style={{ animationDelay: "160ms" }}>
@@ -43,7 +43,12 @@ const Hero = () => {
               </span>
               <span className="block overflow-hidden">
                 <span className="block reveal-up" style={{ animationDelay: "280ms" }}>
-                  for the property you value.
+                  for the property
+                </span>
+              </span>
+              <span className="block overflow-hidden">
+                <span className="block reveal-up" style={{ animationDelay: "380ms" }}>
+                  you value.
                 </span>
               </span>
             </h1>
