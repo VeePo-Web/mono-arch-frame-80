@@ -53,9 +53,9 @@ const RecentWorkPreview = () => {
                 priority={false}
                 className="transition-transform duration-700 ease-weighted group-hover:scale-[1.005]"
               />
-              <div className="mt-4">
-                <h3 className="text-title text-foreground">{p.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
+              <div className="mt-5 pt-3 border-t border-foreground/10 flex items-baseline justify-between gap-4">
+                <h3 className="t-title text-foreground">{p.title}</h3>
+                <p className="t-micro whitespace-nowrap">
                   {p.category} · {p.area}
                 </p>
               </div>
