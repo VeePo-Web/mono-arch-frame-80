@@ -4,7 +4,6 @@ import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
-import { SECTION_PADDING } from "@/lib/spacing";
 import { services } from "@/data/services";
 
 const SITE = "https://havencreekrenovations.ca";
@@ -32,22 +31,36 @@ const Services = () => {
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
       />
 
-      <RevealSection id="services-three" aria-labelledby="services-three-heading" className={SECTION_PADDING.standard}>
+      <RevealSection id="services-three" aria-labelledby="services-three-heading" className="section-y">
         <Container size="wide">
-          <h2 id="services-three-heading" className="sr-only">Our three services</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-10 mb-12 md:mb-20">
+            <p className="md:col-span-3 t-eyebrow">What we do</p>
+            <h2
+              id="services-three-heading"
+              className="md:col-span-9 t-section text-foreground max-w-[16ch]"
+            >
+              Three services, held to one standard.
+            </h2>
+          </div>
+
+          <ul className="border-t border-foreground/12">
             {services.map((s, i) => (
-              <article
+              <li
                 key={s.slug}
                 data-reveal
                 style={{ ["--reveal-delay" as string]: `${i * 110}ms` }}
+                className="row-wash border-b border-foreground/12 grid grid-cols-12 gap-6 items-baseline py-7 md:py-9 px-2 -mx-2"
               >
-                <h3 className="text-headline-sm font-serif text-foreground">{s.title}</h3>
-                <p className="mt-4 text-body text-foreground/85 leading-relaxed">{s.promise}</p>
-                <p className="mt-3 text-body text-muted-foreground leading-relaxed">{s.cardBody}</p>
-              </article>
+                <h3 className="col-span-12 md:col-span-5 t-section text-foreground">
+                  {s.title}
+                </h3>
+                <div className="col-span-12 md:col-span-7 space-y-3">
+                  <p className="t-body text-foreground/85">{s.promise}</p>
+                  <p className="t-body text-foreground/70">{s.cardBody}</p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </Container>
       </RevealSection>
 

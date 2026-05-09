@@ -11,8 +11,8 @@ interface BigCloseCTAProps {
 }
 
 /**
- * BigCloseCTA — one quiet cream variant. Centered headline + one-line lede + one CTA.
- * No dark slab, no embedded form, no secondary CTA.
+ * BigCloseCTA — magazine close. Hair rule above, .t-headline H2,
+ * one solid evergreen CTA. Same on every page.
  */
 const BigCloseCTA = ({
   heading = "Tell us about the place.",
@@ -23,20 +23,20 @@ const BigCloseCTA = ({
     <RevealSection
       id="final-cta"
       aria-labelledby="final-cta-heading"
-      className="pt-20 md:pt-28 pb-24 md:pb-32"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 420px" }}
+      className="section-y border-t border-foreground/10"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 480px" }}
     >
       <Container size="wide">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-3xl text-center">
           <h2
             id="final-cta-heading"
-            className="text-headline text-foreground reveal-up"
+            className="t-headline text-foreground reveal-up"
             style={{ animationDelay: "60ms" }}
           >
             {heading}
           </h2>
           <p
-            className="mt-5 text-subhead text-muted-foreground reveal-up"
+            className="mt-6 t-lede reveal-up"
             style={{ animationDelay: "180ms" }}
           >
             {lede}
@@ -48,7 +48,7 @@ const BigCloseCTA = ({
                 "group/btn inline-flex items-center gap-3 rounded-full",
                 "bg-evergreen text-evergreen-foreground",
                 "pl-7 pr-1.5 py-1.5 min-h-[52px] text-minimal",
-                "transition-all duration-500 ease-swift",
+                "transition-all duration-500 ease-weighted",
                 "hover:bg-evergreen-hover active:scale-[0.98]",
                 "shadow-[0_1px_0_hsl(145_22%_38%/0.4)_inset,0_18px_36px_-12px_hsl(145_24%_8%/0.30)]",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
