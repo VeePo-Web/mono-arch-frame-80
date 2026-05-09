@@ -57,9 +57,7 @@ const ThankYou = () => {
   return (
     <main id="main">
       <SubPageHero
-        compact
         headline={headline}
-        accentWord={accent}
         subhead="We respond within two business days. If your project is time-sensitive, mention it when we reach out."
       />
 
