@@ -52,14 +52,11 @@ const ThankYou = () => {
   const headline = personalized
     ? `Thank you, ${firstName}. We've got your note.`
     : "Thank you. We've got your note.";
-  const accent = personalized ? firstName : "got";
 
   return (
     <main id="main">
       <SubPageHero
-        compact
         headline={headline}
-        accentWord={accent}
         subhead="We respond within two business days. If your project is time-sensitive, mention it when we reach out."
       />
 

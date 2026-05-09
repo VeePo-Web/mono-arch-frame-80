@@ -1,5 +1,4 @@
 import Container from "@/components/Container";
-import SectionHeader from "@/components/SectionHeader";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
@@ -7,7 +6,6 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas } from "@/data/serviceAreas";
 
-const SECTION = "py-16 md:py-32";
 const SITE = "https://havencreekrenovations.ca";
 
 const About = () => {
@@ -33,58 +31,73 @@ const About = () => {
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
       />
 
-      {/* § I — How we work (philosophy + property respect, merged) */}
-      <RevealSection id="how-we-work" aria-labelledby="how-we-work-heading" className={SECTION}>
+      {/* § I — How we work */}
+      <RevealSection id="how-we-work" aria-labelledby="how-we-work-heading" className="section-y">
         <Container size="wide">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
-            <div className="lg:col-span-5" data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-              <SectionHeader
-                id="how-we-work-heading"
-                title="How we work."
-                titleWidth="none"
-                bottomGap="none"
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-8 md:gap-y-10">
+            <p className="md:col-span-3 t-eyebrow" data-reveal>How we work</p>
+            <h2
+              id="how-we-work-heading"
+              className="md:col-span-9 t-section text-foreground max-w-[18ch]"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "120ms" }}
+            >
+              Held to two standards — the work, and the experience.
+            </h2>
+          </div>
 
-            <div className="lg:col-span-7 space-y-7" data-reveal style={{ ["--reveal-delay" as string]: "180ms" }}>
-              <p className="text-body text-foreground/85 leading-relaxed max-w-[58ch]">
-                A finished renovation is judged twice. Once when it's done, and again every
-                day after. The first judgement is about quality — does the work fit, does
-                it last, does it read as resolved. The second is about the experience — what
-                it was like to live with the project from start to finish. We hold both
-                standards because the homeowner does.
-              </p>
-              <p className="text-body text-muted-foreground leading-relaxed max-w-[58ch]">
-                In practice that means careful access — the route, the gates, the hours.
-                It means working around dogs, horses, kids, and the rhythm of a working
-                acreage. Equipment and materials stay where they belong, off the lawn and
-                off the drive, and we clean up at the end of every day. When the project
-                closes we leave the property the way we found it — minus the work that
-                needed doing.
-              </p>
-            </div>
+          <div
+            className="mt-12 grid grid-cols-1 md:grid-cols-12 gap-x-12 gap-y-7"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "240ms" }}
+          >
+            <p className="md:col-span-6 t-body text-foreground/85 max-w-[58ch]">
+              A finished renovation is judged twice. Once when it's done, and again every
+              day after. The first judgement is about quality — does the work fit, does
+              it last, does it read as resolved. The second is about the experience — what
+              it was like to live with the project from start to finish. We hold both
+              standards because the homeowner does.
+            </p>
+            <p className="md:col-span-6 t-body text-foreground/70 max-w-[58ch]">
+              In practice that means careful access — the route, the gates, the hours.
+              It means working around dogs, horses, kids, and the rhythm of a working
+              acreage. Equipment and materials stay where they belong, off the lawn and
+              off the drive, and we clean up at the end of every day. When the project
+              closes we leave the property the way we found it — minus the work that
+              needed doing.
+            </p>
           </div>
         </Container>
       </RevealSection>
 
-      {/* § II — Where we work */}
-      <RevealSection id="areas" aria-labelledby="areas-heading" className={SECTION}>
+      {/* § II — Where we work — magazine directory list */}
+      <RevealSection id="areas" aria-labelledby="areas-heading" className="section-y">
         <Container size="wide">
-          <div data-reveal style={{ ["--reveal-delay" as string]: "0ms" }}>
-            <SectionHeader
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-8 md:gap-y-10 mb-10 md:mb-14">
+            <p className="md:col-span-3 t-eyebrow" data-reveal>Where we work</p>
+            <h2
               id="areas-heading"
-              title="Where we work."
-              titleWidth="none"
-              bottomGap="none"
-            />
+              className="md:col-span-9 t-section text-foreground max-w-[18ch]"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "120ms" }}
+            >
+              Across the foothills.
+            </h2>
           </div>
-          <p
-            className="mt-8 md:mt-10 text-headline-sm font-serif text-foreground/85 leading-snug max-w-3xl"
-            data-reveal
-            style={{ ["--reveal-delay" as string]: "180ms" }}
-          >
-            {serviceAreas.map((a) => a.name).join(" · ")}
-          </p>
+
+          <ul className="border-t border-foreground/12 grid grid-cols-1 md:grid-cols-2">
+            {serviceAreas.map((a, i) => (
+              <li
+                key={a.slug}
+                data-reveal
+                style={{ ["--reveal-delay" as string]: `${i * 90}ms` }}
+                className="row-wash border-b border-foreground/12 md:[&:nth-child(2n-1)]:border-r border-foreground/12 px-2 -mx-2 py-6 md:py-7 flex items-baseline justify-between gap-6"
+              >
+                <span className="t-title text-foreground">{a.name}</span>
+                <span className="t-micro whitespace-nowrap">AB</span>
+              </li>
+            ))}
+          </ul>
         </Container>
       </RevealSection>
 

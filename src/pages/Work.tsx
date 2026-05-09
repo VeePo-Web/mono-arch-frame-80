@@ -8,9 +8,26 @@ import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { galleryPlates } from "@/data/galleryPlates";
 import { workPhotos } from "@/assets/photography";
-import { SECTION_PADDING } from "@/lib/spacing";
 
 const SITE = "https://havencreekrenovations.ca";
+
+// Asymmetric editorial layout — alternating 7/5 magazine spread on lg+.
+const LAYOUTS = [
+  "lg:col-span-7",
+  "lg:col-span-5 lg:mt-24",
+  "lg:col-span-5 lg:col-start-2",
+  "lg:col-span-7",
+  "lg:col-span-7 lg:col-start-1 lg:mt-12",
+  "lg:col-span-5",
+];
+const ASPECTS = [
+  "aspect-[4/5]",
+  "aspect-[3/4]",
+  "aspect-[3/4]",
+  "aspect-[4/5]",
+  "aspect-[4/5]",
+  "aspect-[3/4]",
+];
 
 const Work = () => {
   useSeo({
@@ -34,33 +51,40 @@ const Work = () => {
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
       />
 
-      <RevealSection aria-labelledby="grid-heading" className={cn(SECTION_PADDING.standard, "section-wash")}>
+      <RevealSection aria-labelledby="grid-heading" className="section-y">
         <Container size="wide">
           <h2 id="grid-heading" className="sr-only">Projects</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-9">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-6 gap-y-16 lg:gap-y-28">
             {galleryPlates.map((p, i) => (
               <article
                 key={p.slug}
                 data-reveal
-                style={{ ["--reveal-delay" as string]: `${i * 70}ms` }}
-                className="group"
+                style={{ ["--reveal-delay" as string]: `${i * 90}ms` }}
+                className={cn("group", LAYOUTS[i % LAYOUTS.length])}
               >
-                <ProjectPlaceholder
-                  project={{
-                    slug: p.slug,
-                    title: p.title,
-                    area: p.area,
-                    category: p.category,
-                  }}
-                  index={i}
-                  photoSrc={workPhotos[p.slug]}
-                  priority={i === 0}
-                  className="transition-transform duration-700 ease-weighted group-hover:scale-[1.005]"
-                />
-                <div className="mt-4">
-                  <h3 className="text-title text-foreground">{p.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
+                <div
+                  className={cn(
+                    "overflow-hidden bg-evergreen/[0.04] transition-transform duration-500 ease-weighted group-hover:-translate-y-1",
+                    ASPECTS[i % ASPECTS.length],
+                  )}
+                >
+                  <ProjectPlaceholder
+                    project={{
+                      slug: p.slug,
+                      title: p.title,
+                      area: p.area,
+                      category: p.category,
+                    }}
+                    index={i}
+                    photoSrc={workPhotos[p.slug]}
+                    priority={i === 0}
+                    className="h-full w-full"
+                  />
+                </div>
+                <div className="mt-5 pt-3 border-t border-foreground/10 flex items-baseline justify-between gap-4">
+                  <h3 className="t-title text-foreground">{p.title}</h3>
+                  <p className="t-micro whitespace-nowrap">
                     {p.category} · {p.area}
                   </p>
                 </div>

@@ -24,7 +24,6 @@ const NotFound = () => {
   return (
     <main id="main">
       <SubPageHero
-        compact
         headline="This page seems to have wandered off."
         subhead="It may have moved, been renamed, or never quite made it onto the map. A few honest places to head next."
         primaryCta={{ to: "/", label: "Return home" }}
