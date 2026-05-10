@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
@@ -12,11 +11,11 @@ interface BigCloseCTAProps {
 
 /**
  * BigCloseCTA — magazine close. Hair rule above, .t-headline H2,
- * one solid evergreen CTA. Same on every page.
+ * one solid evergreen square CTA matching nav grammar. Same on every page.
  */
 const BigCloseCTA = ({
   heading = "Tell us about the place.",
-  lede = "Cory replies within two business days.",
+  lede = "Tell us about the property — we'll come look, talk it through, and quote it honestly.",
   primary = { to: "/contact", label: "Get a Free Quote" },
 }: BigCloseCTAProps) => {
   return (
@@ -45,19 +44,13 @@ const BigCloseCTA = ({
             <Link
               to={primary.to}
               className={cn(
-                "group/btn inline-flex items-center gap-3 rounded-full",
+                "cta-spring inline-flex items-center justify-center rounded-lg",
                 "bg-evergreen text-evergreen-foreground",
-                "pl-7 pr-1.5 py-1.5 min-h-[52px] text-minimal",
-                "transition-all duration-500 ease-weighted",
-                "hover:bg-evergreen-hover active:scale-[0.98]",
-                "shadow-[0_1px_0_hsl(145_22%_38%/0.4)_inset,0_18px_36px_-12px_hsl(145_24%_8%/0.30)]",
+                "px-6 min-h-[52px] text-[15px] font-semibold",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               )}
             >
-              <span>{primary.label}</span>
-              <span className="icon-chip icon-chip-light bg-background/15">
-                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              </span>
+              {primary.label}
             </Link>
           </div>
         </div>
