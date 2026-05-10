@@ -54,13 +54,13 @@ const ProjectPlaceholder = ({
       >
         <img
           src={photoSrc}
-          alt={`${project.title} — ${project.area}`}
+          alt={project.title}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
           fetchPriority={priority ? "high" : "auto"}
           width={1024}
           height={1280}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-weighted will-change-transform"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-weighted will-change-transform"
         />
       </figure>
     );

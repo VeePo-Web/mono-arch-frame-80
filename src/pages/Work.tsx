@@ -82,12 +82,6 @@ const Work = () => {
                     className="h-full w-full"
                   />
                 </div>
-                <div className="mt-5 pt-3 border-t border-foreground/10 flex items-baseline justify-between gap-4">
-                  <h3 className="t-title text-foreground">{p.title}</h3>
-                  <p className="t-micro whitespace-nowrap">
-                    {p.category} · {p.area}
-                  </p>
-                </div>
               </article>
             ))}
           </div>
