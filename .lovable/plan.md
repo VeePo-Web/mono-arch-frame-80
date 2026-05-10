@@ -1,57 +1,44 @@
-## Section: Global → Nav (header bar + drawer + section rail)
-
-Focus of this pass: **instant page transitions**. Pointer-warm + idle prefetch already landed last round, so by click-time the next route's JS chunk is in cache. The remaining "flash" comes from one place: `Suspense fallback={<RouteFallback />}` in `App.tsx:74` swaps a blank cream slab over the page for one paint tick even when the chunk is already loaded.
+## Section: Global → Eyebrows / folio chrome
 
 ### Issues found
 
-1. **`src/App.tsx:64,74` — `RouteFallback` is a `min-h-screen bg-background` blank slab.**
-   On warm clicks the chunk resolves synchronously, but Suspense still unmounts the old route and paints the fallback for ~1 frame before the new route appears. Visible as a cream flash, especially against the transparent-top nav.
-   → Use `startTransition` on every navigation so React keeps the *previous* route painted until the new one is ready, and change the fallback to `null` (chunk is already warm — fallback should never actually paint; if it does, painting nothing is better than painting a slab).
+1. **`src/components/PageSlug.tsx` (entire file) + `src/App.tsx:7,96` — fixed top-right "Page 01 — Home" folio.**
+   This is exactly the "01 — Home" the user is calling out. It's pure magazine-folio decoration sitting in the top-right corner of every route, in 9px uppercase tracked-out evergreen with a hairline rule. Core rules ban it three times over: *"no folio"*, *"No 'Plate N', 'Edition', 'Fig.', 'Section No.', or 'Service No.' labels in UI chrome"*, and *"art-school pastiche"*. It also competes visually with the nav.
+   → Delete `src/components/PageSlug.tsx`. Remove the import + `<PageSlug />` render from `src/App.tsx`.
 
-2. **`src/App.tsx:69` — Navigation lives outside any transition wrapper.**
-   React Router doesn't auto-wrap clicks in `startTransition`, so the old tree tears down immediately even with a warm chunk.
-   → Wrap `<Routes>` consumption in a tiny component that calls `useTransition()` and feeds the deferred `location` to `<Routes location={…}>`. Standard React-Router-v6 pattern.
+2. **`src/components/Hero.tsx:35` — `<span className="t-eyebrow">Family-run · Foothills, AB</span>` above the home H1.**
+   Core says: *"Hero + SubPageHero render headlines as plain `text-foreground` — no eyebrow line, no folio, no radial bloom, no vignette. The type itself is the design."* The "small evergreen-rule eyebrow" phrasing in the later Hero rule contradicts the earlier blanket ban; per the audit prompt's *"Default = ship the simpler interpretation"*, the eyebrow goes. The H1 + subhead + CTA stand on their own.
+   → Remove the eyebrow `<span>` (and its containing wrapper if it becomes empty) from Hero.tsx.
 
-3. **`src/components/RoutePrefetcher.tsx:37` — idle-callback fallback is `setTimeout(run, 2500)`.**
-   On Safari (no rIC), warming is delayed 2.5s; first click into Services from `/about` within that window still cold-loads. Prefetch on pointerdown saves it most of the time, but tightening the fallback to ~600ms removes the edge case.
-   → `setTimeout(run, 600)` for the non-rIC branch.
+3. **`src/pages/NotFound.tsx:4,45` — `<Eyebrow label="HEAD HERE" />` on the 404.**
+   Decorative label that adds nothing functional ("HEAD HERE" reads as placeholder copy left in production). Removes a stray usage of the standalone `Eyebrow` component.
+   → Delete the `<Eyebrow … />` line and its import.
 
-4. **`src/components/Navigation.tsx:108` — Phone link uses `transition-[color,transform] duration-150`.**
-   Off-cadence (Core: 300ms color). Microscopic, but it's the same bug we fixed on `HamburgerButton` last round.
-   → Change to `duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]` for color; keep press scale snappy via the existing `active:scale-[0.96]`.
+4. **Section-name eyebrows on About / Services / Contact / RecentWorkPreview** — ✓ keep.
+   `About.tsx:38,77` ("How we work", "Where we work"), `Services.tsx:37` ("What we do"), `Contact.tsx:66` ("Or reach us directly"), `RecentWorkPreview.tsx:28` ("Recent work"). These are functional section names, not folio chrome — they're used as the section's accessible heading (`aria-labelledby`/h2) in a 12-col rail. Core explicitly preserves the 10px uppercase `.t-eyebrow` token and the magazine-rail grammar that uses it. Not the bug the user is naming.
 
-5. **`src/components/nav/MenuDrawer.tsx:104` — drawer Home link `onClick` runs `onOpenChange(false)` synchronously, then React Router navigates.**
-   On a cold-ish home click this can cause the drawer to start closing while the route is still tearing down → 1 frame of "drawer half-open + blank screen." Wrapping the navigation work in `startTransition` (issue #1/#2) fixes this transitively — no separate change needed once the transition wrapper is in place.
-   → No edit. Verified by issue #2.
-
-6. **`src/components/nav/SectionRail.tsx`** — ✓ clean. FLIP indicator, single shared underline, anchor scroll only (no route change), nothing to fix.
-
-7. **Header bar (`Navigation.tsx`) chrome (logo, CTA, hamburger, scrim)** — ✓ clean. Square solid-evergreen CTA, square ghost hamburger, transparent-on-top with scroll-driven `--nav-bg`, `fetchpriority` warning fixed last round.
-
-8. **Drawer chrome (overlay, columns, CTA, close X)** — ✓ clean. One Pages column, single close X, opaque panel, no backdrop-filter on overlay.
+5. **`src/components/SectionHeader.tsx` + `src/components/Eyebrow.tsx`** — ✓ leave in place.
+   `SectionHeader` is unused at runtime; `Eyebrow` is only consumed by `SectionHeader` and (after fix #3) nothing else. Deleting them is a separate cleanup pass — out of scope for an "eyebrow audit" since they don't render anywhere visible to the user. Flag for a future dead-code sweep.
 
 ### Files to change
 
-- **`src/App.tsx`**
-  - Replace `RouteFallback` with `null`.
-  - Add a small `AnimatedRoutes` component inside the file that calls `useTransition()` and `useLocation()`, keeps a `displayedLocation` state, and on every `location` change calls `startTransition(() => setDisplayedLocation(location))`. Render `<Routes location={displayedLocation}>` inside it. Replace the existing `<Suspense><Routes>…</Routes></Suspense>` block with `<Suspense fallback={null}><AnimatedRoutes /></Suspense>`.
-
-- **`src/components/RoutePrefetcher.tsx`**
-  - Change `setTimeout(run, 2500)` → `setTimeout(run, 600)`.
-
-- **`src/components/Navigation.tsx`**
-  - Phone `<a>` className: swap `transition-[color,transform] duration-150` → `transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]` (drop the transform from the transition list — `active:scale-[0.96]` doesn't need a transition declaration to feel snappy, and removing it stops a ghost transform animation on focus).
+- **`src/App.tsx`** — drop the `import PageSlug` line and the `<PageSlug />` render under `<BrowserRouter>`.
+- **`src/components/PageSlug.tsx`** — delete the file.
+- **`src/components/Hero.tsx`** — remove the `Family-run · Foothills, AB` eyebrow span (and the surrounding wrapper if empty after removal).
+- **`src/pages/NotFound.tsx`** — drop the `Eyebrow` import and the `<Eyebrow label="HEAD HERE" />` line.
 
 ### Out of scope
 
-- React Router v7 future-flag warnings (informational).
-- Any route-fade visual treatment beyond "no flash" — the Core memory's 140ms `.route-fade` is already wired on page roots; we are not touching it.
-- Section-rail behaviour (already clean).
-- Drawer motion / staggers (already clean).
+- `SectionHeader` / `Eyebrow` dead-code removal (separate cleanup pass).
+- Refactoring or restyling the legitimate `t-eyebrow` section labels on About/Services/Contact/RecentWorkPreview — they pass Core.
+- Touching anything not listed above.
 
 ### Verification
 
-- `browser--navigate_to_sandbox` → `/` → click `About`, `Services`, `Work`, `Contact` from header CTA, drawer, and (where applicable) cross-route. Watch for any cream flash.
-- Repeat at 390px (mobile drawer path) and 1440px (desktop direct-link path).
-- `code--read_console_logs` + `code--read_runtime_errors` clean.
-- Confirm `useTransition`'s `isPending` doesn't need to gate anything visually — old route stays painted, new route swaps in when ready, no spinner needed.
+- `browser--navigate_to_sandbox` to `/`, `/about`, `/services`, `/work`, `/contact`, `/thank-you` — confirm the top-right "Page 01 — Home" flag is gone on every route.
+- Screenshot home at desktop (1440) — Hero now opens with H1 as the first painted element.
+- `code--read_runtime_errors` + `code--read_console_logs` clean.
+
+### Memory update
+
+Add to Core: *"`PageSlug` is retired — never render a fixed top-right page coordinate / 'Page 0N — Name' folio. Hero and SubPageHero open straight on the H1; no eyebrow line above either."*
