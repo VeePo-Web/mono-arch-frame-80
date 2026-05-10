@@ -14,9 +14,12 @@ import { galleryPlates } from "@/data/galleryPlates";
 const Hero = () => {
   const plate = galleryPlates.find((p) => p.slug === "bearspaw-wraparound-deck")!;
   const photoSrc = workPhotos[plate.slug];
+  const { ref, revealed } = useReveal<HTMLElement>({ threshold: 0 });
 
   return (
     <section
+      ref={ref}
+      data-revealed={revealed}
       aria-labelledby="hero-heading"
       className="relative pt-28 md:pt-40 section-yb"
     >
