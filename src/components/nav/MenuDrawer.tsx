@@ -1,6 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Link, useLocation } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import X from "lucide-react/dist/esm/icons/x";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
