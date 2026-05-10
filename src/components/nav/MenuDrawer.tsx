@@ -193,8 +193,7 @@ const DrawerLink = ({
     onClick={onClick}
     aria-current={active ? "page" : undefined}
     className={cn(
-      "menu-drawer__link py-1 min-h-[44px] flex items-center transition-colors duration-300",
-      "text-[1.0625rem] md:text-[1.125rem]",
+      "menu-drawer__link py-1 min-h-[44px] flex items-center transition-colors duration-300 t-title",
       active
         ? "text-evergreen font-semibold"
         : "text-foreground/85 hover:text-evergreen",
