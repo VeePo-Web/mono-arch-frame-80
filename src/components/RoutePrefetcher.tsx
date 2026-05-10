@@ -50,7 +50,7 @@ const RoutePrefetcher = () => {
 
     const handle = w.requestIdleCallback
       ? w.requestIdleCallback(run, { timeout: 4000 })
-      : window.setTimeout(run, 2500);
+      : window.setTimeout(run, 600);
 
     return () => {
       if (w.requestIdleCallback && typeof handle === "number") {

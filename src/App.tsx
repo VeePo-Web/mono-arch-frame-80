@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
+import { lazy, Suspense, startTransition, useEffect, useLayoutEffect, useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
@@ -61,7 +61,32 @@ function DeferredOverlays() {
   );
 }
 
-const RouteFallback = () => <div className="min-h-screen bg-background" aria-hidden="true" />;
+/**
+ * AnimatedRoutes — keeps the previous route painted while the next chunk
+ * loads, eliminating the Suspense blank-flash on warm clicks. React Router
+ * doesn't auto-wrap navigations in startTransition, so we defer the
+ * location update ourselves.
+ */
+function AnimatedRoutes() {
+  const location = useLocation();
+  const [displayed, setDisplayed] = useState(location);
+  useEffect(() => {
+    if (location === displayed) return;
+    startTransition(() => setDisplayed(location));
+  }, [location, displayed]);
+  return (
+    <Routes location={displayed}>
+      <Route path="/" element={<Index />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/services" element={<Services />} />
+      <Route path="/work" element={<Work />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/thank-you" element={<ThankYou />} />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -71,17 +96,8 @@ const App = () => (
         <PageSlug />
         <RoutePrefetcher />
         <Navigation />
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/work" element={<Work />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/thank-you" element={<ThankYou />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <Suspense fallback={null}>
+          <AnimatedRoutes />
         </Suspense>
         <Footer />
         <DeferredOverlays />

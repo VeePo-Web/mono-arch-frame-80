@@ -142,7 +142,7 @@ const Navigation = () => {
                   "inline-flex items-center justify-center gap-2 shrink-0",
                   "h-11 min-w-[44px] px-2 lg:px-2.5",
                   "text-sm font-medium text-foreground/75 hover:text-evergreen",
-                  "transition-[color,transform] duration-150",
+                  "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   "active:scale-[0.96]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md",
                 )}
