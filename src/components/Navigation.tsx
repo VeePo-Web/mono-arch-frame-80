@@ -143,19 +143,21 @@ const Navigation = () => {
               <Link
                 to="/contact"
                 onClick={handleQuoteClick}
-                aria-label="Get a quote"
+                aria-label="Get a free quote"
                 className={cn(
-                  "nav-quote-cta shrink-0 inline-flex items-center justify-center rounded-lg",
+                  "nav-quote-cta cta-spring shrink-0 inline-flex items-center justify-center rounded-lg",
                   "bg-evergreen text-evergreen-foreground",
                   "text-[14px] sm:text-[15px] font-semibold whitespace-nowrap",
                   "h-10 sm:h-11 px-3.5 sm:px-5",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
               >
-                Get a Quote
+                Get a Free Quote
               </Link>
 
-              <HamburgerButton open={drawerOpen} onClick={openDrawer} />
+              <div className="lg:hidden">
+                <HamburgerButton open={drawerOpen} onClick={openDrawer} />
+              </div>
             </div>
           </nav>
         </Container>
