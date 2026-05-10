@@ -1,19 +1,20 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { prefetchRoute, PREFETCHABLE_ROUTES } from "@/lib/routePrefetch";
 
 /**
  * RoutePrefetcher — idle-time route warming.
  *
- * After requestIdleCallback fires on the home page, dynamically import() the
- * routes a visitor is most likely to hit next. Vite turns these into
- * <link rel="modulepreload"> + parallel chunk fetches, so the actual click
- * navigation is instant.
+ * On every route, after `requestIdleCallback` fires, dynamically import()
+ * every other top-level route via `prefetchRoute()` (which dedupes). Vite
+ * turns these into <link rel="modulepreload"> + parallel chunk fetches,
+ * so the next click navigation commits without showing the Suspense
+ * fallback. On-demand pointerdown warming (in Navigation + MenuDrawer)
+ * covers the cold-click window before idle fires.
  *
  * Guards:
- *   - Only runs from "/" (no point prefetching from a destination page)
  *   - Skips on Save-Data / 2g connections
- *   - Skips when the user has reduced-motion preference set AND we're on a
- *     metered connection (treat as "user wants minimal noise")
+ *   - prefetchRoute() dedupes, so this runs cheaply on every route change
  */
 
 type NetInfo = {
@@ -34,7 +35,6 @@ const RoutePrefetcher = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (pathname !== "/") return;
     if (!shouldPrefetch()) return;
 
     const w = window as Window & {
@@ -42,12 +42,10 @@ const RoutePrefetcher = () => {
     };
 
     const run = () => {
-      // Order = expected click likelihood. Vite emits modulepreload links
-      // in the same order, so the network prioritises them top-to-bottom.
-      void import("@/pages/Services");
-      void import("@/pages/Work");
-      void import("@/pages/Contact");
-      void import("@/pages/About");
+      for (const route of PREFETCHABLE_ROUTES) {
+        if (route === pathname) continue;
+        prefetchRoute(route);
+      }
     };
 
     const handle = w.requestIdleCallback
