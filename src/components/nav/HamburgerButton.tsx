@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 interface HamburgerButtonProps {
   open: boolean;
   onClick: () => void;
+  /** Fires on pointerdown — used to warm the drawer chunk before click commits. */
+  onPointerDown?: () => void;
   /** Optional label override for screen readers. */
   label?: string;
   className?: string;
@@ -18,12 +20,14 @@ interface HamburgerButtonProps {
 const HamburgerButton = ({
   open,
   onClick,
+  onPointerDown,
   label,
   className,
 }: HamburgerButtonProps) => (
   <button
     type="button"
     onClick={onClick}
+    onPointerDown={onPointerDown}
     aria-label={label ?? (open ? "Close menu" : "Open menu")}
     aria-expanded={open}
     aria-controls="site-map-drawer"
@@ -31,7 +35,7 @@ const HamburgerButton = ({
       "hamburger-btn relative z-10 inline-flex items-center justify-center shrink-0",
       "h-11 w-11 rounded-lg",
       "text-foreground hover:bg-foreground/[0.05] active:scale-95",
-      "transition-[background-color,transform]",
+      "transition-[background-color,transform] duration-200 ease-out",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
       className,
     )}
