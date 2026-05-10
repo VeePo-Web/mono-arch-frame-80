@@ -25,7 +25,7 @@ const Hero = () => {
       <Container size="wide">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left — type column */}
-          <div className="lg:col-span-6 flex flex-col">
+          <div className="lg:col-span-5 flex flex-col">
             <div
               className="inline-flex items-center gap-4"
               data-reveal
@@ -83,7 +83,7 @@ const Hero = () => {
 
           {/* Right — photo plate, caption-free */}
           <figure
-            className="lg:col-span-6"
+            className="lg:col-span-7"
             data-reveal
             style={{ ["--reveal-delay" as string]: "320ms" }}
           >
