@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import Container from "@/components/Container";
-import Eyebrow from "@/components/Eyebrow";
 import PremiumCard from "@/components/PremiumCard";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -42,8 +41,7 @@ const NotFound = () => {
               >
                 <PremiumCard className="h-full">
                   <div className="p-8 lg:p-10 flex flex-col h-full">
-                    <Eyebrow label="HEAD HERE" />
-                    <h3 className="mt-7 font-serif text-[1.45rem] text-foreground group-hover:text-evergreen transition-colors duration-500">
+                    <h3 className="font-serif text-[1.45rem] text-foreground group-hover:text-evergreen transition-colors duration-500">
                       {link.title}
                     </h3>
                     <p className="mt-3 text-body text-muted-foreground text-[0.95rem] leading-relaxed flex-1">
