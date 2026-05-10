@@ -7,9 +7,8 @@ import { galleryPlates } from "@/data/galleryPlates";
 
 /**
  * Hero — magazine-grade editorial split.
- * Left: eyebrow + .t-display H1 + .t-lede + one solid evergreen CTA.
- * Right: 16:10 photo plate (Apple-soft drop) with caption strip.
- * Bottom: thin meta locator row at lg+ — pure typographic locator.
+ * Left: eyebrow + .t-display H1 + .t-lede + one solid evergreen CTA + reply note.
+ * Right: 16:10 photo plate, no caption — the photo speaks for itself.
  */
 const Hero = () => {
   const plate = galleryPlates.find((p) => p.slug === "bearspaw-wraparound-deck")!;
@@ -18,15 +17,16 @@ const Hero = () => {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative pt-28 md:pt-40 pb-16 md:pb-24"
+      className="relative pt-28 md:pt-40 section-yb"
     >
       <Container size="wide">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left — type column */}
           <div className="lg:col-span-6 flex flex-col">
             <div
-              className="inline-flex items-center gap-4 reveal-up"
-              style={{ animationDelay: "60ms" }}
+              className="inline-flex items-center gap-4"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "0ms" }}
             >
               <span className="block w-10 h-px bg-evergreen/60" aria-hidden="true" />
               <span className="t-eyebrow">Family-run · Foothills, AB</span>
@@ -34,43 +34,33 @@ const Hero = () => {
 
             <h1
               id="hero-heading"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "120ms" }}
               className="mt-7 t-display wrap-editorial text-foreground"
             >
-              <span className="block overflow-hidden">
-                <span className="block reveal-up" style={{ animationDelay: "160ms" }}>
-                  One trusted contractor
-                </span>
-              </span>
-              <span className="block overflow-hidden">
-                <span className="block reveal-up" style={{ animationDelay: "280ms" }}>
-                  for the property
-                </span>
-              </span>
-              <span className="block overflow-hidden">
-                <span className="block reveal-up" style={{ animationDelay: "380ms" }}>
-                  you value.
-                </span>
-              </span>
+              One trusted contractor for the property you value.
             </h1>
 
             <p
-              className="t-lede mt-8 max-w-[44ch] reveal-up"
-              style={{ animationDelay: "420ms" }}
+              className="t-lede mt-8 max-w-[44ch]"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "240ms" }}
             >
               Hands-on finishing, repairs, and decks across rural Alberta. One
               person plans the work and walks the finish with you.
             </p>
 
-            <div className="mt-10 reveal-up" style={{ animationDelay: "540ms" }}>
+            <div
+              className="mt-10"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "360ms" }}
+            >
               <Link
                 to="/contact"
                 className={cn(
-                  "group/btn inline-flex items-center gap-3 rounded-full",
+                  "cta-spring inline-flex items-center gap-3 rounded-full",
                   "bg-evergreen text-evergreen-foreground",
-                  "pl-7 pr-1.5 py-1.5 min-h-[52px] text-minimal",
-                  "transition-all duration-500 ease-weighted",
-                  "hover:bg-evergreen-hover active:scale-[0.98]",
-                  "shadow-[0_1px_0_hsl(145_22%_38%/0.4)_inset,0_18px_36px_-12px_hsl(145_24%_8%/0.30)]",
+                  "pl-7 pr-1.5 py-1.5 min-h-[52px] text-[15px] font-medium tracking-tight",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
                 aria-label="Get a free quote — start a conversation about your property"
@@ -83,23 +73,20 @@ const Hero = () => {
             </div>
 
             <p
-              className="mt-5 text-[13px] text-muted-foreground reveal-up"
-              style={{ animationDelay: "640ms" }}
+              className="mt-5 text-sm text-muted-foreground"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "460ms" }}
             >
               Replies within two business days.
             </p>
           </div>
 
-          {/* Right — photo plate */}
+          {/* Right — photo plate, caption-free */}
           <figure
-            className="lg:col-span-6 flex flex-col reveal-up"
-            style={{ animationDelay: "320ms" }}
+            className="lg:col-span-6"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "320ms" }}
           >
-            <div className="flex items-center gap-4 mb-5">
-              <span className="block w-10 h-px bg-evergreen/50" aria-hidden="true" />
-              <span className="t-eyebrow">Recent work — {plate.area}</span>
-            </div>
-
             <div className="relative w-full aspect-[16/10] overflow-hidden rounded-sm hero-plate">
               <img
                 src={photoSrc}
@@ -112,22 +99,7 @@ const Hero = () => {
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
-
-            <figcaption className="flex items-end justify-between gap-4 mt-5 pt-3 border-t border-foreground/10">
-              <p className="t-title text-foreground leading-snug">{plate.title}</p>
-              <p className="t-micro whitespace-nowrap">
-                {plate.category} · {plate.area}
-              </p>
-            </figcaption>
           </figure>
-        </div>
-
-        {/* Bottom meta strip — pure typographic locator (lg+ only) */}
-        <div className="hidden lg:flex items-end justify-between mt-24 pt-6 border-t border-foreground/10">
-          <span className="t-micro">Haven Creek / 2026</span>
-          <span className="t-micro text-right leading-relaxed">
-            Foothills, AB · Available across rural Alberta
-          </span>
         </div>
       </Container>
     </section>
