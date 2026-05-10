@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
+import { prefetchRoute } from "@/lib/routePrefetch";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { routeHasTransparentTop } from "@/lib/pageSections";
 import HamburgerButton from "@/components/nav/HamburgerButton";
@@ -50,6 +51,14 @@ const Navigation = () => {
     setDrawerOpen(true);
   };
 
+  // Pointerdown on the hamburger fires ~80–120ms before click on touch
+  // devices — enough lead time to warm the drawer chunk + the most likely
+  // destination (`/contact` for the CTA).
+  const warmDrawer = () => {
+    void import("@/components/nav/MenuDrawer");
+    prefetchRoute("/contact");
+  };
+
   // Section rail fades in once the user is committed to scrolling, so it
   // doesn't compete with the hero headline at viewport 0.
   const railOpacity = transparentRoute
@@ -95,6 +104,8 @@ const Navigation = () => {
             {/* Brand */}
             <Link
               to="/"
+              onPointerDown={() => prefetchRoute("/")}
+              onFocus={() => prefetchRoute("/")}
               aria-label="Haven Creek Renovations — home"
               className={cn(
                 "inline-flex items-center shrink-0 rounded-sm",
@@ -108,7 +119,7 @@ const Navigation = () => {
                 height={28}
                 className="h-6 sm:h-7 w-auto transition-[filter] duration-300"
                 style={{ filter: logoShadow }}
-                fetchPriority="high"
+                {...({ fetchpriority: "high" } as Record<string, string>)}
                 decoding="async"
               />
             </Link>
@@ -143,6 +154,8 @@ const Navigation = () => {
               <Link
                 to="/contact"
                 onClick={handleQuoteClick}
+                onPointerDown={() => prefetchRoute("/contact")}
+                onFocus={() => prefetchRoute("/contact")}
                 aria-label="Get a free quote"
                 className={cn(
                   "nav-quote-cta cta-spring shrink-0 inline-flex items-center justify-center rounded-lg",
@@ -156,7 +169,7 @@ const Navigation = () => {
               </Link>
 
               <div className="lg:hidden">
-                <HamburgerButton open={drawerOpen} onClick={openDrawer} />
+                <HamburgerButton open={drawerOpen} onClick={openDrawer} onPointerDown={warmDrawer} />
               </div>
             </div>
           </nav>
