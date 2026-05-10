@@ -26,20 +26,11 @@ const Hero = () => {
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left — type column */}
           <div className="lg:col-span-5 flex flex-col">
-            <div
-              className="inline-flex items-center gap-4"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "0ms" }}
-            >
-              <span className="block w-10 h-px bg-evergreen/60" aria-hidden="true" />
-              <span className="t-eyebrow">Family-run · Foothills, AB</span>
-            </div>
-
             <h1
               id="hero-heading"
               data-reveal
-              style={{ ["--reveal-delay" as string]: "120ms" }}
-              className="mt-7 t-display wrap-editorial text-foreground"
+              style={{ ["--reveal-delay" as string]: "0ms" }}
+              className="t-display wrap-editorial text-foreground"
             >
               One trusted contractor for the property you value.
             </h1>
