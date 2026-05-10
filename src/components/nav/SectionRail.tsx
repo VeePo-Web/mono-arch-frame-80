@@ -86,7 +86,7 @@ const SectionRail = () => {
   return (
     <nav
       aria-label="Page sections"
-      className="section-rail section-rail-mask hidden md:flex items-center min-w-0 max-w-full"
+      className="section-rail section-rail-mask hidden lg:flex items-center min-w-0 max-w-full"
     >
       <div ref={containerRef} className="relative flex items-center gap-1">
         {sections.map((section) => {

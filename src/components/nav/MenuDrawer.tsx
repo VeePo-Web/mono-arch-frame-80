@@ -1,6 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Link, useLocation } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import X from "lucide-react/dist/esm/icons/x";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
@@ -50,7 +49,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
           aria-describedby={undefined}
           className={cn(
             "menu-drawer fixed inset-0 z-[91] flex flex-col",
-            "bg-background/97 backdrop-blur-2xl",
+            "bg-background",
             "focus:outline-none",
           )}
         >
@@ -79,7 +78,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
 
           {/* Scrollable content body */}
           <div
-            className="relative z-10 flex-1 overflow-y-auto px-6 md:px-10 lg:px-16 pt-1 md:pt-3"
+            className="relative z-10 flex-1 overflow-y-auto overscroll-contain scroll-smooth px-6 md:px-10 lg:px-16 pt-1 md:pt-3"
             style={{
               paddingBottom: "max(2rem, calc(env(safe-area-inset-bottom) + 1rem))",
             }}
@@ -90,20 +89,18 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
               onClick={() => onOpenChange(false)}
               aria-current={pathname === "/" ? "page" : undefined}
               className={cn(
-                "menu-drawer__link inline-flex items-center mb-4 md:mb-6",
-                "text-2xl md:text-3xl font-semibold tracking-tight",
+                "menu-drawer__link inline-flex items-center mb-4 md:mb-6 t-section",
                 pathname === "/" ? "text-evergreen" : "text-foreground hover:text-evergreen",
                 "transition-colors duration-300",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm px-1 -mx-1",
               )}
-              style={{ animationDelay: "120ms" }}
             >
               Home
             </Link>
 
             {/* One Pages column — top-level routes only */}
             <div className="max-w-md">
-              <DrawerColumn label="Pages" delay={200}>
+              <DrawerColumn label="Pages">
                 {PAGES.map((p) => (
                   <DrawerLink
                     key={p.to}
@@ -119,9 +116,9 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
 
           </div>
 
-          {/* Bottom rail — trust line + ONE CTA */}
+          {/* Bottom rail — CTA only */}
           <div
-            className="relative z-10 border-t border-border/60 bg-background/40 backdrop-blur-sm"
+            className="relative z-10 border-t border-border/60 bg-background"
             style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
           >
             <div className="px-6 md:px-10 lg:px-16 py-4 md:py-5 flex md:justify-end">
@@ -131,16 +128,14 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 type="button"
                 onClick={closeAndQuickContact}
                 className={cn(
-                  "menu-drawer__cta md:hidden",
-                  "inline-flex items-center justify-center gap-2.5",
+                  "menu-drawer__cta cta-spring md:hidden",
+                  "inline-flex items-center justify-center",
                   "bg-evergreen text-evergreen-foreground rounded-lg px-6 text-[15px] font-semibold",
                   "min-h-[52px] w-full",
-                  "active:scale-[0.985] transition-transform duration-200",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
               >
-                <span>Get a Free Quote</span>
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={2} />
+                Get a Free Quote
               </button>
 
               {/* Desktop CTA — routes to /contact */}
@@ -148,16 +143,14 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 to="/contact"
                 onClick={() => onOpenChange(false)}
                 className={cn(
-                  "menu-drawer__cta hidden md:inline-flex",
-                  "items-center justify-center gap-2.5 shrink-0",
+                  "menu-drawer__cta cta-spring hidden md:inline-flex",
+                  "items-center justify-center shrink-0",
                   "bg-evergreen text-evergreen-foreground rounded-lg px-6 text-[15px] font-semibold",
                   "min-h-[44px] min-w-[200px]",
-                  "hover:bg-evergreen-hover transition-colors duration-300",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
               >
-                <span>Get a Free Quote</span>
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" strokeWidth={2} />
+                Get a Free Quote
               </Link>
             </div>
           </div>
@@ -171,18 +164,13 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
 
 const DrawerColumn = ({
   label,
-  delay,
   children,
 }: {
   label: string;
-  delay: number;
   children: React.ReactNode;
 }) => (
   <div>
-    <p
-      className="menu-drawer__label text-evergreen text-[11px] font-semibold uppercase tracking-[0.16em] mb-2"
-      style={{ animationDelay: `${delay}ms` }}
-    >
+    <p className="menu-drawer__label text-evergreen text-[11px] font-semibold uppercase tracking-[0.16em] mb-2">
       {label}
     </p>
     <div className="flex flex-col">{children}</div>
@@ -205,8 +193,7 @@ const DrawerLink = ({
     onClick={onClick}
     aria-current={active ? "page" : undefined}
     className={cn(
-      "menu-drawer__link py-1 min-h-[44px] flex items-center transition-colors duration-300",
-      "text-[1.0625rem] md:text-[1.125rem]",
+      "menu-drawer__link py-1 min-h-[44px] flex items-center transition-colors duration-300 t-title",
       active
         ? "text-evergreen font-semibold"
         : "text-foreground/85 hover:text-evergreen",
