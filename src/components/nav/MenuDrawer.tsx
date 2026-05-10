@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import X from "lucide-react/dist/esm/icons/x";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
+import { prefetchRoute } from "@/lib/routePrefetch";
 
 interface MenuDrawerProps {
   open: boolean;
@@ -87,6 +88,8 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
             <Link
               to="/"
               onClick={() => onOpenChange(false)}
+              onPointerDown={() => prefetchRoute("/")}
+              onFocus={() => prefetchRoute("/")}
               aria-current={pathname === "/" ? "page" : undefined}
               className={cn(
                 "menu-drawer__link inline-flex items-center mb-4 md:mb-6 t-section",
@@ -142,6 +145,8 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
               <Link
                 to="/contact"
                 onClick={() => onOpenChange(false)}
+                onPointerDown={() => prefetchRoute("/contact")}
+                onFocus={() => prefetchRoute("/contact")}
                 className={cn(
                   "menu-drawer__cta cta-spring hidden md:inline-flex",
                   "items-center justify-center shrink-0",
@@ -191,6 +196,8 @@ const DrawerLink = ({
   <Link
     to={to}
     onClick={onClick}
+    onPointerDown={() => prefetchRoute(to)}
+    onFocus={() => prefetchRoute(to)}
     aria-current={active ? "page" : undefined}
     className={cn(
       "menu-drawer__link py-1 min-h-[44px] flex items-center transition-colors duration-300 t-title",
