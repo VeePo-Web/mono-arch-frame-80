@@ -1492,18 +1492,20 @@
   .t-display {
     font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
     font-size: var(--fs-display);
-    line-height: 0.98;
+    line-height: 1.06;
     letter-spacing: -0.04em;
     font-weight: 400;
     text-wrap: balance;
+    padding-bottom: 0.08em;
   }
   .t-headline {
     font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
     font-size: var(--fs-headline);
-    line-height: 1.04;
+    line-height: 1.08;
     letter-spacing: -0.035em;
     font-weight: 400;
     text-wrap: balance;
+    padding-bottom: 0.06em;
   }
   .t-section {
     font-family: 'Fraunces Variable', 'Fraunces', 'Fraunces Fallback', Georgia, serif;
