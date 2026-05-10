@@ -1,70 +1,52 @@
-# Section: Global → BigCloseCTA
+# Section: Work page → asymmetric grid
 
-Single component (`src/components/BigCloseCTA.tsx`) used on `/`, `/about`, `/services`, `/work`. Same close on every page.
+Page `src/pages/Work.tsx` + shared tile `src/components/gallery/ProjectPlaceholder.tsx`. The 6-tile asymmetric magazine grid on `/work`.
 
 ## Issues found
 
-**Button shape diverges from nav (one-button-language violation)**
-- L48 — `rounded-full` pill. Header + drawer CTAs are `rounded-lg` square. Core: "ONE button language site-wide." Site has unified on **square 8-radius solid evergreen**. Pill here is the odd one out.
-- L58-60 — Trailing `<ArrowUpRight>` glyph inside an `icon-chip` halo. Core just added: "Drawer + header CTAs are text-only — no trailing arrow glyph." Same shape language must extend to BigCloseCTA. Strip arrow + chip.
-- L50 — `text-minimal` retired-feeling utility. Use plain `text-[15px]` token? Better: drop in favour of `font-semibold` matching nav CTA.
-- L53 — Hand-rolled `shadow-[...]` inset+drop pair. Replace with the site-wide `.cta-spring` class (Core: "Primary CTAs use the `.cta-spring` class").
-- L51 — `transition-all duration-500` — too broad. `.cta-spring` carries the canonical hover lift; remove this line.
-- L48 — `pl-7 pr-1.5 py-1.5 min-h-[52px]` is asymmetric padding for the chip slot. With chip removed, switch to symmetric `px-6 min-h-[52px]` matching the drawer mobile CTA.
+### 1. Caption strip below every photo tile — violates "zero descriptions" rule
+- `src/pages/Work.tsx` L85-90 — Every `<article>` carries a visible caption row: `<h3 className="t-title">{p.title}</h3>` + `<p className="t-micro">{p.category} · {p.area}</p>`, separated by a hair rule.
+- Audit constraint: "Gallery has zero descriptions. Like FlexServices.org. Project tiles show the photo only — no title, no area, no category, no caption strip, no hover label, no overlay text, no per-project link, no detail page. The grid is the message. Anywhere descriptions still exist on a project tile (Home RecentWorkPreview, /work grid, anywhere else), strip them."
+- Fix: delete the entire `mt-5 pt-3 border-t...` caption block (lines 85-90). The grid becomes photo-only, matching the Home RecentWorkPreview treatment.
 
-**Repeated "two business days" copy on home page**
-- L19 — Default lede: `"Cory replies within two business days."` Hero on `/` already says `"Replies within two business days."`. Core: "Two business days reply promise lives only on Hero, ConsultationForm helper, ThankYou hero, Contact rail, QuickContactSheet, BigCloseCTA, and meta descriptions — **never repeated inside the same page twice**." On `/` this fires twice. Fix by changing the default lede to a non-promise sentence the closer can own (Hero handles the promise; closer handles the invitation).
-- New default lede: `"Tell us about the property — we'll come look, talk it through, and quote it honestly."` (no "two business days" duplication, single warm sentence).
-- Sub-pages (About/Services/Work) don't say the promise outside this component, so they still need it somewhere — but the closing CTA's job is invitation, not promise. Acceptable trade.
+### 2. Image hover scale timing violates motion cadence
+- `src/components/gallery/ProjectPlaceholder.tsx` L63 — `transition-transform duration-[1400ms] ease-weighted`. The image scales on hover via CSS (`.group:hover .photo-pending--photographed > img { transform: scale(1.025) }`) with a 1400ms transition.
+- Core motion cadence: "500ms transform on hover lifts" — the wrapper in Work.tsx already has the correct 500ms `-translate-y-1` lift. The image scale at 1400ms is an extra, slower motion layer that breaks the unified cadence.
+- Fix: change `duration-[1400ms]` to `duration-500` so both lift and scale share the 500ms `ease-weighted` timing.
 
-**Container width**
-- L30 — `max-w-3xl` (~48rem). Core: "Any text wider than ~24ch of display?" `.t-headline` at `max-w-3xl` is fine for a centered heading; lede well within ~70ch. ✓.
+### 3. Alt text describes project meta, not visual content
+- `src/components/gallery/ProjectPlaceholder.tsx` L57 — `alt={`${project.title} — ${project.area}`}` reads as metadata ("Interior trim & room transitions — Bragg Creek") rather than describing what the photograph actually shows.
+- Audit constraint: "Alt text truthful (matches what the photo actually shows)."
+- Fix: change to `alt={project.title}` — the title is a visual description of the work (e.g., "Interior trim & room transitions"), while the area ("Bragg Creek") is location metadata that does not describe the photograph.
 
-**Other checklist**
-- ✓ One H2, no H1 collision.
-- ✓ Hair rule above (`border-t border-foreground/10`) matches site grammar.
-- ✓ `.section-y` spacing.
-- ✓ Reveal pattern (`reveal-up` + staggered delays). Inline `animationDelay` styles are tolerated outside drawer; the drawer-specific Core ban doesn't apply globally. Keep.
-- ✓ Focus-visible ring present.
-- ✓ Tap target ≥ 52px.
-- ✓ Alt text N/A (no images).
-- ✓ No descender clip (no overflow-hidden wrapper around heading).
+### Clean checklist
+- ✓ No text under 13px outside `.t-micro`.
+- ✓ No low-contrast pairs on interactive elements.
+- ✓ No descender clipping (photos only, no text overlays).
+- ✓ One H1 per page — H1 lives in `SubPageHero`; grid uses `sr-only` H2.
+- ✓ No eyebrow/lede conflict (grid has neither).
+- ✓ `.section-y` rhythm used correctly.
+- ✓ Hover lift is `-translate-y-1` with `duration-500 ease-weighted`.
+- ✓ No per-project pages, no filter chrome, no expand toggle.
+- ✓ Tap targets — no interactive elements inside the grid (photos are not clickable links).
+- ✓ Responsive: 1-col → 12-col asymmetric holds across breakpoints.
 
 ## Fix plan
 
-### `src/components/BigCloseCTA.tsx`
+### `src/pages/Work.tsx`
+Delete the caption strip below each tile (lines 85-90).
 
-1. **Drop the arrow import** at L2 (unused after CTA simplification).
-2. **L19** — Change default `lede` to `"Tell us about the property — we'll come look, talk it through, and quote it honestly."`.
-3. **L44-61** — Rewrite the CTA block so the button matches nav grammar:
-   ```tsx
-   <Link
-     to={primary.to}
-     className={cn(
-       "cta-spring inline-flex items-center justify-center rounded-lg",
-       "bg-evergreen text-evergreen-foreground",
-       "px-6 min-h-[52px] text-[15px] font-semibold",
-       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-     )}
-   >
-     {primary.label}
-   </Link>
-   ```
-   No arrow, no icon-chip, no inset shadow, no `transition-all`, no `text-minimal`.
-
-### `mem://index.md`
-
-Add to Core: **"BigCloseCTA button uses the same square (rounded-lg) solid evergreen shape as the nav Quote CTA — text-only, no arrow glyph, no icon-chip, no hand-rolled shadow. `.cta-spring` carries hover/press."**
+### `src/components/gallery/ProjectPlaceholder.tsx`
+1. L57 — Simplify alt to `{project.title}`.
+2. L63 — Change `duration-[1400ms]` to `duration-500`.
 
 ## Verify
-
-- `browser--navigate_to_sandbox /` desktop 1440 — confirm closing CTA pill is now a square button matching the nav, lede no longer mentions "two business days" (Hero already does on this page).
-- Mobile 390 — same.
-- Visit `/about` — heading + new lede, square CTA. The promise no longer appears on the page (acceptable; About page never carried it).
+- `browser--navigate_to_sandbox /work` at desktop 1440 — confirm 6 photo tiles with zero visible captions, no title/area text below images.
+- Mobile 390 — same, grid stacks to 1 column, still no captions.
+- Hover a tile — lift + image scale both feel synchronized at 500ms.
 - Console clean.
 
 ## Out of scope
-
-- ConsultationForm embedding (Core says BigCloseCTA never embeds it — not embedded ✓).
-- Per-page custom headings on `/work` (intentional).
-- Footer, nav, hero — separate audits.
+- `SubPageHero` on `/work` — separate "Global → SubPageHero" audit.
+- `BigCloseCTA` on `/work` — already audited.
+- Dead route configs in `pageSections.ts` (`/services/*`, `/service-areas`) — separate cleanup, not part of grid.
