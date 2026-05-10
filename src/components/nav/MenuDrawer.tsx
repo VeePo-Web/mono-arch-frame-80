@@ -164,18 +164,13 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
 
 const DrawerColumn = ({
   label,
-  delay,
   children,
 }: {
   label: string;
-  delay: number;
   children: React.ReactNode;
 }) => (
   <div>
-    <p
-      className="menu-drawer__label text-evergreen text-[11px] font-semibold uppercase tracking-[0.16em] mb-2"
-      style={{ animationDelay: `${delay}ms` }}
-    >
+    <p className="menu-drawer__label text-evergreen text-[11px] font-semibold uppercase tracking-[0.16em] mb-2">
       {label}
     </p>
     <div className="flex flex-col">{children}</div>
