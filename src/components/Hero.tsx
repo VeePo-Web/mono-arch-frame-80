@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "./Container";
+import { useReveal } from "@/hooks/useReveal";
 import { workPhotos } from "@/assets/photography";
 import { galleryPlates } from "@/data/galleryPlates";
 
