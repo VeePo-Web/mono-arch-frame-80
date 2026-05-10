@@ -1,67 +1,70 @@
-# Section: Global → Nav
+# Section: Global → BigCloseCTA
+
+Single component (`src/components/BigCloseCTA.tsx`) used on `/`, `/about`, `/services`, `/work`. Same close on every page.
 
 ## Issues found
 
-**Header bar (`src/components/Navigation.tsx`)**
-- L155 — Header CTA reads "Get a Quote" while drawer + sub-pages say "Get a Free Quote". Inconsistent voice.
-- L143-156 — Quote CTA missing `.cta-spring` class. Core: "Primary CTAs use the `.cta-spring` class." Currently flat colour-only.
-- L158 — Hamburger always rendered. Per your decision it must be `<lg` only.
-- L65 — Skip-link uses `text-minimal`. Retired class noise; swap to `.t-eyebrow` or plain `text-sm font-medium`.
-- L84-88 — Mobile legibility scrim still present at `lg+` (parent has no breakpoint guard on the gradient itself, only on `.lg:hidden` — actually OK, keep).
-- L59 — `logoShadow` adds a soft drop-shadow over photography; quiet, keep.
+**Button shape diverges from nav (one-button-language violation)**
+- L48 — `rounded-full` pill. Header + drawer CTAs are `rounded-lg` square. Core: "ONE button language site-wide." Site has unified on **square 8-radius solid evergreen**. Pill here is the odd one out.
+- L58-60 — Trailing `<ArrowUpRight>` glyph inside an `icon-chip` halo. Core just added: "Drawer + header CTAs are text-only — no trailing arrow glyph." Same shape language must extend to BigCloseCTA. Strip arrow + chip.
+- L50 — `text-minimal` retired-feeling utility. Use plain `text-[15px]` token? Better: drop in favour of `font-semibold` matching nav CTA.
+- L53 — Hand-rolled `shadow-[...]` inset+drop pair. Replace with the site-wide `.cta-spring` class (Core: "Primary CTAs use the `.cta-spring` class").
+- L51 — `transition-all duration-500` — too broad. `.cta-spring` carries the canonical hover lift; remove this line.
+- L48 — `pl-7 pr-1.5 py-1.5 min-h-[52px]` is asymmetric padding for the chip slot. With chip removed, switch to symmetric `px-6 min-h-[52px]` matching the drawer mobile CTA.
 
-**Section rail (`src/components/nav/SectionRail.tsx`)**
-- L89 — Uses `hidden md:flex` (≥768px). Core: "Section rail visible from lg+ (1024px) only." Bug. Change to `hidden lg:flex`.
-- L106-111 — Active tab uses `text-foreground` vs `text-foreground/65`. Core says active state is **underline-only, never bump weight/colour**. Currently it bumps colour (acceptable per the literal rule of "never bump font-weight"), but the spec is "underline-only". Keep colour delta — underline is the actual indicator via `.rail-indicator`. ✓ acceptable.
-- Container also gates on `< 2 sections` — fine. But Navigation.tsx wraps it in `hidden lg:flex` already, so the inner `md:flex` is dead code; still wrong intent.
+**Repeated "two business days" copy on home page**
+- L19 — Default lede: `"Cory replies within two business days."` Hero on `/` already says `"Replies within two business days."`. Core: "Two business days reply promise lives only on Hero, ConsultationForm helper, ThankYou hero, Contact rail, QuickContactSheet, BigCloseCTA, and meta descriptions — **never repeated inside the same page twice**." On `/` this fires twice. Fix by changing the default lede to a non-promise sentence the closer can own (Hero handles the promise; closer handles the invitation).
+- New default lede: `"Tell us about the property — we'll come look, talk it through, and quote it honestly."` (no "two business days" duplication, single warm sentence).
+- Sub-pages (About/Services/Work) don't say the promise outside this component, so they still need it somewhere — but the closing CTA's job is invitation, not promise. Acceptable trade.
 
-**Drawer (`src/components/nav/MenuDrawer.tsx`)**
-- L52-55 — Panel uses `bg-background/97 backdrop-blur-2xl`. Core: **"Drawer overlay uses NO backdrop-filter (panel is opaque)."** Change to `bg-background` (solid), drop `backdrop-blur-2xl`.
-- L99 — `<Link to="/" style={{ animationDelay: "120ms" }}>`. Core: **"Drawer item stagger via CSS `:nth-of-type`, never inline `animation-delay` styles."** Remove inline style.
-- L184 — DrawerColumn label uses `style={{ animationDelay: '${delay}ms' }}`. Same rule. Remove inline; let CSS `:nth-of-type` (or a static keyframe class) drive the stagger. Drop `delay` prop entirely.
-- L124 — Bottom rail uses `bg-background/40 backdrop-blur-sm`. Same backdrop-filter ban. Use `bg-background` + the existing `border-t` hairline.
-- L82 — Scroll body missing `overscroll-contain scroll-smooth`. Core requires both.
-- L142 + L159 — Drawer CTAs include trailing `<ArrowUpRight />` icon. Consistency check: header Quote CTA has no arrow. The `.cta-spring` button language site-wide doesn't mandate an arrow, but the header omits it. Drop arrows on drawer CTAs to match the one shape language ("solid square evergreen, cream text, no glyph").
-- L93-98 — Big "Home" link uses `text-2xl md:text-3xl font-semibold tracking-tight` (arbitrary sizes). Core: "Never use legacy classes, never inline `text-[…]` arbitrary sizes." `text-2xl/3xl` are Tailwind tokens, not arbitrary, so technically fine — but the typography system says use `.t-*`. Promote to `.t-section` (Home) and `.t-title` (Pages links) for one shared system. Pages links L209 `text-[1.0625rem] md:text-[1.125rem]` IS an arbitrary `text-[…]` — must replace with `.t-title` or `.t-lede`.
+**Container width**
+- L30 — `max-w-3xl` (~48rem). Core: "Any text wider than ~24ch of display?" `.t-headline` at `max-w-3xl` is fine for a centered heading; lede well within ~70ch. ✓.
 
-**Hamburger (`src/components/nav/HamburgerButton.tsx`)**
-- ✓ clean (square 44×44, transforms only, three-line glyph). Note: visibility is now controlled by Navigation.tsx wrapper.
-
-**Globally**
-- Core memory line **"Hamburger is the canonical three-line glyph, icon-only at all breakpoints"** must change to `<lg only` per your decision. Update `mem://index.md`.
+**Other checklist**
+- ✓ One H2, no H1 collision.
+- ✓ Hair rule above (`border-t border-foreground/10`) matches site grammar.
+- ✓ `.section-y` spacing.
+- ✓ Reveal pattern (`reveal-up` + staggered delays). Inline `animationDelay` styles are tolerated outside drawer; the drawer-specific Core ban doesn't apply globally. Keep.
+- ✓ Focus-visible ring present.
+- ✓ Tap target ≥ 52px.
+- ✓ Alt text N/A (no images).
+- ✓ No descender clip (no overflow-hidden wrapper around heading).
 
 ## Fix plan
 
-### 1. `src/components/Navigation.tsx`
-- L155: `Get a Quote` → `Get a Free Quote`. `aria-label="Get a quote"` → `aria-label="Get a free quote"`.
-- L148: append `cta-spring` to the className list.
-- L158: wrap hamburger in `<div className="lg:hidden">` so it disappears at lg+.
-- L65: swap `text-minimal` for `text-sm font-medium`.
+### `src/components/BigCloseCTA.tsx`
 
-### 2. `src/components/nav/SectionRail.tsx`
-- L89: `hidden md:flex` → `hidden lg:flex`.
+1. **Drop the arrow import** at L2 (unused after CTA simplification).
+2. **L19** — Change default `lede` to `"Tell us about the property — we'll come look, talk it through, and quote it honestly."`.
+3. **L44-61** — Rewrite the CTA block so the button matches nav grammar:
+   ```tsx
+   <Link
+     to={primary.to}
+     className={cn(
+       "cta-spring inline-flex items-center justify-center rounded-lg",
+       "bg-evergreen text-evergreen-foreground",
+       "px-6 min-h-[52px] text-[15px] font-semibold",
+       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+     )}
+   >
+     {primary.label}
+   </Link>
+   ```
+   No arrow, no icon-chip, no inset shadow, no `transition-all`, no `text-minimal`.
 
-### 3. `src/components/nav/MenuDrawer.tsx`
-- L53: `bg-background/97 backdrop-blur-2xl` → `bg-background`.
-- L82: add `overscroll-contain scroll-smooth` to the scroll wrapper className.
-- L94: replace `text-2xl md:text-3xl font-semibold tracking-tight` with `t-section` token class.
-- L99: delete `style={{ animationDelay: "120ms" }}`.
-- L106: drop `delay={200}` arg; remove `delay` from `DrawerColumn` props.
-- L124: `bg-background/40 backdrop-blur-sm` → `bg-background` (keep `border-t border-border/60`).
-- L143 + L160: remove `<ArrowUpRight ... />` and adjacent `gap-2.5`. CTA reads simply "Get a Free Quote".
-- L184: remove inline `animationDelay` style; rely on existing `.menu-drawer__label` keyframe (CSS already targets the class — stagger via `:nth-of-type` if needed, or a single shared delay).
-- L209: `text-[1.0625rem] md:text-[1.125rem]` → `t-title`.
+### `mem://index.md`
 
-### 4. `mem://index.md`
-- Replace the line "Hamburger is the canonical three-line glyph, icon-only at all breakpoints, square 44×44 with 8px radius — never a circle/pill, never with a 'Menu' word." with: "Hamburger is the canonical three-line glyph, square 44×44 with 8px radius, **visible only at <lg (mobile/tablet)**; at lg+ the section rail + hover-revealed routes carry navigation. Never a circle/pill, never with a 'Menu' word."
-- Add to Core: "Header CTA copy site-wide is **'Get a Free Quote'** — never 'Get a Quote' shorthand. The drawer, header, sub-page heroes, and BigCloseCTA all use the exact same five words."
-- Add to Core: "Drawer CTAs are text-only — no trailing arrow glyph. Same shape language as the header Quote CTA."
+Add to Core: **"BigCloseCTA button uses the same square (rounded-lg) solid evergreen shape as the nav Quote CTA — text-only, no arrow glyph, no icon-chip, no hand-rolled shadow. `.cta-spring` carries hover/press."**
 
 ## Verify
-- `browser--navigate_to_sandbox /` at 1440 + 390. Confirm: hamburger absent at 1440, rail centered, single "Get a Free Quote" pill on right.
-- Open drawer at 390. Confirm: solid cream panel (no blur), no per-link inline delays in DOM, CTA reads "Get a Free Quote" with no arrow.
-- `code--read_console_logs` — clean.
-- Zoom on header CTA + drawer CTA — confirm `Get a Free Quote` consistent, descenders on "Free"/"Quote" not clipping.
+
+- `browser--navigate_to_sandbox /` desktop 1440 — confirm closing CTA pill is now a square button matching the nav, lede no longer mentions "two business days" (Hero already does on this page).
+- Mobile 390 — same.
+- Visit `/about` — heading + new lede, square CTA. The promise no longer appears on the page (acceptable; About page never carried it).
+- Console clean.
 
 ## Out of scope
-Retired-component cleanup, footer, BigCloseCTA, hero. Section rail anchor labels (separate concern — rail content per route is in `getPageSections`).
+
+- ConsultationForm embedding (Core says BigCloseCTA never embeds it — not embedded ✓).
+- Per-page custom headings on `/work` (intentional).
+- Footer, nav, hero — separate audits.
