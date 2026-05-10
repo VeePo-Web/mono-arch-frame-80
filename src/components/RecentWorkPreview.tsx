@@ -17,7 +17,6 @@ const RecentWorkPreview = () => {
       id="recent-work"
       aria-labelledby="recent-work-heading"
       className="section-y"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "1200px 1400px" }}
     >
       <Container size="wide">
         <div
