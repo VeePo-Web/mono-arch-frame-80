@@ -1,52 +1,70 @@
-# Section: Work page → asymmetric grid
+# Section: Global → SubPageHero (consistency pass against home Hero)
 
-Page `src/pages/Work.tsx` + shared tile `src/components/gallery/ProjectPlaceholder.tsx`. The 6-tile asymmetric magazine grid on `/work`.
+Files in scope: `src/components/SubPageHero.tsx`, `src/components/Hero.tsx`. Used on `/about`, `/services`, `/work`, `/contact`, `/thank-you`, `/404`. Hero is the source of truth.
+
+Mandatory cross-cut: Core CTA rule (just cemented for BigCloseCTA) says **all** primary CTAs — header, drawer, BigCloseCTA, sub-page heroes — are `rounded-lg` square solid evergreen, text-only, no arrow, no icon-chip, no hand-rolled shadow, `.cta-spring` only. The home Hero CTA still violates this (rounded-full pill + ArrowUpRight + icon-chip). To make heroes consistent **and** Core-compliant, fix Hero too.
 
 ## Issues found
 
-### 1. Caption strip below every photo tile — violates "zero descriptions" rule
-- `src/pages/Work.tsx` L85-90 — Every `<article>` carries a visible caption row: `<h3 className="t-title">{p.title}</h3>` + `<p className="t-micro">{p.category} · {p.area}</p>`, separated by a hair rule.
-- Audit constraint: "Gallery has zero descriptions. Like FlexServices.org. Project tiles show the photo only — no title, no area, no category, no caption strip, no hover label, no overlay text, no per-project link, no detail page. The grid is the message. Anywhere descriptions still exist on a project tile (Home RecentWorkPreview, /work grid, anywhere else), strip them."
-- Fix: delete the entire `mt-5 pt-3 border-t...` caption block (lines 85-90). The grid becomes photo-only, matching the Home RecentWorkPreview treatment.
+### A. CTA grammar — Hero AND SubPageHero both violate Core
+- `Hero.tsx:62-77` — `rounded-full` pill, `pl-7 pr-1.5 py-1.5`, `<ArrowUpRight>` inside an `icon-chip icon-chip-light` halo. Violates "square `rounded-lg`, text-only, no arrow, no icon-chip."
+- `SubPageHero.tsx:50-70` — Same `rounded-full` pill + arrow chip, **plus** uses `text-minimal` (uppercase 12px → renders "GET A FREE QUOTE"), **plus** hand-rolled inset shadow on L60, **plus** `transition-all duration-500 hover:bg-evergreen-hover active:scale-[0.98]` instead of `.cta-spring`.
+- Fix (both): rewrite the CTA to the canonical BigCloseCTA pattern — `cta-spring inline-flex items-center justify-center rounded-lg bg-evergreen text-evergreen-foreground px-6 min-h-[52px] text-[15px] font-semibold` + focus-ring, drop the arrow/chip/import.
 
-### 2. Image hover scale timing violates motion cadence
-- `src/components/gallery/ProjectPlaceholder.tsx` L63 — `transition-transform duration-[1400ms] ease-weighted`. The image scales on hover via CSS (`.group:hover .photo-pending--photographed > img { transform: scale(1.025) }`) with a 1400ms transition.
-- Core motion cadence: "500ms transform on hover lifts" — the wrapper in Work.tsx already has the correct 500ms `-translate-y-1` lift. The image scale at 1400ms is an extra, slower motion layer that breaks the unified cadence.
-- Fix: change `duration-[1400ms]` to `duration-500` so both lift and scale share the 500ms `ease-weighted` timing.
+### B. Reveal system divergence
+- `SubPageHero.tsx:33-37` wraps the headline in `<span className="block overflow-hidden"><span className="block reveal-up" style={{ animationDelay: "120ms" }}>` — uses the legacy `.reveal-up` keyframe + inline `animationDelay` + an `overflow-hidden` clip wrapper.
+- Hero uses the canonical `data-reveal` + `--reveal-delay` system (800ms opacity + translate + blur). Two reveal systems on the same site = inconsistency.
+- The `overflow-hidden` wrapper is also the textbook descender-clip risk the audit calls out (`p` in "properties," `y` in "Real properties.").
+- Fix: drop the inner `<span overflow-hidden><span reveal-up>` wrappers. Apply `data-reveal` + `style={{ ["--reveal-delay" as string]: "120ms" }}` directly on the `<h1>`, the `<p>` lede, and the CTA wrapper — exactly the Hero pattern.
 
-### 3. Alt text describes project meta, not visual content
-- `src/components/gallery/ProjectPlaceholder.tsx` L57 — `alt={`${project.title} — ${project.area}`}` reads as metadata ("Interior trim & room transitions — Bragg Creek") rather than describing what the photograph actually shows.
-- Audit constraint: "Alt text truthful (matches what the photo actually shows)."
-- Fix: change to `alt={project.title}` — the title is a visual description of the work (e.g., "Interior trim & room transitions"), while the area ("Bragg Creek") is location metadata that does not describe the photograph.
+### C. Section padding — arbitrary token strings
+- `SubPageHero.tsx:25` — `pt-28 md:pt-44 pb-12 md:pb-24`. Hero uses `pt-28 md:pt-40 section-yb`. Core: "One section spacing token `.section-y` — never per-page `py-N md:py-N` strings."
+- Fix: change to `pt-28 md:pt-40 section-yb` to match Hero exactly.
+
+### D. Headline width clamp
+- `SubPageHero.tsx:28` — `max-w-[20ch] md:max-w-[18ch]` is an arbitrary container around the headline. Hero relies on `.t-display`'s `text-wrap: balance` and the column itself for width control.
+- Fix: drop the wrapping `<div className="max-w-…">` — let `.t-headline`'s built-in `text-wrap: balance` do the work, matching Hero. (Lede already has its own `max-w-[52ch]`, keep that.)
+
+### E. Dead-code props on SubPageHero
+- `SubPageHero.tsx:12-15` — `compact` and `accentWord` are deprecated no-op props. No callers pass them (verified across all 6 call sites).
+- Fix: delete both from the interface.
+
+### F. `cn` import
+- After removing `transition-all`/shadow strings the CTA className collapses; `cn` may still be useful for line-wrap clarity. Keep `cn` import — low cost.
 
 ### Clean checklist
-- ✓ No text under 13px outside `.t-micro`.
-- ✓ No low-contrast pairs on interactive elements.
-- ✓ No descender clipping (photos only, no text overlays).
-- ✓ One H1 per page — H1 lives in `SubPageHero`; grid uses `sr-only` H2.
-- ✓ No eyebrow/lede conflict (grid has neither).
-- ✓ `.section-y` rhythm used correctly.
-- ✓ Hover lift is `-translate-y-1` with `duration-500 ease-weighted`.
-- ✓ No per-project pages, no filter chrome, no expand toggle.
-- ✓ Tap targets — no interactive elements inside the grid (photos are not clickable links).
-- ✓ Responsive: 1-col → 12-col asymmetric holds across breakpoints.
+- ✓ One H1 per page (SubPageHero owns it on sub-pages; Hero owns it on /).
+- ✓ Eyebrow rule: SubPageHero has no eyebrow (per Core "page-name eyebrow retired"); Hero's eyebrow is "Family-run · Foothills, AB" — locator, different category from headline — OK.
+- ✓ `.t-headline` (sub-pages) vs `.t-display` (home) is intentional per Core typography map — do NOT unify the type token.
+- ✓ Photo plate on Hero only — Core: "SubPageHero is type-only on every sub-page." Do NOT add a plate to SubPageHero.
+- ✓ Lede max-width 52ch on SubPageHero, 44ch on Hero (Hero is narrower because it shares the row with the photo) — OK.
+- ✓ Reply note ("Replies within two business days") lives on Hero only — never duplicated on sub-pages per Core.
 
 ## Fix plan
 
-### `src/pages/Work.tsx`
-Delete the caption strip below each tile (lines 85-90).
+### `src/components/SubPageHero.tsx` — full rewrite (clean enough to be one pass)
+1. Drop `ArrowUpRight` import.
+2. Drop deprecated `compact` / `accentWord` props.
+3. Section: `className="relative pt-28 md:pt-40 section-yb"` (matches Hero).
+4. Container: drop the `max-w-[20ch] md:max-w-[18ch]` wrapper.
+5. Headline: `<h1 data-reveal style={{ ["--reveal-delay" as string]: "120ms" }} className="t-headline wrap-editorial text-foreground">{headline}</h1>` — no overflow-hidden, no `.reveal-up`.
+6. Lede: `<p data-reveal style={{ ["--reveal-delay" as string]: "240ms" }} className="t-lede mt-7 max-w-[52ch]">{subhead}</p>`.
+7. CTA wrapper: `<div data-reveal style={{ ["--reveal-delay" as string]: "360ms" }} className="mt-10">` containing the canonical square CTA (no arrow, no chip, no hand-rolled shadow).
 
-### `src/components/gallery/ProjectPlaceholder.tsx`
-1. L57 — Simplify alt to `{project.title}`.
-2. L63 — Change `duration-[1400ms]` to `duration-500`.
+### `src/components/Hero.tsx` — CTA only
+1. L62-77 — replace the `rounded-full` pill + arrow chip with the canonical square CTA. Drop `ArrowUpRight` import (L2). Keep everything else (eyebrow, headline, lede, photo plate, reply note) — already canonical.
+
+### `mem://index.md`
+The Core line "Hero left column: small evergreen-rule eyebrow + H1 + subhead + one solid evergreen CTA" stays correct. The CTA-shape Core rule already mandates square/text-only — no memory edit needed.
 
 ## Verify
-- `browser--navigate_to_sandbox /work` at desktop 1440 — confirm 6 photo tiles with zero visible captions, no title/area text below images.
-- Mobile 390 — same, grid stacks to 1 column, still no captions.
-- Hover a tile — lift + image scale both feel synchronized at 500ms.
-- Console clean.
+- `browser--navigate_to_sandbox /` desktop 1440 + mobile 390 — Hero CTA is now a square solid evergreen button matching the nav Quote button. No arrow.
+- `/about`, `/services`, `/work`, `/contact`, `/thank-you` desktop + mobile — SubPageHero CTAs all match Hero CTA (same shape, same label sizing, same hover spring).
+- Zoom into "Real properties." (`/work`) and "Three services. One standard." (`/services`) — descenders on `p`, `y`, `q` no longer clipped.
+- Console + runtime errors clean.
 
 ## Out of scope
-- `SubPageHero` on `/work` — separate "Global → SubPageHero" audit.
-- `BigCloseCTA` on `/work` — already audited.
-- Dead route configs in `pageSections.ts` (`/services/*`, `/service-areas`) — separate cleanup, not part of grid.
+- Removing the photo plate from Hero (Core mandates it).
+- Adding a photo plate to SubPageHero (Core forbids it).
+- The `.reveal-up` keyframe itself in `index.css` (other components may still use it; only the SubPageHero usage is removed here).
+- ThankYou / NotFound page bodies (only the hero block on those pages is touched, via the shared SubPageHero rewrite).

@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import Container from "./Container";
 import { useReveal } from "@/hooks/useReveal";
@@ -62,17 +61,14 @@ const Hero = () => {
               <Link
                 to="/contact"
                 className={cn(
-                  "cta-spring inline-flex items-center gap-3 rounded-full",
+                  "cta-spring inline-flex items-center justify-center rounded-lg",
                   "bg-evergreen text-evergreen-foreground",
-                  "pl-7 pr-1.5 py-1.5 min-h-[52px] text-[15px] font-medium tracking-tight",
+                  "px-6 min-h-[52px] text-[15px] font-semibold",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
                 aria-label="Get a free quote — start a conversation about your property"
               >
-                <span>Get a Free Quote</span>
-                <span className="icon-chip icon-chip-light bg-background/15">
-                  <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                </span>
+                Get a Free Quote
               </Link>
             </div>
 
