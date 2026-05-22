@@ -1,5 +1,5 @@
 import { Suspense, lazy, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
@@ -7,7 +7,6 @@ import { prefetchRoute } from "@/lib/routePrefetch";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { routeHasTransparentTop } from "@/lib/pageSections";
 import HamburgerButton from "@/components/nav/HamburgerButton";
-import SectionRail from "@/components/nav/SectionRail";
 import Container from "@/components/Container";
 import logo from "@/assets/logo/haven-creek-horizontal.webp";
 
@@ -17,16 +16,21 @@ const MenuDrawer = lazy(() => import("@/components/nav/MenuDrawer"));
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_PHONE_DISPLAY = "403 970-7691";
 
+const PRIMARY_ROUTES = [
+  { label: "About", to: "/about" },
+  { label: "Services", to: "/services" },
+  { label: "Work", to: "/work" },
+  { label: "Contact", to: "/contact" },
+];
+
 /**
- * Navigation — Round 7 "Growing Glass".
+ * Navigation — simple editorial header.
  *
- * Single CSS variable `--nav-bg` (0..1) drives backdrop alpha, border,
- * shadow, AND backdrop-blur radius via calc(). The variable comes from
- * useScrollProgress (0..80px scroll → 0..1) on transparent-top routes,
- * or pinned to 1 on form routes / when prefers-reduced-transparency.
+ * Logo · 4 inline routes (lg+) · Phone · Quote CTA · Hamburger (<lg).
  *
- * Drawer-open clamps `--nav-bg` back to 0 so the drawer reads as the
- * sole chrome instead of double-stacking glass.
+ * Section rails were retired — each page has 1–3 sections and stands on its
+ * own scroll. Top-level routes warm on hover/pointerdown/focus so route
+ * commits are instant.
  */
 const Navigation = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -59,13 +63,10 @@ const Navigation = () => {
     prefetchRoute("/contact");
   };
 
-  // Section rail fades in once the user is committed to scrolling, so it
-  // doesn't compete with the hero headline at viewport 0.
-  const railOpacity = transparentRoute
-    ? Math.max(0, scrollProgress * 1.6 - 0.4)
-    : 1;
   // Logo earns a feather drop-shadow only while floating over photography.
   const logoShadow = navBg < 0.3 ? `drop-shadow(0 1px 2px hsl(0 0% 0% / ${(0.3 - navBg) * 0.5}))` : "none";
+
+  const warmRoute = (to: string) => () => prefetchRoute(to);
 
   return (
     <>
@@ -104,8 +105,9 @@ const Navigation = () => {
             {/* Brand */}
             <Link
               to="/"
-              onPointerDown={() => prefetchRoute("/")}
-              onFocus={() => prefetchRoute("/")}
+              onPointerDown={warmRoute("/")}
+              onMouseEnter={warmRoute("/")}
+              onFocus={warmRoute("/")}
               aria-label="Haven Creek Renovations — home"
               className={cn(
                 "inline-flex items-center shrink-0 rounded-sm",
@@ -124,12 +126,32 @@ const Navigation = () => {
               />
             </Link>
 
-            {/* Section rail — center. lg+ only. */}
-            <div
-              className="hidden lg:flex justify-center min-w-0 transition-opacity duration-300 ease-out"
-              style={{ opacity: railOpacity, pointerEvents: railOpacity < 0.1 ? "none" : "auto" }}
-            >
-              <SectionRail />
+            {/* Primary routes — lg+ inline */}
+            <div className="hidden lg:flex justify-center min-w-0">
+              <ul className="flex items-center gap-1">
+                {PRIMARY_ROUTES.map((r) => (
+                  <li key={r.to}>
+                    <NavLink
+                      to={r.to}
+                      onPointerDown={warmRoute(r.to)}
+                      onMouseEnter={warmRoute(r.to)}
+                      onFocus={warmRoute(r.to)}
+                      className={({ isActive }) =>
+                        cn(
+                          "nav-link relative inline-flex items-center px-3.5 py-2 whitespace-nowrap",
+                          "text-sm font-medium transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                          "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                          isActive
+                            ? "text-foreground nav-link--active"
+                            : "text-foreground/65 hover:text-foreground",
+                        )
+                      }
+                    >
+                      {r.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div className="lg:hidden" aria-hidden="true" />
 
@@ -154,8 +176,9 @@ const Navigation = () => {
               <Link
                 to="/contact"
                 onClick={handleQuoteClick}
-                onPointerDown={() => prefetchRoute("/contact")}
-                onFocus={() => prefetchRoute("/contact")}
+                onPointerDown={warmRoute("/contact")}
+                onMouseEnter={warmRoute("/contact")}
+                onFocus={warmRoute("/contact")}
                 aria-label="Get a free quote"
                 className={cn(
                   "nav-quote-cta cta-spring shrink-0 inline-flex items-center justify-center rounded-lg",

@@ -520,56 +520,32 @@
   }
   .nav-quote-cta:active { transform: translateY(0) scale(0.97); }
 
-  /* Section rail — FLIP shared underline. One indicator slides between
-     tabs via --ind-x / --ind-w CSS vars set in JS on active change. */
-  .rail-indicator {
+  /* Primary nav link — active-route underline (matches former rail grammar). */
+  .nav-link::after {
+    content: "";
     position: absolute;
+    left: 0.875rem;
+    right: 0.875rem;
     bottom: 0.375rem;
-    left: 0;
     height: 1.5px;
-    width: var(--ind-w, 0px);
-    transform: translate3d(var(--ind-x, 0px), 0, 0);
     background: hsl(var(--evergreen));
     border-radius: 1px;
-    pointer-events: none;
-    transition:
-      transform 360ms var(--ease-swift),
-      width 360ms var(--ease-swift),
-      opacity 200ms var(--ease-swift);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 360ms var(--ease-swift);
   }
+  .nav-link--active::after { transform: scaleX(1); }
 
-  /* Section rail — always scroll-x with edge-fade mask. */
-  .section-rail {
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .section-rail::-webkit-scrollbar { display: none; }
-  .section-rail-mask {
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent 0,
-      #000 16px,
-      #000 calc(100% - 16px),
-      transparent 100%
-    );
-            mask-image: linear-gradient(
-      to right,
-      transparent 0,
-      #000 16px,
-      #000 calc(100% - 16px),
-      transparent 100%
-    );
-  }
 
   @media (prefers-reduced-motion: reduce) {
     .havencreek-nav,
     .nav-shell,
-    .rail-indicator,
+    .nav-link::after,
     .nav-quote-cta {
       transition-duration: 0ms !important;
     }
   }
+
 
   /* ──────────────────────────────────────────────────────────────────────
      Hamburger — three lines morph to an X (canonical "menu" glyph).
@@ -664,16 +640,9 @@
     }
   }
 
-  /* ──────────────────────────────────────────────────────────────────────
-     Section rail — overflow-x scroll-snap with masked edges so long
-     section lists fade at the boundaries instead of hard-cutting. The
-     rail itself is scroll-snap-x mandatory; SectionRail auto-centers
-     the active label via scrollIntoView.
-     ────────────────────────────────────────────────────────────────────── */
-  /* (section-rail-scroll + menu-primary-text removed in round 3 cleanup —
-     rail now lives inside a solid header with overflow:hidden, and the
-     drawer uses a flat sibling-row of primary links instead of one
-     italic display word.) */
+  /* (Section rail retired — header surfaces 4 routes inline at lg+.) */
+
+
 
   /* ──────────────────────────────────────────────────────────────────────
      Section wash — two-tone vertical gradient replaces flat bg-card/40.

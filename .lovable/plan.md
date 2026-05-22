@@ -1,44 +1,76 @@
-## Section: Global → Eyebrows / folio chrome
+# Section: Global → Nav (bar + drawer + page-to-page transitions)
 
-### Issues found
+## What's actually broken right now
 
-1. **`src/components/PageSlug.tsx` (entire file) + `src/App.tsx:7,96` — fixed top-right "Page 01 — Home" folio.**
-   This is exactly the "01 — Home" the user is calling out. It's pure magazine-folio decoration sitting in the top-right corner of every route, in 9px uppercase tracked-out evergreen with a hairline rule. Core rules ban it three times over: *"no folio"*, *"No 'Plate N', 'Edition', 'Fig.', 'Section No.', or 'Service No.' labels in UI chrome"*, and *"art-school pastiche"*. It also competes visually with the nav.
-   → Delete `src/components/PageSlug.tsx`. Remove the import + `<PageSlug />` render from `src/App.tsx`.
+### 1. SectionRail is pointing at anchors that no longer exist
+`src/lib/pageSections.ts` is stale and is producing **dead in-page links** the user can click — the single worst friction bug in the nav.
 
-2. **`src/components/Hero.tsx:35` — `<span className="t-eyebrow">Family-run · Foothills, AB</span>` above the home H1.**
-   Core says: *"Hero + SubPageHero render headlines as plain `text-foreground` — no eyebrow line, no folio, no radial bloom, no vignette. The type itself is the design."* The "small evergreen-rule eyebrow" phrasing in the later Hero rule contradicts the earlier blanket ban; per the audit prompt's *"Default = ship the simpler interpretation"*, the eyebrow goes. The H1 + subhead + CTA stand on their own.
-   → Remove the eyebrow `<span>` (and its containing wrapper if it becomes empty) from Hero.tsx.
+- **Home** rail tabs: `services-preview`, `how-it-goes`, `areas` → none of these `id`s exist on `/`. Home is now only Hero (`hero-heading`), RecentWorkPreview (`recent-work`), BigCloseCTA. Clicking any rail tab scrolls to nothing.
+- **Services** rail: `services-three` (✓) + `quote` (dead — no `#quote` on the page). One live, one dead.
+- **About** rail: `philosophy`, `respect` → page actually uses `how-we-work`, `areas`. Both dead.
+- File also still configures `/services/interior-finishing`, `/services/exterior-finishing`, `/services/decking`, `/service-areas` — routes that don't exist (Core rule violation).
 
-3. **`src/pages/NotFound.tsx:4,45` — `<Eyebrow label="HEAD HERE" />` on the 404.**
-   Decorative label that adds nothing functional ("HEAD HERE" reads as placeholder copy left in production). Removes a stray usage of the standalone `Eyebrow` component.
-   → Delete the `<Eyebrow … />` line and its import.
+### 2. The section rail itself shouldn't exist on this site
+Core rule + questionnaire say the nav is: logo · 4 routes · Quote CTA. After the recent simplification each page has 1–3 sections — there is nothing meaningful to in-page-navigate to. The rail is decorator chrome that creates the dead-link bug above and steals the center column from the 4 routes the user actually wants reachable in one click.
 
-4. **Section-name eyebrows on About / Services / Contact / RecentWorkPreview** — ✓ keep.
-   `About.tsx:38,77` ("How we work", "Where we work"), `Services.tsx:37` ("What we do"), `Contact.tsx:66` ("Or reach us directly"), `RecentWorkPreview.tsx:28` ("Recent work"). These are functional section names, not folio chrome — they're used as the section's accessible heading (`aria-labelledby`/h2) in a 12-col rail. Core explicitly preserves the 10px uppercase `.t-eyebrow` token and the magazine-rail grammar that uses it. Not the bug the user is naming.
+At `lg+` today the 4 top-level routes are reachable **only** through the drawer. That's a hidden nav on desktop — the opposite of frictionless. Apple/Calemwood/FlexServices all surface their handful of routes inline.
 
-5. **`src/components/SectionHeader.tsx` + `src/components/Eyebrow.tsx`** — ✓ leave in place.
-   `SectionHeader` is unused at runtime; `Eyebrow` is only consumed by `SectionHeader` and (after fix #3) nothing else. Deleting them is a separate cleanup pass — out of scope for an "eyebrow audit" since they don't render anywhere visible to the user. Flag for a future dead-code sweep.
+### 3. Desktop hover doesn't warm chunks
+`onPointerDown` + `onFocus` warm route chunks, but desktop users hover for ~200ms before clicking. Adding `onMouseEnter` gives ~200ms of free prefetch headroom → routes commit truly instantly.
 
-### Files to change
+### 4. Minor
+- `useScrollProgress`-driven `railOpacity` becomes dead code once the rail is gone.
+- `useActiveSection` hook + `pageSections.ts` + `SectionRail.tsx` become unused → delete.
 
-- **`src/App.tsx`** — drop the `import PageSlug` line and the `<PageSlug />` render under `<BrowserRouter>`.
-- **`src/components/PageSlug.tsx`** — delete the file.
-- **`src/components/Hero.tsx`** — remove the `Family-run · Foothills, AB` eyebrow span (and the surrounding wrapper if empty after removal).
-- **`src/pages/NotFound.tsx`** — drop the `Eyebrow` import and the `<Eyebrow label="HEAD HERE" />` line.
+## Fix (smallest possible change, deletion-first)
 
-### Out of scope
+### A. `src/components/Navigation.tsx`
+Replace the center `<SectionRail />` slot with the **4 top-level routes inline** (lg+ only), styled to match the section-rail's quiet voice so the visual rhythm of the header doesn't change.
 
-- `SectionHeader` / `Eyebrow` dead-code removal (separate cleanup pass).
-- Refactoring or restyling the legitimate `t-eyebrow` section labels on About/Services/Contact/RecentWorkPreview — they pass Core.
-- Touching anything not listed above.
+- Inline links: `About · Services · Work · Contact`
+- `text-sm font-medium text-foreground/65 hover:text-foreground transition-colors duration-300`
+- Active route gets `text-foreground` + a 1.5px evergreen underline (`after:` pseudo, matching the rail-indicator grammar — no JS measuring needed for a static set of 4).
+- Each link wires `onPointerDown` + `onMouseEnter` + `onFocus` → `prefetchRoute(to)`.
+- Drop `railOpacity` math + the `transition-opacity` wrapper. Center column is now always visible at lg+.
+- `<HamburgerButton>` stays mobile-only (`<lg`) — unchanged. Drawer still owns nav on mobile.
 
-### Verification
+### B. Delete dead code
+- `src/components/nav/SectionRail.tsx` — delete
+- `src/hooks/useActiveSection.ts` — delete (only consumer was SectionRail)
+- `src/lib/pageSections.ts` — keep ONLY `routeHasTransparentTop()` (still used by Navigation). Drop `PageSection`, `pageSections` map, `getPageSections`.
+- `src/index.css` — drop `.section-rail`, `.section-rail-mask`, `.rail-indicator`, `.nav-tab` rules. (Will inspect after first edit and remove what's orphaned.)
 
-- `browser--navigate_to_sandbox` to `/`, `/about`, `/services`, `/work`, `/contact`, `/thank-you` — confirm the top-right "Page 01 — Home" flag is gone on every route.
-- Screenshot home at desktop (1440) — Hero now opens with H1 as the first painted element.
-- `code--read_runtime_errors` + `code--read_console_logs` clean.
+### C. Drawer — keep, two micro-tweaks
+- Add `onMouseEnter={() => prefetchRoute(to)}` to `DrawerLink` and the Home link (parity with header).
+- Otherwise leave alone — drawer is solid, opens lazy, closes via X or backdrop, motion is correct.
 
-### Memory update
+### D. Memory update
+Update `mem://index.md` Core to retire SectionRail and codify the new lg+ inline-routes pattern:
+- Remove the four section-rail rules (visibility, FLIP indicator, anchor cap, label voice).
+- Add: "At lg+ the header surfaces the 4 top-level routes inline (About · Services · Work · Contact) as quiet text links — active route gets a 1.5px evergreen underline. Section rails are retired; pages stand on their own scroll."
 
-Add to Core: *"`PageSlug` is retired — never render a fixed top-right page coordinate / 'Page 0N — Name' folio. Hero and SubPageHero open straight on the H1; no eyebrow line above either."*
+## Out of scope (intentionally not touching)
+
+- `App.tsx` `AnimatedRoutes` + `startTransition` — already correct, prevents the Suspense blank-flash. ✓ verified clean.
+- `RoutePrefetcher` idle warming — already at 600ms / rIC. ✓.
+- `HamburgerButton` morph, drawer overlay, drawer motion — ✓ clean per Core.
+- Phone link, Quote CTA shape/contrast — ✓ clean per Core.
+- Scroll-tied `--nav-bg` glass — ✓ clean per Core.
+
+## Verification
+
+1. `code--view` each edited file after change.
+2. `browser--navigate_to_sandbox` `/`, screenshot at 1440 → confirm 4 inline routes visible + active underline on `/`.
+3. Navigate `/` → `/about` → `/services` → `/work` → `/contact` — confirm zero blank-flash, zero dead-link scroll-to-nothing.
+4. Screenshot at 390 → confirm hamburger still owns nav, header chrome unchanged.
+5. `code--read_console_logs` clean, `code--read_runtime_errors` clean.
+
+## Files changed (preview)
+
+- `src/components/Navigation.tsx` — center column becomes 4 inline routes
+- `src/components/nav/MenuDrawer.tsx` — add `onMouseEnter` prefetch
+- `src/components/nav/SectionRail.tsx` — **deleted**
+- `src/hooks/useActiveSection.ts` — **deleted**
+- `src/lib/pageSections.ts` — trimmed to `routeHasTransparentTop` only
+- `src/index.css` — drop orphaned `.section-rail*` / `.rail-indicator` / `.nav-tab` rules
+- `mem://index.md` — Core updated
