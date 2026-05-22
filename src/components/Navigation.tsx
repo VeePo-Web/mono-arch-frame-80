@@ -175,7 +175,7 @@ const Navigation = () => {
                       className={({ isActive }) =>
                         cn(
                           "nav-link relative inline-flex items-center py-2 whitespace-nowrap",
-                          "text-[13px] tracking-[0.02em] font-medium",
+                          "text-sm font-medium leading-[1.2]",
                           "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                           "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                           isActive
