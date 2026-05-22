@@ -614,18 +614,19 @@
     from { opacity: 1; transform: translateY(0); }
     to   { opacity: 0; transform: translateY(4px); }
   }
-  .menu-drawer__link,
+  .menu-drawer__row,
   .menu-drawer__cta,
   .menu-drawer__tel {
     opacity: 0;
     animation: drawer-item-rise 520ms var(--ease-weighted) forwards;
   }
-  /* Staggered cascade — Apple-style 60ms beat. */
-  .menu-drawer__link:nth-child(1) { animation-delay:   0ms; }
-  .menu-drawer__link:nth-child(2) { animation-delay:  60ms; }
-  .menu-drawer__link:nth-child(3) { animation-delay: 120ms; }
-  .menu-drawer__link:nth-child(4) { animation-delay: 180ms; }
-  .menu-drawer__link:nth-child(5) { animation-delay: 240ms; }
+  /* Staggered cascade — Apple-style 60ms beat. Targets <li> rows so the
+     selectors actually match (the <a> inside is always :nth-child(1)). */
+  .menu-drawer__row:nth-child(1) { animation-delay:   0ms; }
+  .menu-drawer__row:nth-child(2) { animation-delay:  60ms; }
+  .menu-drawer__row:nth-child(3) { animation-delay: 120ms; }
+  .menu-drawer__row:nth-child(4) { animation-delay: 180ms; }
+  .menu-drawer__row:nth-child(5) { animation-delay: 240ms; }
   .menu-drawer__cta { animation-delay: 320ms; }
   .menu-drawer__tel { animation-delay: 380ms; }
   @keyframes drawer-item-rise {
