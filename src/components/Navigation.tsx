@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
@@ -35,12 +35,44 @@ const PRIMARY_ROUTES = [
 const Navigation = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTouched, setDrawerTouched] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastYRef = useRef(0);
   const { pathname } = useLocation();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
   const transparentRoute = routeHasTransparentTop(pathname);
   const scrollProgress = useScrollProgress(80);
   // Form routes pin to opaque. Drawer-open hides the backdrop. Otherwise interpolate.
   const navBg = drawerOpen ? 0 : transparentRoute ? scrollProgress : 1;
+
+  // Direction-aware hide — Apple/Fly4Me cadence. Past 240px, scrolling down
+  // tucks the bar away; any upward intent or returning near the top reveals it.
+  useEffect(() => {
+    if (drawerOpen) {
+      setHidden(false);
+      return;
+    }
+    let raf = 0;
+    let pending = false;
+    const apply = () => {
+      const y = window.scrollY;
+      const last = lastYRef.current;
+      if (y > 240 && y - last > 4) setHidden(true);
+      else if (last - y > 4 || y < 80) setHidden(false);
+      lastYRef.current = y;
+      pending = false;
+    };
+    const onScroll = () => {
+      if (pending) return;
+      pending = true;
+      raf = requestAnimationFrame(apply);
+    };
+    lastYRef.current = window.scrollY;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [drawerOpen]);
 
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onContactRoute) return;
@@ -79,14 +111,18 @@ const Navigation = () => {
 
       <header
         role="banner"
+        data-hidden={hidden && !drawerOpen}
         className={cn(
           "havencreek-nav nav-shell fixed inset-x-0 top-0 z-50",
-          "h-[60px] sm:h-16",
+          "h-[60px] sm:h-16 md:h-20",
+          "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "data-[hidden=true]:-translate-y-full",
         )}
         style={
           {
             paddingTop: "env(safe-area-inset-top)",
             ["--nav-bg" as string]: navBg.toFixed(3),
+            ["--nav-compress" as string]: navBg.toFixed(3),
           } as React.CSSProperties
         }
       >
@@ -126,9 +162,9 @@ const Navigation = () => {
               />
             </Link>
 
-            {/* Primary routes — lg+ inline */}
+            {/* Primary routes — md+ inline, generous editorial spacing */}
             <div className="hidden md:flex justify-center min-w-0">
-              <ul className="flex items-center gap-1">
+              <ul className="flex items-center gap-7 lg:gap-9">
                 {PRIMARY_ROUTES.map((r) => (
                   <li key={r.to}>
                     <NavLink
@@ -138,12 +174,13 @@ const Navigation = () => {
                       onFocus={warmRoute(r.to)}
                       className={({ isActive }) =>
                         cn(
-                          "nav-link relative inline-flex items-center px-3.5 py-2 whitespace-nowrap",
-                          "text-sm font-medium transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                          "nav-link relative inline-flex items-center py-2 whitespace-nowrap",
+                          "text-[13px] tracking-[0.02em] font-medium",
+                          "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                           "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                           isActive
                             ? "text-foreground nav-link--active"
-                            : "text-foreground/65 hover:text-foreground",
+                            : "text-foreground/50 hover:text-foreground",
                         )
                       }
                     >
@@ -154,6 +191,7 @@ const Navigation = () => {
               </ul>
             </div>
             <div className="md:hidden" aria-hidden="true" />
+
 
             {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
             <div className="flex items-center gap-1 sm:gap-2 md:gap-3 justify-end">
@@ -201,7 +239,7 @@ const Navigation = () => {
 
       {/* Spacer only on routes where the bar owns its own band (form routes). */}
       {!transparentRoute && (
-        <div aria-hidden="true" className="h-[60px] sm:h-16" />
+        <div aria-hidden="true" className="h-[60px] sm:h-16 md:h-20" />
       )}
 
       {drawerTouched && (
