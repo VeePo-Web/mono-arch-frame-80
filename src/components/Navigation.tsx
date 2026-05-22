@@ -110,7 +110,6 @@ const Navigation = () => {
       </a>
 
       <header
-        ref={null}
         role="banner"
         data-hidden={hidden && !drawerOpen}
         className={cn(
