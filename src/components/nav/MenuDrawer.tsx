@@ -17,10 +17,18 @@ const ROUTES = [
   { label: "Contact", to: "/contact" },
 ];
 
+const STUDIO_PHONE_TEL = "+14039707691";
+const STUDIO_PHONE_DISPLAY = "403 970-7691";
+
 /**
- * MenuDrawer — mobile/tablet fullscreen nav.
+ * MenuDrawer — mobile/tablet fullscreen nav (Apple-grade).
  *
- * One list of 5 routes, identical treatment. One CTA pinned to the bottom.
+ * Top-aligned editorial menu. Each route is a full-width row separated
+ * by a hair rule; the active row carries a 6px evergreen dot. The CTA
+ * sits below the list with no divider rail. A quiet phone link below
+ * the CTA preserves the path to contact while the drawer covers the
+ * header.
+ *
  * Hidden at lg+ where inline header routes own primary nav.
  */
 const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
@@ -41,13 +49,13 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
         >
           <Dialog.Title className="sr-only">Site menu</Dialog.Title>
 
-          {/* Close — absolute, corner */}
+          {/* Close — absolute, corner. Matches the hamburger silhouette. */}
           <Dialog.Close
             aria-label="Close menu"
             className={cn(
               "absolute z-20 inline-flex items-center justify-center h-11 w-11 rounded-lg",
               "text-foreground/80 hover:text-foreground hover:bg-foreground/[0.05]",
-              "transition-colors",
+              "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             )}
             style={{
@@ -58,63 +66,85 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
             <X className="h-5 w-5" strokeWidth={1.85} aria-hidden="true" />
           </Dialog.Close>
 
-          {/* Routes — one stacked list */}
-          <nav
-            aria-label="Site"
-            className="flex-1 overflow-y-auto overscroll-contain scroll-smooth px-6 md:px-10 flex flex-col justify-center"
+          {/* Body — top-aligned, scrolls if it must. */}
+          <div
+            className="flex-1 overflow-y-auto overscroll-contain scroll-smooth px-6 md:px-10"
             style={{
-              paddingTop: "max(5rem, calc(env(safe-area-inset-top) + 4rem))",
-              paddingBottom: "2rem",
+              paddingTop: "max(6rem, calc(env(safe-area-inset-top) + 5rem))",
+              paddingBottom: "max(2rem, calc(env(safe-area-inset-bottom) + 1.5rem))",
             }}
           >
-            <ul className="flex flex-col gap-1 md:gap-2 max-w-md">
-              {ROUTES.map((r) => {
-                const active = pathname === r.to;
-                return (
-                  <li key={r.to}>
-                    <Link
-                      to={r.to}
-                      onClick={close}
-                      onPointerDown={() => prefetchRoute(r.to)}
-                      onMouseEnter={() => prefetchRoute(r.to)}
-                      onFocus={() => prefetchRoute(r.to)}
-                      aria-current={active ? "page" : undefined}
-                      className={cn(
-                        "menu-drawer__link t-section block py-2 transition-colors duration-300",
-                        active
-                          ? "text-evergreen"
-                          : "text-foreground hover:text-evergreen",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm px-1 -mx-1",
-                      )}
-                    >
-                      {r.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+            <div className="max-w-md mx-auto md:mx-0">
+              {/* Routes — hair-ruled rows */}
+              <nav aria-label="Site">
+                <ul className="flex flex-col border-t border-foreground/10">
+                  {ROUTES.map((r) => {
+                    const active = pathname === r.to;
+                    return (
+                      <li key={r.to} className="border-b border-foreground/10">
+                        <Link
+                          to={r.to}
+                          onClick={close}
+                          onPointerDown={() => prefetchRoute(r.to)}
+                          onMouseEnter={() => prefetchRoute(r.to)}
+                          onFocus={() => prefetchRoute(r.to)}
+                          aria-current={active ? "page" : undefined}
+                          className={cn(
+                            "menu-drawer__link group t-section",
+                            "flex items-center justify-between gap-4 py-5",
+                            "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                            active ? "text-evergreen" : "text-foreground hover:text-evergreen",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm",
+                          )}
+                        >
+                          <span>{r.label}</span>
+                          <span
+                            aria-hidden="true"
+                            className={cn(
+                              "h-1.5 w-1.5 rounded-full bg-evergreen transition-opacity duration-300",
+                              active ? "opacity-100" : "opacity-0",
+                            )}
+                          />
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
 
-          {/* Bottom rail — single CTA */}
-          <div
-            className="border-t border-border/60 bg-background px-6 md:px-10 py-4 md:py-5 flex md:justify-end"
-            style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
-          >
-            <Link
-              to="/contact"
-              onClick={close}
-              onPointerDown={() => prefetchRoute("/contact")}
-              onMouseEnter={() => prefetchRoute("/contact")}
-              onFocus={() => prefetchRoute("/contact")}
-              className={cn(
-                "menu-drawer__cta cta-spring inline-flex items-center justify-center",
-                "bg-evergreen text-evergreen-foreground rounded-lg px-6 text-[15px] font-semibold",
-                "min-h-[52px] md:min-h-[44px] w-full md:w-auto md:min-w-[220px]",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              )}
-            >
-              Get a Free Quote
-            </Link>
+              {/* CTA — no border rail above */}
+              <Link
+                to="/contact"
+                onClick={close}
+                onPointerDown={() => prefetchRoute("/contact")}
+                onMouseEnter={() => prefetchRoute("/contact")}
+                onFocus={() => prefetchRoute("/contact")}
+                className={cn(
+                  "menu-drawer__cta cta-spring mt-8",
+                  "inline-flex items-center justify-center w-full",
+                  "bg-evergreen text-evergreen-foreground rounded-lg px-6 text-[15px] font-semibold",
+                  "min-h-[52px]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                )}
+              >
+                Get a Free Quote
+              </Link>
+
+              {/* Quiet phone fallback — header phone is hidden behind the drawer */}
+              <a
+                href={`tel:${STUDIO_PHONE_TEL}`}
+                onClick={close}
+                aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
+                className={cn(
+                  "menu-drawer__tel mt-4 flex items-center justify-center",
+                  "min-h-[44px] t-micro tracking-[0.14em] text-foreground/60 hover:text-foreground",
+                  "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm",
+                )}
+              >
+                Or call {STUDIO_PHONE_DISPLAY}
+              </a>
+            </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
