@@ -1,6 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Link, useLocation } from "react-router-dom";
 import X from "lucide-react/dist/esm/icons/x";
+import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
 import { cn } from "@/lib/utils";
 import { prefetchRoute } from "@/lib/routePrefetch";
 
@@ -23,11 +24,10 @@ const STUDIO_PHONE_DISPLAY = "403 970-7691";
 /**
  * MenuDrawer — mobile/tablet fullscreen nav (Apple-grade).
  *
- * Top-aligned editorial menu. Each route is a full-width row separated
- * by a hair rule; the active row carries a 6px evergreen dot. The CTA
- * sits below the list with no divider rail. A quiet phone link below
- * the CTA preserves the path to contact while the drawer covers the
- * header.
+ * Top-aligned editorial menu. Each route is a full-width hair-ruled row.
+ * Active row is evergreen with a persistent arrow; inactive rows reveal
+ * the arrow on hover (4px translate, 360ms). CTA below with no divider,
+ * and a quiet phone fallback under it.
  *
  * Hidden at lg+ where inline header routes own primary nav.
  */
@@ -74,14 +74,14 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
               paddingBottom: "max(2rem, calc(env(safe-area-inset-bottom) + 1.5rem))",
             }}
           >
-            <div className="max-w-md mx-auto md:mx-0">
+            <div className="w-full">
               {/* Routes — hair-ruled rows */}
               <nav aria-label="Site">
                 <ul className="flex flex-col border-t border-foreground/10">
                   {ROUTES.map((r) => {
                     const active = pathname === r.to;
                     return (
-                      <li key={r.to} className="border-b border-foreground/10">
+                      <li key={r.to} className="menu-drawer__row border-b border-foreground/10">
                         <Link
                           to={r.to}
                           onClick={close}
@@ -98,11 +98,15 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                           )}
                         >
                           <span>{r.label}</span>
-                          <span
+                          <ArrowRight
                             aria-hidden="true"
+                            strokeWidth={1.5}
                             className={cn(
-                              "h-1.5 w-1.5 rounded-full bg-evergreen transition-opacity duration-300",
-                              active ? "opacity-100" : "opacity-0",
+                              "h-5 w-5 shrink-0 text-evergreen",
+                              "transition-[opacity,transform] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+                              active
+                                ? "opacity-100 translate-x-0"
+                                : "opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0",
                             )}
                           />
                         </Link>
@@ -130,14 +134,14 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
                 Get a Free Quote
               </Link>
 
-              {/* Quiet phone fallback — header phone is hidden behind the drawer */}
+              {/* Quiet phone fallback — readable, sentence-case */}
               <a
                 href={`tel:${STUDIO_PHONE_TEL}`}
                 onClick={close}
                 aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                 className={cn(
                   "menu-drawer__tel mt-4 flex items-center justify-center",
-                  "min-h-[44px] t-micro tracking-[0.14em] text-foreground/60 hover:text-foreground",
+                  "min-h-[44px] text-sm font-medium text-foreground/65 hover:text-foreground",
                   "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm",
                 )}
