@@ -239,7 +239,7 @@ const Navigation = () => {
 
       {/* Spacer only on routes where the bar owns its own band (form routes). */}
       {!transparentRoute && (
-        <div aria-hidden="true" className="h-[60px] sm:h-16" />
+        <div aria-hidden="true" className="h-[60px] sm:h-16 md:h-20" />
       )}
 
       {drawerTouched && (
