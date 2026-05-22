@@ -89,6 +89,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
               to="/"
               onClick={() => onOpenChange(false)}
               onPointerDown={() => prefetchRoute("/")}
+              onMouseEnter={() => prefetchRoute("/")}
               onFocus={() => prefetchRoute("/")}
               aria-current={pathname === "/" ? "page" : undefined}
               className={cn(
@@ -100,6 +101,7 @@ const MenuDrawer = ({ open, onOpenChange }: MenuDrawerProps) => {
             >
               Home
             </Link>
+
 
             {/* One Pages column — top-level routes only */}
             <div className="max-w-md">
@@ -197,6 +199,7 @@ const DrawerLink = ({
     to={to}
     onClick={onClick}
     onPointerDown={() => prefetchRoute(to)}
+    onMouseEnter={() => prefetchRoute(to)}
     onFocus={() => prefetchRoute(to)}
     aria-current={active ? "page" : undefined}
     className={cn(
@@ -209,6 +212,7 @@ const DrawerLink = ({
   >
     {children}
   </Link>
+
 );
 
 export default MenuDrawer;
