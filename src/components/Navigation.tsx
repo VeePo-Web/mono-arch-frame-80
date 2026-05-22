@@ -35,12 +35,44 @@ const PRIMARY_ROUTES = [
 const Navigation = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTouched, setDrawerTouched] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastYRef = useRef(0);
   const { pathname } = useLocation();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
   const transparentRoute = routeHasTransparentTop(pathname);
   const scrollProgress = useScrollProgress(80);
   // Form routes pin to opaque. Drawer-open hides the backdrop. Otherwise interpolate.
   const navBg = drawerOpen ? 0 : transparentRoute ? scrollProgress : 1;
+
+  // Direction-aware hide — Apple/Fly4Me cadence. Past 240px, scrolling down
+  // tucks the bar away; any upward intent or returning near the top reveals it.
+  useEffect(() => {
+    if (drawerOpen) {
+      setHidden(false);
+      return;
+    }
+    let raf = 0;
+    let pending = false;
+    const apply = () => {
+      const y = window.scrollY;
+      const last = lastYRef.current;
+      if (y > 240 && y - last > 4) setHidden(true);
+      else if (last - y > 4 || y < 80) setHidden(false);
+      lastYRef.current = y;
+      pending = false;
+    };
+    const onScroll = () => {
+      if (pending) return;
+      pending = true;
+      raf = requestAnimationFrame(apply);
+    };
+    lastYRef.current = window.scrollY;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [drawerOpen]);
 
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onContactRoute) return;
