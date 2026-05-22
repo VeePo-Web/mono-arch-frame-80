@@ -110,15 +110,20 @@ const Navigation = () => {
       </a>
 
       <header
+        ref={null}
         role="banner"
+        data-hidden={hidden && !drawerOpen}
         className={cn(
           "havencreek-nav nav-shell fixed inset-x-0 top-0 z-50",
-          "h-[60px] sm:h-16",
+          "h-[60px] sm:h-16 md:h-20",
+          "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "data-[hidden=true]:-translate-y-full",
         )}
         style={
           {
             paddingTop: "env(safe-area-inset-top)",
             ["--nav-bg" as string]: navBg.toFixed(3),
+            ["--nav-compress" as string]: navBg.toFixed(3),
           } as React.CSSProperties
         }
       >
@@ -158,9 +163,9 @@ const Navigation = () => {
               />
             </Link>
 
-            {/* Primary routes — lg+ inline */}
+            {/* Primary routes — md+ inline, generous editorial spacing */}
             <div className="hidden md:flex justify-center min-w-0">
-              <ul className="flex items-center gap-1">
+              <ul className="flex items-center gap-7 lg:gap-9">
                 {PRIMARY_ROUTES.map((r) => (
                   <li key={r.to}>
                     <NavLink
@@ -170,12 +175,13 @@ const Navigation = () => {
                       onFocus={warmRoute(r.to)}
                       className={({ isActive }) =>
                         cn(
-                          "nav-link relative inline-flex items-center px-3.5 py-2 whitespace-nowrap",
-                          "text-sm font-medium transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                          "nav-link relative inline-flex items-center py-2 whitespace-nowrap",
+                          "text-[13px] tracking-[0.02em] font-medium",
+                          "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                           "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                           isActive
                             ? "text-foreground nav-link--active"
-                            : "text-foreground/65 hover:text-foreground",
+                            : "text-foreground/50 hover:text-foreground",
                         )
                       }
                     >
@@ -186,6 +192,7 @@ const Navigation = () => {
               </ul>
             </div>
             <div className="md:hidden" aria-hidden="true" />
+
 
             {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
             <div className="flex items-center gap-1 sm:gap-2 md:gap-3 justify-end">
