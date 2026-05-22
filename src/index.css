@@ -640,16 +640,9 @@
     }
   }
 
-  /* ──────────────────────────────────────────────────────────────────────
-     Section rail — overflow-x scroll-snap with masked edges so long
-     section lists fade at the boundaries instead of hard-cutting. The
-     rail itself is scroll-snap-x mandatory; SectionRail auto-centers
-     the active label via scrollIntoView.
-     ────────────────────────────────────────────────────────────────────── */
-  /* (section-rail-scroll + menu-primary-text removed in round 3 cleanup —
-     rail now lives inside a solid header with overflow:hidden, and the
-     drawer uses a flat sibling-row of primary links instead of one
-     italic display word.) */
+  /* (Section rail retired — header surfaces 4 routes inline at lg+.) */
+
+
 
   /* ──────────────────────────────────────────────────────────────────────
      Section wash — two-tone vertical gradient replaces flat bg-card/40.
