@@ -93,7 +93,7 @@ const Navigation = () => {
         {/* Mobile-only legibility scrim — fades out as the real backdrop fades in. */}
         <div
           aria-hidden="true"
-          className="lg:hidden absolute inset-0 -z-10 pointer-events-none bg-gradient-to-b from-background/70 via-background/25 to-transparent"
+          className="md:hidden absolute inset-0 -z-10 pointer-events-none bg-gradient-to-b from-background/70 via-background/25 to-transparent"
           style={{ opacity: 1 - navBg }}
         />
 
@@ -127,7 +127,7 @@ const Navigation = () => {
             </Link>
 
             {/* Primary routes — lg+ inline */}
-            <div className="hidden lg:flex justify-center min-w-0">
+            <div className="hidden md:flex justify-center min-w-0">
               <ul className="flex items-center gap-1">
                 {PRIMARY_ROUTES.map((r) => (
                   <li key={r.to}>
@@ -153,24 +153,24 @@ const Navigation = () => {
                 ))}
               </ul>
             </div>
-            <div className="lg:hidden" aria-hidden="true" />
+            <div className="md:hidden" aria-hidden="true" />
 
             {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
-            <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 justify-end">
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-3 justify-end">
               <a
                 href={`tel:${STUDIO_PHONE_TEL}`}
                 aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                 className={cn(
                   "inline-flex items-center justify-center gap-2 shrink-0",
-                  "h-11 min-w-[44px] px-2 lg:px-2.5",
+                  "h-11 min-w-[44px] px-2 md:px-2.5",
                   "text-sm font-medium text-foreground/75 hover:text-evergreen",
                   "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   "active:scale-[0.96]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md",
                 )}
               >
-                <Phone className="h-[18px] w-[18px] lg:h-4 lg:w-4" strokeWidth={1.75} aria-hidden="true" />
-                <span className="hidden lg:inline">{STUDIO_PHONE_DISPLAY}</span>
+                <Phone className="h-[18px] w-[18px] md:h-4 md:w-4" strokeWidth={1.75} aria-hidden="true" />
+                <span className="hidden md:inline">{STUDIO_PHONE_DISPLAY}</span>
               </a>
 
               <Link
@@ -191,7 +191,7 @@ const Navigation = () => {
                 Get a Free Quote
               </Link>
 
-              <div className="lg:hidden">
+              <div className="md:hidden">
                 <HamburgerButton open={drawerOpen} onClick={openDrawer} onPointerDown={warmDrawer} />
               </div>
             </div>
