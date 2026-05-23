@@ -54,7 +54,7 @@ const Hero = () => {
                 className={cn(
                   "cta-spring inline-flex items-center justify-center rounded-lg",
                   "bg-evergreen text-evergreen-foreground",
-                  "px-6 min-h-[52px] text-[15px] font-semibold",
+                  "px-6 min-h-[52px] text-sm font-semibold",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
                 aria-label="Get a free quote — start a conversation about your property"
