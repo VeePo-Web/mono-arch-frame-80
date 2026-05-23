@@ -47,7 +47,7 @@ const ProjectPlaceholder = ({
         data-photo-status="photographed"
         data-project-slug={project.slug}
         className={cn(
-          "photo-pending photo-pending--photographed border-b border-border relative overflow-hidden",
+          "photo-pending photo-pending--photographed relative overflow-hidden",
           compact && "photo-pending--compact",
           className,
         )}
