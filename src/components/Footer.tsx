@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import Container from "./Container";
 import logo from "@/assets/logo/haven-creek-mark.webp";
 
@@ -17,10 +16,10 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-16 md:mt-24 border-t border-foreground/12 bg-card">
+    <footer className="relative border-t border-foreground/12 bg-card">
       <Container size="wide">
         {/* Row 1 — brand · CTA */}
-        <div className="py-6 md:py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-5 md:gap-10 border-b border-foreground/10">
+        <div className="py-6 md:py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-5 md:gap-10 border-b border-foreground/12">
           <Link
             to="/"
             aria-label="Haven Creek Renovations — home"
@@ -35,7 +34,7 @@ const Footer = () => {
               loading="lazy"
               decoding="async"
             />
-            <span className="font-serif text-foreground/85 text-[1rem] leading-tight">
+            <span className="font-serif text-foreground/85 text-sm leading-tight">
               Haven Creek Renovations
             </span>
             <span className="t-micro hidden md:inline ml-3">© {year}</span>
@@ -43,12 +42,9 @@ const Footer = () => {
 
           <Link
             to="/contact"
-            className="inline-flex items-center gap-3 min-h-[44px] text-minimal text-foreground hover:text-evergreen transition-colors duration-300 shrink-0"
+            className="cta-spring inline-flex items-center justify-center rounded-lg bg-evergreen px-5 min-h-[44px] text-sm font-medium text-evergreen-foreground shrink-0"
           >
-            <span>Get a Free Quote</span>
-            <span className="icon-chip bg-evergreen/[0.06]">
-              <ArrowUpRight className="h-3.5 w-3.5 text-evergreen" strokeWidth={1.5} aria-hidden="true" />
-            </span>
+            Get a Free Quote
           </Link>
         </div>
 
