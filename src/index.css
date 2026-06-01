@@ -476,11 +476,10 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Haven Creek nav — Round 7 "Growing Glass".
-     Single CSS var `--nav-bg` (0..1) drives backdrop alpha + blur.
-     Set via inline style from <Navigation>; transitions on its own so
-     route-to-route navigation cross-fades the backdrop instead of
-     snapping it on/off.
+     Haven Creek nav — one shape at every breakpoint.
+     `--nav-bg` / `--nav-progress` (0..1) drives backdrop wash + brand-mark
+     crossfade. Set via inline style from <Navigation>; transitions on its
+     own so route changes cross-fade rather than snap.
      ────────────────────────────────────────────────────────────────────── */
   @property --nav-bg {
     syntax: "<number>";
@@ -489,7 +488,7 @@
   }
   .nav-shell {
     background: hsl(var(--background) / calc(var(--nav-bg, 0) * 0.95));
-    border-bottom: 1px solid hsl(var(--border) / calc(var(--nav-bg, 0) * 0.5));
+    border-bottom: 1px solid hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.18));
     box-shadow: 0 4px 24px -8px hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.10));
     -webkit-backdrop-filter: blur(calc(var(--nav-bg, 0) * 12px));
             backdrop-filter: blur(calc(var(--nav-bg, 0) * 12px));
@@ -501,6 +500,11 @@
       -webkit-backdrop-filter: none !important;
               backdrop-filter: none !important;
     }
+  }
+
+  /* Brand-mark crossfade — cream overlay opacity is driven inline. */
+  .brand-mark__cream {
+    transition: opacity 320ms var(--ease-swift);
   }
 
   /* Nav Quote CTA — primary parity (lift + halo + spring). */
@@ -520,139 +524,107 @@
   }
   .nav-quote-cta:active { transform: translateY(0) scale(0.97); }
 
-  /* Primary nav link — editorial hairline underline (Fly4Me grammar).
-     Animates on hover from left; persists for the active route. */
-  .nav-link::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0.25rem;
-    height: 1px;
-    background: hsl(var(--evergreen));
-    border-radius: 1px;
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform 420ms var(--ease-swift);
-  }
-  .nav-link:hover::after,
-  .nav-link:focus-visible::after { transform: scaleX(1); }
-  .nav-link--active::after { transform: scaleX(1); transform-origin: left center; }
-
-
   @media (prefers-reduced-motion: reduce) {
     .havencreek-nav,
     .nav-shell,
-    .nav-link::after,
-    .nav-quote-cta {
+    .nav-quote-cta,
+    .brand-mark__cream {
       transition-duration: 0ms !important;
     }
   }
 
-
   /* ──────────────────────────────────────────────────────────────────────
-     Hamburger — three lines morph to an X (canonical "menu" glyph).
-     At rest: three full-width horizontal lines.
-     Open: top + bottom rotate to form X; middle line fades out.
+     Hamburger — two-line glyph (top + bottom only).
+     At rest:   two horizontal lines, 10px apart.
+     Hover:     top slides right 2px, bottom slides left 2px (500ms).
+     Open:      top rotates +45°, bottom rotates -45° → X.
+     Pure transform/opacity only — never animate width/top/bottom.
      ────────────────────────────────────────────────────────────────────── */
   .hamburger-line {
     transform-origin: center;
     transition:
-      width 280ms var(--ease-swift),
-      transform 280ms var(--ease-swift),
-      opacity 200ms var(--ease-swift),
-      top 280ms var(--ease-swift),
-      bottom 280ms var(--ease-swift);
-    will-change: transform, opacity;
-    width: 100%;
+      transform 500ms var(--ease-weighted),
+      opacity 240ms var(--ease-swift);
+    will-change: transform;
   }
   .hamburger-line--top    { top: 0; }
-  .hamburger-line--mid    { top: 50%; transform: translateY(-50%); }
   .hamburger-line--bottom { bottom: 0; }
-  .hamburger-stage[data-open="true"] .hamburger-line--top {
-    top: 50%;
-    transform: translateY(-50%) rotate(45deg);
+  /* Hover slide (resting state only — open state takes precedence below) */
+  .hamburger-btn:hover .hamburger-stage[data-open="false"] .hamburger-line--top {
+    transform: translateX(2px);
   }
-  .hamburger-stage[data-open="true"] .hamburger-line--mid {
-    opacity: 0;
-    transform: translateY(-50%) scaleX(0);
+  .hamburger-btn:hover .hamburger-stage[data-open="false"] .hamburger-line--bottom {
+    transform: translateX(-2px);
+  }
+  /* Open → X */
+  .hamburger-stage[data-open="true"] .hamburger-line--top {
+    transform: translateY(4.25px) rotate(45deg);
   }
   .hamburger-stage[data-open="true"] .hamburger-line--bottom {
-    bottom: 50%;
-    transform: translateY(50%) rotate(-45deg);
+    transform: translateY(-4.25px) rotate(-45deg);
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Menu drawer — fullscreen editorial Site Map.
-     Backdrop: soft plaster wash (not a flat black scrim).
-     Panel: opacity + 8px lift on enter; 200ms exit.
-     Items: staggered fade-up via per-item animation-delay.
+     Menu overlay — full-viewport evergreen-deep veil.
+     Veil scales from top in 520ms. Route rows cascade in with a
+     blur-to-sharp reveal staggered 90ms apart starting 360ms after open.
+     Contact rail fades in last at 920ms. No backdrop-filter — opaque.
      ────────────────────────────────────────────────────────────────────── */
-  .menu-drawer__overlay {
-    background: hsl(var(--background) / 0.6);
-    animation: drawer-overlay-in 240ms var(--ease-weighted) both;
+  .menu-overlay__veil {
+    background: hsl(var(--evergreen-deep));
+    transform-origin: top center;
+    animation: menu-veil-in 520ms var(--ease-weighted) both;
+    will-change: transform;
   }
-  .menu-drawer__overlay[data-state="closed"] {
-    animation: drawer-overlay-out 180ms var(--ease-swift) both;
+  .menu-overlay__veil[data-state="closed"] {
+    animation: menu-veil-out 320ms var(--ease-swift) both;
   }
-  .menu-drawer {
-    animation: drawer-panel-in 320ms var(--ease-weighted) both;
+  @keyframes menu-veil-in {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
   }
-  .menu-drawer[data-state="closed"] {
-    animation: drawer-panel-out 200ms var(--ease-swift) both;
-  }
-  @keyframes drawer-overlay-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  @keyframes drawer-overlay-out {
-    from { opacity: 1; }
-    to   { opacity: 0; }
-  }
-  @keyframes drawer-panel-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes drawer-panel-out {
-    from { opacity: 1; transform: translateY(0); }
-    to   { opacity: 0; transform: translateY(4px); }
-  }
-  .menu-drawer__row,
-  .menu-drawer__cta,
-  .menu-drawer__tel {
-    opacity: 0;
-    animation: drawer-item-rise 520ms var(--ease-weighted) forwards;
-  }
-  /* Staggered cascade — Apple-style 60ms beat. Targets <li> rows so the
-     selectors actually match (the <a> inside is always :nth-child(1)). */
-  .menu-drawer__row:nth-child(1) { animation-delay:   0ms; }
-  .menu-drawer__row:nth-child(2) { animation-delay:  60ms; }
-  .menu-drawer__row:nth-child(3) { animation-delay: 120ms; }
-  .menu-drawer__row:nth-child(4) { animation-delay: 180ms; }
-  .menu-drawer__row:nth-child(5) { animation-delay: 240ms; }
-  .menu-drawer__cta { animation-delay: 320ms; }
-  .menu-drawer__tel { animation-delay: 380ms; }
-  @keyframes drawer-item-rise {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+  @keyframes menu-veil-out {
+    from { transform: scaleY(1); opacity: 1; }
+    to   { transform: scaleY(1); opacity: 0; }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .menu-drawer__overlay,
-    .menu-drawer,
-    .menu-drawer__primary,
-    .menu-drawer__label,
-    .menu-drawer__row,
-    .menu-drawer__link,
-    .menu-drawer__cta,
-    .hamburger-line {
-      animation-duration: 1ms !important;
-      transition-duration: 1ms !important;
-      transform: none !important;
+  .menu-overlay__row,
+  .menu-overlay__rail {
+    opacity: 0;
+    animation: menu-row-rise 900ms var(--ease-weighted) forwards;
+    will-change: transform, opacity, filter;
+  }
+  /* 360ms start, 90ms beat */
+  .menu-overlay__row:nth-child(1) { animation-delay: 360ms; }
+  .menu-overlay__row:nth-child(2) { animation-delay: 450ms; }
+  .menu-overlay__row:nth-child(3) { animation-delay: 540ms; }
+  .menu-overlay__row:nth-child(4) { animation-delay: 630ms; }
+  .menu-overlay__row:nth-child(5) { animation-delay: 720ms; }
+  .menu-overlay__rail              { animation-delay: 920ms; }
+  @keyframes menu-row-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
     }
   }
 
-  /* (Section rail retired — header surfaces 4 routes inline at lg+.) */
+  @media (prefers-reduced-motion: reduce) {
+    .menu-overlay__veil,
+    .menu-overlay__row,
+    .menu-overlay__rail,
+    .hamburger-line {
+      animation-duration: 60ms !important;
+      transition-duration: 60ms !important;
+      transform: none !important;
+      filter: none !important;
+    }
+  }
 
 
 
