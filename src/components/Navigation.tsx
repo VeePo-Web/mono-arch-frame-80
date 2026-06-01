@@ -239,7 +239,11 @@ const Navigation = () => {
 
       {/* Spacer only on routes where the bar owns its own band (form routes). */}
       {!transparentRoute && (
-        <div aria-hidden="true" className="h-[60px] sm:h-16 md:h-20" />
+        <div
+          aria-hidden="true"
+          className="min-h-[56px] md:min-h-[68px] lg:min-h-20"
+          style={{ paddingTop: "env(safe-area-inset-top)" }}
+        />
       )}
 
       {menuTouched && (
