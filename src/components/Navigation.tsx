@@ -32,7 +32,8 @@ const Navigation = () => {
   const { pathname } = useLocation();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
   const transparentRoute = routeHasTransparentTop(pathname);
-  const scrollProgress = useScrollProgress(80);
+  // 40px interpolation range — glass kicks in within the first scroll gesture (iOS register).
+  const scrollProgress = useScrollProgress(40);
   // Form routes pin to opaque. Menu-open hides the backdrop. Otherwise interpolate.
   const navBg = menuOpen ? 0 : transparentRoute ? scrollProgress : 1;
 
@@ -127,7 +128,9 @@ const Navigation = () => {
         data-hidden={hidden && !menuOpen}
         className={cn(
           "havencreek-nav nav-shell fixed inset-x-0 top-0 z-50",
-          "h-[60px] sm:h-16 md:h-20",
+          // min-h (not h) so safe-area-inset padding pushes the bar DOWN
+          // rather than eating its content area (border-box math bug).
+          "min-h-[56px] md:min-h-[68px] lg:min-h-20",
           "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "data-[hidden=true]:-translate-y-full",
         )}
@@ -146,10 +149,10 @@ const Navigation = () => {
           style={{ opacity: 1 - navBg }}
         />
 
-        <Container size="wide" className="h-full relative">
+        <Container size="wide" className="min-h-[56px] md:min-h-[68px] lg:min-h-20 relative">
           <nav
             aria-label="Primary"
-            className="flex items-center justify-between h-full gap-2 sm:gap-3"
+            className="flex items-center justify-between min-h-[56px] md:min-h-[68px] lg:min-h-20 gap-2 sm:gap-3"
           >
             {/* Brand — two-layer crossfade: cream over hero, foreground after scroll */}
             <Link
@@ -191,20 +194,20 @@ const Navigation = () => {
             </Link>
 
             {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
-            <div className="flex items-center gap-1 sm:gap-2 md:gap-3 justify-end">
+            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 justify-end">
               <a
                 href={`tel:${STUDIO_PHONE_TEL}`}
                 aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                 className={cn(
                   "inline-flex items-center justify-center gap-2 shrink-0",
                   "h-11 min-w-[44px] px-2 md:px-2.5",
-                  "text-sm font-medium text-foreground/75 hover:text-evergreen",
-                  "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                  "text-[13px] md:text-sm font-medium text-foreground/75 hover:text-evergreen",
+                  "transition-colors duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
                   "active:scale-[0.96]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md",
                 )}
               >
-                <Phone className="h-[18px] w-[18px] md:h-4 md:w-4" strokeWidth={1.75} aria-hidden="true" />
+                <Phone className="h-[17px] w-[17px] md:h-4 md:w-4" strokeWidth={1.65} aria-hidden="true" />
                 <span className="hidden md:inline">{STUDIO_PHONE_DISPLAY}</span>
               </a>
 
@@ -236,7 +239,11 @@ const Navigation = () => {
 
       {/* Spacer only on routes where the bar owns its own band (form routes). */}
       {!transparentRoute && (
-        <div aria-hidden="true" className="h-[60px] sm:h-16 md:h-20" />
+        <div
+          aria-hidden="true"
+          className="min-h-[56px] md:min-h-[68px] lg:min-h-20"
+          style={{ paddingTop: "env(safe-area-inset-top)" }}
+        />
       )}
 
       {menuTouched && (

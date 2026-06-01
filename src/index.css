@@ -487,11 +487,12 @@
     initial-value: 0;
   }
   .nav-shell {
-    background: hsl(var(--background) / calc(var(--nav-bg, 0) * 0.95));
-    border-bottom: 1px solid hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.18));
-    box-shadow: 0 4px 24px -8px hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.10));
-    -webkit-backdrop-filter: blur(calc(var(--nav-bg, 0) * 12px));
-            backdrop-filter: blur(calc(var(--nav-bg, 0) * 12px));
+    /* iOS-style materials: translucent fill + heavy blur + saturation lift. */
+    background: hsl(var(--background) / calc(var(--nav-bg, 0) * 0.78));
+    border-bottom: 1px solid hsl(var(--foreground) / calc(var(--nav-bg, 0) * 0.08));
+    box-shadow: 0 4px 20px -10px hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.07));
+    -webkit-backdrop-filter: blur(calc(var(--nav-bg, 0) * 20px)) saturate(calc(1 + var(--nav-bg, 0) * 0.5));
+            backdrop-filter: blur(calc(var(--nav-bg, 0) * 20px)) saturate(calc(1 + var(--nav-bg, 0) * 0.5));
     transition: --nav-bg 320ms ease-out;
   }
   @media (prefers-reduced-transparency: reduce) {
@@ -556,12 +557,12 @@
   .hamburger-btn:hover .hamburger-stage[data-open="false"] .hamburger-line--bottom {
     transform: translateX(-2px);
   }
-  /* Open → X */
+  /* Open → X (stage is 12px tall; lines are 1.75px → translate 5.125px) */
   .hamburger-stage[data-open="true"] .hamburger-line--top {
-    transform: translateY(4.25px) rotate(45deg);
+    transform: translateY(5.125px) rotate(45deg);
   }
   .hamburger-stage[data-open="true"] .hamburger-line--bottom {
-    transform: translateY(-4.25px) rotate(-45deg);
+    transform: translateY(-5.125px) rotate(-45deg);
   }
 
   /* ──────────────────────────────────────────────────────────────────────
@@ -573,7 +574,8 @@
   .menu-overlay__veil {
     background: hsl(var(--evergreen-deep));
     transform-origin: top center;
-    animation: menu-veil-in 520ms var(--ease-weighted) both;
+    /* iOS spring curve — snappier, more native than the editorial ease. */
+    animation: menu-veil-in 480ms cubic-bezier(0.32, 0.72, 0, 1) both;
     will-change: transform;
   }
   .menu-overlay__veil[data-state="closed"] {
