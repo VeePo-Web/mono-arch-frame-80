@@ -1,137 +1,107 @@
-# Owner Handoff — Nav Bar & Menu, First Draft
+# Execute the Nav & Menu Handoff
 
-Copy the message between the `---` fences as one block. Swap bracketed fields.
+Implement the four changes the handoff committed to: one trigger at every breakpoint, full-viewport evergreen-deep menu overlay (same component desktop + mobile), two-line hamburger glyph with opposite-slide hover, and a brand-mark cream→foreground crossfade. Performance posture stays as-is (rAF scroll handler, `React.lazy` overlay, `prefetchRoute()` warming) and gets one additional tightening: warm the overlay chunk on first `requestIdleCallback`, not just on `pointerdown`.
 
----
+This is a tone change for the whole site — the bar will read as "studio" instead of "small business." It's also a deliberate override of three existing memory rules; the index gets updated in the same pass.
 
-**Subject:** Haven Creek — the nav & menu are ready for your eyes (four decisions only you can make)
+## File changes
 
-Hi [Owner first name],
+### 1. `src/components/Navigation.tsx` — one trigger, always
 
-The nav bar is the one component that lives on every page of the site — every hero, every project, every scroll. It carries more brand weight than the homepage hero does, because the visitor sees it dozens of times in a single session and never once thinks about it consciously. That's the bar I want to build you: invisible when it should be, present the instant you reach for it, quiet in a way that makes the rest of the site feel calm. The reference I keep coming back to is Fly4MEdia.ca — a studio site where the nav almost disappears, and the whole brand feels more confident because of it. We're translating that register into Haven Creek's cream-and-evergreen voice. This is the most important component on the site to get right, so I'm sending it to you first.
+- Delete the `PRIMARY_ROUTES` map and the entire inline-routes block (lines ~165–193).
+- Collapse the grid from `[auto_1fr_auto]` to `[auto_auto]` (`justify-between`) — brand left, right cluster right, nothing in the middle.
+- Make the hamburger trigger visible at every breakpoint (remove the `md:hidden` wrapper on `HamburgerButton`).
+- Rename local references: `drawerOpen` → `menuOpen`, `setDrawerOpen` → `setMenuOpen`, `openDrawer` → `openMenu`, `warmDrawer` → `warmMenu`. Swap the lazy import from `MenuDrawer` to `MenuOverlay`.
+- Add a one-shot `requestIdleCallback` (with `setTimeout` fallback) inside the existing scroll-effect cleanup branch to prefetch the overlay chunk shortly after first paint — so the first tap is always warm.
+- Update the logo's `style` to drive both `filter` (existing feather shadow) and a CSS-variable–backed opacity crossfade: when `navBg < 0.3` the wordmark gets a cream tint via `mix-blend-mode: difference` is *not* what we want — instead, swap to a two-layer approach: render the dark logo at full opacity and a cream-tinted overlay copy at `opacity: (1 - navBg)` so the brand reads cream over hero and foreground after scroll. Implementation: one `<picture>`/`<span>` wrapper with two stacked `<img>` elements, the top one masked by `filter: brightness(0) invert(1)` (turns the dark mark cream-white) and faded out as `--nav-progress` rises.
+- Keep Quote CTA + phone exposed exactly as today — no change to either.
 
-Three things to walk through before you click around: **what it should feel like, where the execution isn't there yet, and how to verify it's actually instant.** Four questions at the end — the only ones I need answered before I take it to round two.
+### 2. `src/components/nav/MenuOverlay.tsx` — new file (replaces MenuDrawer)
 
----
+Build the Fly4Me-style veil, translated to Haven Creek's palette. Built on the same Radix `Dialog` primitives MenuDrawer used.
 
-**What it should feel like**
+Structure:
 
-Four moments. Read them slowly, in order — they're the whole experience.
+```text
+<Dialog.Root>
+  <Dialog.Overlay class="menu-overlay__veil" />     // evergreen-deep, scales from top
+  <Dialog.Content class="menu-overlay">
+    <Dialog.Close class="menu-overlay__close" />     // icon-only X, top-right, mirrors hamburger
+    <div class="menu-overlay__body">                 // 12-col grid at lg+, flex column at <lg
+      <nav class="menu-overlay__nav">                // cols 1-9 — oversized link list, center-justified
+        {5 routes — Home, About, Services, Work, Contact}
+      </nav>
+      <aside class="menu-overlay__rail">             // cols 10-12 / bottom on mobile — slim contact
+        email + phone, fades in last
+      </aside>
+    </div>
+  </Dialog.Content>
+</Dialog.Root>
+```
 
-**1. At rest, over a hero photo.** The bar is transparent. The Haven Creek mark sits left, almost floating on the photograph. Right side: the Get a Free Quote button (always), a small phone icon on mobile (always), and a single quiet two-line glyph next to the word *Menu*. That's it. There is no row of routes shouting at the visitor. The bar takes up maybe 10% of the screen's visual weight; the photograph gets the other 90%.
+Behaviour:
+- Veil: `bg-evergreen-deep`, `transform-origin: top`, scales from `scaleY(0)` to `scaleY(1)` over 520ms `cubic-bezier(0.22, 1, 0.36, 1)`.
+- Each link row: oversized type (`clamp(2.5rem, 9vh, 5.75rem)`, `leading-[0.95]`, `tracking-[-0.03em]`), serif (`font-serif` token), `text-evergreen-foreground/85` resting → `text-evergreen-foreground` hover, hover translates the word `translate-x-3` over 500ms.
+- Active route: 28×2px evergreen rule (`bg-evergreen-foreground/70`) sits to the left of the word with a 20px gap. Persistent on the active row; absent on the others (no hover-to-reveal — the rule is only for the active route).
+- Per-row cascade: opacity 0 + 18px translateY + 6px blur → resolved, 900ms each, staggered 90ms apart starting 360ms after open. Implemented in CSS via `.menu-overlay__row:nth-child(N)` keyframe delays so React doesn't drive timing.
+- Contact rail: small uppercase eyebrow (`Contact`) above two link rows (`hello@havencreek.ca`, `403 970-7691`), fades in at 720ms.
+- Close affordance: one icon-only X top-right, square 44×44, matches the hamburger silhouette exactly. Backdrop tap closes (Radix handles). Esc closes (Radix handles).
+- Body scroll lock: Radix handles.
+- `prefersReducedMotion`: collapses every animation to a 60ms opacity change via the existing `@media (prefers-reduced-motion: reduce)` block in `index.css`.
 
-**2. On scroll.** The moment the visitor scrolls past 24 pixels, a soft cream wash arrives under the bar in 300ms — never a flicker, never a snap, never any motion in the bar's height. A 1px evergreen-tinted hairline appears under it. Past 240 pixels, if the visitor keeps scrolling down, the bar tucks itself up out of view in half a second. The instant they scroll back up — even one notch on a trackpad, one flick on a phone — the bar slides back in within about 140ms. It feels welded to their intent, never chasing it.
+### 3. `src/components/nav/HamburgerButton.tsx` — two-line glyph
 
-**3. The Menu trigger.** On desktop, hover the two-line glyph and the top line slides right while the bottom slides left, half a second, no other motion anywhere on the page. On mobile, tap it. Either way, the same thing happens next.
+- Drop the middle line. Two lines only: top and bottom, each `1.5px`, full width of a `w-5` stage.
+- Hover (`group:hover` on the parent button): top line `translate-x-[2px]`, bottom line `-translate-x-[2px]`, 500ms `cubic-bezier(0.22, 1, 0.36, 1)`.
+- Open state: top line `rotate-45 translate-y-[5px]`, bottom line `-rotate-45 -translate-y-[5px]` — forms an X. Same easing.
+- Stage height becomes `h-[10px]` (two lines, 10px apart) instead of `h-3.5`.
 
-**4. The menu opens.** A full-viewport veil — Haven Creek's `evergreen-deep` green, not pure black — scales down from the top in 520ms. Five oversized link names cascade in one after another, each one resolving from a soft blur to sharp focus, 60–90ms apart: Home, About, Services, Work, Contact. The active route gets a 28-pixel evergreen rule to the left of its word — not an underline, not a dot. The visitor's email and phone fade in last in the bottom-right corner, almost as an afterthought. One close affordance: an icon-only X top-right that mirrors the hamburger silhouette exactly. Tap the backdrop, also closes. Hit Esc, also closes. There's no second way to do anything.
+### 4. `src/index.css` — companion tokens & keyframes
 
-That's the experience. Same nav at every breakpoint, just resized. No separate mobile UX that feels like a different app.
+- Remove the `.nav-link::after` / `.nav-link--active` rules (no inline desktop routes anymore).
+- Add `.menu-overlay__veil`, `.menu-overlay__close`, `.menu-overlay__row` blocks with the keyframe + nth-child stagger described above. Mirror the existing `.menu-drawer__row` stagger pattern.
+- Rewrite `.hamburger-line--top/--mid/--bottom` rules: drop `--mid`; add the hover slide rule (`.hamburger-btn:hover .hamburger-line--top` → `translateX(2px)`); rewrite the `[data-open="true"]` block for the two-line X morph.
+- Add `--nav-progress` register documentation comment above the `--nav-bg` block (they're the same value, but the brand-mark crossfade reads cleaner under the new name in the future).
+- Keep `prefers-reduced-motion` overrides — extend them to cover `.menu-overlay__veil` and `.menu-overlay__row`.
 
----
+### 5. `src/components/nav/MenuDrawer.tsx` — delete
 
-**Where the execution isn't there yet — ranked by impact**
+The new overlay replaces it at every breakpoint.
 
-I'd rather tell you what's off than have you find it. Four gaps, in order of how much each one matters:
+### 6. `mem://index.md` — update Core rules
 
-**#1 — The desktop bar still shows four routes inline.** Right now at desktop we surface About · Services · Work · Contact as small text links. Fly4Me's discipline is **one trigger, always** — the same Menu glyph on every screen size, no inline routes ever. Hiding the routes frees the bar to be roughly 80% whitespace, which is what makes it feel like a studio. This is the single biggest change in this round, and the one I most want your call on (question 1 below).
+Three Core lines contradict the new direction. Rewrite them in the same pass so future loops don't re-introduce inline routes or a 3-line hamburger:
 
-**#2 — The mobile menu is currently a side panel.** Same five routes, but the format is a drawer that slides in from the right with hair-ruled rows. That works, but it doesn't *feel* like the desktop experience. I'd rebuild it as the same full-viewport overlay we'd use at desktop — one component, one register, two breakpoints. Internally that's `MenuDrawer.tsx` becoming `MenuOverlay.tsx`. Externally it means the menu feels like the same moment whether you're on a phone or a laptop.
+- Replace "At md+ (≥768px) the header surfaces the 4 top-level routes inline…" with: "Header is the same shape at every breakpoint — brand mark left, Phone + Get a Free Quote + Menu trigger right. No inline routes ever. Five routes (Home · About · Services · Work · Contact) live only inside `MenuOverlay`."
+- Replace "Menu drawer body is ONE flat list of all 5 routes…" with: "MenuOverlay is a full-viewport `bg-evergreen-deep` veil that scales from the top in 520ms. Oversized serif route names cascade in 90ms apart with a blur-to-sharp reveal. Active route gets a 28×2px evergreen-foreground rule to the left of the word — never an underline, never a dot. Contact rail (email + phone) fades in last bottom-right. Same overlay at desktop and mobile."
+- Replace "Hamburger is the canonical three-line glyph…" with: "Hamburger is a two-line glyph (top + bottom only), square 44×44, 8px radius, visible at every breakpoint. Hover slides the top line right and the bottom line left over 500ms. Open state morphs to an X via rotate. Never animate width/top/bottom."
+- Remove the "Header inline routes at md+ replace the old section rail entirely…" line — it no longer applies.
+- Remove "Hamburger + drawer are mobile-only (`<md`, <768px)." — no longer true.
 
-**#3 — The hamburger glyph has three lines.** That's the canonical app-drawer icon — fine, but loud. I'd swap it for a two-line glyph (top and bottom only, no middle), where on hover the top line slides right and the bottom slides left. Quieter, more Apple Maps than Material Design. Reads as "open something" rather than "I am a menu."
+### 7. `src/components/Footer.tsx` (if it references the removed inline-routes pattern) — quick scan only
 
-**#4 — The brand mark renders flat charcoal.** Right now the wordmark is one color over every background, which means it has to fight a little against dark hero photos. I'd add a CSS custom property (`--nav-progress`) that runs from 0 (over hero, top of page) to 1 (after scroll), and crossfade the mark from cream → foreground along that range. The bar can then sit transparent over *any* hero photo — including the darkest ones — without us having to redesign around it.
+No expected changes; just verify nothing imports `PRIMARY_ROUTES` from Navigation.
 
-None of these change how the nav *works*. The five routes stay five. The promises stay the same. But the silhouette becomes much quieter, and the entire site inherits the calm.
+## Performance posture (unchanged + one tightening)
 
----
+- Scroll handler stays exactly as today: passive listener, one rAF, boolean guard, no React state writes on scroll.
+- Overlay stays `React.lazy`-imported.
+- **New:** add `requestIdleCallback` warming inside Navigation so the overlay chunk is parsed shortly after first paint, in addition to the existing `onPointerDown` warm on the hamburger.
+- Veil + hamburger morph use `transform` + `opacity` only. No `backdrop-filter` on the veil (it's opaque).
+- All five overlay routes warm their destination chunks on `pointerDown` + `mouseEnter` + `focus` via `prefetchRoute()` — same pattern the current drawer uses.
+- CLS stays 0: header height is fixed; logo wrapper reserves the same box whether it's mid-crossfade or not.
 
-**What I refuse to change (and need you to push back if you disagree)**
+## Verification before claiming done
 
-Three load-bearing decisions. Each one is a deliberate departure from Fly4Me's playbook, in service of Haven Creek's specific homeowner:
+1. Visual: desktop bar at `/` shows brand + Phone + Quote + Menu only — no inline routes. Mobile bar identical (Phone icon-only, no number).
+2. Open the Menu at desktop. Veil drops from top in ~half a second; five oversized link names cascade in, contact rail fades in last bottom-right. X top-right closes. Backdrop tap closes. Esc closes.
+3. Open the Menu at mobile (390×701 — the current viewport). Same experience, type scales down.
+4. Scroll homepage past 24px — bar gains cream wash, brand-mark crossfades from cream→foreground. Scroll past 240px down — bar tucks. Scroll up one notch — bar reveals.
+5. `bun run build` (if the harness runs it) succeeds.
+6. No console errors on route change or menu open/close.
 
-- **The Get a Free Quote CTA stays exposed in the bar at desktop.** Fly4Me hides Contact inside their menu. We can't. Haven Creek's whole pitch is "type one sentence, hear back in two business days" — a Quote button on every screen, always one click away, is the single most important conversion path on the site. Hiding it behind a menu tap is a measurable loss in submissions.
-- **The phone link stays exposed on mobile.** Rural Foothills homeowners reach for the phone before they reach for the menu. Phone icon always visible, 44×44 tap target, no exceptions.
-- **The menu stays five flat routes.** No "Services > Decking, Fencing, Renos" expansion. No sub-link columns. We promised the visitor a 30-second decision; a deep menu breaks that promise and turns it back into a website.
+## Out of scope
 
-If any of these three feels wrong to you, say so before the rebuild — they're the spine.
-
----
-
-**Performance — the "instant" promise, with numbers**
-
-You asked for instant. Adjectives are easy; budgets are honest. Here are the numbers I'm holding the nav to, and how to verify each one in under 60 seconds in Chrome DevTools:
-
-| Metric | Budget | How to verify |
-|---|---|---|
-| First paint with nav visible | < 1 frame after HTML arrives | DevTools → Performance → First Paint shows nav nodes already painted |
-| Menu trigger → veil opening | < 80ms (INP) | DevTools → Performance Insights → Interaction trace on the tap |
-| Tap-to-paint on a fresh route | 80–140ms on LTE | DevTools → Network throttled to "Fast 4G" → click any menu link |
-| Scroll handler cost per frame | ≤ 0.5ms on a Pixel 5a | DevTools → Performance → record a 3s scroll, scripting < 1.5ms total |
-| Menu open animation | locked 60fps | DevTools → Rendering → FPS meter visible during open |
-| CLS (layout shift) | 0 | DevTools → Performance → Layout Shift column empty across nav events |
-| Nav bundle weight (gzipped) | < 6KB total, overlay < 4KB | DevTools → Network → filter "header" / "overlay" chunks |
-
-The engineering choices that make those numbers true:
-
-- **Zero waterfall.** The nav code ships inside the shared layout chunk. The bar is in the first frame the visitor sees — no second network request to render it.
-- **Lazy menu, warmed early.** `MenuOverlay` is `React.lazy`. We prefetch it on the first `requestIdleCallback` after page load *and* on `pointermove` over the trigger area, so by the time the visitor's finger physically reaches the button, the code is already parsed and ready. Tap-to-veil-open feels like a single frame.
-- **Route warming.** Every menu link calls `prefetchRoute()` on `pointerDown`, `mouseEnter`, and `focus`. By the time the tap lands, the destination page's code is in memory. That's where the 80–140ms tap-to-paint number comes from.
-- **Scroll handler is one rAF.** Single passive scroll listener, one `requestAnimationFrame`, one boolean guard, zero React state writes — the bar's `--nav-progress` is set as a CSS custom property directly on the header ref. React never re-renders on scroll.
-- **GPU-only animations.** Veil scale + hamburger morph + bar hide/show all use `transform` and `opacity` only. Zero `width`, `top`, `bottom`, or `height` animations anywhere in the nav. Low-end Android stays at 60fps.
-- **No backdrop blur.** The veil is opaque, so a `backdrop-filter` blur would cost a full compositing pass for zero visible gain. Removing it saves ~4ms per frame on weaker phones.
-- **INP-safe trigger.** The Menu trigger's click handler does one thing: flip a boolean. The overlay reveal is queued in a microtask so the input event returns immediately. INP target < 80ms.
-- **CLS = 0.** The bar is fixed-height. The wordmark uses a font-display fallback metric matched to the real font, so there's no shift when web fonts arrive. The menu portals above the document flow — opening it never pushes content.
-- **Scroll lock without jank.** While the menu is open, body `overflow: hidden`. iOS rubber-band is killed with `overscroll-behavior: contain`. On close, scroll position is exactly where it was — no jump, no flicker.
-- **Reduced motion respected.** `prefers-reduced-motion: reduce` collapses every animation to a 1-frame opacity change. The menu still works; it just doesn't perform.
-
----
-
-**How to verify in 90 seconds**
-
-Two devices, four tests. If any test fails, screenshot it and send it back — that's a real bug, not a perception.
-
-**Mobile, on LTE (not wifi):**
-1. Open the homepage. Scroll halfway down a long page. Past 240px, the bar should tuck up out of view. Flick upward one notch — it should reappear within ~140ms.
-2. Scroll back to the top. The bar should sit transparent over the hero photo, with the wordmark fully legible.
-3. Tap the Menu trigger. The veil should drop from the top in roughly half a second. The five link names should cascade in *one after another*, not all at once. The email and phone should fade in last, bottom-right.
-4. Tap any route. The destination page should paint within one heartbeat — no white flash, no blank moment.
-
-**Desktop:**
-1. Same scroll test as #1 above. Same hide/reveal behavior.
-2. Hover the Menu trigger without tapping. The two hamburger lines should slide in opposite directions over ~500ms. Nothing else on the page should reflow or shift.
-3. Open dev tools, Performance tab, record a 3-second open-and-close cycle. The Layout and Paint columns should be empty — only Composite work in the timeline.
-4. Throttle network to "Fast 4G" and reload. The bar should be visible in the first frame painted.
-
----
-
-**What I need from you — four questions**
-
-Don't grade typography, hex colors, or millisecond timings yet. Gut answers, in this order:
-
-1. **One trigger, or routes inline at desktop?** Fly4Me hides every route behind one Menu, even on a 27-inch monitor. We currently show four routes inline at desktop. Which feels more "Haven Creek" to you — the cinematic all-hidden version (my recommendation), or the practical routes-visible version we have today? This call sets the tone for everything else.
-2. **The Quote CTA at desktop.** Keep it exposed in the bar (my recommendation — it's the single highest-leverage element on the site for submissions), or move it inside the menu like Fly4Me does with Contact (cleaner silhouette, but every tap costs a submission)? You can't have both.
-3. **The phone link on mobile.** Always visible in the bar (my recommendation — rural homeowners reach for the phone before the menu), or only inside the menu (cleaner mobile bar, one fewer visual element, but a measurable drop in calls)? Same trade-off shape as #2.
-4. **The veil color.** Pure black like Fly4Me (most dramatic — but reads as "different app"), or Haven Creek's `evergreen-deep` (my recommendation — ties the menu back to the palette, feels like the same site looked at differently)?
-
-Each one is a 30-second decision for you and a multi-day decision for everyone downstream. That's why I'm asking you and not guessing.
-
----
-
-**What I do not need yet**
-
-- Hex tuning on the scrolled-state cream wash (round two)
-- Wordmark vs. text logo decision (separate handoff coming this week)
-- Millisecond timing edits — those are tuned to the device, not the spec sheet
-- Copy edits on the five route names — they're just route names
-
----
-
-**Timeline**
-
-First-pass feedback by [date]. The execution changes (one-trigger header, full-viewport overlay rebuild, two-line hamburger swap, brand-mark crossfade) land within [N business days] of your answers. Then I'd like a 15-minute call where we open the menu a few times together on *your phone*, in real daylight, on real LTE. That's the only test that actually counts.
-
-— [Your name]
-Fantasy.co
-
----
+- Hex tuning on the cream wash, the rule color, or the link opacity steps — those are round-two polish.
+- Wordmark vs. text logo decision.
+- Footer, hero, or any other component.
