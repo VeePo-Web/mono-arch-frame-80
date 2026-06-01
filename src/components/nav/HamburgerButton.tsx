@@ -38,7 +38,7 @@ const HamburgerButton = ({
     className={cn(
       "hamburger-btn group relative z-10 inline-flex items-center justify-center shrink-0",
       "h-11 rounded-lg",
-      showWord ? "md:gap-3 md:px-3 md:w-auto w-11" : "w-11",
+      showWord ? "w-11 md:w-auto md:gap-3 md:px-3" : "w-11",
       "text-foreground hover:bg-foreground/[0.05] active:scale-95",
       "transition-[background-color,transform] duration-200 ease-out",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
