@@ -38,19 +38,20 @@ const HamburgerButton = ({
     className={cn(
       "hamburger-btn group relative z-10 inline-flex items-center justify-center shrink-0",
       "h-11 rounded-lg",
-      showWord ? "w-11 md:w-auto md:gap-3 md:px-3" : "w-11",
-      "text-foreground hover:bg-foreground/[0.05] active:scale-95",
-      "transition-[background-color,transform] duration-200 ease-out",
+      showWord ? "w-11 md:w-auto md:gap-2.5 md:px-3" : "w-11",
+      "text-foreground hover:bg-foreground/[0.06] active:scale-95",
+      // iOS spring curve — quick attack on press, slow release.
+      "transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
       className,
     )}
   >
-    <span className="hamburger-stage relative block h-[10px] w-5" data-open={open}>
-      <span className="hamburger-line hamburger-line--top    absolute left-0 right-0 h-[1.5px] bg-foreground rounded-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[2px]" />
-      <span className="hamburger-line hamburger-line--bottom absolute left-0 right-0 h-[1.5px] bg-foreground rounded-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-x-[2px]" />
+    <span className="hamburger-stage relative block h-3 w-[22px]" data-open={open}>
+      <span className="hamburger-line hamburger-line--top    absolute left-0 right-0 h-[1.75px] bg-foreground rounded-full transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-[2px]" />
+      <span className="hamburger-line hamburger-line--bottom absolute left-0 right-0 h-[1.75px] bg-foreground rounded-full transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-x-[2px]" />
     </span>
     {showWord && (
-      <span className="hidden md:inline text-[14px] font-semibold tracking-[-0.005em]">
+      <span className="hidden md:inline text-[13px] font-medium tracking-[-0.01em]">
         {open ? "Close" : "Menu"}
       </span>
     )}
