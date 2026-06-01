@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
 import { openQuickContact } from "@/lib/quickContact";
@@ -10,44 +10,36 @@ import HamburgerButton from "@/components/nav/HamburgerButton";
 import Container from "@/components/Container";
 import logo from "@/assets/logo/haven-creek-horizontal.webp";
 
-// Drawer is interaction-only — defer it past the LCP-critical bundle.
-const MenuDrawer = lazy(() => import("@/components/nav/MenuDrawer"));
+// Overlay is interaction-only — defer past LCP, then warm on idle.
+const MenuOverlay = lazy(() => import("@/components/nav/MenuOverlay"));
 
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_PHONE_DISPLAY = "403 970-7691";
 
-const PRIMARY_ROUTES = [
-  { label: "About", to: "/about" },
-  { label: "Services", to: "/services" },
-  { label: "Work", to: "/work" },
-  { label: "Contact", to: "/contact" },
-];
-
 /**
- * Navigation — simple editorial header.
+ * Navigation — one shape, every breakpoint.
  *
- * Logo · 4 inline routes (lg+) · Phone · Quote CTA · Hamburger (<lg).
- *
- * Section rails were retired — each page has 1–3 sections and stands on its
- * own scroll. Top-level routes warm on hover/pointerdown/focus so route
- * commits are instant.
+ * Brand left · Phone + Quote CTA + Menu trigger right. No inline routes —
+ * all five routes live inside MenuOverlay. The bar is transparent over
+ * hero content, gains a cream wash + 1px evergreen hairline past 24px,
+ * and tucks away on downward scroll past 240px.
  */
 const Navigation = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerTouched, setDrawerTouched] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuTouched, setMenuTouched] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastYRef = useRef(0);
   const { pathname } = useLocation();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
   const transparentRoute = routeHasTransparentTop(pathname);
   const scrollProgress = useScrollProgress(80);
-  // Form routes pin to opaque. Drawer-open hides the backdrop. Otherwise interpolate.
-  const navBg = drawerOpen ? 0 : transparentRoute ? scrollProgress : 1;
+  // Form routes pin to opaque. Menu-open hides the backdrop. Otherwise interpolate.
+  const navBg = menuOpen ? 0 : transparentRoute ? scrollProgress : 1;
 
-  // Direction-aware hide — Apple/Fly4Me cadence. Past 240px, scrolling down
-  // tucks the bar away; any upward intent or returning near the top reveals it.
+  // Direction-aware hide — past 240px, scrolling down tucks the bar; any
+  // upward intent or returning near the top reveals it.
   useEffect(() => {
-    if (drawerOpen) {
+    if (menuOpen) {
       setHidden(false);
       return;
     }
@@ -72,7 +64,29 @@ const Navigation = () => {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [drawerOpen]);
+  }, [menuOpen]);
+
+  // Warm the overlay chunk shortly after first paint so the first Menu tap
+  // is always instant — in addition to the pointerdown warm on the trigger.
+  useEffect(() => {
+    const warm = () => void import("@/components/nav/MenuOverlay");
+    type IdleWindow = Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+    };
+    const w = window as IdleWindow;
+    const ric = w.requestIdleCallback;
+    if (typeof ric === "function") {
+      const id = ric(warm, { timeout: 2000 });
+      return () => {
+        const cancel = (window as IdleWindow & {
+          cancelIdleCallback?: (id: number) => void;
+        }).cancelIdleCallback;
+        if (typeof cancel === "function") cancel(id);
+      };
+    }
+    const t = window.setTimeout(warm, 1200);
+    return () => window.clearTimeout(t);
+  }, []);
 
   const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onContactRoute) return;
@@ -82,20 +96,19 @@ const Navigation = () => {
     }
   };
 
-  const openDrawer = () => {
-    setDrawerTouched(true);
-    setDrawerOpen(true);
+  const openMenu = () => {
+    setMenuTouched(true);
+    setMenuOpen(true);
   };
 
-  // Pointerdown on the hamburger fires ~80–120ms before click on touch
-  // devices — enough lead time to warm the drawer chunk + the most likely
-  // destination (`/contact` for the CTA).
-  const warmDrawer = () => {
-    void import("@/components/nav/MenuDrawer");
+  // Pointerdown on the trigger fires ~80–120ms before click on touch
+  // devices — enough lead time to warm overlay + likely destination.
+  const warmMenu = () => {
+    void import("@/components/nav/MenuOverlay");
     prefetchRoute("/contact");
   };
 
-  // Logo earns a feather drop-shadow only while floating over photography.
+  // Logo feather shadow only while floating over photography.
   const logoShadow = navBg < 0.3 ? `drop-shadow(0 1px 2px hsl(0 0% 0% / ${(0.3 - navBg) * 0.5}))` : "none";
 
   const warmRoute = (to: string) => () => prefetchRoute(to);
@@ -111,7 +124,7 @@ const Navigation = () => {
 
       <header
         role="banner"
-        data-hidden={hidden && !drawerOpen}
+        data-hidden={hidden && !menuOpen}
         className={cn(
           "havencreek-nav nav-shell fixed inset-x-0 top-0 z-50",
           "h-[60px] sm:h-16 md:h-20",
@@ -122,7 +135,7 @@ const Navigation = () => {
           {
             paddingTop: "env(safe-area-inset-top)",
             ["--nav-bg" as string]: navBg.toFixed(3),
-            ["--nav-compress" as string]: navBg.toFixed(3),
+            ["--nav-progress" as string]: navBg.toFixed(3),
           } as React.CSSProperties
         }
       >
@@ -136,9 +149,9 @@ const Navigation = () => {
         <Container size="wide" className="h-full relative">
           <nav
             aria-label="Primary"
-            className="grid grid-cols-[auto_1fr_auto] items-center h-full gap-2 sm:gap-3"
+            className="flex items-center justify-between h-full gap-2 sm:gap-3"
           >
-            {/* Brand */}
+            {/* Brand — two-layer crossfade: cream over hero, foreground after scroll */}
             <Link
               to="/"
               onPointerDown={warmRoute("/")}
@@ -146,52 +159,36 @@ const Navigation = () => {
               onFocus={warmRoute("/")}
               aria-label="Haven Creek Renovations — home"
               className={cn(
-                "inline-flex items-center shrink-0 rounded-sm",
+                "brand-mark inline-flex items-center shrink-0 rounded-sm relative",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               )}
             >
+              {/* Base (dark) — full opacity */}
               <img
                 src={logo}
                 alt="Haven Creek Renovations"
                 width={160}
                 height={28}
-                className="h-6 sm:h-7 w-auto transition-[filter] duration-300"
+                className="h-6 sm:h-7 w-auto block transition-[filter] duration-300"
                 style={{ filter: logoShadow }}
                 {...({ fetchpriority: "high" } as Record<string, string>)}
                 decoding="async"
               />
+              {/* Cream overlay — visible over hero, fades as nav-progress rises */}
+              <img
+                src={logo}
+                alt=""
+                aria-hidden="true"
+                width={160}
+                height={28}
+                className="brand-mark__cream pointer-events-none absolute inset-0 h-6 sm:h-7 w-auto block"
+                style={{
+                  filter: "brightness(0) invert(1)",
+                  opacity: 1 - navBg,
+                }}
+                decoding="async"
+              />
             </Link>
-
-            {/* Primary routes — md+ inline, generous editorial spacing */}
-            <div className="hidden md:flex justify-center min-w-0">
-              <ul className="flex items-center gap-7 lg:gap-9">
-                {PRIMARY_ROUTES.map((r) => (
-                  <li key={r.to}>
-                    <NavLink
-                      to={r.to}
-                      onPointerDown={warmRoute(r.to)}
-                      onMouseEnter={warmRoute(r.to)}
-                      onFocus={warmRoute(r.to)}
-                      className={({ isActive }) =>
-                        cn(
-                          "nav-link relative inline-flex items-center py-2 whitespace-nowrap",
-                          "text-sm font-medium leading-[1.2]",
-                          "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                          "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                          isActive
-                            ? "text-foreground nav-link--active"
-                            : "text-foreground/50 hover:text-foreground",
-                        )
-                      }
-                    >
-                      {r.label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="md:hidden" aria-hidden="true" />
-
 
             {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
             <div className="flex items-center gap-1 sm:gap-2 md:gap-3 justify-end">
@@ -229,9 +226,7 @@ const Navigation = () => {
                 Get a Free Quote
               </Link>
 
-              <div className="md:hidden">
-                <HamburgerButton open={drawerOpen} onClick={openDrawer} onPointerDown={warmDrawer} />
-              </div>
+              <HamburgerButton open={menuOpen} onClick={openMenu} onPointerDown={warmMenu} />
             </div>
           </nav>
         </Container>
@@ -242,9 +237,9 @@ const Navigation = () => {
         <div aria-hidden="true" className="h-[60px] sm:h-16 md:h-20" />
       )}
 
-      {drawerTouched && (
+      {menuTouched && (
         <Suspense fallback={null}>
-          <MenuDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+          <MenuOverlay open={menuOpen} onOpenChange={setMenuOpen} />
         </Suspense>
       )}
     </>

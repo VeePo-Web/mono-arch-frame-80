@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 interface HamburgerButtonProps {
   open: boolean;
   onClick: () => void;
-  /** Fires on pointerdown — used to warm the drawer chunk before click commits. */
+  /** Fires on pointerdown — used to warm the overlay chunk before click commits. */
   onPointerDown?: () => void;
   /** Optional label override for screen readers. */
   label?: string;
@@ -11,11 +11,13 @@ interface HamburgerButtonProps {
 }
 
 /**
- * Round 6: square 44×44 icon-only hamburger.
- * - Three 1.5px lines (canonical menu glyph) → X morph on open.
- * - Square shape (8px radius) — matches the new square Quote CTA so the
- *   right cluster reads as a coherent set of "actions" not "tags".
- * - Honours prefers-reduced-motion via index.css.
+ * Two-line hamburger glyph, square 44×44, 8px radius.
+ *
+ * At rest:  two horizontal lines (top + bottom), 10px apart.
+ * Hover:    top slides right 2px, bottom slides left 2px (500ms).
+ * Open:     lines rotate to form an X.
+ *
+ * Pure transform/opacity only — never animate width/top/bottom.
  */
 const HamburgerButton = ({
   open,
@@ -40,10 +42,9 @@ const HamburgerButton = ({
       className,
     )}
   >
-    <span className="hamburger-stage relative block h-3.5 w-5" data-open={open}>
-      <span className="hamburger-line hamburger-line--top    absolute left-0 h-[1.5px] bg-foreground rounded-full" />
-      <span className="hamburger-line hamburger-line--mid    absolute left-0 h-[1.5px] bg-foreground rounded-full" />
-      <span className="hamburger-line hamburger-line--bottom absolute left-0 h-[1.5px] bg-foreground rounded-full" />
+    <span className="hamburger-stage relative block h-[10px] w-5" data-open={open}>
+      <span className="hamburger-line hamburger-line--top    absolute left-0 right-0 h-[1.5px] bg-foreground rounded-full" />
+      <span className="hamburger-line hamburger-line--bottom absolute left-0 right-0 h-[1.5px] bg-foreground rounded-full" />
     </span>
   </button>
 );
