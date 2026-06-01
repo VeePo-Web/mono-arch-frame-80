@@ -26,7 +26,6 @@ const Navigation = () => {
   const [hidden, setHidden] = useState(false);
   const lastYRef = useRef(0);
   const { pathname } = useLocation();
-  const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
   const transparentRoute = routeHasTransparentTop(pathname);
   // 40px interpolation range — glass kicks in within the first scroll gesture (iOS register).
   const scrollProgress = useScrollProgress(40);
@@ -119,7 +118,7 @@ const Navigation = () => {
           "havencreek-nav nav-shell fixed inset-x-0 top-0 z-50",
           // min-h (not h) so safe-area-inset padding pushes the bar DOWN
           // rather than eating its content area (border-box math bug).
-          "min-h-[56px] md:min-h-[68px] lg:min-h-20",
+          "min-h-[56px] md:min-h-[64px] lg:min-h-[72px]",
           "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "data-[hidden=true]:-translate-y-full",
         )}
@@ -138,10 +137,10 @@ const Navigation = () => {
           style={{ opacity: 1 - navBg }}
         />
 
-        <Container size="wide" className="min-h-[56px] md:min-h-[68px] lg:min-h-20 relative">
+        <Container size="wide" className="min-h-[56px] md:min-h-[64px] lg:min-h-[72px] relative">
           <nav
             aria-label="Primary"
-            className="flex items-center justify-between min-h-[56px] md:min-h-[68px] lg:min-h-20 gap-2 sm:gap-3"
+            className="flex items-center justify-between min-h-[56px] md:min-h-[64px] lg:min-h-[72px] gap-2 sm:gap-3"
           >
             {/* Brand — two-layer crossfade: cream over hero, foreground after scroll */}
             <Link
@@ -196,7 +195,7 @@ const Navigation = () => {
       {!transparentRoute && (
         <div
           aria-hidden="true"
-          className="min-h-[56px] md:min-h-[68px] lg:min-h-20"
+          className="min-h-[56px] md:min-h-[64px] lg:min-h-[72px]"
           style={{ paddingTop: "env(safe-area-inset-top)" }}
         />
       )}
