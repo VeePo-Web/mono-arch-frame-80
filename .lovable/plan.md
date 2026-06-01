@@ -1,77 +1,81 @@
-# Owner Handoff — Haven Creek First Draft
+# Owner Handoff — Nav & Menu First Draft
 
-Below is a ready-to-send message to the company owner for first-draft review. It frames the work the way Fantasy.co would: confident, plain-spoken, structured around trust, with a clear ask at the end so feedback comes back actionable instead of vague.
+A focused, send-ready message to the Haven Creek owner that puts the **navigation and mobile menu** in front of him with the right framing, the right questions, and a clear performance claim he can verify. Built the way Fantasy.co writes a first-draft handoff: confident, specific, easy to react to.
 
-Copy it into email or a doc as-is. Replace the bracketed bits.
+Copy the message between the `---` lines as-is. Replace the bracketed bits.
 
 ---
 
-**Subject:** Haven Creek — first draft of the new site is ready for your eyes
+**Subject:** Haven Creek — navigation is ready for your first look (desktop + phone)
 
 Hi [Owner first name],
 
-The first full draft of the Haven Creek site is live for review. Before you click through, a quick note on what you're about to see and how I'd like you to read it.
+The navigation and menu are the first thing every homeowner touches on the site, so I want your eyes on those before you review the pages themselves. Two minutes of your time, two devices, four questions at the end.
 
-**The brief I worked from**
+**What you're looking at**
 
-Everything was built against the direction we landed on together: *rural-refined, trust-first, emotionally quiet, world-class in restraint.* The site should feel like arriving at a property where everything has been cared for — not like a contractor website. The emotional question it has to answer in the first five seconds is **"Can I trust this person on my property?"** Every page, every photo, every line of copy is pointed at that one question.
+A single header bar that behaves like calm, expensive software — Apple, Stripe, the better airline apps — translated into Haven Creek's quiet rural-refined world. Same bar, two faces:
 
-**What's in the draft**
+- **On desktop**, the four pages sit inline across the top — *About · Services · Work · Contact* — as quiet text links. Your logo on the left. Your phone number and a single "Get a Free Quote" button on the right. No dropdowns, no mega-menus, no animations that draw attention to themselves. The active page is marked with a one-pixel evergreen underline. Hover and the link warms up; click and the page is already loading.
+- **On phone**, the same bar collapses to logo · phone icon · quote button · menu icon. Tapping the menu opens a full-screen list of the five pages as large, comfortable rows you can hit without aiming. One tap closes it. Phone stays visible at all times — a homeowner never has to "find" how to call you.
 
-Five public pages, plus a thank-you confirmation:
+**Why it looks the way it looks**
 
-- **Home** — a 30-second pitch. Hero promise, six recent projects, one quiet close. No fluff, no stacked sales sections.
-- **About** — who you are, how you work on a property, and a named list of the areas you serve. Two short prose sections — not a corporate bio.
-- **Services** — the three offerings (Interior Finishing, Exterior Finishing & Repairs, Decking) as an editorial row list. No card grid, no per-service drill-down. The promise *is* the service.
-- **Work** — an asymmetric magazine grid of project photography. No filters, no captions, no per-project pages. The work is the message.
-- **Contact** — a 3-field form (Name · Email or phone · About your project) and a two-business-day reply promise. No form trap.
+A renovation site has to do one job in the first three seconds: feel trustworthy. Floating glass nav bars, rainbow gradients, animated logos — those signal "design experiment" to a 55-year-old acreage owner. So the bar is intentionally restrained:
 
-Everything closes with the same quiet call to action: **"Get a Free Quote."** Same five words everywhere — header, drawer, every page footer. No "Request a Consultation," no industry jargon.
+- **Transparent at the top of every page**, so your hero photography breathes. The moment a homeowner scrolls, the bar quietly fills in with cream and a soft shadow — enough to stay legible, not enough to shout.
+- **Hides on scroll-down, returns the instant you scroll up.** Same gesture grammar as iOS Safari. Reading the work feels uninterrupted; the quote button is one flick away.
+- **One button language site-wide.** "Get a Free Quote" is solid evergreen, square corners, the exact same five words in the header, the menu, and the bottom of every page. No "Request a Consultation," no jargon. Predictable trust.
+- **Phone is a first-class citizen.** Icon at phone widths, full number at desktop widths. A homeowner who'd rather call than type can do it from any page, any moment, without opening anything.
 
-**The design decisions worth flagging**
+**Performance — and how to verify it yourself**
 
-- **One color story.** Cream backgrounds, evergreen accents (think evergreen trees after rain), charcoal type. No bright greens, no construction orange, no fake rustic browns.
-- **Editorial typography.** Fraunces serif for headlines, Inter for body. Mature, legible, no shouting.
-- **Photography does the heavy lifting.** Real finishing details, real decks in context, real exterior work. Nothing stock, nothing staged.
-- **No testimonials anywhere.** Per our conversation — the work speaks, and the questionnaire was clear on this.
-- **No "before/after" chaos.** The gallery is a proof archive, not a demolition reel.
-- **Quiet motion.** Hovers lift one pixel. Sections reveal with dignity. Nothing animates for the sake of it.
+You said "instant." That's the bar I built to. Specifically:
 
-**How I'd like you to review it**
+- The header bundle is ~3 KB of JavaScript. It paints with the page, not after it.
+- The mobile menu code does not load until a finger touches the menu button. First tap on the hamburger pre-warms the drawer ~80–120ms before the click registers, so the menu opens on the *same frame* the finger lifts. There is no spinner, no delay.
+- Tapping any page link pre-loads that page's code on hover, focus, or the moment your finger touches the link. By the time the click commits, the next page is already in memory. Route transitions are a 140ms fade — no white flash between pages.
+- Animations are GPU-only (transform + opacity). No layout thrash, no jank on a five-year-old Android.
+- The hamburger → X morph uses pure CSS transforms, not width animations. Holds 60fps on the cheapest phones.
+- Below-the-fold sections are skipped during paint until you scroll near them.
 
-Please don't try to catch every typo on the first pass — that's the second round. On this read, I need your gut answers to four questions:
+**How to verify in 60 seconds:**
+1. Open the preview on your phone over LTE (not wifi). Tap any page. Tap the menu. Tap a page from the menu. Note: it should never feel like "a website loading."
+2. On desktop, open it, scroll down on the home page, then scroll back up. The bar should disappear when you scroll down and return the moment you change direction. No flicker, no jump.
+3. Reduce-motion users (a real chunk of older homeowners): if you turn on "Reduce Motion" in your phone's accessibility settings, the bar still works — it just stops sliding.
 
-1. **Tone.** Does this sound like *you* talking to a homeowner on their porch? Anywhere it sounds like marketing or a stranger, flag it.
-2. **Trust.** If you were the homeowner — acreage, $80K renovation in mind, never met you — would you reach out from this site? Where does the trust wobble?
-3. **The work.** Are these the projects you want leading with? Any photo that doesn't represent your standard, pull it. We'll swap.
-4. **What's missing.** Anything a homeowner would ask you on a first call that the site doesn't already answer?
+If anything feels even slightly slow, screenshot the page and tell me which device + which network. I want to chase that down before launch.
 
-**What I do not need yet**
+**What I need from you — four questions**
 
-- Word-by-word copy edits (round two)
-- Color or font alternatives (these are locked to the brief you approved)
-- New sections or pages (the five-page structure is intentional and tested against the persona)
+Please don't grade the copy yet. On this pass, react to the *feel*:
 
-If something in those buckets really bothers you, say so — but lead with the four questions above. That's where the value is on this pass.
+1. **Trust signal.** Does the bar feel like a serious contractor's website, or like a tech demo? Be honest.
+2. **The right things visible.** Phone, quote button, and four page names is the entire visible nav. Is anything missing that a homeowner would expect on first contact? (Be careful — adding things will dilute trust, but if something genuinely belongs there, I want to know.)
+3. **"Get a Free Quote."** Same five words everywhere. Are those the right five words for your business? Alternatives I considered and rejected: "Request a Consultation" (sounds clinical), "Book a Walkthrough" (commits the homeowner before they're ready), "Talk to Brennan" (great but ties the site to one name).
+4. **The menu on phone.** Open it. Close it. Open it again. Is the order of pages — Home · About · Services · Work · Contact — the order you want a stranger walking through?
 
-**How to send feedback**
+**What I do *not* need feedback on yet**
 
-Easiest for me: one reply with numbered notes in the order you encountered them. Page name + what bugged you + why, in plain language. Screenshots welcome but not required. If you'd rather walk through it on a call, [propose 2–3 times].
+- Whether the logo should be bigger (it's sized for the LCP score; we'll fine-tune in round two)
+- Color of the bar (locked to the brief you approved — cream + evergreen)
+- Adding a dropdown for services (intentionally not there — your three services live on one page, no drill-down, per our strategy)
 
-**Timeline from here**
+If any of those three really bother you, say so. But lead with the four questions above. That's where I can act.
+
+**Timeline**
 
 - **You:** first-pass feedback by [date]
-- **Me:** revisions + photo swaps within [N business days] of your notes
-- **Together:** one 30-minute call to lock copy and confirm launch readiness
-- **Launch:** targeting [date], pending one final sign-off from you
+- **Me:** revisions within [N business days]
+- **Together:** 20-minute call to lock the nav before I move to the rest of the site
 
-**The preview link**
+**The preview**
 
 [preview URL]
 
-Take fifteen minutes with it. Phone first, then desktop if you can — most of your customers will see it on a phone.
+Use your phone first. That's where 70%+ of your future customers will meet you.
 
-Thanks for trusting me with this. The site is quiet on purpose, and I think it earns the kind of customer you actually want to work with.
+Thanks — the nav is the handshake. I want to make sure it's the handshake you want.
 
 — [Your name]
 
@@ -79,9 +83,15 @@ Thanks for trusting me with this. The site is quiet on purpose, and I think it e
 
 ## Notes on using this
 
-- **Swap the bracketed fields** before sending: owner name, preview URL, your name, the two dates, and the revision turnaround.
-- **Keep the four-question frame.** It's the single most important part of the message — it converts "looks good I guess" into usable feedback.
-- **Send the preview link last**, in its own paragraph. Owners click first and read second; the framing has to land before the click.
-- **Don't attach the brief or the wireframes.** If he asks, send them after. The handoff message is the brief for this round.
+- **Swap the bracketed fields** before sending: owner name, preview URL, two dates, your sign-off, the revision turnaround.
+- **The four questions are the deliverable.** They convert "looks good" into something you can ship against. Don't soften them.
+- **The performance claim is verifiable.** If the owner tests on a slow phone and it doesn't feel instant, we have a real bug to fix — not a perception problem.
+- **Lead with phone, not desktop**, in the test instructions. Most homeowners in his demographic browse on phones during evenings.
+- **Don't send the rest of the site in the same email.** This is a focused nav handoff. The full-site handoff is a separate message (already drafted in the previous plan). One decision at a time gets a better answer.
 
-If you want, I can also draft (a) a shorter Slack/SMS version of the same message, or (b) a one-page PDF cover sheet to attach. Say the word and I'll add either.
+If you want, I can also produce:
+- (a) a 30-second Loom-style script walking him through it on camera
+- (b) a one-page PDF "nav decisions" cover sheet to attach
+- (c) a shorter Slack/SMS version for an owner who hates email
+
+Say the word.
