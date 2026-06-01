@@ -216,7 +216,9 @@ const Navigation = () => {
                 onFocus={warmRoute("/contact")}
                 aria-label="Get a free quote"
                 className={cn(
-                  "nav-quote-cta cta-spring shrink-0 inline-flex items-center justify-center rounded-lg",
+                  // Hide on mobile — lives inside the overlay there.
+                  "hidden md:inline-flex",
+                  "nav-quote-cta cta-spring shrink-0 items-center justify-center rounded-lg",
                   "bg-evergreen text-evergreen-foreground",
                   "text-[14px] sm:text-[15px] font-semibold whitespace-nowrap",
                   "h-10 sm:h-11 px-3.5 sm:px-5",
@@ -226,7 +228,7 @@ const Navigation = () => {
                 Get a Free Quote
               </Link>
 
-              <HamburgerButton open={menuOpen} onClick={openMenu} onPointerDown={warmMenu} />
+              <HamburgerButton open={menuOpen} onClick={openMenu} onPointerDown={warmMenu} showWord />
             </div>
           </nav>
         </Container>
