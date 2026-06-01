@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -208,13 +207,13 @@ const ConsultationForm = ({
     });
     return (
       <div className={cn("py-2", className)} role="status" aria-live="polite">
-        <p className="font-serif italic font-light text-foreground/85 text-[1.45rem] leading-snug">
+        <p className="t-lede text-foreground/85">
           Thank you. We&apos;ll be in touch.
         </p>
-        <p className="mt-3 text-body text-muted-foreground text-[0.95rem] leading-relaxed">
+        <p className="mt-3 t-body text-muted-foreground">
           We reply within two business days.
         </p>
-        <p className="mt-7 text-minimal text-evergreen/65 tabular-nums">
+        <p className="mt-7 t-micro text-evergreen/70 tabular-nums">
           Received · {time}
         </p>
         <button
@@ -223,10 +222,9 @@ const ConsultationForm = ({
             form.reset();
             setSubmittedAt(null);
           }}
-          className="group/ghost mt-6 inline-flex items-center gap-3 text-minimal text-foreground/80 hover:text-evergreen transition-colors duration-500"
+          className="mt-6 inline-flex items-center text-sm font-medium text-foreground/70 hover:text-evergreen transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
         >
-          <span>Send another</span>
-          <span className="block w-6 h-px bg-evergreen/50 group-hover/ghost:w-12 transition-all duration-500 ease-swift" />
+          Send another
         </button>
       </div>
     );
@@ -271,12 +269,11 @@ const ConsultationForm = ({
             />
           </div>
           <div className="mt-2 flex items-baseline justify-between gap-3">
-            <span className="text-minimal text-foreground/60 tabular-nums">
+            <span className="t-micro text-foreground/60 tabular-nums">
               Step {step + 1} of 3
             </span>
             {projectLabel && step === 2 && (
-              <span className="inline-flex items-center gap-1.5 text-[0.7rem] tracking-[0.18em] uppercase text-evergreen/80">
-                <span className="block w-1 h-1 rounded-full bg-evergreen/60" aria-hidden="true" />
+              <span className="t-micro text-evergreen/80">
                 Re: {projectLabel}
               </span>
             )}
@@ -291,7 +288,7 @@ const ConsultationForm = ({
               name="name"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel className="text-minimal text-foreground/70">Name</FormLabel>
+                  <FormLabel className="t-micro text-foreground/70">Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -318,7 +315,7 @@ const ConsultationForm = ({
               name="contact"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel className="text-minimal text-foreground/70">Email or phone</FormLabel>
+                  <FormLabel className="t-micro text-foreground/70">Email or phone</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -337,7 +334,7 @@ const ConsultationForm = ({
                       className="h-14 text-base bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
                     />
                   </FormControl>
-                  <p className="text-minimal text-muted-foreground/80 pt-1">
+                  <p className="t-micro text-muted-foreground/80 pt-1">
                     Only used to reply.
                   </p>
                   <FormMessage className="text-sm" />
@@ -352,7 +349,7 @@ const ConsultationForm = ({
               name="message"
               render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel className="text-minimal text-foreground/70">About your project</FormLabel>
+                  <FormLabel className="t-micro text-foreground/70">About your project</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
@@ -379,9 +376,9 @@ const ConsultationForm = ({
             <button
               type="button"
               onClick={goBack}
-              className="text-minimal text-foreground/65 hover:text-evergreen transition-colors duration-300"
+              className="text-sm font-medium text-foreground/65 hover:text-evergreen transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
             >
-              ‹ Back
+              Back
             </button>
           ) : (
             <span aria-hidden="true" />
@@ -392,16 +389,13 @@ const ConsultationForm = ({
               type="button"
               onClick={goNext}
               className={cn(
-                "cta-spring inline-flex items-center gap-3",
-                "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 min-h-[52px] text-minimal",
-                "transition-all duration-500 ease-swift hover:bg-evergreen-hover active:scale-[0.98]",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep",
+                "cta-spring inline-flex items-center justify-center shrink-0",
+                "bg-evergreen text-evergreen-foreground rounded-lg",
+                "h-11 px-5 text-[15px] font-semibold whitespace-nowrap",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               )}
             >
-              <span>Next</span>
-              <span className="icon-chip icon-chip-light bg-background/15">
-                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              </span>
+              Next
             </button>
           ) : (
             <button
@@ -409,22 +403,19 @@ const ConsultationForm = ({
               disabled={isSubmitting}
               aria-describedby={RESPONSE_NOTE_ID}
               className={cn(
-                "cta-spring inline-flex items-center gap-3",
-                "bg-evergreen text-evergreen-foreground rounded-full pl-6 pr-1.5 py-1.5 min-h-[52px] text-minimal",
-                "transition-all duration-500 ease-swift hover:bg-evergreen-hover active:scale-[0.98]",
-                "disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-evergreen",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-evergreen-deep",
+                "cta-spring inline-flex items-center justify-center shrink-0",
+                "bg-evergreen text-evergreen-foreground rounded-lg",
+                "h-11 px-5 text-[15px] font-semibold whitespace-nowrap",
+                "disabled:opacity-60 disabled:cursor-not-allowed",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               )}
             >
-              <span>{isSubmitting ? "Sending…" : "Send"}</span>
-              <span className="icon-chip icon-chip-light bg-background/15">
-                <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              </span>
+              {isSubmitting ? "Sending…" : "Send"}
             </button>
           )}
         </div>
 
-        <p id={RESPONSE_NOTE_ID} className="mt-4 text-minimal text-muted-foreground leading-relaxed">
+        <p id={RESPONSE_NOTE_ID} className="mt-4 t-micro text-muted-foreground">
           Reply within two business days.
         </p>
       </form>
