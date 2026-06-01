@@ -1,95 +1,66 @@
-# Fix the nav menu — Fly4Me register, Haven Creek palette
+# Nav fix, round 2 — safe-area + Apple-grade polish
 
-Four problems, four fixes. Closes the gap between the current overlay and the Fly4Me feel you're after, on mobile especially.
+Two real problems in the current build:
 
----
+1. **The bar is hidden behind the top.** `paddingTop: env(safe-area-inset-top)` is applied to a fixed-height header (`h-[60px] sm:h-16 md:h-20`). With Tailwind's default `box-sizing: border-box`, the safe-area inset eats the content area instead of pushing the bar down — so on a real iPhone the logo and icons slide under the status bar.
+2. **It doesn't read as Apple-grade.** The bar feels coarse — content jammed top-edge, hamburger anonymous, scroll-state transition flat, logo crossfade abrupt against the hero.
 
-## 1. Top bar — uncramp the mobile right cluster
+## 1. Safe-area math — fix the actual bug
 
-**Now:** Logo · Phone icon · "Get a Free Quote" pill · hamburger. On a 390px viewport with safe areas, the CTA squeezes the phone icon and pushes the hamburger to the edge.
+- Header becomes `min-h-[60px] sm:min-h-16 md:min-h-20` instead of fixed height. Safe-area padding now pushes the whole bar down rather than eating content.
+- The spacer `<div h-[60px] …>` on opaque routes gets the same `min-h` plus its own `paddingTop: env(safe-area-inset-top)` so layouts don't jump.
+- Direction-aware hide still uses `-translate-y-full` — the bar tucks above the status bar with safe-area included.
+- Verified target: on 390×844 with a 47px safe-area, logo sits with 12px of breathing room from the status bar.
 
-**Change:**
-- **Mobile (<md):** Logo · Phone icon · hamburger. CTA disappears from the bar.
-- **md+ (tablet/desktop):** Unchanged — Logo · Phone with number · Get a Free Quote · Menu.
-- The quote CTA gets a proper home inside the overlay (see §3).
+## 2. Top bar — Apple-grade polish
 
-Phone stays in the bar at every breakpoint per your "always one tap to call" rule.
+- **Heights tuned to iOS chrome:** mobile `min-h-[56px]` (iOS toolbar standard), md `min-h-[68px]`, lg `min-h-20`. Tightens the bar without cramping.
+- **Scroll-state glass** matches iOS: `bg-background/72` + `backdrop-blur-xl` + `backdrop-saturate-150` once `scrollY > 8` (was 24 — Apple triggers translucency almost immediately). 1px bottom hairline at `foreground/8`.
+- **Logo crossfade** gets a gentle 1.5px Y-translate during scroll-in to mirror iOS large-title collapse, and the cream→dark fade slows to 360ms (currently abrupt at 300ms transform alone). Drop-shadow only over hero (already in place; reduce strength by 30%).
+- **Phone glyph** swap: `Phone` icon → outline weight 1.65 (currently 1.75) at 17px (currently 18) — matches SF Symbols default. Hit target stays 44×44.
+- **Right cluster gap** tightens to `gap-1` on mobile (currently `gap-1 sm:gap-2 md:gap-3`) so the three items group as one assembly, not three islands.
 
-## 2. Hamburger — give it a voice
+## 3. Hamburger trigger — confident, not anonymous
 
-**Now:** Two anonymous lines, 44×44 square. No label.
+The current two-1.5px-line glyph reads weak.
 
-**Change:** Restore the Fly4Me-style **"Menu"** word beside the glyph at **md+** only (where there's room and it reads as editorial chrome, not clutter). On mobile, stays icon-only — the hamburger glyph is enough when the bar is sparse.
+- Lines bump to **1.75px** (matches SF Symbols `line.3.horizontal` stroke weight) and **12px stage height** (was 10px) so the two lines sit further apart and read as deliberate, not hairline.
+- Active hit halo: on `:active`, button gets `bg-foreground/[0.06]` 100ms in / 240ms out (currently 200ms both ways) — Apple's quick-attack, slow-release pattern.
+- Open morph eases via `cubic-bezier(0.32, 0.72, 0, 1)` (the iOS spring curve) instead of `cubic-bezier(0.22, 1, 0.36, 1)` — feels snappier on tap.
+- At md+, the "Menu" word becomes `text-[13px] font-medium tracking-[-0.01em]` (currently 14px semibold) — matches macOS menu-bar weight, less shouty.
 
-Same two-line → X morph on open. Same transform-only animation (no width/top/bottom).
+## 4. Menu overlay — small precision pass only
 
-Close affordance inside the overlay also gains its "Close" word at md+, mirroring the trigger.
+The big rebuild from last round stands. Two refinements:
 
-## 3. Overlay layout — rebuild mobile rhythm
+- **Veil scale-in** swaps to the same iOS spring curve `cubic-bezier(0.32, 0.72, 0, 1)` over 480ms (was 520ms). Feels native.
+- **Close** button on the overlay matches the new hamburger weights for symmetry.
 
-**Now:** `items-center` on the grid floats the routes mid-screen on mobile; the contact rail orphans below them with no anchor. Reads like a half-finished dropdown.
-
-**Change — mobile (single column):**
-
-```text
-┌────────────────────────────┐
-│                       Close│  ← top-right, mirrors hamburger
-│                            │
-│ ─── Home                   │  ← routes top-anchored
-│     About                  │     under the close, large
-│     Services               │     cascade in 90ms beat
-│     Work                   │
-│     Contact                │
-│                            │
-│   [ Get a Free Quote ]     │  ← oversized CTA, full-width
-│                            │     square solid evergreen
-│   ─────────────────────    │  ← hair rule
-│   CONTACT                  │
-│   hello@havencreek.ca      │  ← rail pinned to bottom
-│   403 970-7691             │     above safe-area inset
-└────────────────────────────┘
-```
-
-**Change — desktop (lg+):** Routes col 1-9 left-aligned, contact rail col 10-12 bottom-right. Routes top-anchored (not vertically centered) so the cascade reads from the top edge like Fly4Me's. CTA sits as an oversized button under the routes at lg too.
-
-## 4. Cinematic finish — grain, vignette, type weight
-
-Match Fly4Me's atmosphere over the evergreen-deep ground:
-
-- **Film grain** — `radial-gradient` micro-dots at 5% opacity, `mix-blend-overlay`. Prevents the flat digital green.
-- **Vignette** — radial darken from transparent to `evergreen-deep/55` at edges. Pulls focus to the route list.
-- **Route type scale on mobile:** bump from `clamp(2.5rem, 9vh, 5.75rem)` to `clamp(3rem, 11vh, 6rem)`. On a 390×700 viewport, route names land at ~77px (now ~63px) — reads as a statement.
-- **Cascade timing:** keep 360ms start + 90ms beat. Tighten the rail fade to 720ms (from 920ms) so it doesn't feel orphaned after the routes settle.
-- **Active-route rule** stays 28×2px cream, left of the word.
-
----
-
-## Memory updates required
-
-This intentionally overrides four Core rules. After implementation:
-
-- `Header is the same shape at every breakpoint` → revised: brand + phone are constant; CTA hidden <md, lives in overlay instead.
-- `Quote CTA is always exposed at every breakpoint` → revised: exposed at md+; on mobile, lives in overlay (still one tap from hamburger).
-- `Hamburger ... Never with a "Menu" word` → revised: "Menu" / "Close" word shown at md+ only; mobile stays icon-only.
-- `ONE close affordance: icon-only square X` → revised: icon at mobile, icon + "Close" word at md+.
-- `MenuOverlay ... Same overlay at every breakpoint` → revised: same overlay, mobile gets top-anchored routes + bottom-pinned rail + inline CTA; desktop unchanged in spirit.
-
-I'll rewrite `mem://features/two-tier-navigation` and the relevant Core lines in the same pass.
+That's it for the overlay — leave the cascade, grain, vignette, CTA, and rail alone. Round 1's structure was right; only the trigger and bar were under-polished.
 
 ---
 
 ## Files touched
 
-- `src/components/Navigation.tsx` — hide CTA <md, conditionally render "Menu" label at md+.
-- `src/components/nav/HamburgerButton.tsx` — accept optional `label` prop, render at md+.
-- `src/components/nav/MenuOverlay.tsx` — top-anchor routes on mobile, pin rail to bottom, add inline CTA button, add grain + vignette layers, bump mobile type scale, add "Close" word at md+.
-- `src/index.css` — `.menu-overlay__grain`, `.menu-overlay__vignette` utilities; adjust `.menu-overlay__rail` delay.
-- `mem://index.md` + `mem://features/two-tier-navigation` — reflect the four revised rules.
+- `src/components/Navigation.tsx` — header `min-h` instead of `h`, spacer gets safe-area padding, tightened cluster gap, scroll threshold 8px, glass formula updated, logo Y-translate.
+- `src/components/nav/HamburgerButton.tsx` — line weight 1.75px, stage h-3, iOS spring curve, refined "Menu" word weight.
+- `src/components/nav/MenuOverlay.tsx` — close button weights match new hamburger.
+- `src/index.css` — `.nav-shell` scroll-shadow strength reduced; `.menu-overlay__veil` curve swap.
+- `mem://index.md` — update the nav-bar-glass rule (`scrollY > 8`, new opacity), the hamburger spec (1.75px lines, 12px stage, iOS spring), and the bar height tokens.
 
 ## Out of scope
 
-Footer, hero, page content, route changes, color tokens, no new dependencies.
+- Overlay layout, type scale, cascade, grain, vignette, CTA, contact rail — all untouched from round 1.
+- Footer, hero, page content, colors, fonts.
 
 ## Performance
 
-No regressions. Grain/vignette are CSS-only paint layers (cheap), no extra JS, no new chunks. Overlay still lazy-loaded, warmed on idle + hamburger pointerdown.
+No new JS. CSS-only changes plus prop tweaks. Backdrop-blur-xl is the same primitive Safari already optimizes; no extra paint cost vs current `backdrop-blur-md`.
+
+## Verification
+
+I'll reload the preview at 390×844, confirm:
+1. Logo + icons have ≥8px clearance from top in the simulated safe area
+2. Glass appears within first 8px of scroll
+3. Hamburger lines visibly thicker, more confident
+4. No layout shift on scroll
