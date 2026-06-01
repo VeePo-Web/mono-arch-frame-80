@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Link, useLocation } from "react-router-dom";
-import X from "lucide-react/dist/esm/icons/x";
+
 import { cn } from "@/lib/utils";
 import { prefetchRoute } from "@/lib/routePrefetch";
 import { openQuickContact } from "@/lib/quickContact";
@@ -67,23 +67,29 @@ const MenuOverlay = ({ open, onOpenChange }: MenuOverlayProps) => {
           {/* Vignette — pulls focus to the route list */}
           <div aria-hidden="true" className="menu-overlay__vignette pointer-events-none absolute inset-0" />
 
-          {/* Close — mirrors hamburger silhouette; gains "Close" word at md+ */}
+          {/* Close — matches the trigger pill silhouette */}
           <Dialog.Close
             aria-label="Close menu"
             className={cn(
-              "menu-overlay__close group absolute z-20 inline-flex items-center justify-center h-11 rounded-lg",
-              "w-11 md:w-auto md:gap-3 md:px-3",
-              "text-evergreen-foreground/85 hover:text-evergreen-foreground hover:bg-evergreen-foreground/[0.08]",
+              "menu-overlay__close group absolute z-20 inline-flex items-center justify-center shrink-0",
+              "gap-2 sm:gap-2.5 rounded-full",
+              "h-10 md:h-11 px-4 md:px-5",
+              "bg-evergreen-foreground/[0.08] text-evergreen-foreground",
+              "hover:bg-evergreen-foreground/[0.14]",
               "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen-foreground/60",
             )}
             style={{
               top: "max(1rem, calc(env(safe-area-inset-top) + 0.625rem))",
               right: "max(1rem, env(safe-area-inset-right))",
+              boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.06)",
             }}
           >
-            <X className="h-5 w-5" strokeWidth={1.85} aria-hidden="true" />
-            <span className="hidden md:inline text-[13px] font-medium tracking-[-0.01em]">
+            <span className="relative block h-3 w-[18px]">
+              <span className="absolute left-0 right-0 top-[5.25px] h-[1.5px] bg-evergreen-foreground rounded-full rotate-45" />
+              <span className="absolute left-0 right-0 top-[5.25px] h-[1.5px] bg-evergreen-foreground rounded-full -rotate-45" />
+            </span>
+            <span className="text-[13px] md:text-[14px] font-medium tracking-[-0.01em] leading-none">
               Close
             </span>
           </Dialog.Close>
@@ -195,8 +201,8 @@ const MenuOverlay = ({ open, onOpenChange }: MenuOverlayProps) => {
                     onClick={close}
                     aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
                     className={cn(
-                      "inline-block text-base md:text-lg font-medium",
-                      "text-evergreen-foreground/85 hover:text-evergreen-foreground",
+                      "inline-block text-lg md:text-xl font-semibold tracking-[-0.01em]",
+                      "text-evergreen-foreground",
                       "transition-colors duration-300",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen-foreground/60 rounded-sm",
                     )}
