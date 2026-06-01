@@ -115,9 +115,11 @@ const MenuOverlay = ({ open, onOpenChange }: MenuOverlayProps) => {
                         onFocus={() => prefetchRoute(r.to)}
                         aria-current={active ? "page" : undefined}
                         className={cn(
-                          "menu-overlay__link group inline-flex items-center gap-5 py-1",
+                          "menu-overlay__link group inline-flex items-center gap-4 sm:gap-5 py-1",
                           "font-serif tracking-[-0.03em] leading-[0.95]",
-                          "text-[clamp(3rem,11vh,6rem)] lg:text-[clamp(3.25rem,9vh,5.75rem)]",
+                          // Mobile: width-bound so longest word ("Services") never clips.
+                          // Desktop (lg+): viewport-height bound for cinematic scale.
+                          "text-[clamp(2.5rem,13vw,4.75rem)] lg:text-[clamp(3.25rem,9vh,5.75rem)]",
                           "transition-[transform,color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
                           active
                             ? "text-evergreen-foreground"
