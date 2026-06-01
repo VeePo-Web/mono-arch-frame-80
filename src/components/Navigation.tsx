@@ -32,7 +32,8 @@ const Navigation = () => {
   const { pathname } = useLocation();
   const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
   const transparentRoute = routeHasTransparentTop(pathname);
-  const scrollProgress = useScrollProgress(80);
+  // 40px interpolation range — glass kicks in within the first scroll gesture (iOS register).
+  const scrollProgress = useScrollProgress(40);
   // Form routes pin to opaque. Menu-open hides the backdrop. Otherwise interpolate.
   const navBg = menuOpen ? 0 : transparentRoute ? scrollProgress : 1;
 
