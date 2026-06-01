@@ -574,7 +574,8 @@
   .menu-overlay__veil {
     background: hsl(var(--evergreen-deep));
     transform-origin: top center;
-    animation: menu-veil-in 520ms var(--ease-weighted) both;
+    /* iOS spring curve — snappier, more native than the editorial ease. */
+    animation: menu-veil-in 480ms cubic-bezier(0.32, 0.72, 0, 1) both;
     will-change: transform;
   }
   .menu-overlay__veil[data-state="closed"] {
