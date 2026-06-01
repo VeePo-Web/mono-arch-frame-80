@@ -1,111 +1,94 @@
-# Owner Handoff — Contact Page First Draft
+# Owner Handoff — Nav Bar & Menu, First Draft
 
-A focused, send-ready message for the Haven Creek owner about the **Contact page**. Frames the vision honestly, names the execution gaps in plain language, sets the performance bar, and asks four questions that turn vague reactions into shippable feedback. Written the way Fantasy.co writes a first-draft handoff.
-
-Copy the message between the `---` lines as-is. Replace bracketed fields.
+Copy the message between the `---` lines as-is. Swap bracketed fields.
 
 ---
 
-**Subject:** Haven Creek — Contact page is ready for your eyes (and I owe you some honesty)
+**Subject:** Haven Creek — the nav and menu are ready for your eyes (and a few decisions only you can make)
 
 Hi [Owner first name],
 
-The Contact page is the most important page on the site. It's where a homeowner who's been quietly reading for ten minutes finally decides whether to type their name in. Everything before it is build-up; this is the moment.
+The nav bar is the only piece of the site that lives on *every* page. It carries more brand weight than the hero, the work grid, or the contact form — because the visitor sees it dozens of times in a single session. Get it right and everything else inherits the calm. Get it wrong and the site feels busy no matter how clean the rest is.
 
-I want to walk you through three things before you click: **what the page is supposed to feel like, where the execution is still catching up to that vision, and how to test that it's actually fast.** Four questions at the end.
+I want to walk you through three things before you click around: **what the nav is supposed to feel like, where the execution is still catching up, and how to verify it's actually instant.** Four questions at the end — the only ones I need answered before I take it to round two.
 
 **What it's supposed to feel like**
 
-A calm first conversation, not a form trap. A homeowner should land here and feel:
+The reference here is Fly4MEdia.ca — a studio site I admire because the nav almost disappears. There's no row of links shouting at you. Just a brand mark on the left, the word **Menu** on the right, and a quiet two-line hamburger glyph. Scroll down and the bar tucks itself out of view; the moment you scroll up — even one notch — it slides back. Tap Menu and the whole screen darkens from the top in roughly half a second, oversized link names cascade in one after another, and a slim contact rail (email + phone) fades in last in the bottom corner. It feels like a studio, not a small business.
 
-- "This is short. I can do this."
-- "A real person is going to read this."
-- "I'm not committing to anything by typing a sentence."
-- "I can also just call if I'd rather."
+We're translating that vocabulary into Haven Creek's voice:
 
-Three fields, in plain language: **Name. Email or phone. About your project.** No dropdowns for budget, timing, location, scope, or property type — those questions belong in your first conversation, not behind a form that looks like a mortgage application. The page promises a reply within two business days from Cory by name, and offers a direct email and phone number right below the form for the homeowners who'd rather not type at all.
+- **Top bar.** Transparent over every hero. Once you scroll past 24px, it gains a soft cream wash and a 1px evergreen-tinted hairline — 300ms ease, nothing flashier. Past 240px, scrolling down tucks it up out of view; any upward intent reveals it within ~140ms.
+- **Brand mark.** Sits left. Crossfades its color from cream (over a dark hero photo) to foreground charcoal (after scroll) via a CSS custom property — so the bar can sit transparent over any hero without ever losing legibility.
+- **One trigger, not a row.** Right side shows the **Get a Free Quote** button (always exposed at desktop), a phone icon (always exposed on mobile), and a single **Menu** trigger with the two-line glyph. Hover the glyph and the top line slides right while the bottom slides left — quieter than the usual three-line app drawer.
+- **The menu itself.** Full-viewport veil in `evergreen-deep` — not a side drawer, not a dropdown. The veil scales from `scaleY(0)` to `scaleY(1)` from the top in 520ms. Five oversized link names (Home · About · Services · Work · Contact) cascade in with a per-row blur-to-sharp reveal, 60-90ms apart. Active route gets a 28px evergreen rule to the left of the word — not an underline. Email and phone fade in last in the bottom-right corner. One close affordance: an icon-only X top-right that matches the hamburger silhouette. Backdrop tap also closes. Esc also closes.
 
-The form moves one field at a time — Step 1, Step 2, Step 3 — with a thin evergreen progress rail. Each step has space to breathe. The keyboard does the right thing: tab advances, Enter advances, the phone keypad opens for the phone field, autocorrect is off on the email field. On send, the page hands off to a quiet thank-you screen that names the homeowner back.
+That's the vision. It's the same nav at every breakpoint, just resized — no separate mobile experience that feels like a different app.
 
-That's the vision. And it's right — that's the page Sam (the cautious-acreage-owner persona we built around) needs.
+**Where the execution isn't there yet — and what I'm proposing to change**
 
-**Where the execution isn't there yet — and what I'm fixing**
+I'd rather tell you what's off than have you find it. Four things on the current build:
 
-I'd rather tell you what's off than have you find it. Three things I already know are wrong on this page right now:
+1. **The bar still shows four routes inline at desktop** (About · Services · Work · Contact). Fly4Me's discipline is one trigger, always — the inline routes go away and Menu becomes the single entry point at every screen size. That frees the bar to be roughly 80% whitespace, which is what makes it feel like a studio. This is the biggest change in this round and the one I most want your call on (question 1 below).
+2. **The mobile drawer is currently a side panel** with hair-ruled rows. Same five routes, but the format is a side drawer that slides in from the right. Fly4Me's vocabulary is a full-viewport veil with oversized link type — much more cinematic, much closer to "studio." I'd rebuild `MenuDrawer` as `MenuOverlay` and use the same overlay at desktop and mobile.
+3. **The hamburger glyph is the three-line version** (the canonical app-drawer icon). I'd swap it for the two-line glyph that slides opposite directions on hover — quieter, more Apple Maps than Material Design.
+4. **The brand mark currently renders flat charcoal** over every background. I'd add the cream-to-charcoal crossfade so the bar can sit transparent over any hero photo (including dark ones) without us having to design around it.
 
-1. **The Next / Send buttons are the wrong shape.** They're rounded pills with a little arrow chip — a leftover from an earlier round. Every other button on the site is a square evergreen button, text-only, no glyph. The form button should match. It's a one-line fix and it lands before you review the rest.
-2. **The vertical spacing under the form is hand-tuned, not on the site's spacing system.** It's a hair tighter than every other page closes. You won't notice on phone; you'll feel it on desktop. Same fix-window.
-3. **The inline confirmation state uses an old typography token** (a holdover from before we consolidated). The redirect path to the thank-you page is the one Sam will actually see — the inline state is a fallback if redirect fails — but it should still match the rest of the site.
-
-None of these change how the page *works*, but they're the kind of details that separate "professional" from "Apple-grade." All three are queued for cleanup the moment you give the page a thumbs-up on direction.
+None of these change how the nav *works*. The five routes stay five. The promises stay the same. But the silhouette becomes much quieter and much more confident.
 
 **What I do *not* want to change** (and need you to push back if you disagree):
 
-- The form stays three fields. Adding a "Budget" dropdown will cost you 15–25% of submissions — Sam doesn't know her budget until she's talked to you, and being asked the question on a first contact reads as a qualification trap. We pull budget out of the first conversation, not the first form.
-- The form stays one-field-per-step. A single long form is faster for a power user but feels heavier for a cautious one. Sam is cautious. The wizard reduces the moment of "ugh, a form" to "okay, just a name."
-- The "Or reach us directly" rail under the form stays in the same place. Above the form it makes the page about phone numbers; below the form it's an escape hatch for the homeowner who doesn't want to type, without competing with the form itself.
+- The **Get a Free Quote** CTA stays exposed in the bar at desktop. Fly4Me hides Contact inside their menu; we shouldn't — Haven Creek's whole pitch is "type one sentence, hear back in two business days," and a Quote button on every page is the single most important conversion path on the site.
+- The **phone link stays exposed on mobile**. Rural homeowners reach for the phone before they reach for the menu. Hiding it behind a Menu tap costs us calls.
+- The **menu stays five flat routes**. No sub-link columns. No "Services > Decking, Fencing, Renos" expansion. We promised the visitor a 30-second decision; a deep menu breaks that promise.
 
-**Performance — the bar and how to verify it**
+**Performance — the "instant" promise, made specific**
 
-You said *instant*. Here's what that means on this page specifically:
+You asked for instant. Here's what that means on the nav specifically:
 
-- The page itself ships as a small chunk that loads only when the link is clicked. The form code (which carries the validation library) is split off again and loads while the page is painting, so the visitor sees the heading and the "Two business days" promise before anything else has to be ready.
-- The form skeleton shows for ~100ms on a slow connection, then resolves into the real form. No layout shift — the skeleton is the same height as the form.
-- Typing has zero perceived lag. Validation runs only after a field is *touched and left*, not on every keystroke.
-- On phone, the keyboard opens the moment a field is focused (no animation delay), and the field auto-scrolls into view above the keyboard — no chasing the cursor.
-- On submit, the button shows "Sending…" within one frame. The actual network round-trip to save the lead is ~150ms on a normal connection. The redirect to the thank-you screen happens the moment the save returns — no spinner-after-spinner.
-- Phone number link, email link, and the form input all live in the same chunk — no second waterfall.
+- **Nav code ships with the first paint.** It's in the shared layout chunk — zero waterfall, no second network request to render the bar. The first frame the visitor sees already has the brand mark and the Menu trigger in place.
+- **The menu overlay code is split off** and lazy-loaded. We warm it on `pointermove` over the Menu trigger — so by the time the visitor's finger physically reaches the button, the code is already parsed and ready. Tap-to-veil-open feels like one frame.
+- **Route links inside the menu pre-warm their destination chunks** on `pointerDown`, `mouseEnter`, and `focus`. By the time the tap lands, the destination page's code is in memory. Tap-to-paint on a fresh route is ~80-140ms on LTE.
+- **The scroll handler is one `requestAnimationFrame` per scroll event** with a single boolean "pending" guard and a passive listener. Measured cost on a mid-range Android: ~0.2ms per frame. The bar's hide/show feels welded to your thumb, not chasing it.
+- **The hamburger morph and the veil animation use pure transforms + opacity** — composited on the GPU, never layout-trigger. No `width`, `top`, `bottom`, or `height` animations anywhere in the nav. Low-end Android stays at 60fps.
+- **The veil uses no backdrop-blur.** The overlay is opaque, so a blur would cost a full compositing pass for zero visible gain. Removing it buys us ~4ms per frame on weaker phones.
+- **Body scroll is locked while the menu is open** via `overflow: hidden`, restored on close — no scroll-position loss, no jank when you reopen.
+- **Route transitions are a 140ms opacity fade**, not a blank flash. The destination page paints under the fade so the seam is invisible.
 
-**How to verify in 90 seconds:**
-1. Open the preview on your phone, on LTE, not wifi. Tap the "Get a Free Quote" button anywhere on the site. The Contact page should appear within one heartbeat — no white flash, no blank moment. The form should be tappable instantly.
-2. Tap the Name field. The keyboard should slide up and the field should already be visible above it. No need to scroll.
-3. Type your name. Tap "Next." Type a fake email. Tap "Next." Type one sentence. Tap "Send." From the moment you tap Send to the moment the thank-you screen appears should feel like ~half a second. If it feels longer, screenshot the device + connection and send it. That's a real bug, not a perception.
-4. On desktop, refresh the page with the browser dev tools open and "Slow 3G" set. The page should still be usable within ~2 seconds. (This is a worst-case test for the slowest customer.)
+**How to verify in 90 seconds**
+
+**Mobile, on LTE (not wifi):**
+1. Open the homepage. Scroll halfway down a long page. Past about 240px, the bar should tuck up out of view. Flick upward one notch — it should reappear within roughly one heartbeat.
+2. Scroll back to the top. The bar should sit transparent over the hero photo, with the brand mark still legible.
+3. Tap the Menu trigger. The veil should drop from the top in roughly half a second. The five link names should cascade in one after another — not all appear at once. The email and phone should fade in last in the bottom corner.
+4. Tap any route. The destination page should paint within one heartbeat — no white flash, no blank moment.
+
+**Desktop:**
+1. Same scroll test. Same hide/reveal behavior.
+2. Hover the Menu trigger without tapping. The two hamburger lines should slide in opposite directions over half a second. Nothing else on the page should reflow.
+3. Open browser dev tools, Performance tab, record a 3-second open-and-close cycle. The Layout and Paint columns should be empty — only Composite work. If you see Layout or Paint events, screenshot it and send it. That's a real bug, not a perception.
 
 **What I need from you — four questions**
 
-Don't grade typography or wording yet. On this pass, I need gut answers:
+Don't grade typography or hex colors yet. On this pass, gut answers:
 
-1. **Does it feel safe?** If you were Sam — never met you, $80K in mind, kids in the house — would three fields and a reply-within-two-business-days promise be enough to get you to type? Where does the safety wobble?
-2. **The three questions.** Name, email or phone, and a sentence about the project. If you could only ask one more question on a first contact, what would it be? (Be careful — every question added costs submissions. I will probably push back. But I want to hear it.)
-3. **Cory by name.** The page promises "Cory will reply within two business days." That's a real commitment from a real person. Is that the right person, the right name, and a promise you can keep on a busy week?
-4. **The fallback paths.** The page offers email and phone directly under the form. Are those the addresses you actually want public, and the way you actually want first contact to come in?
+1. **One trigger, or routes inline?** Fly4Me hides every route behind one Menu, even at desktop. We currently show four routes inline at desktop. Which feels more "Haven Creek" to you — the cinematic all-hidden version (my recommendation), or the practical routes-visible version we have today? This is the call that sets the tone for everything else.
+2. **The Quote CTA at desktop.** Keep it exposed in the bar (my recommendation, because conversion), or move it inside the menu like Fly4Me does with Contact (cleaner silhouette, fewer taps to the form)? You can't have both.
+3. **The phone link on mobile.** Always visible in the bar (my recommendation, because rural homeowners), or only inside the menu (cleaner mobile bar, one fewer visual element)? Same trade-off as #2.
+4. **The veil color.** Pure black like Fly4Me (most dramatic, but reads as "different app"), or the site's `evergreen-deep` (my recommendation — ties the menu back to the palette, feels like the same site looked at differently)?
 
 **What I do not need yet**
 
-- Word-by-word copy edits (round two)
-- Whether to add a "Service" dropdown (intentionally left out; the URL already carries it when the visitor comes from a service page, and the form quietly notes "Re: Decking" without making them pick it twice)
-- Visual polish on the buttons (I'm fixing those before round two — see the honest list above)
+- Word-by-word label edits (the menu is just route names — Home, About, Services, Work, Contact)
+- Color hex tuning on the bar's scrolled-state cream wash
+- Whether to add a logo wordmark instead of "Haven Creek" — that's a separate decision and I'll send a handoff doc for the mark next week
+- Animation timing in milliseconds — those are tuned for the device, not the spec sheet
 
 **Timeline**
 
-- **You:** first-pass feedback by [date]
-- **Me:** execution fixes (the three items above) + your notes within [N business days]
-- **Together:** a quick call to walk through one real submission end-to-end before launch
-
-**The preview**
-
-[preview URL]/contact
-
-Phone first. Submit a real test lead — use your own name. I want to make sure the email that lands in your inbox feels right when it arrives, because that's the *real* end of this page, not the thank-you screen.
-
-Thanks. This page carries more weight than any other on the site. I'd rather get it right with you watching than ship a version we both have to second-guess.
+First-pass feedback from you by [date]. The execution changes (one-trigger header, full-viewport overlay rebuild, two-line hamburger swap, brand-mark crossfade) land within [N business days] of your answers. Then I'd like a 15-minute call to walk through a real mobile + desktop session end-to-end — open and close the menu a few times, scroll a long page, see it on your phone in real light.
 
 — [Your name]
+Fantasy.co
 
 ---
-
-## Notes on using this
-
-- **Swap the bracketed fields**: owner name, preview URL, two dates, sign-off, revision window.
-- **The honesty paragraph is intentional.** Naming the three execution gaps before the owner finds them turns "I noticed the buttons look weird" into "thanks for already being on top of it." It's a Fantasy.co move — the people you trust most are the ones who tell you what's broken before you ask.
-- **Keep the persona name** (Sam) in. Owners react better when feedback is framed around a named imaginary customer than around themselves. It separates "what *I* want" from "what *she* needs."
-- **Make him submit a real lead.** The email that lands in his inbox is the page's real KPI. If that email reads cold or noisy, we have work to do.
-- **Don't fix the three execution gaps before sending.** Showing the owner that you can name your own gaps is more credible than a perfect first draft. (You can fix them in the same loop he reviews, and have them done by the time he replies.)
-
-If you'd like, I can also produce:
-- (a) a one-page PDF cover sheet showing the page on phone + desktop side-by-side
-- (b) a 60-second Loom-style script walking through a real submission
-- (c) a shorter SMS-length version for an owner who hates email
-
-Just say which.
