@@ -1,81 +1,95 @@
-# Owner Handoff — Nav & Menu First Draft
+# Owner Handoff — Contact Page First Draft
 
-A focused, send-ready message to the Haven Creek owner that puts the **navigation and mobile menu** in front of him with the right framing, the right questions, and a clear performance claim he can verify. Built the way Fantasy.co writes a first-draft handoff: confident, specific, easy to react to.
+A focused, send-ready message for the Haven Creek owner about the **Contact page**. Frames the vision honestly, names the execution gaps in plain language, sets the performance bar, and asks four questions that turn vague reactions into shippable feedback. Written the way Fantasy.co writes a first-draft handoff.
 
-Copy the message between the `---` lines as-is. Replace the bracketed bits.
+Copy the message between the `---` lines as-is. Replace bracketed fields.
 
 ---
 
-**Subject:** Haven Creek — navigation is ready for your first look (desktop + phone)
+**Subject:** Haven Creek — Contact page is ready for your eyes (and I owe you some honesty)
 
 Hi [Owner first name],
 
-The navigation and menu are the first thing every homeowner touches on the site, so I want your eyes on those before you review the pages themselves. Two minutes of your time, two devices, four questions at the end.
+The Contact page is the most important page on the site. It's where a homeowner who's been quietly reading for ten minutes finally decides whether to type their name in. Everything before it is build-up; this is the moment.
 
-**What you're looking at**
+I want to walk you through three things before you click: **what the page is supposed to feel like, where the execution is still catching up to that vision, and how to test that it's actually fast.** Four questions at the end.
 
-A single header bar that behaves like calm, expensive software — Apple, Stripe, the better airline apps — translated into Haven Creek's quiet rural-refined world. Same bar, two faces:
+**What it's supposed to feel like**
 
-- **On desktop**, the four pages sit inline across the top — *About · Services · Work · Contact* — as quiet text links. Your logo on the left. Your phone number and a single "Get a Free Quote" button on the right. No dropdowns, no mega-menus, no animations that draw attention to themselves. The active page is marked with a one-pixel evergreen underline. Hover and the link warms up; click and the page is already loading.
-- **On phone**, the same bar collapses to logo · phone icon · quote button · menu icon. Tapping the menu opens a full-screen list of the five pages as large, comfortable rows you can hit without aiming. One tap closes it. Phone stays visible at all times — a homeowner never has to "find" how to call you.
+A calm first conversation, not a form trap. A homeowner should land here and feel:
 
-**Why it looks the way it looks**
+- "This is short. I can do this."
+- "A real person is going to read this."
+- "I'm not committing to anything by typing a sentence."
+- "I can also just call if I'd rather."
 
-A renovation site has to do one job in the first three seconds: feel trustworthy. Floating glass nav bars, rainbow gradients, animated logos — those signal "design experiment" to a 55-year-old acreage owner. So the bar is intentionally restrained:
+Three fields, in plain language: **Name. Email or phone. About your project.** No dropdowns for budget, timing, location, scope, or property type — those questions belong in your first conversation, not behind a form that looks like a mortgage application. The page promises a reply within two business days from Cory by name, and offers a direct email and phone number right below the form for the homeowners who'd rather not type at all.
 
-- **Transparent at the top of every page**, so your hero photography breathes. The moment a homeowner scrolls, the bar quietly fills in with cream and a soft shadow — enough to stay legible, not enough to shout.
-- **Hides on scroll-down, returns the instant you scroll up.** Same gesture grammar as iOS Safari. Reading the work feels uninterrupted; the quote button is one flick away.
-- **One button language site-wide.** "Get a Free Quote" is solid evergreen, square corners, the exact same five words in the header, the menu, and the bottom of every page. No "Request a Consultation," no jargon. Predictable trust.
-- **Phone is a first-class citizen.** Icon at phone widths, full number at desktop widths. A homeowner who'd rather call than type can do it from any page, any moment, without opening anything.
+The form moves one field at a time — Step 1, Step 2, Step 3 — with a thin evergreen progress rail. Each step has space to breathe. The keyboard does the right thing: tab advances, Enter advances, the phone keypad opens for the phone field, autocorrect is off on the email field. On send, the page hands off to a quiet thank-you screen that names the homeowner back.
 
-**Performance — and how to verify it yourself**
+That's the vision. And it's right — that's the page Sam (the cautious-acreage-owner persona we built around) needs.
 
-You said "instant." That's the bar I built to. Specifically:
+**Where the execution isn't there yet — and what I'm fixing**
 
-- The header bundle is ~3 KB of JavaScript. It paints with the page, not after it.
-- The mobile menu code does not load until a finger touches the menu button. First tap on the hamburger pre-warms the drawer ~80–120ms before the click registers, so the menu opens on the *same frame* the finger lifts. There is no spinner, no delay.
-- Tapping any page link pre-loads that page's code on hover, focus, or the moment your finger touches the link. By the time the click commits, the next page is already in memory. Route transitions are a 140ms fade — no white flash between pages.
-- Animations are GPU-only (transform + opacity). No layout thrash, no jank on a five-year-old Android.
-- The hamburger → X morph uses pure CSS transforms, not width animations. Holds 60fps on the cheapest phones.
-- Below-the-fold sections are skipped during paint until you scroll near them.
+I'd rather tell you what's off than have you find it. Three things I already know are wrong on this page right now:
 
-**How to verify in 60 seconds:**
-1. Open the preview on your phone over LTE (not wifi). Tap any page. Tap the menu. Tap a page from the menu. Note: it should never feel like "a website loading."
-2. On desktop, open it, scroll down on the home page, then scroll back up. The bar should disappear when you scroll down and return the moment you change direction. No flicker, no jump.
-3. Reduce-motion users (a real chunk of older homeowners): if you turn on "Reduce Motion" in your phone's accessibility settings, the bar still works — it just stops sliding.
+1. **The Next / Send buttons are the wrong shape.** They're rounded pills with a little arrow chip — a leftover from an earlier round. Every other button on the site is a square evergreen button, text-only, no glyph. The form button should match. It's a one-line fix and it lands before you review the rest.
+2. **The vertical spacing under the form is hand-tuned, not on the site's spacing system.** It's a hair tighter than every other page closes. You won't notice on phone; you'll feel it on desktop. Same fix-window.
+3. **The inline confirmation state uses an old typography token** (a holdover from before we consolidated). The redirect path to the thank-you page is the one Sam will actually see — the inline state is a fallback if redirect fails — but it should still match the rest of the site.
 
-If anything feels even slightly slow, screenshot the page and tell me which device + which network. I want to chase that down before launch.
+None of these change how the page *works*, but they're the kind of details that separate "professional" from "Apple-grade." All three are queued for cleanup the moment you give the page a thumbs-up on direction.
+
+**What I do *not* want to change** (and need you to push back if you disagree):
+
+- The form stays three fields. Adding a "Budget" dropdown will cost you 15–25% of submissions — Sam doesn't know her budget until she's talked to you, and being asked the question on a first contact reads as a qualification trap. We pull budget out of the first conversation, not the first form.
+- The form stays one-field-per-step. A single long form is faster for a power user but feels heavier for a cautious one. Sam is cautious. The wizard reduces the moment of "ugh, a form" to "okay, just a name."
+- The "Or reach us directly" rail under the form stays in the same place. Above the form it makes the page about phone numbers; below the form it's an escape hatch for the homeowner who doesn't want to type, without competing with the form itself.
+
+**Performance — the bar and how to verify it**
+
+You said *instant*. Here's what that means on this page specifically:
+
+- The page itself ships as a small chunk that loads only when the link is clicked. The form code (which carries the validation library) is split off again and loads while the page is painting, so the visitor sees the heading and the "Two business days" promise before anything else has to be ready.
+- The form skeleton shows for ~100ms on a slow connection, then resolves into the real form. No layout shift — the skeleton is the same height as the form.
+- Typing has zero perceived lag. Validation runs only after a field is *touched and left*, not on every keystroke.
+- On phone, the keyboard opens the moment a field is focused (no animation delay), and the field auto-scrolls into view above the keyboard — no chasing the cursor.
+- On submit, the button shows "Sending…" within one frame. The actual network round-trip to save the lead is ~150ms on a normal connection. The redirect to the thank-you screen happens the moment the save returns — no spinner-after-spinner.
+- Phone number link, email link, and the form input all live in the same chunk — no second waterfall.
+
+**How to verify in 90 seconds:**
+1. Open the preview on your phone, on LTE, not wifi. Tap the "Get a Free Quote" button anywhere on the site. The Contact page should appear within one heartbeat — no white flash, no blank moment. The form should be tappable instantly.
+2. Tap the Name field. The keyboard should slide up and the field should already be visible above it. No need to scroll.
+3. Type your name. Tap "Next." Type a fake email. Tap "Next." Type one sentence. Tap "Send." From the moment you tap Send to the moment the thank-you screen appears should feel like ~half a second. If it feels longer, screenshot the device + connection and send it. That's a real bug, not a perception.
+4. On desktop, refresh the page with the browser dev tools open and "Slow 3G" set. The page should still be usable within ~2 seconds. (This is a worst-case test for the slowest customer.)
 
 **What I need from you — four questions**
 
-Please don't grade the copy yet. On this pass, react to the *feel*:
+Don't grade typography or wording yet. On this pass, I need gut answers:
 
-1. **Trust signal.** Does the bar feel like a serious contractor's website, or like a tech demo? Be honest.
-2. **The right things visible.** Phone, quote button, and four page names is the entire visible nav. Is anything missing that a homeowner would expect on first contact? (Be careful — adding things will dilute trust, but if something genuinely belongs there, I want to know.)
-3. **"Get a Free Quote."** Same five words everywhere. Are those the right five words for your business? Alternatives I considered and rejected: "Request a Consultation" (sounds clinical), "Book a Walkthrough" (commits the homeowner before they're ready), "Talk to Brennan" (great but ties the site to one name).
-4. **The menu on phone.** Open it. Close it. Open it again. Is the order of pages — Home · About · Services · Work · Contact — the order you want a stranger walking through?
+1. **Does it feel safe?** If you were Sam — never met you, $80K in mind, kids in the house — would three fields and a reply-within-two-business-days promise be enough to get you to type? Where does the safety wobble?
+2. **The three questions.** Name, email or phone, and a sentence about the project. If you could only ask one more question on a first contact, what would it be? (Be careful — every question added costs submissions. I will probably push back. But I want to hear it.)
+3. **Cory by name.** The page promises "Cory will reply within two business days." That's a real commitment from a real person. Is that the right person, the right name, and a promise you can keep on a busy week?
+4. **The fallback paths.** The page offers email and phone directly under the form. Are those the addresses you actually want public, and the way you actually want first contact to come in?
 
-**What I do *not* need feedback on yet**
+**What I do not need yet**
 
-- Whether the logo should be bigger (it's sized for the LCP score; we'll fine-tune in round two)
-- Color of the bar (locked to the brief you approved — cream + evergreen)
-- Adding a dropdown for services (intentionally not there — your three services live on one page, no drill-down, per our strategy)
-
-If any of those three really bother you, say so. But lead with the four questions above. That's where I can act.
+- Word-by-word copy edits (round two)
+- Whether to add a "Service" dropdown (intentionally left out; the URL already carries it when the visitor comes from a service page, and the form quietly notes "Re: Decking" without making them pick it twice)
+- Visual polish on the buttons (I'm fixing those before round two — see the honest list above)
 
 **Timeline**
 
 - **You:** first-pass feedback by [date]
-- **Me:** revisions within [N business days]
-- **Together:** 20-minute call to lock the nav before I move to the rest of the site
+- **Me:** execution fixes (the three items above) + your notes within [N business days]
+- **Together:** a quick call to walk through one real submission end-to-end before launch
 
 **The preview**
 
-[preview URL]
+[preview URL]/contact
 
-Use your phone first. That's where 70%+ of your future customers will meet you.
+Phone first. Submit a real test lead — use your own name. I want to make sure the email that lands in your inbox feels right when it arrives, because that's the *real* end of this page, not the thank-you screen.
 
-Thanks — the nav is the handshake. I want to make sure it's the handshake you want.
+Thanks. This page carries more weight than any other on the site. I'd rather get it right with you watching than ship a version we both have to second-guess.
 
 — [Your name]
 
@@ -83,15 +97,15 @@ Thanks — the nav is the handshake. I want to make sure it's the handshake you 
 
 ## Notes on using this
 
-- **Swap the bracketed fields** before sending: owner name, preview URL, two dates, your sign-off, the revision turnaround.
-- **The four questions are the deliverable.** They convert "looks good" into something you can ship against. Don't soften them.
-- **The performance claim is verifiable.** If the owner tests on a slow phone and it doesn't feel instant, we have a real bug to fix — not a perception problem.
-- **Lead with phone, not desktop**, in the test instructions. Most homeowners in his demographic browse on phones during evenings.
-- **Don't send the rest of the site in the same email.** This is a focused nav handoff. The full-site handoff is a separate message (already drafted in the previous plan). One decision at a time gets a better answer.
+- **Swap the bracketed fields**: owner name, preview URL, two dates, sign-off, revision window.
+- **The honesty paragraph is intentional.** Naming the three execution gaps before the owner finds them turns "I noticed the buttons look weird" into "thanks for already being on top of it." It's a Fantasy.co move — the people you trust most are the ones who tell you what's broken before you ask.
+- **Keep the persona name** (Sam) in. Owners react better when feedback is framed around a named imaginary customer than around themselves. It separates "what *I* want" from "what *she* needs."
+- **Make him submit a real lead.** The email that lands in his inbox is the page's real KPI. If that email reads cold or noisy, we have work to do.
+- **Don't fix the three execution gaps before sending.** Showing the owner that you can name your own gaps is more credible than a perfect first draft. (You can fix them in the same loop he reviews, and have them done by the time he replies.)
 
-If you want, I can also produce:
-- (a) a 30-second Loom-style script walking him through it on camera
-- (b) a one-page PDF "nav decisions" cover sheet to attach
-- (c) a shorter Slack/SMS version for an owner who hates email
+If you'd like, I can also produce:
+- (a) a one-page PDF cover sheet showing the page on phone + desktop side-by-side
+- (b) a 60-second Loom-style script walking through a real submission
+- (c) a shorter SMS-length version for an owner who hates email
 
-Say the word.
+Just say which.

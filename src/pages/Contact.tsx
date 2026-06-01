@@ -42,7 +42,7 @@ const Contact = () => {
         subhead="Share a few details and Cory will reply within two business days."
       />
 
-      <RevealSection id="form" aria-labelledby="form-heading" className="pb-24 md:pb-32">
+      <RevealSection id="form" aria-labelledby="form-heading" className="section-y">
         <Container size="wide">
           <div className="mx-auto max-w-xl">
             <h2 id="form-heading" className="sr-only">Contact form</h2>
