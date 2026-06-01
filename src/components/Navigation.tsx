@@ -1,8 +1,6 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Phone from "lucide-react/dist/esm/icons/phone";
 import { cn } from "@/lib/utils";
-import { openQuickContact } from "@/lib/quickContact";
 import { prefetchRoute } from "@/lib/routePrefetch";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { routeHasTransparentTop } from "@/lib/pageSections";
@@ -13,8 +11,6 @@ import logo from "@/assets/logo/haven-creek-horizontal.webp";
 // Overlay is interaction-only — defer past LCP, then warm on idle.
 const MenuOverlay = lazy(() => import("@/components/nav/MenuOverlay"));
 
-const STUDIO_PHONE_TEL = "+14039707691";
-const STUDIO_PHONE_DISPLAY = "403 970-7691";
 
 /**
  * Navigation — one shape, every breakpoint.
@@ -30,7 +26,6 @@ const Navigation = () => {
   const [hidden, setHidden] = useState(false);
   const lastYRef = useRef(0);
   const { pathname } = useLocation();
-  const onContactRoute = pathname === "/contact" || pathname === "/thank-you";
   const transparentRoute = routeHasTransparentTop(pathname);
   // 40px interpolation range — glass kicks in within the first scroll gesture (iOS register).
   const scrollProgress = useScrollProgress(40);
@@ -89,14 +84,6 @@ const Navigation = () => {
     return () => window.clearTimeout(t);
   }, []);
 
-  const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (onContactRoute) return;
-    if (window.matchMedia("(max-width: 767px)").matches) {
-      e.preventDefault();
-      openQuickContact({ source: "quick_contact_sheet" });
-    }
-  };
-
   const openMenu = () => {
     setMenuTouched(true);
     setMenuOpen(true);
@@ -108,6 +95,7 @@ const Navigation = () => {
     void import("@/components/nav/MenuOverlay");
     prefetchRoute("/contact");
   };
+
 
   // Logo feather shadow only while floating over photography.
   const logoShadow = navBg < 0.3 ? `drop-shadow(0 1px 2px hsl(0 0% 0% / ${(0.3 - navBg) * 0.5}))` : "none";
@@ -130,7 +118,7 @@ const Navigation = () => {
           "havencreek-nav nav-shell fixed inset-x-0 top-0 z-50",
           // min-h (not h) so safe-area-inset padding pushes the bar DOWN
           // rather than eating its content area (border-box math bug).
-          "min-h-[56px] md:min-h-[68px] lg:min-h-20",
+          "min-h-[56px] md:min-h-[64px] lg:min-h-[72px]",
           "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "data-[hidden=true]:-translate-y-full",
         )}
@@ -149,10 +137,10 @@ const Navigation = () => {
           style={{ opacity: 1 - navBg }}
         />
 
-        <Container size="wide" className="min-h-[56px] md:min-h-[68px] lg:min-h-20 relative">
+        <Container size="wide" className="min-h-[56px] md:min-h-[64px] lg:min-h-[72px] relative">
           <nav
             aria-label="Primary"
-            className="flex items-center justify-between min-h-[56px] md:min-h-[68px] lg:min-h-20 gap-2 sm:gap-3"
+            className="flex items-center justify-between min-h-[56px] md:min-h-[64px] lg:min-h-[72px] gap-2 sm:gap-3"
           >
             {/* Brand — two-layer crossfade: cream over hero, foreground after scroll */}
             <Link
@@ -193,46 +181,12 @@ const Navigation = () => {
               />
             </Link>
 
-            {/* Right cluster — Phone (flat) · Quote (square solid) · Menu (square ghost) */}
-            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 justify-end">
-              <a
-                href={`tel:${STUDIO_PHONE_TEL}`}
-                aria-label={`Call studio at ${STUDIO_PHONE_DISPLAY}`}
-                className={cn(
-                  "inline-flex items-center justify-center gap-2 shrink-0",
-                  "h-11 min-w-[44px] px-2 md:px-2.5",
-                  "text-[13px] md:text-sm font-medium text-foreground/75 hover:text-evergreen",
-                  "transition-colors duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]",
-                  "active:scale-[0.96]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md",
-                )}
-              >
-                <Phone className="h-[17px] w-[17px] md:h-4 md:w-4" strokeWidth={1.65} aria-hidden="true" />
-                <span className="hidden md:inline">{STUDIO_PHONE_DISPLAY}</span>
-              </a>
-
-              <Link
-                to="/contact"
-                onClick={handleQuoteClick}
-                onPointerDown={warmRoute("/contact")}
-                onMouseEnter={warmRoute("/contact")}
-                onFocus={warmRoute("/contact")}
-                aria-label="Get a free quote"
-                className={cn(
-                  // Hide on mobile — lives inside the overlay there.
-                  "hidden md:inline-flex",
-                  "nav-quote-cta cta-spring shrink-0 items-center justify-center rounded-lg",
-                  "bg-evergreen text-evergreen-foreground",
-                  "text-[14px] sm:text-[15px] font-semibold whitespace-nowrap",
-                  "h-10 sm:h-11 px-3.5 sm:px-5",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                )}
-              >
-                Get a Free Quote
-              </Link>
-
-              <HamburgerButton open={menuOpen} onClick={openMenu} onPointerDown={warmMenu} showWord />
+            {/* Right cluster — single dark evergreen Menu pill. Phone + Quote
+                live inside the overlay; the pill is the entire chrome. */}
+            <div className="flex items-center justify-end">
+              <HamburgerButton open={menuOpen} onClick={openMenu} onPointerDown={warmMenu} />
             </div>
+
           </nav>
         </Container>
       </header>
@@ -241,7 +195,7 @@ const Navigation = () => {
       {!transparentRoute && (
         <div
           aria-hidden="true"
-          className="min-h-[56px] md:min-h-[68px] lg:min-h-20"
+          className="min-h-[56px] md:min-h-[64px] lg:min-h-[72px]"
           style={{ paddingTop: "env(safe-area-inset-top)" }}
         />
       )}
