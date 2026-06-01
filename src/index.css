@@ -487,11 +487,12 @@
     initial-value: 0;
   }
   .nav-shell {
-    background: hsl(var(--background) / calc(var(--nav-bg, 0) * 0.95));
-    border-bottom: 1px solid hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.18));
-    box-shadow: 0 4px 24px -8px hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.10));
-    -webkit-backdrop-filter: blur(calc(var(--nav-bg, 0) * 12px));
-            backdrop-filter: blur(calc(var(--nav-bg, 0) * 12px));
+    /* iOS-style materials: translucent fill + heavy blur + saturation lift. */
+    background: hsl(var(--background) / calc(var(--nav-bg, 0) * 0.78));
+    border-bottom: 1px solid hsl(var(--foreground) / calc(var(--nav-bg, 0) * 0.08));
+    box-shadow: 0 4px 20px -10px hsl(var(--evergreen) / calc(var(--nav-bg, 0) * 0.07));
+    -webkit-backdrop-filter: blur(calc(var(--nav-bg, 0) * 20px)) saturate(calc(1 + var(--nav-bg, 0) * 0.5));
+            backdrop-filter: blur(calc(var(--nav-bg, 0) * 20px)) saturate(calc(1 + var(--nav-bg, 0) * 0.5));
     transition: --nav-bg 320ms ease-out;
   }
   @media (prefers-reduced-transparency: reduce) {
