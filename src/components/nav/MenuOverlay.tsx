@@ -83,7 +83,7 @@ const MenuOverlay = ({ open, onOpenChange }: MenuOverlayProps) => {
             }}
           >
             <X className="h-5 w-5" strokeWidth={1.85} aria-hidden="true" />
-            <span className="hidden md:inline text-[14px] font-semibold tracking-[-0.005em]">
+            <span className="hidden md:inline text-[13px] font-medium tracking-[-0.01em]">
               Close
             </span>
           </Dialog.Close>
