@@ -127,11 +127,11 @@ const MenuOverlay = ({ open, onOpenChange }: MenuOverlayProps) => {
                           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen-foreground/60 rounded-sm",
                         )}
                       >
-                        {/* Active rule — 28×2px, sits left of the word */}
+                        {/* Active rule — sits left of the word */}
                         <span
                           aria-hidden="true"
                           className={cn(
-                            "menu-overlay__rule inline-block h-[2px] w-[28px] bg-evergreen-foreground/70 shrink-0",
+                            "menu-overlay__rule inline-block h-[2px] w-[22px] lg:w-[28px] bg-evergreen-foreground/70 shrink-0",
                             "transition-opacity duration-300",
                             active ? "opacity-100" : "opacity-0",
                           )}
