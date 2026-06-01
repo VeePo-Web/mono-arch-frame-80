@@ -588,7 +588,32 @@
     to   { transform: scaleY(1); opacity: 0; }
   }
 
+  /* Film grain — micro-dots over the evergreen ground, Fly4Me register */
+  .menu-overlay__grain {
+    opacity: 0;
+    background-image: radial-gradient(hsl(var(--evergreen-foreground) / 0.6) 1px, transparent 1px);
+    background-size: 3px 3px;
+    mix-blend-mode: overlay;
+    animation: menu-grain-in 700ms var(--ease-weighted) 200ms forwards;
+  }
+  @keyframes menu-grain-in {
+    from { opacity: 0; }
+    to   { opacity: 0.05; }
+  }
+
+  /* Vignette — soft radial darken, pulls focus to the route list */
+  .menu-overlay__vignette {
+    opacity: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, hsl(var(--evergreen-deep) / 0.55) 100%);
+    animation: menu-vignette-in 700ms var(--ease-weighted) 200ms forwards;
+  }
+  @keyframes menu-vignette-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
   .menu-overlay__row,
+  .menu-overlay__cta,
   .menu-overlay__rail {
     opacity: 0;
     animation: menu-row-rise 900ms var(--ease-weighted) forwards;
@@ -600,7 +625,8 @@
   .menu-overlay__row:nth-child(3) { animation-delay: 540ms; }
   .menu-overlay__row:nth-child(4) { animation-delay: 630ms; }
   .menu-overlay__row:nth-child(5) { animation-delay: 720ms; }
-  .menu-overlay__rail              { animation-delay: 920ms; }
+  .menu-overlay__cta               { animation-delay: 820ms; }
+  .menu-overlay__rail              { animation-delay: 720ms; }
   @keyframes menu-row-rise {
     from {
       opacity: 0;
@@ -616,7 +642,10 @@
 
   @media (prefers-reduced-motion: reduce) {
     .menu-overlay__veil,
+    .menu-overlay__grain,
+    .menu-overlay__vignette,
     .menu-overlay__row,
+    .menu-overlay__cta,
     .menu-overlay__rail,
     .hamburger-line {
       animation-duration: 60ms !important;
