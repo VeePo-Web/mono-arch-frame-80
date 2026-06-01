@@ -556,12 +556,12 @@
   .hamburger-btn:hover .hamburger-stage[data-open="false"] .hamburger-line--bottom {
     transform: translateX(-2px);
   }
-  /* Open → X */
+  /* Open → X (stage is 12px tall; lines are 1.75px → translate 5.125px) */
   .hamburger-stage[data-open="true"] .hamburger-line--top {
-    transform: translateY(4.25px) rotate(45deg);
+    transform: translateY(5.125px) rotate(45deg);
   }
   .hamburger-stage[data-open="true"] .hamburger-line--bottom {
-    transform: translateY(-4.25px) rotate(-45deg);
+    transform: translateY(-5.125px) rotate(-45deg);
   }
 
   /* ──────────────────────────────────────────────────────────────────────
