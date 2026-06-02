@@ -94,20 +94,21 @@ const MenuOverlay = ({ open, onOpenChange }: MenuOverlayProps) => {
             </span>
           </Dialog.Close>
 
-          {/* Body — 12-col grid at lg+, single-column stack <lg */}
+          {/* Body — 12-col grid at lg+, vertically centered stack on mobile */}
           <div
             className={cn(
               "menu-overlay__body relative z-10 flex-1 w-full overflow-y-auto",
               "px-6 md:px-10 lg:px-16",
               "grid grid-cols-1 lg:grid-cols-12 gap-y-10 lg:gap-x-10",
+              "lg:items-center",
             )}
             style={{
-              paddingTop: "max(5.5rem, calc(env(safe-area-inset-top) + 4.5rem))",
+              paddingTop: "max(6rem, calc(env(safe-area-inset-top) + 5rem))",
               paddingBottom: "max(2rem, calc(env(safe-area-inset-bottom) + 1.5rem))",
             }}
           >
-            {/* Routes — top-anchored, oversized serif */}
-            <nav aria-label="Site" className="lg:col-span-9 w-full self-start">
+            {/* Routes — centered vertically on mobile, top-anchored on lg+ */}
+            <nav aria-label="Site" className="lg:col-span-9 w-full self-center lg:self-start flex flex-col justify-center min-h-0">
               <ul className="flex flex-col gap-1 sm:gap-2 md:gap-3">
                 {ROUTES.map((r) => {
                   const active = pathname === r.to;
