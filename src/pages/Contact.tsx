@@ -13,6 +13,8 @@ const SITE = "https://havencreekrenovations.ca";
 const STUDIO_PHONE = "403 970-7691";
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_EMAIL = "cory@havencreekrenovations.com";
+const STUDIO_LOCATION = "Foothills, AB";
+const FORM_ID = "contact-form";
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
@@ -39,22 +41,23 @@ const Contact = () => {
 
       <SubPageHero
         headline="Let's talk through your property."
-        subhead="Share a few details and Cory will reply within two business days."
+        subhead="Cory replies within two business days."
       />
 
-      <RevealSection id="form" aria-labelledby="form-heading" className="section-y">
+      <RevealSection id="form" aria-labelledby="form-heading" className="section-y pb-32 md:pb-0">
         <Container size="wide">
           <div className="mx-auto max-w-xl">
             <h2 id="form-heading" className="sr-only">Contact form</h2>
             <Suspense
               fallback={
-                <div aria-hidden="true" className="h-[520px] rounded-md bg-foreground/[0.03] animate-pulse" />
+                <div aria-hidden="true" className="h-[420px] rounded-md bg-foreground/[0.03] animate-pulse" />
               }
             >
               <ConsultationForm
                 source="contact_page"
                 initialProjectType={initialProjectType}
                 successMode="redirect"
+                formId={FORM_ID}
               />
             </Suspense>
 
@@ -88,11 +91,29 @@ const Contact = () => {
                     <span className="t-micro">PHONE</span>
                   </a>
                 </li>
+                <li className="border-b border-foreground/12">
+                  <div className="flex items-baseline justify-between gap-6 py-5 px-2 -mx-2">
+                    <span className="t-title text-foreground">{STUDIO_LOCATION}</span>
+                    <span className="t-micro">LOCATION</span>
+                  </div>
+                </li>
               </ul>
             </div>
           </div>
         </Container>
       </RevealSection>
+
+      {/* Mobile sticky submit — submits the form above via formId */}
+      <div className="contact-sticky-cta md:hidden" aria-hidden="false">
+        <button
+          type="submit"
+          form={FORM_ID}
+          data-sticky-submit-for={FORM_ID}
+          className="cta-spring w-full inline-flex items-center justify-center bg-evergreen text-evergreen-foreground rounded-lg h-12 px-6 text-[15px] font-semibold disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          Send
+        </button>
+      </div>
     </main>
   );
 };

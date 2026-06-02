@@ -13,8 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   PROJECT_TYPES,
   consultationSchema,
@@ -30,42 +28,30 @@ interface ConsultationFormProps {
   initialProjectType?: string | null;
   /** Override the post-submit behavior. Defaults: "redirect" on /contact, "inline" elsewhere */
   successMode?: "redirect" | "inline";
+  /** DOM id for the form element — lets a sticky external button submit it. */
+  formId?: string;
   className?: string;
 }
 
 const RESPONSE_NOTE_ID = "consultation-response-window-note";
 
 /**
- * ConsultationForm — cautious-lead lead capture.
+ * ConsultationForm — single-scroll, three-field lead capture.
  *
- * Field order is built around Sam's persona: minimum required friction
- * (name, contact, a written sentence about the project), then a single
- * collapsible "more context" group for type/budget/timing/location.
- *
- * The contact field accepts email OR phone — detected at submit and
- * stored in the right column. We persist a single email value into the
- * existing `email` column when the input parses as an email; when it's a
- * phone number we still store it as the `email` column value (the column
- * is the lead's primary reach-back), and the message text carries the
- * preference signal.
- *
- * Validation: zod (client) + DB CHECK constraints + RLS shape policy.
- * Honeypot field "company" must be empty — bot submissions are dropped silently.
+ * Bare on the page background. No card, no progress rail, no wizard.
+ * Underline inputs, big touch targets, calm motion. Submit is wired
+ * through `formId` so the page can render a sticky mobile CTA that
+ * submits the same logical form (and SRs hear one logical submit).
  */
 const ConsultationForm = ({
   source = "home_final_cta",
   initialProjectType,
   successMode,
+  formId,
   className,
 }: ConsultationFormProps) => {
   const navigate = useNavigate();
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
-  const [step, setStep] = useState<0 | 1 | 2>(0);
-  const nameRef = useRef<HTMLInputElement | null>(null);
-  const contactRef = useRef<HTMLInputElement | null>(null);
-  const messageRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const STEP_FIELDS = [["name"], ["contact"], ["message"]] as const;
 
   const resolvedSuccessMode: "redirect" | "inline" =
     successMode ?? (typeof window !== "undefined" && window.location.pathname === "/contact" ? "redirect" : "inline");
@@ -102,30 +88,18 @@ const ConsultationForm = ({
     [projectTypeWatch],
   );
 
-  // Auto-focus the active step's input on advance/back
+  // Expose submitting state to a sticky external CTA, if present.
+  const stickyRef = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
-    const targets = [nameRef, contactRef, messageRef] as const;
-    const id = requestAnimationFrame(() => {
-      targets[step].current?.focus();
-    });
-    return () => cancelAnimationFrame(id);
-  }, [step]);
-
-  const goNext = async () => {
-    const ok = await form.trigger(STEP_FIELDS[step] as unknown as Parameters<typeof form.trigger>[0]);
-    if (ok && step < 2) setStep((step + 1) as 0 | 1 | 2);
-  };
-
-  const goBack = () => {
-    if (step > 0) setStep((step - 1) as 0 | 1 | 2);
-  };
-
-  const handleKeyAdvance = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      void goNext();
-    }
-  };
+    if (!formId) return;
+    const btn = document.querySelector<HTMLButtonElement>(
+      `button[data-sticky-submit-for="${formId}"]`,
+    );
+    stickyRef.current = btn;
+    if (!btn) return;
+    btn.disabled = isSubmitting;
+    btn.textContent = isSubmitting ? "Sending…" : "Send";
+  }, [isSubmitting, formId]);
 
   const onSubmit = async (values: ConsultationFormValues) => {
     // Honeypot — silently succeed for bots, never hit the network
@@ -136,16 +110,10 @@ const ConsultationForm = ({
 
     const detected = detectContact(values.contact);
     if (!detected) {
-      // Defensive — schema should already block this.
       form.setError("contact", { message: "Please enter a valid email or phone number" });
       return;
     }
 
-    // The DB column is `email` and is required + length-checked. When the
-    // visitor gives us a phone, we still need a value in `email` for the
-    // RLS check; we use a deterministic placeholder + record the real
-    // phone inside the message text. (A future migration can split this
-    // into proper `email NULL` + `phone` columns.)
     const emailForDb =
       detected.kind === "email"
         ? detected.value
@@ -197,7 +165,7 @@ const ConsultationForm = ({
     toast.success("Thank you. We'll be in touch.");
   };
 
-  // ── Inline success state (used when successMode === "inline") ─────────
+  // ── Inline success state ──────────────────────────────────────────────
   if (submittedAt) {
     const time = submittedAt.toLocaleString(undefined, {
       month: "short",
@@ -207,15 +175,9 @@ const ConsultationForm = ({
     });
     return (
       <div className={cn("py-2", className)} role="status" aria-live="polite">
-        <p className="t-lede text-foreground/85">
-          Thank you. We&apos;ll be in touch.
-        </p>
-        <p className="mt-3 t-body text-muted-foreground">
-          We reply within two business days.
-        </p>
-        <p className="mt-7 t-micro text-evergreen/70 tabular-nums">
-          Received · {time}
-        </p>
+        <p className="t-lede text-foreground/85">Thank you. We&apos;ll be in touch.</p>
+        <p className="mt-3 t-body text-muted-foreground">We reply within two business days.</p>
+        <p className="mt-7 t-micro text-evergreen/70 tabular-nums">Received · {time}</p>
         <button
           type="button"
           onClick={() => {
@@ -231,13 +193,12 @@ const ConsultationForm = ({
   }
 
   // ── Form ───────────────────────────────────────────────────────────────
-  const progressPct = ((step + 1) / 3) * 100;
-
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("space-y-0", className)}
+        className={cn("space-y-10 md:space-y-12", className)}
         noValidate
         aria-busy={isSubmitting}
       >
@@ -253,171 +214,100 @@ const ConsultationForm = ({
           />
         </div>
 
-        {/* Progress rail */}
-        <div className="mb-7">
-          <div
-            className="h-[2px] w-full bg-evergreen/10 rounded-full overflow-hidden"
-            role="progressbar"
-            aria-valuemin={1}
-            aria-valuemax={3}
-            aria-valuenow={step + 1}
-            aria-label={`Step ${step + 1} of 3`}
-          >
-            <div
-              className="h-full bg-evergreen transition-[width] duration-500 ease-swift"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-          <div className="mt-2 flex items-baseline justify-between gap-3">
-            <span className="t-micro text-foreground/60 tabular-nums">
-              Step {step + 1} of 3
-            </span>
-            {projectLabel && step === 2 && (
-              <span className="t-micro text-evergreen/80">
-                Re: {projectLabel}
-              </span>
+        {/* Name */}
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem className="form-field space-y-2">
+              <FormLabel className="t-eyebrow text-foreground/55">Name</FormLabel>
+              <FormControl>
+                <input
+                  {...field}
+                  placeholder="Jane Doe"
+                  autoComplete="name"
+                  enterKeyHint="next"
+                  className="form-field-input"
+                />
+              </FormControl>
+              <FormMessage className="t-micro text-destructive" />
+            </FormItem>
+          )}
+        />
+
+        {/* Contact */}
+        <FormField
+          control={form.control}
+          name="contact"
+          render={({ field }) => (
+            <FormItem className="form-field space-y-2">
+              <FormLabel className="t-eyebrow text-foreground/55">Email or phone</FormLabel>
+              <FormControl>
+                <input
+                  {...field}
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  placeholder="you@example.com  ·  403 970-7691"
+                  autoComplete="email"
+                  enterKeyHint="next"
+                  className="form-field-input"
+                />
+              </FormControl>
+              <p className="t-micro text-muted-foreground/80 pt-1">Only used to reply.</p>
+              <FormMessage className="t-micro text-destructive" />
+            </FormItem>
+          )}
+        />
+
+        {/* Project */}
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem className="form-field space-y-2">
+              <div className="flex items-baseline justify-between gap-3">
+                <FormLabel className="t-eyebrow text-foreground/55">About your project</FormLabel>
+                {projectLabel && (
+                  <span className="t-micro text-evergreen/80">Re: {projectLabel}</span>
+                )}
+              </div>
+              <FormControl>
+                <textarea
+                  {...field}
+                  rows={4}
+                  placeholder="New deck, hoping for spring."
+                  enterKeyHint="send"
+                  className="form-field-input resize-y min-h-[120px]"
+                />
+              </FormControl>
+              <FormMessage className="t-micro text-destructive" />
+            </FormItem>
+          )}
+        />
+
+        {/* In-flow submit (hidden on mobile when a sticky CTA owns the action) */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            aria-describedby={RESPONSE_NOTE_ID}
+            className={cn(
+              "cta-spring inline-flex items-center justify-center",
+              "bg-evergreen text-evergreen-foreground rounded-lg",
+              "h-12 px-6 text-[15px] font-semibold whitespace-nowrap",
+              "disabled:opacity-60 disabled:cursor-not-allowed",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              formId ? "hidden md:inline-flex" : "inline-flex",
             )}
-          </div>
+          >
+            {isSubmitting ? "Sending…" : "Send"}
+          </button>
+          <p id={RESPONSE_NOTE_ID} className="mt-4 t-micro text-muted-foreground">
+            Reply within two business days.
+          </p>
         </div>
-
-        {/* Active step */}
-        <div key={step} className="animate-in fade-in slide-in-from-bottom-1 duration-300">
-          {step === 0 && (
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="t-micro text-foreground/70">Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      ref={(el) => {
-                        field.ref(el);
-                        nameRef.current = el;
-                      }}
-                      placeholder="Jane Doe"
-                      autoComplete="name"
-                      enterKeyHint="next"
-                      onKeyDown={handleKeyAdvance}
-                      className="h-14 text-base bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm" />
-                </FormItem>
-              )}
-            />
-          )}
-
-          {step === 1 && (
-            <FormField
-              control={form.control}
-              name="contact"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="t-micro text-foreground/70">Email or phone</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      ref={(el) => {
-                        field.ref(el);
-                        contactRef.current = el;
-                      }}
-                      inputMode="email"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      spellCheck={false}
-                      placeholder="you@example.com  ·  403 970-7691"
-                      autoComplete="email"
-                      enterKeyHint="next"
-                      onKeyDown={handleKeyAdvance}
-                      className="h-14 text-base bg-background/60 border-foreground/10 focus-visible:ring-evergreen"
-                    />
-                  </FormControl>
-                  <p className="t-micro text-muted-foreground/80 pt-1">
-                    Only used to reply.
-                  </p>
-                  <FormMessage className="text-sm" />
-                </FormItem>
-              )}
-            />
-          )}
-
-          {step === 2 && (
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="t-micro text-foreground/70">About your project</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      ref={(el) => {
-                        field.ref(el);
-                        messageRef.current = el;
-                      }}
-                      rows={5}
-                      placeholder="New deck, hoping for spring."
-                      enterKeyHint="send"
-                      className="min-h-[150px] text-base bg-background/60 border-foreground/10 focus-visible:ring-evergreen resize-y"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-sm" />
-                </FormItem>
-              )}
-            />
-          )}
-        </div>
-
-        {/* Action row */}
-        <div className="mt-7 flex items-center justify-between gap-4">
-          {step > 0 ? (
-            <button
-              type="button"
-              onClick={goBack}
-              className="text-sm font-medium text-foreground/65 hover:text-evergreen transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
-            >
-              Back
-            </button>
-          ) : (
-            <span aria-hidden="true" />
-          )}
-
-          {step < 2 ? (
-            <button
-              type="button"
-              onClick={goNext}
-              className={cn(
-                "cta-spring inline-flex items-center justify-center shrink-0",
-                "bg-evergreen text-evergreen-foreground rounded-lg",
-                "h-11 px-5 text-[15px] font-semibold whitespace-nowrap",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              )}
-            >
-              Next
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              aria-describedby={RESPONSE_NOTE_ID}
-              className={cn(
-                "cta-spring inline-flex items-center justify-center shrink-0",
-                "bg-evergreen text-evergreen-foreground rounded-lg",
-                "h-11 px-5 text-[15px] font-semibold whitespace-nowrap",
-                "disabled:opacity-60 disabled:cursor-not-allowed",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              )}
-            >
-              {isSubmitting ? "Sending…" : "Send"}
-            </button>
-          )}
-        </div>
-
-        <p id={RESPONSE_NOTE_ID} className="mt-4 t-micro text-muted-foreground">
-          Reply within two business days.
-        </p>
       </form>
     </Form>
   );
