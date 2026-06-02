@@ -1593,3 +1593,46 @@
   }
 }
 
+
+/* ==========================================================================
+   Contact form — underline inputs + mobile sticky CTA
+   Fly4Me register: bare inputs, bottom-rule that thickens to evergreen on
+   focus, calm 300ms colour transition. No fill, no boxed shell.
+   ========================================================================== */
+
+@layer components {
+  .form-field-input {
+    @apply block w-full bg-transparent text-foreground placeholder:text-foreground/30
+           border-0 border-b border-foreground/15 rounded-none
+           px-0 py-3 min-h-14 text-base leading-snug
+           transition-[border-color,color] duration-300 ease-weighted
+           focus:outline-none focus:ring-0 focus:border-evergreen;
+  }
+
+  .form-field:focus-within > label {
+    @apply text-evergreen;
+    transition: color 300ms var(--ease-weighted);
+  }
+
+  /* Mobile sticky submit bar — scoped exception to the no-floating-FAB rule,
+     scoped to /contact only. Lifts above the iOS keyboard automatically
+     because it's a normal fixed element anchored to the layout viewport. */
+  .contact-sticky-cta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+    background: linear-gradient(
+      to top,
+      hsl(var(--background)) 0%,
+      hsl(var(--background) / 0.92) 70%,
+      hsl(var(--background) / 0) 100%
+    );
+    pointer-events: none;
+  }
+  .contact-sticky-cta > * {
+    pointer-events: auto;
+  }
+}
