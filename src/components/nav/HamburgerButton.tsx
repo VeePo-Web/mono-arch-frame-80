@@ -13,11 +13,11 @@ interface HamburgerButtonProps {
 }
 
 /**
- * Menu pill — Fantasy.co register.
+ * Menu pill — Fantasy/Fly4Me register.
  *
  * Single dark evergreen capsule with cream "Menu" / "Close" word + a
- * two-line glyph. The pill IS the nav chrome (the bar behind it is
- * transparent), so the word is visible at every breakpoint.
+ * two-line glyph. Lines glide on hover (top→right, bottom→left) like
+ * Fly4Me. The pill IS the nav chrome (the bar behind it is transparent).
  */
 const HamburgerButton = ({
   open,
@@ -35,17 +35,17 @@ const HamburgerButton = ({
     aria-controls="site-map-drawer"
     className={cn(
       "menu-pill group relative z-10 inline-flex items-center justify-center shrink-0",
-      "gap-2 sm:gap-2.5 rounded-full",
+      "gap-2.5 rounded-full",
       "h-10 md:h-11 px-4 md:px-5",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen-foreground/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
       className,
     )}
   >
-    <span className="hamburger-stage relative block h-3 w-[18px]" data-open={open}>
+    <span className="hamburger-stage relative block h-[10px] w-[18px]" data-open={open}>
       <span className="hamburger-line hamburger-line--top    absolute left-0 right-0 h-[1.5px] bg-evergreen-foreground rounded-full" />
       <span className="hamburger-line hamburger-line--bottom absolute left-0 right-0 h-[1.5px] bg-evergreen-foreground rounded-full" />
     </span>
-    <span className="text-[13px] md:text-[14px] font-medium tracking-[-0.01em] leading-none">
+    <span className="text-[13px] md:text-[14px] font-medium tracking-[-0.005em] leading-none">
       {open ? "Close" : "Menu"}
     </span>
   </button>

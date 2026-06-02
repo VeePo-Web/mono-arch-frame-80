@@ -2,7 +2,6 @@ import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { prefetchRoute } from "@/lib/routePrefetch";
-import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { routeHasTransparentTop } from "@/lib/pageSections";
 import HamburgerButton from "@/components/nav/HamburgerButton";
 import Container from "@/components/Container";
@@ -11,14 +10,13 @@ import logo from "@/assets/logo/haven-creek-horizontal.webp";
 // Overlay is interaction-only — defer past LCP, then warm on idle.
 const MenuOverlay = lazy(() => import("@/components/nav/MenuOverlay"));
 
-
 /**
- * Navigation — one shape, every breakpoint.
+ * Navigation — Fantasy/Fly4Me register.
  *
- * Brand left · Phone + Quote CTA + Menu trigger right. No inline routes —
- * all five routes live inside MenuOverlay. The bar is transparent over
- * hero content, gains a cream wash + 1px evergreen hairline past 24px,
- * and tucks away on downward scroll past 240px.
+ * One shape, every breakpoint. Logo left, single dark evergreen Menu pill
+ * right. Bar is fully transparent at all times — the pill IS the chrome.
+ * No backdrop, no scrim, no inline routes. Phone + Quote live inside the
+ * overlay only. Direction-aware hide past 240px scroll.
  */
 const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,12 +25,8 @@ const Navigation = () => {
   const lastYRef = useRef(0);
   const { pathname } = useLocation();
   const transparentRoute = routeHasTransparentTop(pathname);
-  // 40px interpolation range — glass kicks in within the first scroll gesture (iOS register).
-  const scrollProgress = useScrollProgress(40);
-  // Form routes pin to opaque. Menu-open hides the backdrop. Otherwise interpolate.
-  const navBg = menuOpen ? 0 : transparentRoute ? scrollProgress : 1;
 
-  // Direction-aware hide — past 240px, scrolling down tucks the bar; any
+  // Direction-aware hide — past 240px, downward scroll tucks the bar;
   // upward intent or returning near the top reveals it.
   useEffect(() => {
     if (menuOpen) {
@@ -62,8 +56,7 @@ const Navigation = () => {
     };
   }, [menuOpen]);
 
-  // Warm the overlay chunk shortly after first paint so the first Menu tap
-  // is always instant — in addition to the pointerdown warm on the trigger.
+  // Warm the overlay chunk shortly after first paint.
   useEffect(() => {
     const warm = () => void import("@/components/nav/MenuOverlay");
     type IdleWindow = Window & {
@@ -89,16 +82,10 @@ const Navigation = () => {
     setMenuOpen(true);
   };
 
-  // Pointerdown on the trigger fires ~80–120ms before click on touch
-  // devices — enough lead time to warm overlay + likely destination.
   const warmMenu = () => {
     void import("@/components/nav/MenuOverlay");
     prefetchRoute("/contact");
   };
-
-
-  // Logo feather shadow only while floating over photography.
-  const logoShadow = navBg < 0.3 ? `drop-shadow(0 1px 2px hsl(0 0% 0% / ${(0.3 - navBg) * 0.5}))` : "none";
 
   const warmRoute = (to: string) => () => prefetchRoute(to);
 
@@ -115,34 +102,20 @@ const Navigation = () => {
         role="banner"
         data-hidden={hidden && !menuOpen}
         className={cn(
-          "havencreek-nav nav-shell fixed inset-x-0 top-0 z-50",
-          // min-h (not h) so safe-area-inset padding pushes the bar DOWN
-          // rather than eating its content area (border-box math bug).
-          "min-h-[56px] md:min-h-[64px] lg:min-h-[72px]",
+          "havencreek-nav fixed inset-x-0 top-0 z-50",
+          // More breathing room — Fly4Me sits at 64/80; we match.
+          "min-h-[64px] md:min-h-[72px] lg:min-h-[80px]",
           "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "data-[hidden=true]:-translate-y-full",
         )}
-        style={
-          {
-            paddingTop: "env(safe-area-inset-top)",
-            ["--nav-bg" as string]: navBg.toFixed(3),
-            ["--nav-progress" as string]: navBg.toFixed(3),
-          } as React.CSSProperties
-        }
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        {/* Mobile-only legibility scrim — fades out as the real backdrop fades in. */}
-        <div
-          aria-hidden="true"
-          className="md:hidden absolute inset-0 -z-10 pointer-events-none bg-gradient-to-b from-background/70 via-background/25 to-transparent"
-          style={{ opacity: 1 - navBg }}
-        />
-
-        <Container size="wide" className="min-h-[56px] md:min-h-[64px] lg:min-h-[72px] relative">
+        <Container size="wide" className="min-h-[64px] md:min-h-[72px] lg:min-h-[80px] relative">
           <nav
             aria-label="Primary"
-            className="flex items-center justify-between min-h-[56px] md:min-h-[64px] lg:min-h-[72px] gap-2 sm:gap-3"
+            className="flex items-center justify-between min-h-[64px] md:min-h-[72px] lg:min-h-[80px] gap-3"
           >
-            {/* Brand — two-layer crossfade: cream over hero, foreground after scroll */}
+            {/* Brand — single dark mark. Site is cream-only, no crossfade needed. */}
             <Link
               to="/"
               onPointerDown={warmRoute("/")}
@@ -150,43 +123,25 @@ const Navigation = () => {
               onFocus={warmRoute("/")}
               aria-label="Haven Creek Renovations — home"
               className={cn(
-                "brand-mark inline-flex items-center shrink-0 rounded-sm relative",
+                "brand-mark inline-flex items-center shrink-0 rounded-sm",
+                "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02]",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               )}
             >
-              {/* Base (dark) — full opacity */}
               <img
                 src={logo}
                 alt="Haven Creek Renovations"
                 width={160}
                 height={28}
-                className="h-6 sm:h-7 w-auto block transition-[filter] duration-300"
-                style={{ filter: logoShadow }}
+                className="h-7 md:h-8 w-auto block"
                 {...({ fetchpriority: "high" } as Record<string, string>)}
-                decoding="async"
-              />
-              {/* Cream overlay — visible over hero, fades as nav-progress rises */}
-              <img
-                src={logo}
-                alt=""
-                aria-hidden="true"
-                width={160}
-                height={28}
-                className="brand-mark__cream pointer-events-none absolute inset-0 h-6 sm:h-7 w-auto block"
-                style={{
-                  filter: "brightness(0) invert(1)",
-                  opacity: 1 - navBg,
-                }}
                 decoding="async"
               />
             </Link>
 
-            {/* Right cluster — single dark evergreen Menu pill. Phone + Quote
-                live inside the overlay; the pill is the entire chrome. */}
-            <div className="flex items-center justify-end">
-              <HamburgerButton open={menuOpen} onClick={openMenu} onPointerDown={warmMenu} />
-            </div>
-
+            {/* Right — single dark evergreen Menu pill. Phone + Quote live
+                inside the overlay; the pill is the entire chrome. */}
+            <HamburgerButton open={menuOpen} onClick={openMenu} onPointerDown={warmMenu} />
           </nav>
         </Container>
       </header>
@@ -195,7 +150,7 @@ const Navigation = () => {
       {!transparentRoute && (
         <div
           aria-hidden="true"
-          className="min-h-[56px] md:min-h-[64px] lg:min-h-[72px]"
+          className="min-h-[64px] md:min-h-[72px] lg:min-h-[80px]"
           style={{ paddingTop: "env(safe-area-inset-top)" }}
         />
       )}
