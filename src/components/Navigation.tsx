@@ -4,42 +4,54 @@ import { cn } from "@/lib/utils";
 import { prefetchRoute } from "@/lib/routePrefetch";
 import { routeHasTransparentTop } from "@/lib/pageSections";
 import HamburgerButton from "@/components/nav/HamburgerButton";
+import BrandMark from "@/components/nav/BrandMark";
+import NavLinks from "@/components/nav/NavLinks";
 import Container from "@/components/Container";
-import logo from "@/assets/logo/haven-creek-horizontal.webp";
 
-// Overlay is interaction-only — defer past LCP, then warm on idle.
 const MenuOverlay = lazy(() => import("@/components/nav/MenuOverlay"));
 
 /**
- * Navigation — Fantasy/Fly4Me register.
+ * Navigation — Logo · inline routes · CTA · (mobile: hamburger).
  *
- * One shape, every breakpoint. Logo left, single dark evergreen Menu pill
- * right. Bar is fully transparent at all times — the pill IS the chrome.
- * No backdrop, no scrim, no inline routes. Phone + Quote live inside the
- * overlay only. Direction-aware hide past 240px scroll.
+ * Three-col flex. At lg+ the route row + solid evergreen "Get a Free Quote"
+ * CTA render inline; below lg the hamburger reveals MenuOverlay (unchanged).
+ *
+ * A single rAF scroll handler drives:
+ *  • `--nav-progress` (0..1) for the brand-mark + nav-link crossfade
+ *  • `data-scrolled` for the cream backdrop past 80px
+ *  • direction-aware hide past 240px
  */
+const NAV_PROGRESS_MAX = 80;
+const HIDE_THRESHOLD = 240;
+
 const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuTouched, setMenuTouched] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const lastYRef = useRef(0);
+  const headerRef = useRef<HTMLElement | null>(null);
   const { pathname } = useLocation();
   const transparentRoute = routeHasTransparentTop(pathname);
 
-  // Direction-aware hide — past 240px, downward scroll tucks the bar;
-  // upward intent or returning near the top reveals it.
+  // Single rAF loop — progress + scrolled + direction-aware hide.
   useEffect(() => {
-    if (menuOpen) {
-      setHidden(false);
-      return;
-    }
     let raf = 0;
     let pending = false;
     const apply = () => {
       const y = window.scrollY;
       const last = lastYRef.current;
-      if (y > 240 && y - last > 4) setHidden(true);
-      else if (last - y > 4 || y < 80) setHidden(false);
+      const p = Math.min(y / NAV_PROGRESS_MAX, 1);
+      if (headerRef.current) {
+        headerRef.current.style.setProperty("--nav-progress", p.toFixed(3));
+      }
+      setScrolled(y > NAV_PROGRESS_MAX);
+      if (!menuOpen) {
+        if (y > HIDE_THRESHOLD && y - last > 4) setHidden(true);
+        else if (last - y > 4 || y < 80) setHidden(false);
+      } else {
+        setHidden(false);
+      }
       lastYRef.current = y;
       pending = false;
     };
@@ -49,6 +61,7 @@ const Navigation = () => {
       raf = requestAnimationFrame(apply);
     };
     lastYRef.current = window.scrollY;
+    apply();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -99,11 +112,12 @@ const Navigation = () => {
       </a>
 
       <header
+        ref={headerRef}
         role="banner"
         data-hidden={hidden && !menuOpen}
+        data-scrolled={scrolled}
         className={cn(
           "havencreek-nav fixed inset-x-0 top-0 z-50",
-          // More breathing room — Fly4Me sits at 64/80; we match.
           "min-h-[64px] md:min-h-[72px] lg:min-h-[80px]",
           "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "data-[hidden=true]:-translate-y-full",
@@ -113,9 +127,9 @@ const Navigation = () => {
         <Container size="wide" className="min-h-[64px] md:min-h-[72px] lg:min-h-[80px] relative">
           <nav
             aria-label="Primary"
-            className="flex items-center justify-between min-h-[64px] md:min-h-[72px] lg:min-h-[80px] gap-3"
+            className="grid grid-cols-[auto_1fr_auto] items-center min-h-[64px] md:min-h-[72px] lg:min-h-[80px] gap-3"
           >
-            {/* Brand — single dark mark. Site is cream-only, no crossfade needed. */}
+            {/* Left — brand */}
             <Link
               to="/"
               onPointerDown={warmRoute("/")}
@@ -128,25 +142,40 @@ const Navigation = () => {
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               )}
             >
-              <img
-                src={logo}
-                alt="Haven Creek Renovations"
-                width={160}
-                height={28}
-                className="h-7 md:h-8 w-auto block"
-                {...({ fetchpriority: "high" } as Record<string, string>)}
-                decoding="async"
-              />
+              <BrandMark />
             </Link>
 
-            {/* Right — single dark evergreen Menu pill. Phone + Quote live
-                inside the overlay; the pill is the entire chrome. */}
-            <HamburgerButton open={menuOpen} onClick={openMenu} onPointerDown={warmMenu} />
+            {/* Center — inline routes (lg+) */}
+            <NavLinks />
+
+            {/* Right — desktop CTA + mobile hamburger */}
+            <div className="flex items-center justify-end gap-2">
+              <Link
+                to="/contact"
+                onPointerDown={warmRoute("/contact")}
+                onMouseEnter={warmRoute("/contact")}
+                onFocus={warmRoute("/contact")}
+                className={cn(
+                  "nav-quote-cta cta-spring hidden lg:inline-flex items-center justify-center",
+                  "h-10 px-5 rounded-lg",
+                  "bg-evergreen text-evergreen-foreground",
+                  "text-[14px] font-medium tracking-[-0.005em] leading-none",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                )}
+              >
+                Get a Free Quote
+              </Link>
+              <HamburgerButton
+                open={menuOpen}
+                onClick={openMenu}
+                onPointerDown={warmMenu}
+                className="lg:hidden"
+              />
+            </div>
           </nav>
         </Container>
       </header>
 
-      {/* Spacer only on routes where the bar owns its own band (form routes). */}
       {!transparentRoute && (
         <div
           aria-hidden="true"
