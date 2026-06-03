@@ -63,17 +63,21 @@ const Navigation = () => {
         const now = performance.now();
         const cooled = now - lastToggleAtRef.current > TOGGLE_COOLDOWN_MS;
         if (y < 80) {
-          if (hidden) {
-            setHidden(false);
-            lastToggleAtRef.current = now;
-          }
+          setHidden((h) => {
+            if (h) lastToggleAtRef.current = now;
+            return false;
+          });
         } else if (cooled) {
-          if (y > HIDE_THRESHOLD && y - last > DOWN_DELTA && !hidden) {
-            setHidden(true);
-            lastToggleAtRef.current = now;
-          } else if (last - y > UP_DELTA && hidden) {
-            setHidden(false);
-            lastToggleAtRef.current = now;
+          if (y > HIDE_THRESHOLD && y - last > DOWN_DELTA) {
+            setHidden((h) => {
+              if (!h) lastToggleAtRef.current = now;
+              return true;
+            });
+          } else if (last - y > UP_DELTA) {
+            setHidden((h) => {
+              if (h) lastToggleAtRef.current = now;
+              return false;
+            });
           }
         }
       }
