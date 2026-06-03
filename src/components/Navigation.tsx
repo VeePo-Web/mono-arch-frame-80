@@ -36,9 +36,14 @@ const Navigation = () => {
   const headerRef = useRef<HTMLElement | null>(null);
   const { pathname } = useLocation();
   const transparentRoute = routeHasTransparentTop(pathname);
+  const lastToggleAtRef = useRef(0);
 
   // Single rAF loop — progress + scrolled + direction-aware hide.
   useEffect(() => {
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
     let raf = 0;
     let pending = false;
     const apply = () => {
@@ -49,12 +54,30 @@ const Navigation = () => {
         headerRef.current.style.setProperty("--nav-progress", p.toFixed(3));
       }
       setScrolled(y > NAV_PROGRESS_MAX);
-      if (!menuOpen) {
-        if (y > HIDE_THRESHOLD && y - last > 4) setHidden(true);
-        else if (last - y > 4 || y < 80) setHidden(false);
-      } else {
+
+      if (reduceMotion) {
         setHidden(false);
+      } else if (menuOpen) {
+        setHidden(false);
+      } else {
+        const now = performance.now();
+        const cooled = now - lastToggleAtRef.current > TOGGLE_COOLDOWN_MS;
+        if (y < 80) {
+          if (hidden) {
+            setHidden(false);
+            lastToggleAtRef.current = now;
+          }
+        } else if (cooled) {
+          if (y > HIDE_THRESHOLD && y - last > DOWN_DELTA && !hidden) {
+            setHidden(true);
+            lastToggleAtRef.current = now;
+          } else if (last - y > UP_DELTA && hidden) {
+            setHidden(false);
+            lastToggleAtRef.current = now;
+          }
+        }
       }
+
       lastYRef.current = y;
       pending = false;
     };
