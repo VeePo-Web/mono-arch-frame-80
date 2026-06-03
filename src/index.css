@@ -476,29 +476,93 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Haven Creek nav — one shape at every breakpoint.
-     `--nav-bg` / `--nav-progress` (0..1) drives backdrop wash + brand-mark
-     crossfade. Set via inline style from <Navigation>; transitions on its
-     own so route changes cross-fade rather than snap.
+     Haven Creek nav — Logo · inline routes · CTA · hamburger (mobile).
+     `--nav-progress` (0..1) is written inline on <header> from a single
+     rAF scroll handler. Drives the brand-mark + nav-link crossfade.
+     `data-scrolled="true"` past 80px paints the cream backdrop that
+     keeps the inline route row legible once the hero scrolls out.
      ────────────────────────────────────────────────────────────────────── */
-  @property --nav-bg {
+  @property --nav-progress {
     syntax: "<number>";
-    inherits: false;
+    inherits: true;
     initial-value: 0;
   }
-  .nav-shell {
-    /* Pill-only chrome — the bar itself never paints a backdrop. The
-       single dark Menu pill IS the chrome. `--nav-bg` is retained only
-       to drive the brand-mark crossfade + mobile legibility scrim. */
+
+  .havencreek-nav {
+    --nav-progress: 0;
     background: transparent;
-    transition: none;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 300ms var(--ease-weighted),
+      backdrop-filter 300ms var(--ease-weighted),
+      border-color 300ms var(--ease-weighted);
+  }
+  .havencreek-nav[data-scrolled="true"] {
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: saturate(140%) blur(12px);
+    -webkit-backdrop-filter: saturate(140%) blur(12px);
+    border-bottom-color: hsl(var(--foreground) / 0.08);
+  }
+
+  /* Brand-mark crossfade — cream overlay opacity bound to --nav-progress. */
+  .brand-mark__cream {
+    transition: opacity 320ms var(--ease-swift);
   }
 
   /* ──────────────────────────────────────────────────────────────────────
-     Menu pill — Fantasy.co register.
-     Single capsule trigger sitting over the hero. Dark evergreen ground,
-     cream foreground, 1px inset top highlight + soft outer shadow.
+     Inline route links — dark↔cream crossfade + animated underline.
      ────────────────────────────────────────────────────────────────────── */
+  .nav-link {
+    --nav-link-cream: hsl(var(--evergreen-foreground));
+    --nav-link-dark: hsl(var(--foreground) / 0.78);
+    --nav-link-dark-hover: hsl(var(--foreground));
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1;
+    color: color-mix(in oklab, var(--nav-link-cream), var(--nav-link-dark) calc(var(--nav-progress, 0) * 100%));
+    transition: color 300ms var(--ease-weighted);
+  }
+  .nav-link:hover {
+    color: color-mix(in oklab, var(--nav-link-cream), var(--nav-link-dark-hover) calc(var(--nav-progress, 0) * 100%));
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    background: hsl(var(--evergreen));
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 300ms var(--ease-weighted);
+    border-radius: 1px;
+  }
+  .havencreek-nav[data-scrolled="false"] .nav-link::after {
+    background: hsl(var(--evergreen-foreground));
+  }
+  .nav-link--active {
+    color: hsl(var(--evergreen));
+  }
+  .havencreek-nav[data-scrolled="false"] .nav-link--active {
+    color: hsl(var(--evergreen-foreground));
+  }
+  .nav-link--active::after,
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+  .nav-link:focus-visible {
+    outline: none;
+    border-radius: 2px;
+    box-shadow: 0 0 0 2px hsl(var(--evergreen) / 0.6);
+  }
+
+  /* Menu pill — mobile hamburger only. */
   .menu-pill {
     background: hsl(var(--evergreen-deep));
     color: hsl(var(--evergreen-foreground));
@@ -520,12 +584,6 @@
   }
   .menu-pill:active { transform: scale(0.97); }
 
-
-  /* Brand-mark crossfade — cream overlay opacity is driven inline. */
-  .brand-mark__cream {
-    transition: opacity 320ms var(--ease-swift);
-  }
-
   /* Nav Quote CTA — primary parity (lift + halo + spring). */
   .nav-quote-cta {
     transition:
@@ -545,7 +603,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .havencreek-nav,
-    .nav-shell,
+    .nav-link,
+    .nav-link::after,
     .nav-quote-cta,
     .brand-mark__cream {
       transition-duration: 0ms !important;
