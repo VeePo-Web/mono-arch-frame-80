@@ -22,7 +22,10 @@ const MenuOverlay = lazy(() => import("@/components/nav/MenuOverlay"));
  *  • direction-aware hide past 240px
  */
 const NAV_PROGRESS_MAX = 80;
-const HIDE_THRESHOLD = 240;
+const HIDE_THRESHOLD = 320;
+const DOWN_DELTA = 12;
+const UP_DELTA = 8;
+const TOGGLE_COOLDOWN_MS = 180;
 
 const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,9 +36,14 @@ const Navigation = () => {
   const headerRef = useRef<HTMLElement | null>(null);
   const { pathname } = useLocation();
   const transparentRoute = routeHasTransparentTop(pathname);
+  const lastToggleAtRef = useRef(0);
 
   // Single rAF loop — progress + scrolled + direction-aware hide.
   useEffect(() => {
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
     let raf = 0;
     let pending = false;
     const apply = () => {
@@ -46,12 +54,34 @@ const Navigation = () => {
         headerRef.current.style.setProperty("--nav-progress", p.toFixed(3));
       }
       setScrolled(y > NAV_PROGRESS_MAX);
-      if (!menuOpen) {
-        if (y > HIDE_THRESHOLD && y - last > 4) setHidden(true);
-        else if (last - y > 4 || y < 80) setHidden(false);
-      } else {
+
+      if (reduceMotion) {
         setHidden(false);
+      } else if (menuOpen) {
+        setHidden(false);
+      } else {
+        const now = performance.now();
+        const cooled = now - lastToggleAtRef.current > TOGGLE_COOLDOWN_MS;
+        if (y < 80) {
+          setHidden((h) => {
+            if (h) lastToggleAtRef.current = now;
+            return false;
+          });
+        } else if (cooled) {
+          if (y > HIDE_THRESHOLD && y - last > DOWN_DELTA) {
+            setHidden((h) => {
+              if (!h) lastToggleAtRef.current = now;
+              return true;
+            });
+          } else if (last - y > UP_DELTA) {
+            setHidden((h) => {
+              if (h) lastToggleAtRef.current = now;
+              return false;
+            });
+          }
+        }
       }
+
       lastYRef.current = y;
       pending = false;
     };
@@ -119,7 +149,7 @@ const Navigation = () => {
         className={cn(
           "havencreek-nav fixed inset-x-0 top-0 z-50",
           "min-h-[64px] md:min-h-[72px] lg:min-h-[80px]",
-          "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           "data-[hidden=true]:-translate-y-full",
         )}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
