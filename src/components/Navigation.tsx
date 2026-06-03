@@ -149,7 +149,7 @@ const Navigation = () => {
         className={cn(
           "havencreek-nav fixed inset-x-0 top-0 z-50",
           "min-h-[64px] md:min-h-[72px] lg:min-h-[80px]",
-          "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           "data-[hidden=true]:-translate-y-full",
         )}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
