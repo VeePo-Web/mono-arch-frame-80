@@ -22,7 +22,10 @@ const MenuOverlay = lazy(() => import("@/components/nav/MenuOverlay"));
  *  • direction-aware hide past 240px
  */
 const NAV_PROGRESS_MAX = 80;
-const HIDE_THRESHOLD = 240;
+const HIDE_THRESHOLD = 320;
+const DOWN_DELTA = 12;
+const UP_DELTA = 8;
+const TOGGLE_COOLDOWN_MS = 180;
 
 const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
