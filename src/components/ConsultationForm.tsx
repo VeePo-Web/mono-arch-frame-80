@@ -313,12 +313,13 @@ const ConsultationForm = ({
               "h-12 px-6 text-[15px] font-semibold whitespace-nowrap",
               "disabled:opacity-60 disabled:cursor-not-allowed",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              isDark ? "flex w-full" : formId ? "hidden md:inline-flex" : "inline-flex",
+              isCompact ? "inline-flex" : formId ? "hidden md:inline-flex" : "inline-flex",
+              isDark && "w-full",
             )}
           >
             {isSubmitting ? "Sending…" : "Send"}
           </button>
-          {!isDark && (
+          {!isCompact && (
             <p id={RESPONSE_NOTE_ID} className="mt-4 t-micro text-muted-foreground">
               Reply within two business days.
             </p>
