@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 
 import { cn } from "@/lib/utils";
 import { prefetchRoute } from "@/lib/routePrefetch";
-import { openQuickContact } from "@/lib/quickContact";
 
 interface MenuOverlayProps {
   open: boolean;
@@ -38,15 +37,8 @@ const MenuOverlay = ({ open, onOpenChange }: MenuOverlayProps) => {
   const { pathname } = useLocation();
   const close = () => onOpenChange(false);
 
-  const handleQuoteClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    close();
-    if (window.matchMedia("(max-width: 767px)").matches) {
-      e.preventDefault();
-      requestAnimationFrame(() =>
-        openQuickContact({ source: "quick_contact_sheet" }),
-      );
-    }
-  };
+
+
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -149,27 +141,6 @@ const MenuOverlay = ({ open, onOpenChange }: MenuOverlayProps) => {
                   );
                 })}
               </ul>
-
-              {/* CTA — oversized, sits under the route stack */}
-              <div className="menu-overlay__cta mt-8 md:mt-10">
-                <Link
-                  to="/contact"
-                  onClick={handleQuoteClick}
-                  onPointerDown={() => prefetchRoute("/contact")}
-                  onMouseEnter={() => prefetchRoute("/contact")}
-                  onFocus={() => prefetchRoute("/contact")}
-                  className={cn(
-                    "cta-spring inline-flex items-center justify-center rounded-lg",
-                    "bg-evergreen-foreground text-evergreen",
-                    "h-12 px-6 md:px-7",
-                    "text-[15px] md:text-[16px] font-semibold whitespace-nowrap",
-                    "w-full sm:w-auto",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen-foreground/60",
-                  )}
-                >
-                  Get a Free Quote
-                </Link>
-              </div>
             </nav>
 
             {/* Contact rail — pinned bottom on mobile, bottom-right at lg+ */}
