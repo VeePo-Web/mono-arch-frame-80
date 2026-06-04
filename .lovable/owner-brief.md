@@ -9,11 +9,23 @@ We build calm, premium websites for trade businesses that want to look like the 
 
 ---
 
+## Read this before you open the link
+
+This draft is focused on **navigation and menu only**. Everything else on the site is still in motion. Open the preview with the five questions below in mind — those are the decisions we need from you.
+
+### Five questions for your first review
+
+1. Does the simpler top bar feel premium and trustworthy to your customers?
+2. Should the phone number stay visible at every screen size, or icon-only on phones?
+3. Is "Get a Free Quote" the exact phrase you want? Or do you prefer "Request a Quote" or "Book a Visit"?
+4. Does the full-screen menu feel right, or would a smaller side panel feel more familiar?
+5. Is the overall calmness right for Haven Creek, or do you want a touch more energy?
+
+---
+
 ## What this is
 
 We rebuilt the top bar and the menu page to feel like a studio site, not a contractor template. Same five pages, calmer, faster, more confident.
-
-This first draft is focused: the navigation only. Everything else on the site is still in motion.
 
 ---
 
@@ -69,13 +81,25 @@ Every removal is a decision.
 
 ---
 
-## Five questions for your first review
+## Known gaps — what's coming in round 2
 
-1. Does the simpler top bar feel premium and trustworthy to your customers?
-2. Should the phone number stay visible at every screen size, or icon-only on phones?
-3. Is "Get a Free Quote" the exact phrase you want? Or do you prefer "Request a Quote" or "Book a Visit"?
-4. Does the full-screen menu feel right, or would a smaller side panel feel more familiar?
-5. Is the overall calmness right for Haven Creek, or do you want a touch more energy?
+These are deliberate and intentional. We didn't ship them yet because they need your input or your photos.
+
+- **Real photography.** The work tiles currently show carefully calibrated AI photographs as placeholders. Round 2 swaps in real photos from your projects — that's the biggest single credibility lift this site will get.
+- **Lead email loop.** Right now, form submissions land in the backend database. Once we confirm the sender domain to use (notify.havencreekrenovations.com, most likely), Cory gets an email every time someone submits, and the submitter gets a warm confirmation note.
+- **Final wordmark decision.** The current mark is the working version. Round 2 locks the final.
+- **Footer rebuild.** Currently a quiet single-row footer. Round 2 will expand it with hours, service area at a glance, and the legal lines.
+- **Analytics.** Nothing is tracking your test clicks yet. We'll wire that in once you approve the basic shape.
+
+---
+
+## Public contact details to confirm
+
+These are hardcoded across the site. Tell us if any of these should change before round 2:
+
+- **Phone:** 403 970-7691
+- **Email:** cory@havencreekrenovations.com
+- **Location label:** Foothills, AB
 
 ---
 
@@ -95,6 +119,6 @@ That's the bar.
 
 1. Open the preview link on a desktop and on your phone. Spend two minutes on each.
 2. Send us written notes — or a voice memo. We'll transcribe.
-3. Round two is hex tuning, the final wordmark decision, and the footer rebuild.
+3. Round two is hex tuning, the final wordmark decision, the footer rebuild, real photos, and the email loop.
 
 — The team at Fantasy.co
