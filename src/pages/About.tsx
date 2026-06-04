@@ -106,10 +106,11 @@ const About = () => {
         </Container>
       </RevealSection>
       <PhotoBleed
-        src={photography.aboutToolsBench}
-        alt="Hand tools resting on a workbench in soft daylight"
-        position="50% 55%"
+        src={photography.heroDetail}
+        alt="A heavy black structural bracket bolted into a stained timber post"
+        position="50% 45%"
       />
+
 
       {/* § II — Where we work — editorial pass */}
       <RevealSection id="areas" aria-labelledby="areas-heading" className="section-y">
