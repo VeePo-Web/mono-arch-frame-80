@@ -228,14 +228,14 @@ const ConsultationForm = ({
           name="name"
           render={({ field }) => (
             <FormItem className="form-field space-y-2">
-              <FormLabel className="t-eyebrow text-foreground/55">Name</FormLabel>
+              <FormLabel className={labelClass}>Name</FormLabel>
               <FormControl>
                 <input
                   {...field}
                   placeholder="Jane Doe"
                   autoComplete="name"
                   enterKeyHint="next"
-                  className="form-field-input"
+                  className={inputClass}
                 />
               </FormControl>
               <FormMessage className="t-micro text-destructive" />
@@ -249,7 +249,7 @@ const ConsultationForm = ({
           name="contact"
           render={({ field }) => (
             <FormItem className="form-field space-y-2">
-              <FormLabel className="t-eyebrow text-foreground/55">Email or phone</FormLabel>
+              <FormLabel className={labelClass}>Email or phone</FormLabel>
               <FormControl>
                 <input
                   {...field}
@@ -260,10 +260,10 @@ const ConsultationForm = ({
                   placeholder="you@example.com  ·  403 970-7691"
                   autoComplete="email"
                   enterKeyHint="next"
-                  className="form-field-input"
+                  className={inputClass}
                 />
               </FormControl>
-              <p className="t-micro text-muted-foreground/80 pt-1">Only used to reply.</p>
+              <p className={helperClass}>Only used to reply.</p>
               <FormMessage className="t-micro text-destructive" />
             </FormItem>
           )}
@@ -276,9 +276,11 @@ const ConsultationForm = ({
           render={({ field }) => (
             <FormItem className="form-field space-y-2">
               <div className="flex items-baseline justify-between gap-3">
-                <FormLabel className="t-eyebrow text-foreground/55">About your project</FormLabel>
+                <FormLabel className={labelClass}>About your project</FormLabel>
                 {projectLabel && (
-                  <span className="t-micro text-evergreen/80">Re: {projectLabel}</span>
+                  <span className={cn("t-micro", isDark ? "text-evergreen-foreground/70" : "text-evergreen/80")}>
+                    Re: {projectLabel}
+                  </span>
                 )}
               </div>
               <FormControl>
@@ -287,7 +289,7 @@ const ConsultationForm = ({
                   rows={4}
                   placeholder="New deck, hoping for spring."
                   enterKeyHint="send"
-                  className="form-field-input resize-y min-h-[120px]"
+                  className={cn(inputClass, "resize-y min-h-[120px]")}
                 />
               </FormControl>
               <FormMessage className="t-micro text-destructive" />
