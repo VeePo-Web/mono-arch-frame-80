@@ -18,8 +18,12 @@ const Index = () => {
       <WebSiteJsonLd />
 
       <Hero />
-      <RecentWorkPreview />
-      <BigCloseCTA />
+      <section id="work">
+        <RecentWorkPreview />
+      </section>
+      <section id="contact">
+        <BigCloseCTA />
+      </section>
     </main>
   );
 };
