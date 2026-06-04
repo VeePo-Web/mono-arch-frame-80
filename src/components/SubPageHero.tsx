@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useReveal } from "@/hooks/useReveal";
 import Container from "./Container";
 
 interface CtaSpec { to: string; label: string }
@@ -12,14 +13,18 @@ interface SubPageHeroProps {
 
 /**
  * SubPageHero — type-only, magazine grammar. One size site-wide.
- * Mirrors Hero: data-reveal cadence, square solid evergreen CTA, .section-yb rhythm.
+ * Mirrors Hero: self-wires useReveal so its data-reveal children cascade in.
  */
 const SubPageHero = ({ headline, subhead, primaryCta }: SubPageHeroProps) => {
+  const { ref, revealed } = useReveal<HTMLElement>({ threshold: 0 });
   return (
     <section
+      ref={ref}
+      data-revealed={revealed}
       aria-labelledby="subpage-hero-heading"
       className="relative pt-28 md:pt-40 section-yb"
     >
+
       <Container size="wide">
         <h1
           id="subpage-hero-heading"
