@@ -48,7 +48,7 @@ const Contact = () => {
           Sits below the nav and fills the rest of the viewport.
           ────────────────────────────────────────────────────────────────── */}
       <section
-        className="hidden lg:flex relative w-full h-[calc(100svh-80px)] overflow-hidden bg-background"
+        className="hidden lg:flex relative w-full min-h-[calc(100svh-80px)] bg-background"
         aria-label="Contact"
       >
         <div className="mx-auto w-full max-w-[1280px] px-12 grid grid-cols-12 gap-x-20 items-center">
