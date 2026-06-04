@@ -106,6 +106,8 @@ const Hero = () => {
           </figure>
         </div>
       </Container>
+
+      <ScrollCue />
     </section>
   );
 };
