@@ -314,7 +314,7 @@ const ConsultationForm = ({
           >
             {isSubmitting ? "Sending…" : "Send"}
           </button>
-          <p id={RESPONSE_NOTE_ID} className="mt-4 t-micro text-muted-foreground">
+          <p id={RESPONSE_NOTE_ID} className={cn("mt-4 t-micro", isDark ? "text-evergreen-foreground/55" : "text-muted-foreground")}>
             Reply within two business days.
           </p>
         </div>
