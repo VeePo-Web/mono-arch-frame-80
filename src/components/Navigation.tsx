@@ -182,21 +182,23 @@ const Navigation = () => {
             {/* Right — desktop CTA + mobile hamburger */}
             <div className="flex items-center justify-end gap-2 md:gap-3">
               <PhoneLink />
-              <Link
-                to="/contact"
-                onPointerDown={warmRoute("/contact")}
-                onMouseEnter={warmRoute("/contact")}
-                onFocus={warmRoute("/contact")}
-                className={cn(
-                  "nav-quote-cta cta-spring hidden lg:inline-flex items-center justify-center",
-                  "h-10 px-5 rounded-lg",
-                  "bg-evergreen text-evergreen-foreground",
-                  "text-[14px] font-medium tracking-[-0.005em] leading-none",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                )}
-              >
-                Get a Free Quote
-              </Link>
+              {pathname !== "/contact" && (
+                <Link
+                  to="/contact"
+                  onPointerDown={warmRoute("/contact")}
+                  onMouseEnter={warmRoute("/contact")}
+                  onFocus={warmRoute("/contact")}
+                  className={cn(
+                    "nav-quote-cta cta-spring hidden lg:inline-flex items-center justify-center",
+                    "h-10 px-5 rounded-lg",
+                    "bg-evergreen text-evergreen-foreground",
+                    "text-[14px] font-medium tracking-[-0.005em] leading-none",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  )}
+                >
+                  Get a Free Quote
+                </Link>
+              )}
               <HamburgerButton
                 open={menuOpen}
                 onClick={openMenu}
