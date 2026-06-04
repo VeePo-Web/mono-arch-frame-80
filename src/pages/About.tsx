@@ -5,6 +5,7 @@ import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas } from "@/data/serviceAreas";
+import { photography } from "@/assets/photography";
 
 const SITE = "https://havencreekrenovations.ca";
 
@@ -29,6 +30,7 @@ const About = () => {
         headline="A hands-on renovation partner for rural properties."
         subhead="Haven Creek was built for homeowners who want a more personal, less scattered way to improve the property they care about."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
+        backdrop={photography.areaFoothills}
       />
 
       {/* § I — How we work */}

@@ -5,6 +5,7 @@ import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
+import { photography } from "@/assets/photography";
 
 const SITE = "https://havencreekrenovations.ca";
 
@@ -29,6 +30,7 @@ const Services = () => {
         headline="Three services. One standard."
         subhead="Three focused services, held to the same hands-on standard."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
+        backdrop={photography.interiorDetailTrim}
       />
 
       <RevealSection id="services-three" aria-labelledby="services-three-heading" className="section-y">
