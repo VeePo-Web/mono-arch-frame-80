@@ -1,13 +1,10 @@
 import { lazy, Suspense, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Container from "@/components/Container";
-import RevealSection from "@/components/RevealSection";
-import SubPageHero from "@/components/SubPageHero";
 import ContactBrandStack from "@/components/contact/ContactBrandStack";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { projectTypeFromQuery } from "@/lib/validation/consultation";
-import { photography } from "@/assets/photography";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
@@ -89,19 +86,26 @@ const Contact = () => {
           MOBILE (< lg) — Original single-column layout. UNCHANGED.
           ────────────────────────────────────────────────────────────────── */}
       <div className="lg:hidden">
-        <SubPageHero
-          headline="Let's talk through your property."
-          subhead="Cory replies within two business days."
-          backdrop={photography.closingPhotoMoment}
-        />
+        <section aria-labelledby="contact-mobile-heading" className="pt-6 pb-2">
+          <Container size="wide">
+            <div className="mx-auto max-w-xl">
+              <p className="t-eyebrow text-evergreen/70">
+                Get in touch · Replies in 2 business days
+              </p>
+              <h1 id="contact-mobile-heading" className="mt-4 t-headline text-foreground">
+                Tell us about your project.
+              </h1>
+            </div>
+          </Container>
+        </section>
 
-        <RevealSection id="form" aria-labelledby="form-heading" className="section-y pb-32">
+        <section id="form" aria-labelledby="form-heading" className="pt-6 pb-40">
           <Container size="wide">
             <div className="mx-auto max-w-xl">
               <h2 id="form-heading" className="sr-only">Contact form</h2>
               <Suspense
                 fallback={
-                  <div aria-hidden="true" className="h-[420px] rounded-md bg-foreground/[0.03] animate-pulse" />
+                  <div aria-hidden="true" className="h-[360px] rounded-md bg-foreground/[0.03] animate-pulse" />
                 }
               >
                 <ConsultationForm
@@ -109,6 +113,7 @@ const Contact = () => {
                   initialProjectType={initialProjectType}
                   successMode="redirect"
                   formId={FORM_ID}
+                  compact
                 />
               </Suspense>
 
@@ -152,7 +157,7 @@ const Contact = () => {
               </div>
             </div>
           </Container>
-        </RevealSection>
+        </section>
 
         {/* Mobile sticky submit — submits the form above via formId */}
         <div className="contact-sticky-cta" aria-hidden="false">
