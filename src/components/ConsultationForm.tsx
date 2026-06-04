@@ -30,6 +30,9 @@ interface ConsultationFormProps {
   successMode?: "redirect" | "inline";
   /** DOM id for the form element — lets a sticky external button submit it. */
   formId?: string;
+  /** Surface tone — "cream" (default) for the standard cream page, "dark" for the
+   *  evergreen-deep right panel on /contact desktop. Only swaps colour classes. */
+  tone?: "cream" | "dark";
   className?: string;
 }
 
@@ -48,8 +51,13 @@ const ConsultationForm = ({
   initialProjectType,
   successMode,
   formId,
+  tone = "cream",
   className,
 }: ConsultationFormProps) => {
+  const isDark = tone === "dark";
+  const labelClass = isDark ? "t-eyebrow text-evergreen-foreground/70" : "t-eyebrow text-foreground/55";
+  const inputClass = isDark ? "form-field-input form-field-input--dark" : "form-field-input";
+  const helperClass = isDark ? "t-micro text-evergreen-foreground/50 pt-1" : "t-micro text-muted-foreground/80 pt-1";
   const navigate = useNavigate();
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
 
@@ -220,14 +228,14 @@ const ConsultationForm = ({
           name="name"
           render={({ field }) => (
             <FormItem className="form-field space-y-2">
-              <FormLabel className="t-eyebrow text-foreground/55">Name</FormLabel>
+              <FormLabel className={labelClass}>Name</FormLabel>
               <FormControl>
                 <input
                   {...field}
                   placeholder="Jane Doe"
                   autoComplete="name"
                   enterKeyHint="next"
-                  className="form-field-input"
+                  className={inputClass}
                 />
               </FormControl>
               <FormMessage className="t-micro text-destructive" />
@@ -241,7 +249,7 @@ const ConsultationForm = ({
           name="contact"
           render={({ field }) => (
             <FormItem className="form-field space-y-2">
-              <FormLabel className="t-eyebrow text-foreground/55">Email or phone</FormLabel>
+              <FormLabel className={labelClass}>Email or phone</FormLabel>
               <FormControl>
                 <input
                   {...field}
@@ -252,10 +260,10 @@ const ConsultationForm = ({
                   placeholder="you@example.com  ·  403 970-7691"
                   autoComplete="email"
                   enterKeyHint="next"
-                  className="form-field-input"
+                  className={inputClass}
                 />
               </FormControl>
-              <p className="t-micro text-muted-foreground/80 pt-1">Only used to reply.</p>
+              <p className={helperClass}>Only used to reply.</p>
               <FormMessage className="t-micro text-destructive" />
             </FormItem>
           )}
@@ -268,9 +276,11 @@ const ConsultationForm = ({
           render={({ field }) => (
             <FormItem className="form-field space-y-2">
               <div className="flex items-baseline justify-between gap-3">
-                <FormLabel className="t-eyebrow text-foreground/55">About your project</FormLabel>
+                <FormLabel className={labelClass}>About your project</FormLabel>
                 {projectLabel && (
-                  <span className="t-micro text-evergreen/80">Re: {projectLabel}</span>
+                  <span className={cn("t-micro", isDark ? "text-evergreen-foreground/70" : "text-evergreen/80")}>
+                    Re: {projectLabel}
+                  </span>
                 )}
               </div>
               <FormControl>
@@ -279,7 +289,7 @@ const ConsultationForm = ({
                   rows={4}
                   placeholder="New deck, hoping for spring."
                   enterKeyHint="send"
-                  className="form-field-input resize-y min-h-[120px]"
+                  className={cn(inputClass, "resize-y min-h-[120px]")}
                 />
               </FormControl>
               <FormMessage className="t-micro text-destructive" />
@@ -304,7 +314,7 @@ const ConsultationForm = ({
           >
             {isSubmitting ? "Sending…" : "Send"}
           </button>
-          <p id={RESPONSE_NOTE_ID} className="mt-4 t-micro text-muted-foreground">
+          <p id={RESPONSE_NOTE_ID} className={cn("mt-4 t-micro", isDark ? "text-evergreen-foreground/55" : "text-muted-foreground")}>
             Reply within two business days.
           </p>
         </div>

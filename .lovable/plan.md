@@ -1,46 +1,78 @@
-# Pre-launch punch list
+# Desktop /contact — Royal-Mechanical-style brand-stack + side panel
 
-Quick audit of what's still rough before this site is ready to go live. Grouped by risk — fix the blockers first, then the polish.
+Replace the current centered single-column /contact page with a two-column desktop layout that mirrors Royal Mechanical's message overlay: brand cascade on the left, dark form panel anchored to the right. Mobile is untouched.
 
-## Blockers (do before launch)
+## Desktop layout (lg ≥ 1024px)
 
-1. **Stale sitemap.xml** — Currently lists 7 dead routes that no longer exist (`/services/interior-finishing`, `/services/exterior-finishing`, `/services/decking`, `/service-areas`, `/service-areas/bragg-creek`, `/service-areas/rocky-view-county`, `/service-areas/bearspaw`, `/service-areas/water-valley`). Google will crawl them, get 404s/SPA-fallback to the home page, and ding the site. Rewrite to the 5 real routes only: `/`, `/about`, `/services`, `/work`, `/contact`.
+```text
+┌─────────────────────────────────────────┬──────────────────────────┐
+│                                         │ ▎ Haven Creek            │
+│           [ haven creek mark ]          │   Family-run · Foothills │
+│                                         │   ◆ Replies in 2 days    │
+│              ─────────                  ├──────────────────────────┤
+│                                         │                          │
+│         Haven Creek Renovations         │  Name                    │
+│                                         │  ___________________     │
+│         Trusted renovations             │                          │
+│         for rural Alberta               │  Email or phone          │
+│                                         │  ___________________     │
+│            403 970-7691                 │                          │
+│                                         │  About your project      │
+│                                         │  ___________________     │
+│                                         │  ___________________     │
+│                                         │                          │
+│                                         │  ┌──────────────────┐    │
+│                                         │  │ Send             │    │
+│                                         │  └──────────────────┘    │
+└─────────────────────────────────────────┴──────────────────────────┘
+        cream background (page)                evergreen-deep panel
+        (calc(100% - 520px) wide)              (520px wide, full height)
+```
 
-2. **Real OG / social share image** — `og:image` currently points at `apple-touch-icon.png` (a tiny square icon). When anyone shares the URL in iMessage, Facebook, LinkedIn, the preview will look broken. Need a proper 1200×630 share image (logo + tagline on cream, or a hero photo with the wordmark). Add as `public/og-image.jpg` and update `index.html` + `useSeo` defaults.
+- **Left zone** (cream, fills `calc(100% - 520px)`) — vertically centered cascade, all `pointer-events-none` except the phone link:
+  1. Haven Creek mark (`haven-creek-mark.webp`), ~`48vh` max-height — cinematic blur-to-sharp fade-in at 80ms
+  2. Evergreen hairline rule (1px, 7rem wide, gradient transparent → evergreen/60 → transparent) at 450ms
+  3. Horizontal wordmark (`haven-creek-horizontal.webp`, max-width 360px) at 550ms
+  4. Italic tagline "Trusted renovations for rural Alberta" in `.t-lede` at 700ms
+  5. Phone number link (`tel:`) at 850ms — pointer-events-auto, hover scales 1.05, click-to-call
+- **Right zone** (dark, `bg-evergreen-deep`, fixed 520px wide, full viewport height after nav) — pinned to the right edge of the page section, NOT to the viewport (so it sits inside the page flow, no fixed positioning). Contains:
+  - Header strip (24px padding, bottom hair-rule `border-evergreen-foreground/10`): 4px-wide evergreen accent bar (`bg-evergreen`, 32px tall) + "Haven Creek" name + "Family-run · Foothills, AB" subtitle + small rotated diamond pip + "Replies in 2 business days" uppercase
+  - 3-field form body (32px padding), reusing the existing `ConsultationForm` component but rendered against the dark surface
 
-3. **Form delivery wired & tested** — `ConsultationForm` writes to the `consultations` table, but confirm Cory actually gets an email when a lead comes in. If not, add a database trigger → edge function → Resend (or similar) email to `cory@havencreekrenovations.com`. Without this, leads go into a black box.
+The dark panel uses a new `--on-evergreen-deep` variant of the form fields so the bottom-only underline rule reads as `bg-evergreen-foreground/15` → `bg-evergreen-foreground` on focus instead of `foreground/15` → `evergreen`. Form labels become cream (`text-evergreen-foreground/70`), input text becomes cream.
 
-4. **Real phone number & email confirmed** — `403 970-7691` and `cory@havencreekrenovations.com` are hard-coded in `src/lib/studioContact.ts` + `Contact.tsx`. Confirm with Cory these are the right public-facing channels before launch (especially the phone — wrong number means missed jobs).
+## Mobile (< lg) — zero changes
 
-5. **Replace placeholder project photography** — `ProjectPlaceholder` tiles on `/work` and `RecentWorkPreview` on `/` are still SVG/placeholder plates per `galleryPlates.ts` comment ("to be replaced as real photography arrives"). A contractor site without real project photos won't convert. Either ship with real photos in hand, or shrink `/work` to 3-4 tiles of the strongest available shots.
+Below `lg` the layout reverts to exactly what ships today:
+- `SubPageHero` with backdrop
+- Centered `ConsultationForm` in cream
+- Sticky bottom Send bar (`.contact-sticky-cta`)
+- Direct contact rail (email / phone / location)
 
-## Should-fix (quality bar)
+The brand-stack column and dark right panel are `hidden lg:flex` only.
 
-6. **Custom domain connected** — Project is published at `havencreek-renovation.lovable.app`. Connect `havencreekrenovations.ca` (referenced everywhere in canonical, sitemap, JSON-LD) before announcing, or every external link breaks.
+## Files touched
 
-7. **Google Search Console + Analytics** — Add GSC verification meta tag and a privacy-respecting analytics tag (Plausible, Fathom, or GA4) so Cory can see traffic from day one. Currently zero tracking.
+- **`src/pages/Contact.tsx`** — branch the render: at `lg+` show the new two-column layout, otherwise render today's single-column page. SubPageHero only renders on mobile (the brand stack replaces it on desktop).
+- **`src/components/contact/ContactBrandStack.tsx`** (new, ~80 lines) — the left-column cascade. Imports the 4 logo assets, lucide `Phone` for the rail. Uses the existing `.cta-spring` for the phone hover.
+- **`src/components/ConsultationForm.tsx`** — add an optional `tone?: "cream" | "dark"` prop (default `"cream"`). When `"dark"`, swap label / input / underline classes via a single ternary. No structural changes, no field changes.
+- **`src/index.css`** — add three small utilities scoped to the dark panel: `.form-field-input--dark` (cream underline + cream text), `.form-field-label--dark` (cream label, evergreen-foreground/90 on focus), and a key-frame set `@keyframes overlay-cascade-in` for the left-column cascade (blur(8px)→blur(0) + opacity 0→1 + translateY 12→0, 900ms `ease-weighted`, with `--cascade-delay` CSS var).
+- **`mem://index.md` Core** — add one line: "On `/contact` at `lg+` the layout is a two-column split — brand cascade left (cream), `bg-evergreen-deep` form panel right (520px, full-height). Mobile (< lg) keeps the existing single-column SubPageHero + bare cream form + sticky CTA. The dark panel is the ONE scoped exception to the dark-on-cream rule, scoped to /contact desktop only."
 
-8. **Favicon set** — `favicon.ico` + `favicon-32.png` + `apple-touch-icon.png` exist but were likely defaults. Confirm they're the Haven Creek mark, not Lovable defaults.
+## What stays the same
 
-9. **404 page polish** — Confirm `NotFound.tsx` matches the rest of the site's editorial tone and has a clear path back home.
+- Same 3 fields: Name · Email or phone · About your project. No new fields, no service picker, no step wizard, no photo upload.
+- `?service=` "Re: {label}" chip still renders inside the form.
+- `BigCloseCTA` does NOT close `/contact` (it never did — Contact ends at the form).
+- Navigation, MenuOverlay, footer, route prefetch, scroll-spy — untouched.
+- Royal's success-confetti / countdown ring / haptic vibrate are NOT carried over — keep the existing success behaviour (redirect to `/thank-you`).
 
-10. **Email-delivery domain auth** — If transactional emails are added (step 3), set up SPF/DKIM on the sending domain so receipts/notifications don't land in spam.
+## Out of scope
 
-## QA pass (final checklist)
+- Slide-in animation from off-screen — the panel renders in place because it's a page, not an overlay.
+- A close button on the panel — there's nothing to close; this IS the contact page.
+- Dark variant of the form anywhere else on the site.
 
-11. **Real-device test** — iPhone Safari, Android Chrome, desktop Safari + Chrome. Walk every route. Tap every CTA. Submit the form. Open the menu overlay.
-12. **Lighthouse run** — Targets in `.lighthouserc.json` are aggressive (perf ≥0.9, LCP ≤2.5s). Run against the published URL and fix anything red.
-13. **Form spam guardrails** — Honeypot is already in `consultationSchema`. Confirm rate-limiting / Turnstile is in place if Cory is worried about bot leads.
-14. **Copy proofread** — One human read-through of every page with Cory. Catch any name/date/area mistakes before they're public.
-15. **Legal** — Decide whether to ship a one-line privacy footer link covering form data handling. Not strictly required for a contact-form-only site in AB, but a good signal of seriousness.
+## One open question
 
-## Out of scope for launch (post-launch backlog)
-
-- Blog / project journal
-- Testimonials (explicitly forbidden per memory)
-- Multi-language
-- Per-project case-study pages
-
----
-
-**My recommendation:** items 1, 2, 3, 5, 6 are the hard blockers. Everything else can ship in the first week post-launch if needed. Want me to start with #1 (sitemap) and #2 (OG image) right now?
+The right panel: do you want it pinned to the right edge of the **page section** (sits inside normal scroll, scrolls away with the page) or **viewport-fixed** (always visible while you scroll the brand column)? Royal Mechanical's is viewport-fixed because it's an overlay; on a real page the section-pinned version reads more like a normal layout. I'll default to **section-pinned** (no fixed positioning) unless you say otherwise — it avoids weird scroll-interaction edge cases.
