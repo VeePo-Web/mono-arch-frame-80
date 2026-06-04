@@ -40,7 +40,7 @@ const About = () => {
             <p className="md:col-span-3 t-eyebrow" data-reveal>How we work</p>
             <h2
               id="how-we-work-heading"
-              className="md:col-span-9 t-section text-foreground max-w-[18ch]"
+              className="md:col-span-9 t-section text-foreground max-w-[22ch]"
               data-reveal
               style={{ ["--reveal-delay" as string]: "120ms" }}
             >
@@ -49,19 +49,51 @@ const About = () => {
           </div>
 
           <div
-            className="mt-12 grid grid-cols-1 md:grid-cols-12 gap-x-12 gap-y-7"
+            className="mt-14 md:mt-16 border-t border-foreground/12"
             data-reveal
-            style={{ ["--reveal-delay" as string]: "240ms" }}
-          >
-            <p className="md:col-span-6 t-body text-foreground/85 max-w-[58ch]">
+            style={{ ["--reveal-delay" as string]: "200ms" }}
+          />
+
+          <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10">
+            <p
+              className="lg:col-span-7 t-lede text-foreground/90 max-w-[58ch]"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "280ms" }}
+            >
               A finished renovation is judged twice. Once when it's done, and again every
               day after. The first judgement is about quality — does the work fit, does
               it last, does it read as resolved. The second is about the experience — what
-              it was like to live with the project from start to finish. We hold both
-              standards because the homeowner does.
+              it was like to live with the project from start to finish.
             </p>
-            <p className="md:col-span-6 t-body text-foreground/70 max-w-[58ch]">
-              In practice that means careful access — the route, the gates, the hours.
+
+            <blockquote
+              className="lg:col-span-4 lg:col-start-9 lg:pt-2"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "360ms" }}
+            >
+              <span className="block h-px w-8 bg-evergreen/40 mb-5" aria-hidden="true" />
+              <p className="font-serif italic text-2xl lg:text-3xl text-foreground leading-[1.25] tracking-[-0.01em]">
+                We hold both standards because the homeowner does.
+              </p>
+            </blockquote>
+          </div>
+
+          <div
+            className="mt-20 md:mt-24 flex items-center gap-3"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "480ms" }}
+          >
+            <span className="h-px w-6 bg-foreground/20" aria-hidden="true" />
+            <p className="t-eyebrow text-evergreen/70">In practice</p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-12">
+            <p
+              className="lg:col-span-8 lg:col-start-3 t-body text-foreground/85 max-w-[62ch]"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "560ms" }}
+            >
+              That means careful access — the route, the gates, the hours.
               It means working around dogs, horses, kids, and the rhythm of a working
               acreage. Equipment and materials stay where they belong, off the lawn and
               off the drive, and we clean up at the end of every day. When the project
