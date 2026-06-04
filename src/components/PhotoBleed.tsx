@@ -28,37 +28,38 @@ const PhotoBleed = ({ src, alt, position = "50% 50%", priority = false }: PhotoB
           alt={alt}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: position }}
+          className="absolute inset-0 h-full w-full object-cover scale-[1.04]"
+          style={{ objectPosition: position, filter: "blur(2px) saturate(0.92)" }}
         />
 
-        {/* Quiet warm wash — mutes the photo so it sits with the cream page */}
+        {/* Warm cream wash — mutes the photo further so it whispers */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
-          style={{ background: "hsl(var(--background) / 0.08)" }}
+          style={{ background: "hsl(var(--background) / 0.22)" }}
         />
 
-        {/* Top dissolve — cream melts into photo */}
+        {/* Top dissolve — cream melts deep into the photo */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-20 md:h-28 lg:h-40"
+          className="pointer-events-none absolute inset-x-0 top-0 h-40 md:h-56 lg:h-72"
           style={{
             background:
-              "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--background) / 0.7) 50%, transparent 100%)",
+              "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--background) / 0.85) 35%, hsl(var(--background) / 0.4) 70%, transparent 100%)",
           }}
         />
 
         {/* Bottom dissolve — cream rises */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-20 md:h-28 lg:h-40"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-40 md:h-56 lg:h-72"
           style={{
             background:
-              "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.7) 50%, transparent 100%)",
+              "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.85) 35%, hsl(var(--background) / 0.4) 70%, transparent 100%)",
           }}
         />
       </div>
+
 
     </section>
   );
