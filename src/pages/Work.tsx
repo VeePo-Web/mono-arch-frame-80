@@ -56,7 +56,7 @@ const Work = () => {
         <Container size="wide">
           <h2 id="grid-heading" className="sr-only">Projects</h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-6 gap-y-16 lg:gap-y-28">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-16 md:gap-y-12 lg:gap-y-28">
             {galleryPlates.map((p, i) => (
               <article
                 key={p.slug}
