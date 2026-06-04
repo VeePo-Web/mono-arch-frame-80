@@ -1,13 +1,10 @@
 import { lazy, Suspense, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Container from "@/components/Container";
-import RevealSection from "@/components/RevealSection";
-import SubPageHero from "@/components/SubPageHero";
 import ContactBrandStack from "@/components/contact/ContactBrandStack";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { projectTypeFromQuery } from "@/lib/validation/consultation";
-import { photography } from "@/assets/photography";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
