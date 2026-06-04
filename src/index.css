@@ -562,6 +562,20 @@
     box-shadow: 0 0 0 2px hsl(var(--evergreen) / 0.6);
   }
 
+  /* Phone link — desktop right cluster, mirrors .nav-link color blend. */
+  .nav-phone {
+    --nav-link-cream: hsl(var(--evergreen-foreground));
+    --nav-link-dark: hsl(var(--foreground) / 0.78);
+    color: color-mix(in oklab, var(--nav-link-cream), var(--nav-link-dark) calc(var(--nav-progress, 0) * 100%));
+    transition: color 300ms var(--ease-weighted);
+  }
+  .nav-phone:hover {
+    color: hsl(var(--evergreen));
+  }
+  .havencreek-nav[data-scrolled="false"] .nav-phone:hover {
+    color: hsl(var(--evergreen-foreground));
+  }
+
   /* Menu pill — mobile hamburger only. */
   .menu-pill {
     background: hsl(var(--evergreen-deep));
