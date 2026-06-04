@@ -1,122 +1,59 @@
-# Pre-Client Polish — "Ready to show Cory" pass
+# Stand up Haven Creek's own email loop
 
-Goal: every surface Cory touches in his first 5 minutes feels intentional and on-brand. Ordered by credibility impact, ranked exactly as you asked: photography → form delivery → favicon/OG → mobile QA → everything else.
+You're right — `notify.calemwooddetailing.com` belongs to a different client. We don't borrow it. Haven Creek gets its own sender domain so every email Cory (and his leads) receive comes `from` a Haven Creek address.
 
----
+## 1. Provision `notify.havencreekrenovations.com`
 
-## 1. Photography audit (the credibility lift)
+- Open the Lovable email-setup dialog scoped to this project so the verified subdomain is `notify.havencreekrenovations.com`.
+- Cory (or whoever holds the registrar login for `havencreekrenovations.ca` / `.com`) adds the NS records Lovable returns — `ns3.lovable.cloud` / `ns4.lovable.cloud` on the `notify` subdomain only. Root domain stays untouched.
+- Wait for verification (status flips to `active`). Scaffolding can proceed before verification; sends just queue until DNS resolves.
 
-Status check first — `src/assets/photography/index.ts` already maps all 6 work slugs and `RecentWorkPreview` + `Work.tsx` already pass `photoSrc={workPhotos[p.slug]}`. So the placeholder shell only shows if a file is missing. All 6 `work-*.jpg` files exist on disk.
+Surface to user via the email-setup presentation action. Do not reuse another workspace's domain.
 
-Action:
-- Visually QA each of the 6 work photos in-place by rendering `/work` and `/` and screenshotting. Confirm none of them are still the painted typographic plate. If any tile reads as a wireframe, regenerate that specific photo at premium tier with a tight brand-aligned prompt (rural Alberta, no people, calm cedar/evergreen/warm-off-white palette per `1.5-brand-identity-north-star.md`).
-- Audit the supporting photography too: `hero-detail-trim` (home Hero plate), `exteriorDetailSoffit` (Work hero backdrop), `aboutToolsBench` (About), `closingPrairie` / `closingPhotoMoment` (PhotoBleed). Any that read as AI-tellish get regenerated.
-- Add `alt` audit pass — every image should have a descriptive alt that names the work, not the filename.
+## 2. Stand up email infrastructure on this project
 
-Out of scope: shooting real photos. These stay AI-generated, calibrated to the brand contract. Cory provides real photos in round 2.
+- Run `setup_email_infra` so this project gets its own pgmq queues, `process-email-queue` cron, send log, suppression list, and unsubscribe tokens. Calemwood's infra is in a different project — none of it carries over.
 
----
+## 3. Scaffold the two Haven Creek templates
 
-## 2. Form delivery — close the loop end-to-end
+Both live at `supabase/functions/_shared/transactional-email-templates/` in this project, sent from `notify.havencreekrenovations.com`:
 
-Today: `ConsultationForm` inserts into the `consultations` table. No email goes to Cory. He has to log into the backend to see leads. Unacceptable for a demo where he'll test the form himself.
+1. **`lead-notification`** → `cory@havencreekrenovations.com`
+   - Subject: `New enquiry — {{name}}`
+   - Editorial cream/evergreen layout matching the site. Name, contact (email or phone), project blurb, source page, timestamp.
 
-Action:
-- Stand up email infrastructure (`setup_email_infra` + `scaffold_transactional_email`) on the project's verified domain. If no domain is configured yet, surface the email setup dialog so Cory's address is the sender.
-- Create two transactional templates in `supabase/functions/_shared/transactional-email-templates/`:
-  1. **`lead-notification`** — to Cory (`cory@havencreekrenovations.com`): name, contact, project blurb, source page, timestamp. Plain editorial layout, cream/evergreen palette matching the site.
-  2. **`lead-confirmation`** — to the submitter: warm two-business-days reply promise, signed from Cory. Same brand tone as `ThankYou.tsx`.
-- Add a Postgres trigger (or invoke from the form submit path in `ConsultationForm.onSubmit`) that calls `send-transactional-email` for both templates with an idempotency key derived from the new row id.
-- QA by submitting a test lead and verifying both inboxes receive the right message.
+2. **`lead-confirmation`** → the submitter
+   - Subject: `Thanks — we'll be in touch`
+   - Warm two-business-day reply promise, signed "Cory · Haven Creek Renovations". Same brand grammar as `ThankYou.tsx`.
 
-Phone & email sanity check piggybacks here: confirm with Cory in the owner brief that `403 970-7691` + `cory@havencreekrenovations.com` are the public-facing channels.
+Register both in `registry.ts`. No unsubscribe text in the template body — the system appends it. Footer signature uses `STUDIO_PHONE_DISPLAY` + `cory@havencreekrenovations.com`.
 
----
+## 4. Wire the form
 
-## 3. Favicon + social card — first-impression chrome
+In `ConsultationForm.onSubmit`, right after the successful `supabase.from('consultations').insert(...)`, invoke `send-transactional-email` twice:
 
-Today: `index.html` references `/favicon.ico`, `/favicon-32.png`, `/apple-touch-icon.png`, and `/og-image.jpg`. Verify each file exists in `public/`. If any are missing or generic Lovable defaults, replace.
+- `lead-notification` to Cory, idempotency key `lead-notify-{row.id}`
+- `lead-confirmation` to the submitter (only when `detected.kind === "email"` — phone-only leads skip the confirmation email but Cory still gets notified), idempotency key `lead-confirm-{row.id}`
 
-Action:
-- Generate a brand favicon set (cream H mark on evergreen, or evergreen H on cream — match `BrandMark.tsx`): `/favicon.ico`, `/favicon-32.png`, `/apple-touch-icon.png` (180×180).
-- Generate `/og-image.jpg` at 1200×630 premium tier: a calm composition with the wordmark + a single signature photo + the tagline "Trusted renovations for rural homes." Cream ground, evergreen type, no busy chrome. This is the texted-to-wife moment.
-- Spot-check the OG card with the LinkedIn Post Inspector / Twitter card validator after deploy.
+`templateData` passes only fields the template actually renders: `name`, `contact`, `message`, `projectLabel`, `source`, `submittedAt`.
 
----
+## 5. QA the loop end-to-end
 
-## 4. Mobile QA pass — real device, not devtools
+- Submit a test lead from `/contact` desktop and mobile.
+- Confirm Cory's inbox shows the notification with the correct `from` address (`notify.havencreekrenovations.com`) and Haven Creek branding.
+- Confirm the submitter's inbox receives the confirmation.
+- Confirm `consultations` row exists and `email_send_log` shows two `sent` rows tied to that submission.
+- Verify nothing in the deployed function references `calemwooddetailing` or any other workspace.
 
-Action (scripted walk-through on a real iOS device + Android):
-- `/` — Hero photo plate stacks below type, `PhotoBleed` blur reads as soft, `RecentWorkPreview` grid is a single column, `BigCloseCTA` form is reachable, no horizontal scroll.
-- `/contact` — `.contact-sticky-cta` clears the iOS home-bar via `env(safe-area-inset-bottom)`, Send button disabled state syncs with the form, keyboard doesn't trap focus, autofocus order is Name → Email/phone → Message.
-- `MenuOverlay` — open/close animation runs at 60fps, route names don't clip (Services is the widest), close pill is tappable, Esc + backdrop tap both close, scroll lock works.
-- Nav bar — direction-aware hide/show feels intentional, brand-mark crossfade reads correctly over the hero photo, Quote CTA + Phone hidden below `lg` (correct).
-- `/work` — asymmetric grid stacks cleanly on mobile, all six photos load lazily without layout shift.
+## 6. Owner brief update
 
-Log issues into a short fix list; resolve before sending the link.
+Once verified, strike "Email loop" from the "Known gaps for round 2" list in `.lovable/owner-brief.md` and replace with a one-line "Lead emails wired — Cory + submitter both receive a Haven Creek-branded message on submit."
 
----
+## What stays untouched
 
-## 5. Copy review against `2.2-page-by-page-copy-plan.md`
+- `notify.calemwooddetailing.com` — different client, different project. Never referenced in Haven Creek code, templates, or DNS.
+- All site UI — this is backend wiring only. No component edits beyond the `ConsultationForm.onSubmit` invoke calls.
 
-Sweep current copy on `Hero`, `Services`, `About`, `Work`, `Contact`, `ThankYou`, `BigCloseCTA` against the source-of-truth doc. Specifically check:
-- No "Best", "Luxury", "Top-rated", "Book now", "Dream home" — voice violations.
-- Primary CTA is exactly "Get a Free Quote" everywhere (already enforced by memory, but verify).
-- About page hits: hands-on, property respect, continuity, long-term relationship.
-- Services blurbs lead with Interior Finishing as flagship, ordered Interior → Exterior → Decking.
-- No placeholder lorem voice remains.
+## Open question for you before I build
 
-Capture diffs as a single edit pass per file.
-
----
-
-## 6. 404 page polish
-
-Currently uses legacy `text-body`, `text-minimal`, `font-serif text-[1.45rem]` arbitrary sizes — violates the `.t-*` typography system in memory. Also still uses `PremiumCard` chrome which is heavier than the rest of the site.
-
-Action:
-- Rebuild `NotFound.tsx` body as a 3-row magazine list (same grammar as Services rows): hair rule, `.t-title` + short prose, `.row-wash` hover. No PremiumCard, no arrow icon-chip.
-- Switch all typography to `.t-section`, `.t-title`, `.t-body`, `.t-micro`.
-- Headline copy stays as-is (already on-brand).
-
----
-
-## 7. Sitemap + robots sanity check
-
-`public/sitemap.xml` lists the 5 real routes against `havencreekrenovations.ca`. `robots.txt` disallows `/thank-you` and `/style-guide` (style-guide route doesn't exist anymore — verify and remove the line). Confirm canonical in `index.html` matches the sitemap host.
-
----
-
-## 8. Owner brief framing
-
-Update `.lovable/owner-brief.md` so Cory reads it before the preview link:
-- Move the "Five questions" block to the top, right under the preview URL.
-- Add a "Known gaps for round 2" section listing: real photography (replacing AI placeholders), final wordmark decision, footer rebuild, analytics wiring.
-- Confirm the 5 open decisions are still the right ones to surface.
-
----
-
-## 9. Nice-to-have (not blockers, listed so they're tracked)
-
-- Lighthouse run via existing `.lighthouserc.json` — quote the perf/SEO numbers in the brief.
-- Analytics — currently nothing tracks Cory's test clicks. Skip unless he asks.
-
----
-
-## Execution order
-
-1. Photography QA + regenerate any weak tiles
-2. Email infra + lead-notification + lead-confirmation templates
-3. Favicon set + OG image
-4. 404 polish + sitemap/robots cleanup + copy sweep (parallel, small)
-5. Mobile QA pass on a real device
-6. Owner brief rewrite
-7. (Optional) Lighthouse snapshot for the brief
-
-## Technical notes
-
-- All new colors/typography go through existing `.t-*` classes and CSS tokens — no new arbitrary values.
-- Email templates live in `supabase/functions/_shared/transactional-email-templates/` per the transactional-email guide; deploy after registering.
-- Form-trigger wiring: prefer invoking `send-transactional-email` from the `ConsultationForm.onSubmit` success branch (right after the successful `supabase.from('consultations').insert`) with an idempotency key derived from the inserted row id. Keeps the email coupled to the user-facing success path.
-- Photography regenerations: premium tier, explicit "no people, no faces, rural Alberta foothills, golden hour, calm cedar/evergreen/warm-off-white palette" prompt scaffold.
-- No memory updates needed — this work executes existing rules, doesn't add new ones.
+**Confirm the inbox.** Should Cory's notifications land at `cory@havencreekrenovations.com` (what's currently hardcoded in `ContactBrandStack.tsx` + the owner brief), or a different address (e.g. `leads@…`, a Gmail he checks more often)? Same answer drives the `From` reply-to on the confirmation email.
