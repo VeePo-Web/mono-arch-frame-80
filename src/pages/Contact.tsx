@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
