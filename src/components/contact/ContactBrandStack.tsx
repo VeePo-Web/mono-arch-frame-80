@@ -31,7 +31,7 @@ const ContactBrandStack = () => {
 
       {/* Evergreen hairline */}
       <div
-        className="contact-cascade-item mt-10 mb-8 h-px w-28 bg-gradient-to-r from-transparent via-evergreen/60 to-transparent"
+        className="contact-cascade-item mt-8 mb-6 h-px w-28 bg-gradient-to-r from-transparent via-evergreen/60 to-transparent"
         style={{ ["--cascade-delay" as string]: "450ms" }}
       />
 
