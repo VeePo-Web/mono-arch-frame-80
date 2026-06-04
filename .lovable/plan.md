@@ -1,17 +1,26 @@
-Make PhotoBleed more subtle across all pages.
+Make the desktop `/contact` panel fit the viewport in one screen — no scroll. Mobile untouched.
 
-### Current state
-PhotoBleed renders full-bleed images between text sections with:
-- Heights: `min-h-[40svh] md:min-h-[55vh] lg:min-h-[60vh]`
-- Top/bottom dissolve gradients: `h-16 md:h-24 lg:h-32`
+### Problem
+Right panel currently scrolls because it stacks: panel header (brand + reply note) + `py-8` padding + `space-y-10/12` fields + helper text under each input + trailing "Reply within two business days" line. On a typical laptop (`calc(100svh-80px)` ≈ 720-820px), the form overflows and `overflow-y-auto` kicks in.
 
 ### Changes
-1. **Reduce height** — drop each breakpoint by ~10-15% so the bleed whispers rather than banners:
-   - `min-h-[35svh] md:min-h-[48vh] lg:min-h-[52vh]`
-2. **Deepen the edge dissolve** — extend gradient height and pull the opaque stop closer to the edge so the photo peak is narrower and softer:
-   - `h-20 md:h-28 lg:h-40`
-   - shift the 60% opacity stop to 50% for a gentler transition
-3. **Slightly mute the image** — add a barely-there warm overlay (`bg-background/[0.08]`) across the photo so it sits quieter against the cream page.
 
-### Scope
-Only `src/components/PhotoBleed.tsx`. No changes to call sites, alt text, or positioning.
+**`src/pages/Contact.tsx` (desktop block only, lines 49-110)**
+- Remove the panel header (`<header>` with "Haven Creek Renovations / Family-run · Foothills, AB / Replies in 2 business days"). The left brand cascade already carries identity + tagline; the reply promise moves to a single quiet line above the form.
+- Body wrapper: drop `overflow-y-auto`, switch to `flex-1 flex flex-col justify-center px-10 py-10` so the 3 fields center vertically in the panel.
+- Add one small eyebrow line above the form: `Replies in 2 business days` in `t-eyebrow text-evergreen-foreground/55`, sitting ~24px above the first field.
+- Keep the top hairline accent.
+
+**`src/components/ConsultationForm.tsx` — tighten when `tone === "dark"` only**
+- Form `space-y-10 md:space-y-12` → `space-y-7` in dark tone (cream tone unchanged).
+- Drop the helper line `Only used to reply.` under the contact field in dark tone.
+- Drop the trailing `Reply within two business days.` paragraph under the submit in dark tone (it's now in the panel eyebrow).
+- Textarea: `rows={4}` + `min-h-[120px]` → `rows={3}` + `min-h-[96px]` in dark tone.
+- Submit button stays solid evergreen, full-width inside the panel: add `w-full` when dark.
+
+### Result
+Right panel renders: hairline → small "Replies in 2 business days" eyebrow → Name → Email or phone → About your project (3 rows) → full-width Send. All inside `min-h-[calc(100svh-80px)]`, no scrollbar at 1280×720 and up. Mobile path (`lg:hidden` block + sticky CTA) is not modified.
+
+### Out of scope
+- Mobile `<SubPageHero>`, mobile direct rail, `.contact-sticky-cta`, `ContactBrandStack`, schema, submit logic, `formId` plumbing.
+- No new tokens, no new components.
