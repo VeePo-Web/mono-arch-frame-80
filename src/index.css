@@ -1756,4 +1756,41 @@
     .hero-backdrop__img { animation: none; opacity: 1; }
     .scroll-cue-bob { animation: none; }
   }
+
+  /* Dark-tone form variant — scoped to /contact desktop right panel.
+     Bottom-only cream underline that brightens on focus; cream caret + text. */
+  .form-field-input--dark {
+    @apply text-evergreen-foreground placeholder:text-evergreen-foreground/30
+           border-b-evergreen-foreground/20
+           focus:border-evergreen-foreground;
+    caret-color: hsl(var(--evergreen-foreground));
+  }
+  .form-field:focus-within > label.text-evergreen-foreground\/70 {
+    color: hsl(var(--evergreen-foreground));
+  }
+
+  /* Brand-stack cascade — blur-to-sharp + lift, staggered per element
+     via inline --cascade-delay. Mirrors the Royal Mechanical overlay cascade. */
+  .contact-cascade-item {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(12px);
+    animation: contact-cascade-in 900ms var(--ease-weighted) forwards;
+    animation-delay: var(--cascade-delay, 0ms);
+  }
+  @keyframes contact-cascade-in {
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .contact-cascade-item {
+      animation: none;
+      opacity: 1;
+      filter: none;
+      transform: none;
+    }
+  }
 }
