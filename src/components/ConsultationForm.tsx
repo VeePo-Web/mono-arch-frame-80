@@ -30,6 +30,9 @@ interface ConsultationFormProps {
   successMode?: "redirect" | "inline";
   /** DOM id for the form element — lets a sticky external button submit it. */
   formId?: string;
+  /** Surface tone — "cream" (default) for the standard cream page, "dark" for the
+   *  evergreen-deep right panel on /contact desktop. Only swaps colour classes. */
+  tone?: "cream" | "dark";
   className?: string;
 }
 
