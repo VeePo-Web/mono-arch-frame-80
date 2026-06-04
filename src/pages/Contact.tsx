@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
@@ -32,20 +32,6 @@ const Contact = () => {
     path: "/contact",
   });
 
-  // Desktop (lg+) only: lock the page to a single viewport so the footer
-  // is unreachable. Mobile keeps native scroll.
-  useEffect(() => {
-    const mql = window.matchMedia("(min-width: 1024px)");
-    const apply = () => {
-      document.documentElement.style.overflow = mql.matches ? "hidden" : "";
-    };
-    apply();
-    mql.addEventListener("change", apply);
-    return () => {
-      mql.removeEventListener("change", apply);
-      document.documentElement.style.overflow = "";
-    };
-  }, []);
 
   return (
     <main id="main">
@@ -62,7 +48,7 @@ const Contact = () => {
           Sits below the nav and fills the rest of the viewport.
           ────────────────────────────────────────────────────────────────── */}
       <section
-        className="hidden lg:flex relative w-full h-[calc(100svh-80px)] overflow-hidden bg-background"
+        className="hidden lg:flex relative w-full min-h-[calc(100svh-80px)] bg-background"
         aria-label="Contact"
       >
         <div className="mx-auto w-full max-w-[1280px] px-12 grid grid-cols-12 gap-x-20 items-center">
