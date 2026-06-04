@@ -22,7 +22,7 @@ const PhotoBleed = ({ src, alt, position = "50% 50%", priority = false }: PhotoB
       aria-hidden="true"
       className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen overflow-hidden"
     >
-      <div className="relative min-h-[40svh] md:min-h-[55vh] lg:min-h-[60vh]">
+      <div className="relative min-h-[35svh] md:min-h-[48vh] lg:min-h-[52vh]">
         <img
           src={src}
           alt={alt}
@@ -32,26 +32,34 @@ const PhotoBleed = ({ src, alt, position = "50% 50%", priority = false }: PhotoB
           style={{ objectPosition: position }}
         />
 
+        {/* Quiet warm wash — mutes the photo so it sits with the cream page */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "hsl(var(--background) / 0.08)" }}
+        />
+
         {/* Top dissolve — cream melts into photo */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-16 md:h-24 lg:h-32"
+          className="pointer-events-none absolute inset-x-0 top-0 h-20 md:h-28 lg:h-40"
           style={{
             background:
-              "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--background) / 0.6) 35%, transparent 100%)",
+              "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--background) / 0.7) 50%, transparent 100%)",
           }}
         />
 
         {/* Bottom dissolve — cream rises */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-16 md:h-24 lg:h-32"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-20 md:h-28 lg:h-40"
           style={{
             background:
-              "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.6) 35%, transparent 100%)",
+              "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.7) 50%, transparent 100%)",
           }}
         />
       </div>
+
     </section>
   );
 };
