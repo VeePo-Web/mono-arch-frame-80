@@ -160,7 +160,7 @@ const Contact = () => {
               </div>
             </div>
           </Container>
-        </RevealSection>
+        </section>
 
         {/* Mobile sticky submit — submits the form above via formId */}
         <div className="contact-sticky-cta" aria-hidden="false">
