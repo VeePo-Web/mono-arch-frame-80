@@ -286,10 +286,10 @@ const ConsultationForm = ({
               <FormControl>
                 <textarea
                   {...field}
-                  rows={4}
+                  rows={isDark ? 3 : 4}
                   placeholder="New deck, hoping for spring."
                   enterKeyHint="send"
-                  className={cn(inputClass, "resize-y min-h-[120px]")}
+                  className={cn(inputClass, "resize-y", isDark ? "min-h-[96px]" : "min-h-[120px]")}
                 />
               </FormControl>
               <FormMessage className="t-micro text-destructive" />
