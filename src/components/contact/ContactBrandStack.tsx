@@ -2,74 +2,90 @@ import havenCreekMark from "@/assets/logo/haven-creek-mark.webp";
 import havenCreekWordmark from "@/assets/logo/haven-creek-horizontal.webp";
 import { STUDIO_PHONE_DISPLAY, STUDIO_PHONE_TEL } from "@/lib/studioContact";
 
+const STUDIO_EMAIL = "cory@havencreekrenovations.com";
+const STUDIO_LOCATION = "Foothills, AB";
+
 /**
- * ContactBrandStack — left-column cinematic cascade for /contact desktop.
+ * ContactBrandStack — left-aligned editorial stack for /contact desktop.
  *
- * Mirrors the Royal Mechanical message-overlay brand identity:
- * mark → hairline → wordmark → tagline → phone, each fading in with
- * a blur-to-sharp lift on its own delay. Pointer-events disabled
- * except the phone tel: link.
+ * Fantasy.co-style: quiet logo + wordmark + tagline up top, then a small
+ * directory of direct-contact rows pinned to the lower half of the column.
+ * Everything left-justified, generous whitespace, no centered cascade.
  */
 const ContactBrandStack = () => {
   return (
     <div
-      className="hidden lg:flex relative h-full w-full flex-col items-center justify-center px-10 pointer-events-none"
-      aria-hidden="true"
+      className="hidden lg:flex relative h-full w-full flex-col justify-center items-start text-left"
     >
-      {/* Brand mark */}
-      <img
-        src={havenCreekMark}
-        alt=""
-        width={480}
-        height={480}
-        loading="eager"
-        fetchPriority="high"
-        decoding="async"
-        className="contact-cascade-item h-[34vh] max-h-[380px] w-auto object-contain"
-        style={{ ["--cascade-delay" as string]: "80ms" }}
-      />
+      <div className="contact-cascade-item" style={{ ["--cascade-delay" as string]: "80ms" }}>
+        <img
+          src={havenCreekMark}
+          alt=""
+          width={140}
+          height={140}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="h-[120px] w-auto object-contain"
+          aria-hidden="true"
+        />
+      </div>
 
-      {/* Evergreen hairline */}
-      <div
-        className="contact-cascade-item mt-8 mb-6 h-px w-28 bg-gradient-to-r from-transparent via-evergreen/60 to-transparent"
-        style={{ ["--cascade-delay" as string]: "450ms" }}
-      />
-
-      {/* Wordmark */}
       <img
         src={havenCreekWordmark}
-        alt=""
-        width={360}
-        height={60}
+        alt="Haven Creek Renovations"
+        width={280}
+        height={48}
         loading="eager"
         decoding="async"
-        className="contact-cascade-item h-auto w-auto max-w-[360px] object-contain"
-        style={{ ["--cascade-delay" as string]: "550ms" }}
+        className="contact-cascade-item mt-10 h-auto w-auto max-w-[260px] object-contain"
+        style={{ ["--cascade-delay" as string]: "260ms" }}
       />
 
-      {/* Tagline */}
       <p
-        className="contact-cascade-item mt-6 t-lede italic text-foreground/70 text-center"
-        style={{ ["--cascade-delay" as string]: "700ms" }}
+        className="contact-cascade-item mt-5 t-lede italic text-foreground/65 max-w-md"
+        style={{ ["--cascade-delay" as string]: "420ms" }}
       >
         Trusted renovations for rural Alberta.
       </p>
 
-      {/* Phone — only interactive element */}
-      <a
-        href={`tel:${STUDIO_PHONE_TEL}`}
-        aria-hidden={false}
-        aria-label={`Call Haven Creek at ${STUDIO_PHONE_DISPLAY}`}
-        className="contact-cascade-item pointer-events-auto mt-8 inline-flex flex-col items-center gap-1 group"
-        style={{ ["--cascade-delay" as string]: "850ms" }}
+      <div
+        className="contact-cascade-item mt-16 w-full max-w-md"
+        style={{ ["--cascade-delay" as string]: "600ms" }}
       >
-        <span className="t-eyebrow text-evergreen/70 group-hover:text-evergreen transition-colors duration-300 ease-weighted">
-          Call
-        </span>
-        <span className="font-serif text-3xl tabular-nums text-foreground transition-transform duration-300 ease-weighted group-hover:scale-[1.03]">
-          {STUDIO_PHONE_DISPLAY}
-        </span>
-      </a>
+        <p className="t-eyebrow text-evergreen/70 mb-5">Direct</p>
+        <ul className="border-t border-foreground/12">
+          <li className="border-b border-foreground/12">
+            <a
+              href={`mailto:${STUDIO_EMAIL}`}
+              className="group flex items-baseline justify-between gap-6 py-4"
+            >
+              <span className="t-body text-foreground transition-transform duration-500 ease-weighted group-hover:translate-x-1">
+                {STUDIO_EMAIL}
+              </span>
+              <span className="t-micro text-foreground/45">EMAIL</span>
+            </a>
+          </li>
+          <li className="border-b border-foreground/12">
+            <a
+              href={`tel:${STUDIO_PHONE_TEL}`}
+              aria-label={`Call Haven Creek at ${STUDIO_PHONE_DISPLAY}`}
+              className="group flex items-baseline justify-between gap-6 py-4"
+            >
+              <span className="t-body tabular-nums text-foreground transition-transform duration-500 ease-weighted group-hover:translate-x-1">
+                {STUDIO_PHONE_DISPLAY}
+              </span>
+              <span className="t-micro text-foreground/45">PHONE</span>
+            </a>
+          </li>
+          <li className="border-b border-foreground/12">
+            <div className="flex items-baseline justify-between gap-6 py-4">
+              <span className="t-body text-foreground">{STUDIO_LOCATION}</span>
+              <span className="t-micro text-foreground/45">STUDIO</span>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };
