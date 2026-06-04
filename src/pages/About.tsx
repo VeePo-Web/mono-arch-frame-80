@@ -35,76 +35,81 @@ const About = () => {
         backdrop={photography.areaFoothills}
       />
 
-      {/* § I — How we work */}
+      {/* § I — How we work — signed letter */}
       <RevealSection id="how-we-work" aria-labelledby="how-we-work-heading" className="section-y">
         <Container size="wide">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-8 md:gap-y-10">
-            <p className="md:col-span-3 t-eyebrow" data-reveal>How we work</p>
-            <h2
-              id="how-we-work-heading"
-              className="md:col-span-9 t-section text-foreground max-w-[22ch]"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "120ms" }}
-            >
-              Held to two standards — the work, and the experience.
-            </h2>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10">
+            {/* Left rail — signature column */}
+            <div className="lg:col-span-3">
+              <p className="t-eyebrow" data-reveal>A note from Cory</p>
+              <span
+                className="mt-5 block h-px w-8 bg-foreground/20"
+                aria-hidden="true"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "120ms" }}
+              />
+            </div>
 
-          <div
-            className="mt-14 md:mt-16 border-t border-foreground/12"
-            data-reveal
-            style={{ ["--reveal-delay" as string]: "200ms" }}
-          />
+            {/* Right column — the letter */}
+            <div className="lg:col-span-9 max-w-[58ch] space-y-8">
+              <h2
+                id="how-we-work-heading"
+                className="t-section text-foreground"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "200ms" }}
+              >
+                A finished renovation is judged twice — once when it's done, and again every day after.{" "}
+                <em className="text-evergreen italic font-serif">
+                  We hold both standards because the homeowner does.
+                </em>
+              </h2>
 
-          <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10">
-            <p
-              className="lg:col-span-7 t-lede text-foreground/90 max-w-[58ch]"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "280ms" }}
-            >
-              A finished renovation is judged twice. Once when it's done, and again every
-              day after. The first judgement is about quality — does the work fit, does
-              it last, does it read as resolved. The second is about the experience — what
-              it was like to live with the project from start to finish.
-            </p>
-
-            <blockquote
-              className="lg:col-span-4 lg:col-start-9 lg:pt-2"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "360ms" }}
-            >
-              <span className="block h-px w-8 bg-evergreen/40 mb-5" aria-hidden="true" />
-              <p className="font-serif italic text-2xl lg:text-3xl text-foreground leading-[1.25] tracking-[-0.01em]">
-                We hold both standards because the homeowner does.
+              <p
+                className="t-lede text-foreground/75"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "360ms" }}
+              >
+                The first judgement is about quality — does the work fit, does it last,
+                does it read as resolved.
               </p>
-            </blockquote>
-          </div>
 
-          <div
-            className="mt-20 md:mt-24 flex items-center gap-3"
-            data-reveal
-            style={{ ["--reveal-delay" as string]: "480ms" }}
-          >
-            <span className="h-px w-6 bg-foreground/20" aria-hidden="true" />
-            <p className="t-eyebrow text-evergreen/70">In practice</p>
-          </div>
+              <p
+                className="t-lede text-foreground/75"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "480ms" }}
+              >
+                The second is about the experience — what it was like to live with the
+                project from start to finish.
+              </p>
 
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-12">
-            <p
-              className="lg:col-span-8 lg:col-start-3 t-body text-foreground/85 max-w-[62ch]"
-              data-reveal
-              style={{ ["--reveal-delay" as string]: "560ms" }}
-            >
-              That means careful access — the route, the gates, the hours.
-              It means working around dogs, horses, kids, and the rhythm of a working
-              acreage. Equipment and materials stay where they belong, off the lawn and
-              off the drive, and we clean up at the end of every day. When the project
-              closes we leave the property the way we found it — minus the work that
-              needed doing.
-            </p>
+              <p
+                className="t-lede text-foreground/75"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "600ms" }}
+              >
+                In practice, that means careful access — the route, the gates, the hours.
+                It means working around dogs, horses, kids, and the rhythm of a working
+                acreage. Equipment and materials stay where they belong, off the lawn and
+                off the drive, and we clean up at the end of every day. When the project
+                closes we leave the property the way we found it — minus the work that
+                needed doing.
+              </p>
+
+              <div
+                className="pt-2"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "760ms" }}
+              >
+                <span className="block h-px w-10 bg-foreground/20 mb-5" aria-hidden="true" />
+                <p className="font-serif italic text-foreground/70 text-base">
+                  — Cory, Haven Creek Renovations
+                </p>
+              </div>
+            </div>
           </div>
         </Container>
       </RevealSection>
+
       <PhotoBleed
         src={photography.heroDetail}
         alt="A heavy black structural bracket bolted into a stained timber post"
