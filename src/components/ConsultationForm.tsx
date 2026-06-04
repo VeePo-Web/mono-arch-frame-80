@@ -51,8 +51,13 @@ const ConsultationForm = ({
   initialProjectType,
   successMode,
   formId,
+  tone = "cream",
   className,
 }: ConsultationFormProps) => {
+  const isDark = tone === "dark";
+  const labelClass = isDark ? "t-eyebrow text-evergreen-foreground/70" : "t-eyebrow text-foreground/55";
+  const inputClass = isDark ? "form-field-input form-field-input--dark" : "form-field-input";
+  const helperClass = isDark ? "t-micro text-evergreen-foreground/50 pt-1" : "t-micro text-muted-foreground/80 pt-1";
   const navigate = useNavigate();
   const [submittedAt, setSubmittedAt] = useState<Date | null>(null);
 
