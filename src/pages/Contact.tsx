@@ -6,6 +6,7 @@ import SubPageHero from "@/components/SubPageHero";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { projectTypeFromQuery } from "@/lib/validation/consultation";
+import { photography } from "@/assets/photography";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
@@ -42,6 +43,7 @@ const Contact = () => {
       <SubPageHero
         headline="Let's talk through your property."
         subhead="Cory replies within two business days."
+        backdrop={photography.closingPhotoMoment}
       />
 
       <RevealSection id="form" aria-labelledby="form-heading" className="section-y pb-32 md:pb-0">

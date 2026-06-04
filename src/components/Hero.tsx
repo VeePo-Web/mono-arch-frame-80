@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import Container from "./Container";
+import ScrollCue from "./nav/ScrollCue";
 import { useReveal } from "@/hooks/useReveal";
-import { workPhotos } from "@/assets/photography";
+import { photography, workPhotos } from "@/assets/photography";
 import { galleryPlates } from "@/data/galleryPlates";
 
 /**
@@ -20,9 +21,21 @@ const Hero = () => {
       ref={ref}
       data-revealed={revealed}
       aria-labelledby="hero-heading"
-      className="relative pt-28 md:pt-40 section-yb"
+      className="relative overflow-hidden pt-28 md:pt-40 section-yb min-h-[92vh] flex flex-col justify-center"
     >
-      <Container size="wide">
+      <div className="hero-backdrop" aria-hidden="true">
+        <img
+          src={photography.closingPrairie}
+          alt=""
+          className="hero-backdrop__img"
+          loading="eager"
+          decoding="async"
+          {...({ fetchpriority: "high" } as Record<string, string>)}
+        />
+        <div className="hero-backdrop__veil" />
+      </div>
+
+      <Container size="wide" className="relative z-10">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left — type column */}
           <div className="lg:col-span-5 flex flex-col">
@@ -93,6 +106,8 @@ const Hero = () => {
           </figure>
         </div>
       </Container>
+
+      <ScrollCue />
     </section>
   );
 };

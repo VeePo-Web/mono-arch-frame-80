@@ -1708,4 +1708,52 @@
   .contact-sticky-cta > * {
     pointer-events: auto;
   }
+
+  /* Hero backdrop — heavily blurred full-bleed photo behind hero type.
+     Atmosphere layer only; type remains the design. */
+  .hero-backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero-backdrop__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(48px) saturate(1.05);
+    transform: scale(1.15);
+    opacity: 0;
+    animation: hero-backdrop-in 1400ms var(--ease-weighted) forwards;
+  }
+  .hero-backdrop__veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        to bottom,
+        hsl(var(--background) / 0.45) 0%,
+        hsl(var(--background) / 0.7) 60%,
+        hsl(var(--background)) 100%
+      );
+  }
+  @keyframes hero-backdrop-in {
+    to { opacity: 1; }
+  }
+
+  /* Subtle bob loop for the hero scroll cue. */
+  .scroll-cue-bob {
+    animation: scroll-cue-bob 2400ms ease-in-out infinite;
+  }
+  @keyframes scroll-cue-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-backdrop__img { animation: none; opacity: 1; }
+    .scroll-cue-bob { animation: none; }
+  }
 }

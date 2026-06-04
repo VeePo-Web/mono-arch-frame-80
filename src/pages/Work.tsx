@@ -7,7 +7,7 @@ import ProjectPlaceholder from "@/components/gallery/ProjectPlaceholder";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { galleryPlates } from "@/data/galleryPlates";
-import { workPhotos } from "@/assets/photography";
+import { workPhotos, photography } from "@/assets/photography";
 
 const SITE = "https://havencreekrenovations.ca";
 
@@ -49,6 +49,7 @@ const Work = () => {
       <SubPageHero
         headline="Real properties. Real outcomes."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
+        backdrop={photography.exteriorDetailSoffit}
       />
 
       <RevealSection aria-labelledby="grid-heading" className="section-y">
