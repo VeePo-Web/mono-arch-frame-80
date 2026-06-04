@@ -62,46 +62,41 @@ const Contact = () => {
           Sits below the nav and fills the rest of the viewport.
           ────────────────────────────────────────────────────────────────── */}
       <section
-        className="hidden lg:flex relative w-full h-[calc(100svh-80px)] overflow-hidden"
+        className="hidden lg:flex relative w-full h-[calc(100svh-80px)] overflow-hidden bg-background"
         aria-label="Contact"
       >
-        {/* Left: brand cascade — fills remaining width */}
-        <div className="flex-1 min-w-0">
-          <ContactBrandStack />
-        </div>
-
-        {/* Right: dark form panel */}
-        <aside
-          className="relative w-[520px] shrink-0 bg-evergreen-deep text-evergreen-foreground flex flex-col"
-          aria-labelledby="form-heading-desktop"
-        >
-          {/* Hairline accent top */}
-          <div
-            className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-evergreen-foreground/30 to-transparent"
-            aria-hidden="true"
-          />
-
-          <h2 id="form-heading-desktop" className="sr-only">Contact form</h2>
-
-          {/* Form body — centered, no scroll */}
-          <div className="flex-1 min-h-0 flex flex-col justify-center px-10 py-10">
-            <p className="t-eyebrow text-evergreen-foreground/55 mb-6">
-              Replies in 2 business days
-            </p>
-            <Suspense
-              fallback={
-                <div aria-hidden="true" className="h-[420px] rounded-md bg-evergreen-foreground/5 animate-pulse" />
-              }
-            >
-              <ConsultationForm
-                source="contact_page"
-                initialProjectType={initialProjectType}
-                successMode="redirect"
-                tone="dark"
-              />
-            </Suspense>
+        <div className="mx-auto w-full max-w-[1280px] px-12 grid grid-cols-12 gap-x-20 items-center">
+          {/* Left: brand cascade */}
+          <div className="col-span-7 h-full">
+            <ContactBrandStack />
           </div>
-        </aside>
+
+          {/* Right: bare cream form */}
+          <div className="col-span-5 flex flex-col justify-center">
+            <h2 id="form-heading-desktop" className="sr-only">Contact form</h2>
+            <p className="t-eyebrow text-evergreen/70">
+              Get in touch · Replies in 2 business days
+            </p>
+            <p className="mt-5 t-headline text-foreground">
+              Tell us about your project.
+            </p>
+            <div className="mt-10">
+              <Suspense
+                fallback={
+                  <div aria-hidden="true" className="h-[360px] rounded-md bg-foreground/[0.03] animate-pulse" />
+                }
+              >
+                <ConsultationForm
+                  source="contact_page"
+                  initialProjectType={initialProjectType}
+                  successMode="redirect"
+                  tone="cream"
+                  compact
+                />
+              </Suspense>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ──────────────────────────────────────────────────────────────────
