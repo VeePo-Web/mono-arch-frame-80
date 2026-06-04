@@ -1,29 +1,56 @@
-## Fix `/work` grid on tablet portrait + iPad landscape
+## What you'll see
 
-Between `md` (768px) and `lg` (1024px), the Work page falls back to a single full-width column of giant tiles because the grid jumps straight from `grid-cols-1` to `lg:grid-cols-12`. iPad landscape lands here too (the scrollbar drops effective width below 1024).
+Quiet, full-width photo "bleeds" — a single atmospheric image stretched edge-to-edge, with the cream background dissolving softly into the top and bottom of the photo so it never feels like a hard banner. No headlines on the image, no CTAs, no overlays. Just a breath of photography between text sections, in the same minimal Fantasy.co register the site already uses.
 
-The other four routes (`/`, `/about`, `/services`, `/contact`) and the nav/footer hold up at both 820×1180 and 1024×768 — no changes needed.
+The pattern is borrowed from Royal Mechanical's `PhotoMoment` — but stripped of the dark wash, the white headline, and the parallax. Ours is silent: photo + soft cream dissolves top and bottom. That's it.
 
-### Change
+## Where they land
 
-**`src/pages/Work.tsx`** — add a `md` tier to the project grid only.
+**Home (`/`)** — One bleed between `RecentWorkPreview` and `BigCloseCTA`. Photo: `closingPrairie` (wide foothills light). Acts as a visual exhale between the work grid and the closing CTA.
 
-Replace the container className:
+**About (`/about`)** — One bleed between "How we work" and "Where we work". Photo: `aboutToolsBench` (tactile, hands-on register).
+
+**Services (`/services`)** — One bleed between the services row list and `BigCloseCTA`. Photo: `deckingDetailEndgrain` (material detail).
+
+**Work (`/work`)** — Skipped. The page is already nothing but full-bleed photography; adding another bleed would be redundant.
+
+**Contact (`/contact`)** — Skipped. Desktop already has the photo-equivalent (dark evergreen panel + brand cascade); mobile already carries `closingPhotoMoment` in the SubPageHero.
+
+## The component
+
+New file: `src/components/PhotoBleed.tsx`. Type-only API:
 
 ```
-grid grid-cols-1 lg:grid-cols-12 gap-x-6 gap-y-16 lg:gap-y-28
+<PhotoBleed src={photography.closingPrairie} alt="..." position="50% 60%" />
 ```
 
-with:
+- Full-viewport-width via `w-screen relative left-1/2 -translate-x-1/2` (escapes any `Container`).
+- Height: `min-h-[40svh] md:min-h-[55vh] lg:min-h-[60vh]` — present but never dominant.
+- Cream-to-transparent dissolve at top and bottom (`h-16 md:h-24 lg:h-32`), same gradient idiom as Royal Mechanical's bleed but using `hsl(var(--background))` so it melts into our cream.
+- `object-cover`, `loading="lazy"`, `decoding="async"`, no parallax, no overlay text, no caption, no CTA.
+- Optional `aspectFocus` prop to bias `object-position` per photo.
+- Honors `prefers-reduced-motion` — no transform animations to begin with, so this is automatic.
 
-```
-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-16 md:gap-y-12 lg:gap-y-28
-```
+## What I will NOT change
 
-The existing `LAYOUTS` strings (`lg:col-span-7`, `lg:col-span-5 lg:col-start-2`, `lg:mt-24`, …) are all `lg:`-scoped, so at `md` each tile naturally falls into one of the two columns — the asymmetric magazine register only re-activates at `lg+`, exactly as today.
+- No new components beyond `PhotoBleed.tsx`.
+- No new photography — uses existing files in `src/assets/photography/`.
+- No copy changes, no headline edits, no CTA edits.
+- No layout edits to Hero, SubPageHero, `RecentWorkPreview`, services row list, or About prose.
+- No memory rule changes other than the one note below.
 
-### Out of scope
-- Mobile (`<md`) layout — unchanged.
-- Desktop (`lg+`) asymmetric layout — unchanged.
-- Hero, SubPageHero, About, Services, Contact, nav, footer — no changes.
-- No data, no new components, no token changes.
+## Memory note (one rule update)
+
+The core memory currently says: *"Home is exactly 3 sections: Hero → RecentWorkPreview → BigCloseCTA. Never re-add `ServicesGrid`, `HowItGoes`, or the area rail to `/`."*
+
+This plan adds a 4th element to home — but it's a silent photo bleed, not a content section (no heading, no CTA, no list). I'll update the core rule to read: *"Home is exactly Hero → RecentWorkPreview → PhotoBleed → BigCloseCTA. The bleed is a silent photo only — never a content section with headings, CTAs, or lists. Never re-add ServicesGrid, HowItGoes, or the area rail to /."*
+
+The retired `mem://features/home-cinematic-arc` file will be left as-is (already superseded by core).
+
+## Files touched
+
+- `src/components/PhotoBleed.tsx` — new
+- `src/pages/Index.tsx` — add one `<PhotoBleed>` between work preview and CTA
+- `src/pages/About.tsx` — add one `<PhotoBleed>` between the two `RevealSection`s
+- `src/pages/Services.tsx` — add one `<PhotoBleed>` before `BigCloseCTA`
+- `mem://index.md` — update the home-sections core rule (one line)
