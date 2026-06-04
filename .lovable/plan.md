@@ -1,24 +1,39 @@
-## Nav scroll behavior — smoother hide / reveal
+## Goal
+Add a desktop right cluster: **Phone · Get a Free Quote · Menu pill**, while keeping the inline routes row. Menu pill becomes visible at every breakpoint and opens the existing MenuOverlay.
 
-Pages audit passed: Index, About, Services, Work, Contact all match the Core memory's section spec — no page is missing or carrying extra sections. The only change is the nav scroll behavior.
+## Changes
 
-### What changes
+**1. `src/components/Navigation.tsx`**
+- Right cluster at `lg+` becomes (in order): `PhoneLink` → `.nav-quote-cta` "Get a Free Quote" → `.menu-pill`.
+- Remove `lg:hidden` from the `.menu-pill` wrapper so it shows at every breakpoint.
+- At `<lg`, hide the phone link and Quote CTA (keep mobile minimal: logo + menu pill only — same as today).
+- Spacing: `gap-2 md:gap-3` between right-cluster items; phone gets `mr-1` breathing room from the CTA.
 
-Tune the existing direction-aware hide in `Navigation.tsx` so it stops feeling jittery on slow scrolls and small finger gestures, while still getting out of the way when reading long content.
+**2. New `src/components/nav/PhoneLink.tsx`**
+- Small `<a href="tel:...">` with phone glyph (lucide `Phone`, 14px) + formatted number.
+- `text-[13px] lg:text-[14px] font-medium tracking-[-0.01em]`.
+- Color follows `--nav-progress` the same way `.nav-link` does (cream over hero → foreground when scrolled). Add `.nav-phone` class in `index.css` that mirrors the `.nav-link` color-mix rule, no underline by default, evergreen on hover.
+- Hidden below `lg` (`hidden lg:inline-flex`).
+- Phone number sourced from the same constant the MenuOverlay rail already uses (single source of truth).
 
-1. **Raise the hide threshold** from `240` → `320` px. Below that the bar always stays visible — covers the entire hero + first scroll into content.
-2. **Require a larger delta** before toggling: change the `4` px scroll-delta gate to `12` px going down and `8` px going up. Small reverse jiggles (trackpad inertia, momentum scroll on iOS) no longer pop the bar on/off.
-3. **Cooldown between toggles** — store `lastToggleAtRef` (timestamp) and ignore further direction flips for 180 ms after a toggle. Prevents rapid up/down "blinking".
-4. **Slow the slide** from `duration-500` → `duration-[600ms]` and keep the existing `cubic-bezier(0.22,1,0.36,1)` easing. The bar settles instead of snapping.
-5. **Reduced motion**: when `prefers-reduced-motion: reduce`, disable hide entirely — bar stays pinned.
-6. **Always show near top**: keep the existing `y < 80 → show` rule so the bar is guaranteed visible over the hero.
+**3. `src/index.css`**
+- Add `.nav-phone` rule (color-mix with `--nav-progress`, hover → `hsl(var(--evergreen))`, 300ms transition).
+- No other token changes.
 
-### Files
+**4. `mem://index.md` (Core)**
+Update three lines that currently forbid this:
+- "Desktop Quote CTA…" → right cluster at lg+ is **Phone · Quote CTA · Menu pill**; pill is visible at every breakpoint.
+- "At `<lg` the nav right cluster is the `.menu-pill` alone…" → keep the `<lg` half (pill alone), drop the "and the pill is gone at lg+" half.
+- "Phone link is NEVER in the header…" → replace with: Phone link lives in the desktop header (lg+ only) and inside MenuOverlay's contact rail; never on mobile header chrome.
 
-- `src/components/Navigation.tsx` — update the rAF handler constants + add cooldown ref + bump transition duration + reduced-motion guard.
-- `mem://index.md` — update the Core line `"Direction-aware hide past 240px"` → `"Direction-aware hide past 320px with 12/8px deltas, 180ms cooldown, 600ms slide; disabled under prefers-reduced-motion"`.
+## Out of scope
+- MenuOverlay internals (untouched).
+- Inline `NavLinks` (untouched — stays as the center row).
+- Mobile header layout (untouched — logo + menu pill only).
+- Scroll hide/reveal behavior (untouched).
+- Footer, page sections, forms.
 
-### Out of scope
-
-- Logo crossfade, inline routes, CTA, backdrop, MenuOverlay — all already correct, untouched.
-- Page sections — audit clean, no edits.
+## Technical notes
+- `.menu-pill` already supports both breakpoints visually; only the parent wrapper's `lg:hidden` is removing it. Just drop that class.
+- Phone constant: reuse whatever `MenuOverlay.tsx` imports (likely `siteContact` or inline string — plan will read it during build to keep one source).
+- No new deps.
