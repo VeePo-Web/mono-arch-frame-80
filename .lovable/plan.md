@@ -1,59 +1,68 @@
-# Stand up Haven Creek's own email loop
+# Mobile Contact — instant-to-form UX
 
-You're right — `notify.calemwooddetailing.com` belongs to a different client. We don't borrow it. Haven Creek gets its own sender domain so every email Cory (and his leads) receive comes `from` a Haven Creek address.
+Right now `/contact` on mobile opens with a full `SubPageHero` (headline + subhead + backdrop photo). The Name field doesn't appear until the user scrolls. The sticky Send bar already lives at the bottom, but there's nothing to send yet — the form is below the fold. We fix that.
 
-## 1. Provision `notify.havencreekrenovations.com`
+Desktop split (lg+) is untouched. This change is scoped to the `<div className="lg:hidden">` branch of `src/pages/Contact.tsx`.
 
-- Open the Lovable email-setup dialog scoped to this project so the verified subdomain is `notify.havencreekrenovations.com`.
-- Cory (or whoever holds the registrar login for `havencreekrenovations.ca` / `.com`) adds the NS records Lovable returns — `ns3.lovable.cloud` / `ns4.lovable.cloud` on the `notify` subdomain only. Root domain stays untouched.
-- Wait for verification (status flips to `active`). Scaffolding can proceed before verification; sends just queue until DNS resolves.
+## Goal
 
-Surface to user via the email-setup presentation action. Do not reuse another workspace's domain.
+A returning visitor taps "Contact" and sees the Name field within the first viewport — no scroll, no hero to skim past. Form first, prose second, direct rail third.
 
-## 2. Stand up email infrastructure on this project
+## New mobile order
 
-- Run `setup_email_infra` so this project gets its own pgmq queues, `process-email-queue` cron, send log, suppression list, and unsubscribe tokens. Calemwood's infra is in a different project — none of it carries over.
+```
+┌───────────────────────────────┐
+│ NAV (existing)                │
+├───────────────────────────────┤
+│ Compact header band           │  ~ 140-160px tall
+│  · t-eyebrow  "Get in touch"  │
+│  · t-headline (2 lines max)   │
+│    "Tell us about your        │
+│     project."                  │
+│  · t-micro  "Reply in 2       │
+│    business days · Cory"       │
+├───────────────────────────────┤
+│ NAME            [input]       │  ← visible on first paint
+│ EMAIL OR PHONE  [input]       │
+│ ABOUT…          [textarea]    │
+├───────────────────────────────┤
+│ (scroll) Or reach us directly │
+│  email · phone · location     │
+├───────────────────────────────┤
+│ STICKY SEND (existing)        │
+└───────────────────────────────┘
+```
 
-## 3. Scaffold the two Haven Creek templates
+The compact header replaces `SubPageHero` on mobile. Same typographic grammar (`t-eyebrow` + `t-headline` + `t-micro`), no backdrop photo, no folio, no fixed min-height — it occupies only what its type needs (~`pt-6 pb-8`). On a 390×701 viewport that leaves room for the Name and Email fields above the fold; the textarea starts immediately below.
 
-Both live at `supabase/functions/_shared/transactional-email-templates/` in this project, sent from `notify.havencreekrenovations.com`:
+## What changes
 
-1. **`lead-notification`** → `cory@havencreekrenovations.com`
-   - Subject: `New enquiry — {{name}}`
-   - Editorial cream/evergreen layout matching the site. Name, contact (email or phone), project blurb, source page, timestamp.
+`src/pages/Contact.tsx`, mobile branch only:
 
-2. **`lead-confirmation`** → the submitter
-   - Subject: `Thanks — we'll be in touch`
-   - Warm two-business-day reply promise, signed "Cory · Haven Creek Renovations". Same brand grammar as `ThankYou.tsx`.
+1. Remove `<SubPageHero …/>` and the `photography.closingPhotoMoment` import path (still used elsewhere — only the call here goes).
+2. Insert a new compact header block above the form section using existing tokens:
+   - `t-eyebrow text-evergreen/70` — "Get in touch · Replies in 2 business days"
+   - `t-headline text-foreground` — "Tell us about your project."
+   - Optional second line in `t-body text-muted-foreground` — "Cory replies personally."
+   - Spacing: `pt-6 pb-6` inside `Container size="wide"`.
+3. Tighten the form section: drop `section-y pb-32`, use `pt-2 pb-40` so the sticky CTA has clearance but no giant top gap.
+4. Pass `compact` to `<ConsultationForm>` so field rhythm fits the viewport (already supported — uses `space-y-7`, smaller textarea, no helper line). Keep `formId={FORM_ID}` so the sticky Send keeps working.
+5. Keep the "Or reach us directly" rail and sticky CTA exactly as they are.
 
-Register both in `registry.ts`. No unsubscribe text in the template body — the system appends it. Footer signature uses `STUDIO_PHONE_DISPLAY` + `cory@havencreekrenovations.com`.
+## Why these choices
 
-## 4. Wire the form
+- **No accordion / no "open form" tap.** Friction. The form *is* the page.
+- **No hero photo on mobile.** Contact intent is already high; a photo just pushes fields down.
+- **Compact mode on the form.** Already built and used on the desktop right panel — reusing it keeps one source of truth, no new variant.
+- **Direct rail stays below the form**, not above — most visitors will type into the form; the email/phone fallback is for the minority who prefer it, and they'll scroll.
 
-In `ConsultationForm.onSubmit`, right after the successful `supabase.from('consultations').insert(...)`, invoke `send-transactional-email` twice:
+## Out of scope
 
-- `lead-notification` to Cory, idempotency key `lead-notify-{row.id}`
-- `lead-confirmation` to the submitter (only when `detected.kind === "email"` — phone-only leads skip the confirmation email but Cory still gets notified), idempotency key `lead-confirm-{row.id}`
+- Desktop layout (lg+ split) — not touched.
+- `ConsultationForm` internals — already supports `compact` + `formId`.
+- `SubPageHero` component — still used by other pages.
+- Memory updates — once shipped, add one line to the core nav/contact rule noting "mobile /contact opens directly to the form; no SubPageHero."
 
-`templateData` passes only fields the template actually renders: `name`, `contact`, `message`, `projectLabel`, `source`, `submittedAt`.
+## Files touched
 
-## 5. QA the loop end-to-end
-
-- Submit a test lead from `/contact` desktop and mobile.
-- Confirm Cory's inbox shows the notification with the correct `from` address (`notify.havencreekrenovations.com`) and Haven Creek branding.
-- Confirm the submitter's inbox receives the confirmation.
-- Confirm `consultations` row exists and `email_send_log` shows two `sent` rows tied to that submission.
-- Verify nothing in the deployed function references `calemwooddetailing` or any other workspace.
-
-## 6. Owner brief update
-
-Once verified, strike "Email loop" from the "Known gaps for round 2" list in `.lovable/owner-brief.md` and replace with a one-line "Lead emails wired — Cory + submitter both receive a Haven Creek-branded message on submit."
-
-## What stays untouched
-
-- `notify.calemwooddetailing.com` — different client, different project. Never referenced in Haven Creek code, templates, or DNS.
-- All site UI — this is backend wiring only. No component edits beyond the `ConsultationForm.onSubmit` invoke calls.
-
-## Open question for you before I build
-
-**Confirm the inbox.** Should Cory's notifications land at `cory@havencreekrenovations.com` (what's currently hardcoded in `ContactBrandStack.tsx` + the owner brief), or a different address (e.g. `leads@…`, a Gmail he checks more often)? Same answer drives the `From` reply-to on the confirmation email.
+- `src/pages/Contact.tsx` (mobile branch only, ~25 lines changed)
