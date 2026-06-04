@@ -1,27 +1,35 @@
-Lock `/contact` desktop to a single viewport — footer is unreachable. Audit a few small UX nits at the same time. Mobile untouched.
+## Goal
+Refine `/contact` (desktop) into a fantasy.co-style editorial page: more whitespace, restrained type, fewer competing elements. Hide the nav "Get a Free Quote" CTA on `/contact` (redundant — the page IS the quote form).
 
-### 1. Lock the page (no scroll → no footer on desktop)
-**`src/pages/Contact.tsx` desktop section**
-- Swap `min-h-[calc(100svh-80px)]` → `h-[calc(100svh-80px)] overflow-hidden` so the section is exactly viewport-height.
-- Add a `useEffect` that, when `matchMedia("(min-width: 1024px)")` matches on `/contact`, sets `document.documentElement.style.overflow = "hidden"` and clears on cleanup / on resize below `lg`. Mobile path stays scrollable. Footer still renders in the DOM (a11y + SEO), it just sits below the locked viewport and can't be reached.
+## Changes
 
-### 2. Visual audit fixes (desktop panel only)
-**`src/pages/Contact.tsx`**
-- Right panel currently relies on `flex-1 justify-center` — add `min-h-0` on the body wrapper to guarantee it never pushes the panel taller than the locked section on shorter laptops (720px).
-- Move the "Replies in 2 business days" eyebrow inside the same vertical-centered column as the form so the whole block centers as a unit (currently the eyebrow sits with `mb-6` above an auto-centered form, which slightly off-centers the visual mass).
+### 1. `src/components/Navigation.tsx`
+Hide the inline "Get a Free Quote" pill when `pathname === "/contact"`. Phone link + Menu pill stay. Mobile nav unchanged.
 
-**`src/components/ConsultationForm.tsx` (dark tone only)**
-- Textarea: hide the resize handle in dark tone (`resize-none`) — drag handles read as raw HTML against the cinematic panel. Cream tone keeps `resize-y`.
-- Submit button: button stays `w-full` in dark tone; that's already in. Confirm `flex` not `inline-flex` (already set) — no change.
-- Project chip `Re: {label}` already uses `text-evergreen-foreground/70` in dark tone — no change.
+### 2. `src/pages/Contact.tsx` (desktop only — mobile untouched)
+Rebalance the two-column split toward fantasy.co's editorial calm:
+- Drop the dark evergreen form panel. Whole page becomes cream-on-cream — fantasy.co never uses a hard color split.
+- Left column (~58%): brand cascade reworked into a single quiet stack, left-aligned (not centered), with generous left padding. Mark smaller (~140px), a fine evergreen hairline, wordmark, italic tagline, phone — all left-justified, more vertical breathing room.
+- Right column (~42%): bare cream form with a single-line eyebrow ("Get in touch / Replies in 2 business days"), an oversized serif headline ("Tell us about your project."), then the 3 fields. No panel, no hairline divider, no background fill.
+- Keep the single-viewport lock (`h-[calc(100svh-80px)] overflow-hidden` + html overflow hidden).
+- Vertical-center both columns; ~80–96px horizontal gutter between them via a center spine.
 
-**`src/components/contact/ContactBrandStack.tsx`**
-- Cap mark height tighter so the cascade fits on 720px laptops without the phone link risking clip: `h-[40vh] max-h-[460px]` → `h-[34vh] max-h-[380px]`.
-- Reduce inter-element spacing one notch on short viewports: `mt-10 mb-8` rule → `mt-8 mb-6`; phone `mt-10` → `mt-8`. Keeps the cascade airy on tall screens, prevents overflow on short ones.
+### 3. `src/components/contact/ContactBrandStack.tsx`
+- Switch from centered cascade to left-aligned stack: `items-start`, left padding bumped, text-left.
+- Mark: cap at ~140px (down from 380px) so it reads as a logo, not a hero illustration.
+- Reduce the wordmark width; tagline becomes a single quiet italic line under it.
+- Phone: smaller, label "Call" + number on one line, evergreen on hover.
 
-### 3. Out of scope
-- Mobile (`lg:hidden`) block, `.contact-sticky-cta`, SubPageHero, schema, submit logic, Footer component, Navigation.
-- No new tokens, no new components, no copy changes beyond what's listed.
+### 4. `src/components/ConsultationForm.tsx`
+- Remove the `tone="dark"` branch usage on `/contact` (page no longer dark). Revert to the cream tone but keep the compact spacing (`space-y-7`) and `rows={3}` so it still fits one viewport. Easiest: keep `tone="dark"` API but pass `tone="cream"` from Contact, and tighten cream spacing locally inside Contact via a wrapping class — OR add a `compact` prop. Simpler: keep using `tone="dark"` flag purely for spacing/sizing and split the color logic so dark-only color classes are gated by a separate `surface` consideration. **Chosen approach:** introduce a `compact?: boolean` prop that only controls spacing/textarea rows/submit-width (independent of `tone`), and pass `tone="cream"` + `compact` from `/contact` desktop.
 
-### Result
-At `lg+` on `/contact`: page is a fixed, single-viewport split. No vertical scroll, footer not reachable. Brand cascade and form both visually centered with safe spacing down to 1280×720. Mobile behaviour unchanged.
+## Out of scope
+- Mobile `/contact` layout, sticky CTA, SubPageHero, form schema, submit logic.
+- Footer, MenuOverlay, other routes.
+- Copy elsewhere on the site.
+
+## Technical notes
+- Navigation gets `const onContact = pathname === "/contact";` then `className={cn(..., onContact && "hidden")}` on the quote `<Link>` (still keep `lg:inline-flex` for other routes).
+- Contact desktop uses a 12-col grid: brand col-span-7, form col-span-5, centered with `max-w-[1280px] mx-auto`, `px-12`, `gap-x-20`.
+- Form headline uses `.t-headline` (serif), eyebrow uses `.t-eyebrow text-evergreen/70`.
+- No new design tokens, no new components, no copy changes beyond the form headline + eyebrow on the right column.

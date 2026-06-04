@@ -33,6 +33,8 @@ interface ConsultationFormProps {
   /** Surface tone — "cream" (default) for the standard cream page, "dark" for the
    *  evergreen-deep right panel on /contact desktop. Only swaps colour classes. */
   tone?: "cream" | "dark";
+  /** Compact spacing — tightens vertical rhythm so the form fits one viewport. */
+  compact?: boolean;
   className?: string;
 }
 
@@ -52,9 +54,11 @@ const ConsultationForm = ({
   successMode,
   formId,
   tone = "cream",
+  compact = false,
   className,
 }: ConsultationFormProps) => {
   const isDark = tone === "dark";
+  const isCompact = compact || isDark;
   const labelClass = isDark ? "t-eyebrow text-evergreen-foreground/70" : "t-eyebrow text-foreground/55";
   const inputClass = isDark ? "form-field-input form-field-input--dark" : "form-field-input";
   const helperClass = isDark ? "t-micro text-evergreen-foreground/50 pt-1" : "t-micro text-muted-foreground/80 pt-1";
@@ -206,7 +210,7 @@ const ConsultationForm = ({
       <form
         id={formId}
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn(isDark ? "space-y-7" : "space-y-10 md:space-y-12", className)}
+        className={cn(isCompact ? "space-y-7" : "space-y-10 md:space-y-12", className)}
         noValidate
         aria-busy={isSubmitting}
       >
@@ -263,7 +267,7 @@ const ConsultationForm = ({
                   className={inputClass}
                 />
               </FormControl>
-              {!isDark && <p className={helperClass}>Only used to reply.</p>}
+              {!isCompact && <p className={helperClass}>Only used to reply.</p>}
               <FormMessage className="t-micro text-destructive" />
             </FormItem>
           )}
@@ -286,10 +290,10 @@ const ConsultationForm = ({
               <FormControl>
                 <textarea
                   {...field}
-                  rows={isDark ? 3 : 4}
+                  rows={isCompact ? 3 : 4}
                   placeholder="New deck, hoping for spring."
                   enterKeyHint="send"
-                  className={cn(inputClass, isDark ? "resize-none min-h-[96px]" : "resize-y min-h-[120px]")}
+                  className={cn(inputClass, isCompact ? "resize-none min-h-[96px]" : "resize-y min-h-[120px]")}
                 />
               </FormControl>
               <FormMessage className="t-micro text-destructive" />
@@ -309,12 +313,13 @@ const ConsultationForm = ({
               "h-12 px-6 text-[15px] font-semibold whitespace-nowrap",
               "disabled:opacity-60 disabled:cursor-not-allowed",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              isDark ? "flex w-full" : formId ? "hidden md:inline-flex" : "inline-flex",
+              isCompact ? "inline-flex" : formId ? "hidden md:inline-flex" : "inline-flex",
+              isDark && "w-full",
             )}
           >
             {isSubmitting ? "Sending…" : "Send"}
           </button>
-          {!isDark && (
+          {!isCompact && (
             <p id={RESPONSE_NOTE_ID} className="mt-4 t-micro text-muted-foreground">
               Reply within two business days.
             </p>
