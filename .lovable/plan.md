@@ -1,26 +1,27 @@
-Make the desktop `/contact` panel fit the viewport in one screen — no scroll. Mobile untouched.
+Lock `/contact` desktop to a single viewport — footer is unreachable. Audit a few small UX nits at the same time. Mobile untouched.
 
-### Problem
-Right panel currently scrolls because it stacks: panel header (brand + reply note) + `py-8` padding + `space-y-10/12` fields + helper text under each input + trailing "Reply within two business days" line. On a typical laptop (`calc(100svh-80px)` ≈ 720-820px), the form overflows and `overflow-y-auto` kicks in.
+### 1. Lock the page (no scroll → no footer on desktop)
+**`src/pages/Contact.tsx` desktop section**
+- Swap `min-h-[calc(100svh-80px)]` → `h-[calc(100svh-80px)] overflow-hidden` so the section is exactly viewport-height.
+- Add a `useEffect` that, when `matchMedia("(min-width: 1024px)")` matches on `/contact`, sets `document.documentElement.style.overflow = "hidden"` and clears on cleanup / on resize below `lg`. Mobile path stays scrollable. Footer still renders in the DOM (a11y + SEO), it just sits below the locked viewport and can't be reached.
 
-### Changes
+### 2. Visual audit fixes (desktop panel only)
+**`src/pages/Contact.tsx`**
+- Right panel currently relies on `flex-1 justify-center` — add `min-h-0` on the body wrapper to guarantee it never pushes the panel taller than the locked section on shorter laptops (720px).
+- Move the "Replies in 2 business days" eyebrow inside the same vertical-centered column as the form so the whole block centers as a unit (currently the eyebrow sits with `mb-6` above an auto-centered form, which slightly off-centers the visual mass).
 
-**`src/pages/Contact.tsx` (desktop block only, lines 49-110)**
-- Remove the panel header (`<header>` with "Haven Creek Renovations / Family-run · Foothills, AB / Replies in 2 business days"). The left brand cascade already carries identity + tagline; the reply promise moves to a single quiet line above the form.
-- Body wrapper: drop `overflow-y-auto`, switch to `flex-1 flex flex-col justify-center px-10 py-10` so the 3 fields center vertically in the panel.
-- Add one small eyebrow line above the form: `Replies in 2 business days` in `t-eyebrow text-evergreen-foreground/55`, sitting ~24px above the first field.
-- Keep the top hairline accent.
+**`src/components/ConsultationForm.tsx` (dark tone only)**
+- Textarea: hide the resize handle in dark tone (`resize-none`) — drag handles read as raw HTML against the cinematic panel. Cream tone keeps `resize-y`.
+- Submit button: button stays `w-full` in dark tone; that's already in. Confirm `flex` not `inline-flex` (already set) — no change.
+- Project chip `Re: {label}` already uses `text-evergreen-foreground/70` in dark tone — no change.
 
-**`src/components/ConsultationForm.tsx` — tighten when `tone === "dark"` only**
-- Form `space-y-10 md:space-y-12` → `space-y-7` in dark tone (cream tone unchanged).
-- Drop the helper line `Only used to reply.` under the contact field in dark tone.
-- Drop the trailing `Reply within two business days.` paragraph under the submit in dark tone (it's now in the panel eyebrow).
-- Textarea: `rows={4}` + `min-h-[120px]` → `rows={3}` + `min-h-[96px]` in dark tone.
-- Submit button stays solid evergreen, full-width inside the panel: add `w-full` when dark.
+**`src/components/contact/ContactBrandStack.tsx`**
+- Cap mark height tighter so the cascade fits on 720px laptops without the phone link risking clip: `h-[40vh] max-h-[460px]` → `h-[34vh] max-h-[380px]`.
+- Reduce inter-element spacing one notch on short viewports: `mt-10 mb-8` rule → `mt-8 mb-6`; phone `mt-10` → `mt-8`. Keeps the cascade airy on tall screens, prevents overflow on short ones.
+
+### 3. Out of scope
+- Mobile (`lg:hidden`) block, `.contact-sticky-cta`, SubPageHero, schema, submit logic, Footer component, Navigation.
+- No new tokens, no new components, no copy changes beyond what's listed.
 
 ### Result
-Right panel renders: hairline → small "Replies in 2 business days" eyebrow → Name → Email or phone → About your project (3 rows) → full-width Send. All inside `min-h-[calc(100svh-80px)]`, no scrollbar at 1280×720 and up. Mobile path (`lg:hidden` block + sticky CTA) is not modified.
-
-### Out of scope
-- Mobile `<SubPageHero>`, mobile direct rail, `.contact-sticky-cta`, `ContactBrandStack`, schema, submit logic, `formId` plumbing.
-- No new tokens, no new components.
+At `lg+` on `/contact`: page is a fixed, single-viewport split. No vertical scroll, footer not reachable. Brand cascade and form both visually centered with safe spacing down to 1280×720. Mobile behaviour unchanged.

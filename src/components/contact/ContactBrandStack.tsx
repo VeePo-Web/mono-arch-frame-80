@@ -25,13 +25,13 @@ const ContactBrandStack = () => {
         loading="eager"
         fetchPriority="high"
         decoding="async"
-        className="contact-cascade-item h-[40vh] max-h-[460px] w-auto object-contain"
+        className="contact-cascade-item h-[34vh] max-h-[380px] w-auto object-contain"
         style={{ ["--cascade-delay" as string]: "80ms" }}
       />
 
       {/* Evergreen hairline */}
       <div
-        className="contact-cascade-item mt-10 mb-8 h-px w-28 bg-gradient-to-r from-transparent via-evergreen/60 to-transparent"
+        className="contact-cascade-item mt-8 mb-6 h-px w-28 bg-gradient-to-r from-transparent via-evergreen/60 to-transparent"
         style={{ ["--cascade-delay" as string]: "450ms" }}
       />
 
@@ -60,7 +60,7 @@ const ContactBrandStack = () => {
         href={`tel:${STUDIO_PHONE_TEL}`}
         aria-hidden={false}
         aria-label={`Call Haven Creek at ${STUDIO_PHONE_DISPLAY}`}
-        className="contact-cascade-item pointer-events-auto mt-10 inline-flex flex-col items-center gap-1 group"
+        className="contact-cascade-item pointer-events-auto mt-8 inline-flex flex-col items-center gap-1 group"
         style={{ ["--cascade-delay" as string]: "850ms" }}
       >
         <span className="t-eyebrow text-evergreen/70 group-hover:text-evergreen transition-colors duration-300 ease-weighted">
