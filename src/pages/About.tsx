@@ -104,14 +104,14 @@ const About = () => {
         </Container>
       </RevealSection>
 
-      {/* § II — Where we work — magazine directory list */}
+      {/* § II — Where we work — editorial pass */}
       <RevealSection id="areas" aria-labelledby="areas-heading" className="section-y">
         <Container size="wide">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-8 md:gap-y-10 mb-10 md:mb-14">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-8 md:gap-y-10">
             <p className="md:col-span-3 t-eyebrow" data-reveal>Where we work</p>
             <h2
               id="areas-heading"
-              className="md:col-span-9 t-section text-foreground max-w-[18ch]"
+              className="md:col-span-9 t-section text-foreground max-w-[22ch]"
               data-reveal
               style={{ ["--reveal-delay" as string]: "120ms" }}
             >
@@ -119,21 +119,70 @@ const About = () => {
             </h2>
           </div>
 
-          <ul className="border-t border-foreground/12 grid grid-cols-1 md:grid-cols-2">
+          <div
+            className="mt-14 md:mt-16 border-t border-foreground/12"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "200ms" }}
+          />
+
+          <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10">
+            <p
+              className="lg:col-span-7 t-lede text-foreground/90 max-w-[58ch]"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "280ms" }}
+            >
+              Foothills work, mostly. Wooded acreages, working properties, and established
+              country homes west and north of Calgary — places where access, weather, and
+              respect for the land shape every decision.
+            </p>
+
+            <blockquote
+              className="lg:col-span-4 lg:col-start-9 lg:pt-2"
+              data-reveal
+              style={{ ["--reveal-delay" as string]: "360ms" }}
+            >
+              <span className="block h-px w-8 bg-evergreen/40 mb-5" aria-hidden="true" />
+              <p className="font-serif italic text-2xl lg:text-3xl text-foreground leading-[1.25] tracking-[-0.01em]">
+                If we can get there in a morning, we can take care of it.
+              </p>
+            </blockquote>
+          </div>
+
+          <div
+            className="mt-20 md:mt-24 flex items-center gap-3"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: "480ms" }}
+          >
+            <span className="h-px w-6 bg-foreground/20" aria-hidden="true" />
+            <p className="t-eyebrow text-evergreen/70">In the area</p>
+          </div>
+
+          <ul className="mt-8 border-t border-foreground/12">
             {serviceAreas.map((a, i) => (
               <li
                 key={a.slug}
                 data-reveal
-                style={{ ["--reveal-delay" as string]: `${i * 90}ms` }}
-                className="row-wash border-b border-foreground/12 md:[&:nth-child(2n-1)]:border-r border-foreground/12 px-2 -mx-2 py-6 md:py-7 flex items-baseline justify-between gap-6"
+                style={{ ["--reveal-delay" as string]: `${560 + i * 90}ms` }}
+                className="row-wash border-b border-foreground/12 px-2 -mx-2 py-6 md:py-7 grid grid-cols-1 md:grid-cols-12 gap-x-8 items-baseline"
               >
-                <span className="t-title text-foreground">{a.name}</span>
-                <span className="t-micro whitespace-nowrap">AB</span>
+                <span className="md:col-span-4 t-title text-foreground">{a.name}</span>
+                <span className="hidden md:block md:col-span-8 t-micro text-foreground/60">
+                  {a.shortLine}
+                </span>
               </li>
             ))}
           </ul>
+
+          <p
+            className="mt-8 t-micro text-foreground/60"
+            data-reveal
+            style={{ ["--reveal-delay" as string]: `${560 + serviceAreas.length * 90 + 90}ms` }}
+          >
+            Outside this radius? Send a note — we'll tell you straight.
+          </p>
         </Container>
       </RevealSection>
+
 
       <BigCloseCTA />
     </main>

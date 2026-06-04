@@ -1,75 +1,30 @@
-# /about "How we work" — editorial re-format
+# Reformat "Where we work" — editorial pass
 
-Replace the two parallel body columns with a fantasy.co-style tall editorial layout. Scope is **only** the `#how-we-work` section in `src/pages/About.tsx`. Eyebrow + headline grammar stays (matches the Areas section below it). Type tokens, motion cadence, and `.section-y` spacing all stay locked.
+Match the grammar we just landed on "How we work": eyebrow + tight headline, hair rule, a short lede paired with an italic serif pull-quote, then the area list rendered as a clean typographic stack instead of the noisy 2-col grid with repeating "AB" chips.
 
-## What's wrong with the current section
+## What changes (in `src/pages/About.tsx`, lines 108–136 only)
 
-- Two side-by-side body paragraphs read as a newspaper column dump — eye doesn't know which to read first.
-- Headline is clamped to `max-w-[18ch]` so it breaks awkwardly at md.
-- The strongest line in the copy ("We hold both standards because the homeowner does.") is buried at the end of paragraph one with no emphasis.
-- "In practice" pivot has no visual marker, so paragraph two feels like more of the same.
-- Body opacity step (`/85` → `/70`) demotes the second paragraph for no editorial reason.
+**Header block (unchanged grammar, tightened copy)**
+- Keep `t-eyebrow` "Where we work" + `t-section` headline "Across the foothills."
+- Add the same 1px `border-t border-foreground/12` divider used in "How we work" (mt-14 / mt-16).
 
-## New layout (lg+)
+**Lede + pull-quote row** (new, mirrors How we work)
+- Left, `lg:col-span-7`, `t-lede text-foreground/90 max-w-[58ch]`:
+  > "Foothills work, mostly. Wooded acreages, working properties, and established country homes west and north of Calgary — places where access, weather, and respect for the land shape every decision."
+- Right, `lg:col-span-4 lg:col-start-9`, italic serif pull-quote with the 32px evergreen hair rule above it:
+  > "If we can get there in a morning, we can take care of it."
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│  HOW WE WORK                                                │
-│  ───────                                                    │
-│                                                             │
-│  Held to two standards —                                    │
-│  the work, and                                              │
-│  the experience.                          ← oversized H2,   │
-│                                             cols 1-9,       │
-│                                             tighter leading │
-│                                                             │
-│  ─────────────────────────────────────────────              │
-│                                                             │
-│  ┌──── cols 1-7 ────┐    ┌─ cols 9-12 ──┐                   │
-│  │ A finished       │    │ ❝ We hold     │                  │
-│  │ renovation is    │    │   both        │                  │
-│  │ judged twice…    │    │   standards   │                  │
-│  │ [t-lede, larger, │    │   because     │                  │
-│  │  cream lead      │    │   the         │                  │
-│  │  paragraph]      │    │   homeowner   │                  │
-│  │                  │    │   does. ❞     │                  │
-│  └──────────────────┘    │  ← pull-quote │                  │
-│                          │    serif      │                  │
-│                          │    italic,    │                  │
-│                          │    evergreen  │                  │
-│                          │    rule above │                  │
-│                          └───────────────┘                  │
-│                                                             │
-│  ─── IN PRACTICE                                            │
-│                                                             │
-│  ┌──── cols 3-10 (indented body) ──────────┐                │
-│  │ Careful access — the route, the gates,  │                │
-│  │ the hours. Working around dogs, horses, │                │
-│  │ kids, and the rhythm of a working       │                │
-│  │ acreage. Equipment and materials stay   │                │
-│  │ where they belong…                      │                │
-│  └─────────────────────────────────────────┘                │
-└─────────────────────────────────────────────────────────────┘
-```
-
-Mobile collapses to a single column in the same vertical order: eyebrow → headline → lead paragraph → pull-quote (full width, hair rules above + below, indented left) → "IN PRACTICE" small-caps divider → second paragraph (no indent).
-
-## Specific moves
-
-1. **Headline** — drop `max-w-[18ch]`, let `.t-section` breathe to `max-w-[22ch]` so the line break lands on "two standards — / the work, and / the experience." naturally. No copy change.
-2. **Hair rule under headline** — 1px `border-foreground/12`, full container width, 56px below H2 / 64px above the body grid. Same magazine grammar as the Areas list.
-3. **Lead paragraph** — first paragraph promoted to `.t-lede text-foreground/90` (currently `.t-body /85`). Cols 1-7 at lg, full width below.
-4. **Pull-quote** — extract "We hold both standards because the homeowner does." into a `<blockquote>` at cols 9-12 (lg) / full width (mobile). `font-serif italic text-2xl lg:text-3xl text-foreground leading-[1.25] tracking-[-0.01em]`, with a 32px-wide `h-px bg-evergreen/40` rule above the quote and 16px below. **Remove that sentence from the lead paragraph** so it isn't repeated.
-5. **"In Practice" divider** — small-caps `.t-eyebrow text-evergreen/70` flush left, preceded by a 24px `h-px bg-foreground/20` rule (rule + label inline, 12px gap). 80px above the second paragraph.
-6. **Second paragraph** — restored to `.t-body text-foreground/85` (same weight as lead, no demotion), indented to cols 3-10 at lg, `max-w-[62ch]`. No "minus the work that needed doing" trim — copy unchanged otherwise.
-7. **Reveal cadence** — eyebrow 0ms · headline 120ms · rule 200ms · lead 280ms · pull-quote 360ms · in-practice rule 480ms · second paragraph 560ms. All `data-reveal`, standard 800ms `ease-weighted`.
-
-## Files touched
-
-- **`src/pages/About.tsx`** — replace lines 36-73 (the `#how-we-work` `RevealSection`) with the new editorial layout. No other section changes. No new components, no new CSS — everything uses existing tokens (`.t-eyebrow`, `.t-section`, `.t-lede`, `.t-body`, `font-serif`, `text-evergreen`, `border-foreground/12`, `data-reveal`).
+**Area list** — replace the 2-col grid + "AB" chips with a single typographic column
+- "In the area" eyebrow divider row (matches "In practice" on the section above).
+- Render `serviceAreas` as a clean `<ul>`:
+  - Single column at every breakpoint, full-width hair rule between rows.
+  - Each row: area name in `.t-title text-foreground` (left), the area's existing `shortLine` in `.t-micro text-foreground/60` (right, hidden < md). No "AB" tag — Alberta is already named in the eyebrow context.
+  - `.row-wash` hover, `data-reveal` stagger 90ms apart.
+- Quiet closing line below the list, `.t-micro text-foreground/60 mt-8`:
+  > "Outside this radius? Send a note — we'll tell you straight."
 
 ## Out of scope
-
-- The Areas section, the Hero, BigCloseCTA — untouched.
-- No new memory entries — this is a layout refinement, not a new rule. The existing core rule "About is exactly 2 prose sections + the named-area rail + BigCloseCTA" still holds (we're refining one of those 2 prose sections, not adding a third).
-- No copy rewrites beyond extracting the one sentence into the pull-quote.
+- No copy changes to How we work, Hero, BigCloseCTA.
+- No data file changes (`serviceAreas.ts` stays as-is; we just surface `shortLine`).
+- No new components, no new tokens — uses `.t-eyebrow`, `.t-section`, `.t-lede`, `.t-title`, `.t-micro`, `.row-wash`, `border-foreground/12`, evergreen hair rule, `data-reveal`.
+- Memory index: tweak the About line to note the section now uses the lede + pull-quote + single-column rail grammar (no "AB" chips, no 2-col grid).
