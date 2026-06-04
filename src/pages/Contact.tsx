@@ -32,6 +32,21 @@ const Contact = () => {
     path: "/contact",
   });
 
+  // Desktop (lg+) only: lock the page to a single viewport so the footer
+  // is unreachable. Mobile keeps native scroll.
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const apply = () => {
+      document.documentElement.style.overflow = mql.matches ? "hidden" : "";
+    };
+    apply();
+    mql.addEventListener("change", apply);
+    return () => {
+      mql.removeEventListener("change", apply);
+      document.documentElement.style.overflow = "";
+    };
+  }, []);
+
   return (
     <main id="main">
       <BreadcrumbJsonLd
