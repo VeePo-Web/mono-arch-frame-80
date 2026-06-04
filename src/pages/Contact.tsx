@@ -62,7 +62,7 @@ const Contact = () => {
           Sits below the nav and fills the rest of the viewport.
           ────────────────────────────────────────────────────────────────── */}
       <section
-        className="hidden lg:flex relative w-full min-h-[calc(100svh-80px)]"
+        className="hidden lg:flex relative w-full h-[calc(100svh-80px)] overflow-hidden"
         aria-label="Contact"
       >
         {/* Left: brand cascade — fills remaining width */}
@@ -84,7 +84,7 @@ const Contact = () => {
           <h2 id="form-heading-desktop" className="sr-only">Contact form</h2>
 
           {/* Form body — centered, no scroll */}
-          <div className="flex-1 flex flex-col justify-center px-10 py-10">
+          <div className="flex-1 min-h-0 flex flex-col justify-center px-10 py-10">
             <p className="t-eyebrow text-evergreen-foreground/55 mb-6">
               Replies in 2 business days
             </p>
