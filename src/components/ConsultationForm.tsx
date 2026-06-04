@@ -33,6 +33,8 @@ interface ConsultationFormProps {
   /** Surface tone — "cream" (default) for the standard cream page, "dark" for the
    *  evergreen-deep right panel on /contact desktop. Only swaps colour classes. */
   tone?: "cream" | "dark";
+  /** Compact spacing — tightens vertical rhythm so the form fits one viewport. */
+  compact?: boolean;
   className?: string;
 }
 
