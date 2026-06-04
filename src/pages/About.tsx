@@ -1,11 +1,13 @@
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
+import PhotoBleed from "@/components/PhotoBleed";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas } from "@/data/serviceAreas";
 import { photography } from "@/assets/photography";
+
 
 const SITE = "https://havencreekrenovations.ca";
 
@@ -103,9 +105,15 @@ const About = () => {
           </div>
         </Container>
       </RevealSection>
+      <PhotoBleed
+        src={photography.aboutToolsBench}
+        alt="Hand tools resting on a workbench in soft daylight"
+        position="50% 55%"
+      />
 
       {/* § II — Where we work — editorial pass */}
       <RevealSection id="areas" aria-labelledby="areas-heading" className="section-y">
+
         <Container size="wide">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-y-8 md:gap-y-10">
             <p className="md:col-span-3 t-eyebrow" data-reveal>Where we work</p>

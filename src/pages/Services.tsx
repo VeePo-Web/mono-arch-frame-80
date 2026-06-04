@@ -1,11 +1,13 @@
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
+import PhotoBleed from "@/components/PhotoBleed";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
 import { photography } from "@/assets/photography";
+
 
 const SITE = "https://havencreekrenovations.ca";
 
@@ -66,9 +68,16 @@ const Services = () => {
         </Container>
       </RevealSection>
 
+      <PhotoBleed
+        src={photography.deckingDetailEndgrain}
+        alt="End-grain detail on a finished cedar deck board"
+        position="50% 50%"
+      />
+
       <BigCloseCTA />
     </main>
   );
 };
+
 
 export default Services;

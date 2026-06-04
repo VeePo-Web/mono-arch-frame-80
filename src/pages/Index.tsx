@@ -1,8 +1,10 @@
 import Hero from "@/components/Hero";
 import RecentWorkPreview from "@/components/RecentWorkPreview";
+import PhotoBleed from "@/components/PhotoBleed";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import { LocalBusinessJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
+import { photography } from "@/assets/photography";
 
 const Index = () => {
   useSeo({
@@ -21,6 +23,11 @@ const Index = () => {
       <section id="work">
         <RecentWorkPreview />
       </section>
+      <PhotoBleed
+        src={photography.closingPrairie}
+        alt="Foothills light across an Alberta acreage at dusk"
+        position="50% 60%"
+      />
       <section id="contact">
         <BigCloseCTA />
       </section>
@@ -29,3 +36,4 @@ const Index = () => {
 };
 
 export default Index;
+
