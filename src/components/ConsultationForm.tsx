@@ -289,7 +289,7 @@ const ConsultationForm = ({
                   rows={isDark ? 3 : 4}
                   placeholder="New deck, hoping for spring."
                   enterKeyHint="send"
-                  className={cn(inputClass, "resize-y", isDark ? "min-h-[96px]" : "min-h-[120px]")}
+                  className={cn(inputClass, isDark ? "resize-none min-h-[96px]" : "resize-y min-h-[120px]")}
                 />
               </FormControl>
               <FormMessage className="t-micro text-destructive" />
