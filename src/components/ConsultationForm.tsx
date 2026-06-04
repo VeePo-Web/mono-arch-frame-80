@@ -206,7 +206,7 @@ const ConsultationForm = ({
       <form
         id={formId}
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("space-y-10 md:space-y-12", className)}
+        className={cn(isDark ? "space-y-7" : "space-y-10 md:space-y-12", className)}
         noValidate
         aria-busy={isSubmitting}
       >
@@ -263,7 +263,7 @@ const ConsultationForm = ({
                   className={inputClass}
                 />
               </FormControl>
-              <p className={helperClass}>Only used to reply.</p>
+              {!isDark && <p className={helperClass}>Only used to reply.</p>}
               <FormMessage className="t-micro text-destructive" />
             </FormItem>
           )}
@@ -286,10 +286,10 @@ const ConsultationForm = ({
               <FormControl>
                 <textarea
                   {...field}
-                  rows={4}
+                  rows={isDark ? 3 : 4}
                   placeholder="New deck, hoping for spring."
                   enterKeyHint="send"
-                  className={cn(inputClass, "resize-y min-h-[120px]")}
+                  className={cn(inputClass, "resize-y", isDark ? "min-h-[96px]" : "min-h-[120px]")}
                 />
               </FormControl>
               <FormMessage className="t-micro text-destructive" />
@@ -304,19 +304,21 @@ const ConsultationForm = ({
             disabled={isSubmitting}
             aria-describedby={RESPONSE_NOTE_ID}
             className={cn(
-              "cta-spring inline-flex items-center justify-center",
+              "cta-spring items-center justify-center",
               "bg-evergreen text-evergreen-foreground rounded-lg",
               "h-12 px-6 text-[15px] font-semibold whitespace-nowrap",
               "disabled:opacity-60 disabled:cursor-not-allowed",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              formId ? "hidden md:inline-flex" : "inline-flex",
+              isDark ? "flex w-full" : formId ? "hidden md:inline-flex" : "inline-flex",
             )}
           >
             {isSubmitting ? "Sending…" : "Send"}
           </button>
-          <p id={RESPONSE_NOTE_ID} className={cn("mt-4 t-micro", isDark ? "text-evergreen-foreground/55" : "text-muted-foreground")}>
-            Reply within two business days.
-          </p>
+          {!isDark && (
+            <p id={RESPONSE_NOTE_ID} className="mt-4 t-micro text-muted-foreground">
+              Reply within two business days.
+            </p>
+          )}
         </div>
       </form>
     </Form>

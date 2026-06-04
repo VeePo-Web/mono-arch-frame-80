@@ -66,33 +66,13 @@ const Contact = () => {
             aria-hidden="true"
           />
 
-          {/* Panel header */}
-          <header className="flex items-start gap-4 px-8 py-6 border-b border-evergreen-foreground/10">
-            <span
-              className="mt-1 inline-block h-8 w-1 rounded-full bg-evergreen-foreground"
-              aria-hidden="true"
-            />
-            <div>
-              <p id="form-heading-desktop" className="text-evergreen-foreground font-semibold text-base">
-                Haven Creek Renovations
-              </p>
-              <p className="text-evergreen-foreground/55 text-sm mt-0.5">
-                Family-run · Foothills, AB
-              </p>
-              <div className="flex items-center gap-2 mt-2">
-                <span
-                  className="inline-block h-[6px] w-[6px] rotate-45 bg-evergreen-foreground/80"
-                  aria-hidden="true"
-                />
-                <span className="t-eyebrow text-evergreen-foreground/55">
-                  Replies in 2 business days
-                </span>
-              </div>
-            </div>
-          </header>
+          <h2 id="form-heading-desktop" className="sr-only">Contact form</h2>
 
-          {/* Form body */}
-          <div className="flex-1 overflow-y-auto px-8 py-8">
+          {/* Form body — centered, no scroll */}
+          <div className="flex-1 flex flex-col justify-center px-10 py-10">
+            <p className="t-eyebrow text-evergreen-foreground/55 mb-6">
+              Replies in 2 business days
+            </p>
             <Suspense
               fallback={
                 <div aria-hidden="true" className="h-[420px] rounded-md bg-evergreen-foreground/5 animate-pulse" />
