@@ -267,7 +267,7 @@ const ConsultationForm = ({
                   className={inputClass}
                 />
               </FormControl>
-              {!isDark && <p className={helperClass}>Only used to reply.</p>}
+              {!isCompact && <p className={helperClass}>Only used to reply.</p>}
               <FormMessage className="t-micro text-destructive" />
             </FormItem>
           )}
