@@ -70,7 +70,7 @@ const Services = () => {
 
       <PhotoBleed
         src={photography.deckingDetailEndgrain}
-        alt="End-grain detail on a finished cedar deck board"
+        alt="End-grain of a cedar deck board with a fallen leaf catching afternoon light"
         position="50% 50%"
       />
 

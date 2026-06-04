@@ -24,10 +24,11 @@ const Index = () => {
         <RecentWorkPreview />
       </section>
       <PhotoBleed
-        src={photography.closingPrairie}
-        alt="Foothills light across an Alberta acreage at dusk"
-        position="50% 60%"
+        src={photography.closingPhotoMoment}
+        alt="A wood-clad acreage home at dusk, interior windows warm against the prairie sky"
+        position="50% 65%"
       />
+
       <section id="contact">
         <BigCloseCTA />
       </section>

@@ -1,56 +1,51 @@
-## What you'll see
+## Audit findings
 
-Quiet, full-width photo "bleeds" — a single atmospheric image stretched edge-to-edge, with the cream background dissolving softly into the top and bottom of the photo so it never feels like a hard banner. No headlines on the image, no CTAs, no overlays. Just a breath of photography between text sections, in the same minimal Fantasy.co register the site already uses.
+I opened each photograph and cross-checked it against where it sits today.
 
-The pattern is borrowed from Royal Mechanical's `PhotoMoment` — but stripped of the dark wash, the white headline, and the parallax. Ours is silent: photo + soft cream dissolves top and bottom. That's it.
+| Page | Current bleed | Verdict |
+|---|---|---|
+| Home `/` | `closingPrairie` (snow on evergreens) | **Fail — duplicate.** The Hero on the same page already paints `closingPrairie` as its full-bleed `hero-backdrop__img`. Seeing the same forest twice in one scroll is the opposite of Apple restraint. |
+| About `/about` | `aboutToolsBench` | **Fail — wrong subject.** The photo is not a tools bench — it's interior finished shelving above a desk. The alt I wrote ("hand tools resting on a workbench") is misleading. The image itself reads flat/cluttered at full bleed. |
+| Services `/services` | `deckingDetailEndgrain` | **Pass.** Warm end-grain + fallen leaf + low shadow. The single most Apple-product-photography image in the library. Keep. |
 
-## Where they land
+I also catalogued what's already spoken for:
 
-**Home (`/`)** — One bleed between `RecentWorkPreview` and `BigCloseCTA`. Photo: `closingPrairie` (wide foothills light). Acts as a visual exhale between the work grid and the closing CTA.
+- `closingPrairie` → home Hero backdrop
+- `areaFoothills` → About Hero backdrop
+- `interiorDetailTrim` → Services Hero backdrop
+- `exteriorDetailSoffit` → Work Hero backdrop
+- `closingPhotoMoment` → Contact mobile Hero backdrop only (free on desktop)
+- `heroDetail` → currently **unused** anywhere
 
-**About (`/about`)** — One bleed between "How we work" and "Where we work". Photo: `aboutToolsBench` (tactile, hands-on register).
+## The Apple-UX rule I'm applying
 
-**Services (`/services`)** — One bleed between the services row list and `BigCloseCTA`. Photo: `deckingDetailEndgrain` (material detail).
+Each bleed must (a) not repeat a photograph already on the same page, (b) advance the page's argument visually — not just decorate, (c) reward inspection with a clear material focal point.
 
-**Work (`/work`)** — Skipped. The page is already nothing but full-bleed photography; adding another bleed would be redundant.
+## Changes
 
-**Contact (`/contact`)** — Skipped. Desktop already has the photo-equivalent (dark evergreen panel + brand cascade); mobile already carries `closingPhotoMoment` in the SubPageHero.
+**Home `/` — swap `closingPrairie` → `closingPhotoMoment`**
+The shot is a modern wood-clad acreage home at dusk, interior windows warm. Payoff: the page just showed six tiles of work; this is what work looks like when it's done and the homeowner has gone inside. Sits between RecentWorkPreview and BigCloseCTA as the emotional pivot to "let's talk." `closingPhotoMoment` is only used on `/contact` mobile, so no desktop duplication.
+- `position="50% 65%"` to seat the roofline in lower-mid frame and let the dusk sky dominate the dissolve.
+- Alt: `"A wood-clad acreage home at dusk, interior windows warm against the prairie sky"`.
 
-## The component
+**About `/about` — swap `aboutToolsBench` → `heroDetail`**
+The unused `hero-detail-trim.jpg` is a heavy black bracket fastened to a stained timber post — heavy hardware, real fasteners, warm wood. Reads instantly as "craft + hands-on + the actual joinery," which is exactly the bridge between "How we work" (philosophy) and "Where we work" (areas). Currently unused anywhere, so introducing it here also gives the photo library full coverage.
+- `position="50% 45%"` to center the bracket vertically.
+- Alt: `"A heavy black structural bracket bolted into a stained timber post"`.
 
-New file: `src/components/PhotoBleed.tsx`. Type-only API:
+**Services `/services` — keep `deckingDetailEndgrain`, refine copy**
+- Tighten alt to: `"End-grain of a cedar deck board with a fallen leaf catching afternoon light"`.
+- `position="50% 50%"` already correct.
 
-```
-<PhotoBleed src={photography.closingPrairie} alt="..." position="50% 60%" />
-```
+## What stays untouched
 
-- Full-viewport-width via `w-screen relative left-1/2 -translate-x-1/2` (escapes any `Container`).
-- Height: `min-h-[40svh] md:min-h-[55vh] lg:min-h-[60vh]` — present but never dominant.
-- Cream-to-transparent dissolve at top and bottom (`h-16 md:h-24 lg:h-32`), same gradient idiom as Royal Mechanical's bleed but using `hsl(var(--background))` so it melts into our cream.
-- `object-cover`, `loading="lazy"`, `decoding="async"`, no parallax, no overlay text, no caption, no CTA.
-- Optional `aspectFocus` prop to bias `object-position` per photo.
-- Honors `prefers-reduced-motion` — no transform animations to begin with, so this is automatic.
-
-## What I will NOT change
-
-- No new components beyond `PhotoBleed.tsx`.
-- No new photography — uses existing files in `src/assets/photography/`.
-- No copy changes, no headline edits, no CTA edits.
-- No layout edits to Hero, SubPageHero, `RecentWorkPreview`, services row list, or About prose.
-- No memory rule changes other than the one note below.
-
-## Memory note (one rule update)
-
-The core memory currently says: *"Home is exactly 3 sections: Hero → RecentWorkPreview → BigCloseCTA. Never re-add `ServicesGrid`, `HowItGoes`, or the area rail to `/`."*
-
-This plan adds a 4th element to home — but it's a silent photo bleed, not a content section (no heading, no CTA, no list). I'll update the core rule to read: *"Home is exactly Hero → RecentWorkPreview → PhotoBleed → BigCloseCTA. The bleed is a silent photo only — never a content section with headings, CTAs, or lists. Never re-add ServicesGrid, HowItGoes, or the area rail to /."*
-
-The retired `mem://features/home-cinematic-arc` file will be left as-is (already superseded by core).
+- `PhotoBleed.tsx` component — no API or visual changes. Only swapping `src`/`alt`/`position` props at the three callsites.
+- Work and Contact pages — still no bleed.
+- Memory core rule for home flow stays valid (Hero → RecentWorkPreview → PhotoBleed → BigCloseCTA).
+- Photography manifest, hero placements, services list, About prose — untouched.
 
 ## Files touched
 
-- `src/components/PhotoBleed.tsx` — new
-- `src/pages/Index.tsx` — add one `<PhotoBleed>` between work preview and CTA
-- `src/pages/About.tsx` — add one `<PhotoBleed>` between the two `RevealSection`s
-- `src/pages/Services.tsx` — add one `<PhotoBleed>` before `BigCloseCTA`
-- `mem://index.md` — update the home-sections core rule (one line)
+- `src/pages/Index.tsx` — swap PhotoBleed `src`/`alt`/`position`
+- `src/pages/About.tsx` — swap PhotoBleed `src`/`alt`/`position`
+- `src/pages/Services.tsx` — alt rewrite only
