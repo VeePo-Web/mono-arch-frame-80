@@ -6,6 +6,7 @@ import { routeHasTransparentTop } from "@/lib/pageSections";
 import HamburgerButton from "@/components/nav/HamburgerButton";
 import BrandMark from "@/components/nav/BrandMark";
 import NavLinks from "@/components/nav/NavLinks";
+import PhoneLink from "@/components/nav/PhoneLink";
 import Container from "@/components/Container";
 
 const MenuOverlay = lazy(() => import("@/components/nav/MenuOverlay"));
@@ -179,7 +180,8 @@ const Navigation = () => {
             <NavLinks />
 
             {/* Right — desktop CTA + mobile hamburger */}
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex items-center justify-end gap-2 md:gap-3">
+              <PhoneLink />
               <Link
                 to="/contact"
                 onPointerDown={warmRoute("/contact")}
@@ -199,7 +201,6 @@ const Navigation = () => {
                 open={menuOpen}
                 onClick={openMenu}
                 onPointerDown={warmMenu}
-                className="lg:hidden"
               />
             </div>
           </nav>
