@@ -25,7 +25,7 @@ const ContactBrandStack = () => {
         loading="eager"
         fetchPriority="high"
         decoding="async"
-        className="contact-cascade-item h-[40vh] max-h-[460px] w-auto object-contain"
+        className="contact-cascade-item h-[34vh] max-h-[380px] w-auto object-contain"
         style={{ ["--cascade-delay" as string]: "80ms" }}
       />
 
