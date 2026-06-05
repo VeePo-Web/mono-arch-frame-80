@@ -56,3 +56,50 @@ export const workPhotos: Record<string, string> = {
   "water-valley-stepdown-platform": workWaterValleyStepdown,
 };
 
+// Real project photographs supplied by Haven Creek. Order is intentional —
+// strongest establishing shots first so the Work grid leads with impact.
+import upload01 from "./uploads/IMG_6394.jpeg";
+import upload02 from "./uploads/IMG_6395.jpeg";
+import upload03 from "./uploads/IMG_6396.jpeg";
+import upload04 from "./uploads/IMG_6397.jpeg";
+import upload05 from "./uploads/IMG_6398.jpeg";
+import upload06 from "./uploads/IMG_6399.jpeg";
+import upload07 from "./uploads/IMG_6400.jpeg";
+import upload08 from "./uploads/IMG_6401.jpeg";
+import upload09 from "./uploads/IMG_6402.jpeg";
+import upload10 from "./uploads/IMG_6403.jpeg";
+import upload11 from "./uploads/IMG_6404.jpeg";
+import upload12 from "./uploads/IMG_6405.jpeg";
+import upload13 from "./uploads/IMG_6406.jpeg";
+import upload14 from "./uploads/IMG_6407.jpeg";
+import upload15 from "./uploads/IMG_6408.jpeg";
+import upload16 from "./uploads/IMG_6409.jpeg";
+import upload17 from "./uploads/IMG_6410.jpeg";
+import upload18 from "./uploads/IMG_3788_1.jpeg";
+
+export interface UploadedProjectPhoto {
+  src: string;
+  alt: string;
+}
+
+export const uploadedProjectPhotos: UploadedProjectPhoto[] = [
+  { src: upload01, alt: "Haven Creek Renovations project photograph" },
+  { src: upload02, alt: "Haven Creek Renovations project photograph" },
+  { src: upload03, alt: "Haven Creek Renovations project photograph" },
+  { src: upload04, alt: "Haven Creek Renovations project photograph" },
+  { src: upload05, alt: "Haven Creek Renovations project photograph" },
+  { src: upload06, alt: "Haven Creek Renovations project photograph" },
+  { src: upload07, alt: "Haven Creek Renovations project photograph" },
+  { src: upload08, alt: "Haven Creek Renovations project photograph" },
+  { src: upload09, alt: "Haven Creek Renovations project photograph" },
+  { src: upload10, alt: "Haven Creek Renovations project photograph" },
+  { src: upload11, alt: "Haven Creek Renovations project photograph" },
+  { src: upload12, alt: "Haven Creek Renovations project photograph" },
+  { src: upload13, alt: "Haven Creek Renovations project photograph" },
+  { src: upload14, alt: "Haven Creek Renovations project photograph" },
+  { src: upload15, alt: "Haven Creek Renovations project photograph" },
+  { src: upload16, alt: "Haven Creek Renovations project photograph" },
+  { src: upload17, alt: "Haven Creek Renovations project photograph" },
+  { src: upload18, alt: "Haven Creek Renovations project photograph" },
+];
+

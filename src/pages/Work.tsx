@@ -1,39 +1,18 @@
-import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
-import ProjectPlaceholder from "@/components/gallery/ProjectPlaceholder";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
-import { galleryPlates } from "@/data/galleryPlates";
-import { workPhotos, photography } from "@/assets/photography";
+import { uploadedProjectPhotos, photography } from "@/assets/photography";
 
 const SITE = "https://havencreekrenovations.ca";
-
-// Asymmetric editorial layout — alternating 7/5 magazine spread on lg+.
-const LAYOUTS = [
-  "lg:col-span-7",
-  "lg:col-span-5 lg:mt-24",
-  "lg:col-span-5 lg:col-start-2",
-  "lg:col-span-7",
-  "lg:col-span-7 lg:col-start-1 lg:mt-12",
-  "lg:col-span-5",
-];
-const ASPECTS = [
-  "aspect-[4/5]",
-  "aspect-[3/4]",
-  "aspect-[3/4]",
-  "aspect-[4/5]",
-  "aspect-[4/5]",
-  "aspect-[3/4]",
-];
 
 const Work = () => {
   useSeo({
     title: "Our Work — Selected Projects",
     description:
-      "A selected collection of recent renovation work across rural Alberta — interior finishing, exterior repairs, and decking on properties in Bragg Creek, Bearspaw, and area.",
+      "A collection of recent renovation work across rural Alberta — interior finishing, exterior repairs, and decking on properties in Bragg Creek, Bearspaw, and area.",
     path: "/work",
   });
 
@@ -56,34 +35,23 @@ const Work = () => {
         <Container size="wide">
           <h2 id="grid-heading" className="sr-only">Projects</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-16 md:gap-y-12 lg:gap-y-28">
-            {galleryPlates.map((p, i) => (
-              <article
-                key={p.slug}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+            {uploadedProjectPhotos.map((photo, i) => (
+              <figure
+                key={i}
                 data-reveal
-                style={{ ["--reveal-delay" as string]: `${i * 90}ms` }}
-                className={cn("group", LAYOUTS[i % LAYOUTS.length])}
+                style={{ ["--reveal-delay" as string]: `${(i % 8) * 60}ms` }}
+                className="group relative aspect-[4/5] overflow-hidden bg-evergreen/[0.04] transition-transform duration-500 ease-weighted hover:-translate-y-1"
               >
-                <div
-                  className={cn(
-                    "overflow-hidden bg-evergreen/[0.04] transition-transform duration-500 ease-weighted group-hover:-translate-y-1",
-                    ASPECTS[i % ASPECTS.length],
-                  )}
-                >
-                  <ProjectPlaceholder
-                    project={{
-                      slug: p.slug,
-                      title: p.title,
-                      area: p.area,
-                      category: p.category,
-                    }}
-                    index={i}
-                    photoSrc={workPhotos[p.slug]}
-                    priority={i === 0}
-                    className="h-full w-full"
-                  />
-                </div>
-              </article>
+                <img
+                  src={photo.src}
+                  alt={photo.alt}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  fetchPriority={i === 0 ? "high" : "auto"}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-weighted will-change-transform group-hover:scale-[1.02]"
+                />
+              </figure>
             ))}
           </div>
         </Container>
