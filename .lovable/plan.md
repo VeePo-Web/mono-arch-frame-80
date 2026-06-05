@@ -1,68 +1,75 @@
-# Mobile Contact — instant-to-form UX
-
-Right now `/contact` on mobile opens with a full `SubPageHero` (headline + subhead + backdrop photo). The Name field doesn't appear until the user scrolls. The sticky Send bar already lives at the bottom, but there's nothing to send yet — the form is below the fold. We fix that.
-
-Desktop split (lg+) is untouched. This change is scoped to the `<div className="lg:hidden">` branch of `src/pages/Contact.tsx`.
-
 ## Goal
 
-A returning visitor taps "Contact" and sees the Name field within the first viewport — no scroll, no hero to skim past. Form first, prose second, direct rail third.
+1. `/work` becomes a uniform photo grid showing **all 17 uploaded real project photos** (16 fits 4×4; the 17th wraps into a 5th row).
+2. `/services` gets a representative photo per service and each service block becomes a clickable link to `/work`.
 
-## New mobile order
+## Heads-up — two memory constraints you are overriding
 
-```
-┌───────────────────────────────┐
-│ NAV (existing)                │
-├───────────────────────────────┤
-│ Compact header band           │  ~ 140-160px tall
-│  · t-eyebrow  "Get in touch"  │
-│  · t-headline (2 lines max)   │
-│    "Tell us about your        │
-│     project."                  │
-│  · t-micro  "Reply in 2       │
-│    business days · Cory"       │
-├───────────────────────────────┤
-│ NAME            [input]       │  ← visible on first paint
-│ EMAIL OR PHONE  [input]       │
-│ ABOUT…          [textarea]    │
-├───────────────────────────────┤
-│ (scroll) Or reach us directly │
-│  email · phone · location     │
-├───────────────────────────────┤
-│ STICKY SEND (existing)        │
-└───────────────────────────────┘
+- Core memory: *"Work page is an asymmetric 12-col magazine grid… mixed 4:5 / 3:4 aspects."* — replacing with a uniform 4-col grid.
+- Core memory: *"Services page renders a magazine row list… never per-service link, never images."* — adding images and per-row link.
+
+I'll update `mem://index.md` so future passes don't revert these. Confirm by approving.
+
+## Step 1 — Bring in the 17 uploaded photos
+
+Copy from `/mnt/user-uploads/` into `src/assets/photography/uploads/`:
+
+```text
+IMG_3788_1.jpeg, IMG_6394.jpeg … IMG_6410.jpeg   (17 files)
 ```
 
-The compact header replaces `SubPageHero` on mobile. Same typographic grammar (`t-eyebrow` + `t-headline` + `t-micro`), no backdrop photo, no folio, no fixed min-height — it occupies only what its type needs (~`pt-6 pb-8`). On a 390×701 viewport that leaves room for the Name and Email fields above the fold; the textarea starts immediately below.
+Extend `src/assets/photography/index.ts` with a new export:
 
-## What changes
+```ts
+export const uploadedProjectPhotos: { src: string; alt: string }[] = [
+  { src: img3788,  alt: "Haven Creek project photograph" },
+  { src: img6394,  alt: "Haven Creek project photograph" },
+  // …17 total
+];
+```
 
-`src/pages/Contact.tsx`, mobile branch only:
+(Alt text stays generic until Cory tags them — no fake locations.)
 
-1. Remove `<SubPageHero …/>` and the `photography.closingPhotoMoment` import path (still used elsewhere — only the call here goes).
-2. Insert a new compact header block above the form section using existing tokens:
-   - `t-eyebrow text-evergreen/70` — "Get in touch · Replies in 2 business days"
-   - `t-headline text-foreground` — "Tell us about your project."
-   - Optional second line in `t-body text-muted-foreground` — "Cory replies personally."
-   - Spacing: `pt-6 pb-6` inside `Container size="wide"`.
-3. Tighten the form section: drop `section-y pb-32`, use `pt-2 pb-40` so the sticky CTA has clearance but no giant top gap.
-4. Pass `compact` to `<ConsultationForm>` so field rhythm fits the viewport (already supported — uses `space-y-7`, smaller textarea, no helper line). Keep `formId={FORM_ID}` so the sticky Send keeps working.
-5. Keep the "Or reach us directly" rail and sticky CTA exactly as they are.
+## Step 2 — Rewrite `/work` grid
 
-## Why these choices
+`src/pages/Work.tsx`:
 
-- **No accordion / no "open form" tap.** Friction. The form *is* the page.
-- **No hero photo on mobile.** Contact intent is already high; a photo just pushes fields down.
-- **Compact mode on the form.** Already built and used on the desktop right panel — reusing it keeps one source of truth, no new variant.
-- **Direct rail stays below the form**, not above — most visitors will type into the form; the email/phone fallback is for the minority who prefer it, and they'll scroll.
+- Drop `LAYOUTS` / `ASPECTS` asymmetric arrays and the `galleryPlates` import.
+- Render one uniform grid: `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6`.
+- Each tile = `<figure>` with `aspect-[4/5]`, `overflow-hidden`, lazy `<img>`, hover lift `-translate-y-1 / 500ms ease-weighted` and inner `scale-[1.02]` on hover (same cadence as `ProjectPlaceholder` photographed mode).
+- First tile gets `loading="eager"` + `fetchPriority="high"` for LCP.
+- Keep `SubPageHero` and `BigCloseCTA` unchanged.
+- No captions, no filters, no per-tile link (preserves the "Work is photo-only, no per-project page" rule).
 
-## Out of scope
+Result on lg+: rows of 4 → 4×4 + 1 trailing tile centered via natural grid flow (or we can pad row 5 by repeating one strong photo — flag for owner if a lonely tile bothers him).
 
-- Desktop layout (lg+ split) — not touched.
-- `ConsultationForm` internals — already supports `compact` + `formId`.
-- `SubPageHero` component — still used by other pages.
-- Memory updates — once shipped, add one line to the core nav/contact rule noting "mobile /contact opens directly to the form; no SubPageHero."
+## Step 3 — Update `/services` page
+
+`src/pages/Services.tsx`:
+
+- Convert the `<ul>` row list into the same magazine rhythm but each `<li>` becomes a `<Link to="/work">` block.
+- Add a 12-col split per row: photo on cols 1-5 (4:3, `service-interior-finishing.jpg` / `service-exterior-finishing.jpg` / `service-decking.jpg` already in the manifest), text on cols 6-12 (title + promise + cardBody).
+- Mobile: stacked — photo first, then text, full-width.
+- Hover: keep `.row-wash` evergreen tint + photo scale-[1.02] / 500ms; underline title on hover.
+- Add a quiet `t-micro` "See related work →" line under the body to signal the click target.
+- Keep `PhotoBleed` (deckingDetailEndgrain) and `BigCloseCTA` unchanged.
+
+## Step 4 — Memory + brief updates
+
+- `mem://index.md` Core: rewrite the Work-grid line ("uniform 4-col photo grid of all uploaded project photos") and the Services line (drops "never images, never per-service link"; adds "each row links to /work").
+- `.lovable/plan.md`: log the change so the owner brief stays current.
 
 ## Files touched
 
-- `src/pages/Contact.tsx` (mobile branch only, ~25 lines changed)
+- `src/assets/photography/uploads/*.jpeg` (new, copied)
+- `src/assets/photography/index.ts` (new export)
+- `src/pages/Work.tsx` (grid rewrite)
+- `src/pages/Services.tsx` (photos + Link rows)
+- `mem://index.md`
+- `.lovable/plan.md`
+
+## Out of scope
+
+- No category mapping / filtering on /work (kept simple per existing constraint).
+- No per-project pages.
+- No changes to Home `RecentWorkPreview` (still uses the 6 named gallery plates with their AI shots). Say the word if you want the home preview swapped to 6 of the real uploads too.
