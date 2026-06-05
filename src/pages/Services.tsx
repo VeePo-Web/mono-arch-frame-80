@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
 import SubPageHero from "@/components/SubPageHero";
@@ -8,8 +9,17 @@ import { useSeo } from "@/hooks/useSeo";
 import { services } from "@/data/services";
 import { photography } from "@/assets/photography";
 
+import serviceInterior from "@/assets/photography/service-interior-finishing.jpg";
+import serviceExterior from "@/assets/photography/service-exterior-finishing.jpg";
+import serviceDecking from "@/assets/photography/service-decking.jpg";
 
 const SITE = "https://havencreekrenovations.ca";
+
+const SERVICE_PHOTOS: Record<string, string> = {
+  "interior-finishing": serviceInterior,
+  "exterior-finishing": serviceExterior,
+  "decking": serviceDecking,
+};
 
 const Services = () => {
   useSeo({
@@ -53,15 +63,33 @@ const Services = () => {
                 key={s.slug}
                 data-reveal
                 style={{ ["--reveal-delay" as string]: `${i * 110}ms` }}
-                className="row-wash border-b border-foreground/12 grid grid-cols-12 gap-6 items-baseline py-7 md:py-9 px-2 -mx-2"
+                className="border-b border-foreground/12"
               >
-                <h3 className="col-span-12 md:col-span-5 t-section text-foreground">
-                  {s.title}
-                </h3>
-                <div className="col-span-12 md:col-span-7 space-y-3">
-                  <p className="t-body text-foreground/85">{s.promise}</p>
-                  <p className="t-body text-foreground/70">{s.cardBody}</p>
-                </div>
+                <Link
+                  to="/work"
+                  className="row-wash group grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center py-8 md:py-10 px-2 -mx-2"
+                  aria-label={`${s.title} — see related work`}
+                >
+                  <div className="md:col-span-5 overflow-hidden aspect-[4/3] bg-evergreen/[0.04]">
+                    <img
+                      src={SERVICE_PHOTOS[s.slug]}
+                      alt={`${s.title} — Haven Creek Renovations`}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-500 ease-weighted will-change-transform group-hover:scale-[1.02]"
+                    />
+                  </div>
+                  <div className="md:col-span-7 space-y-3">
+                    <h3 className="t-section text-foreground transition-colors duration-300 group-hover:text-evergreen">
+                      {s.title}
+                    </h3>
+                    <p className="t-body text-foreground/85">{s.promise}</p>
+                    <p className="t-body text-foreground/70">{s.cardBody}</p>
+                    <p className="t-micro text-evergreen/80 pt-2">
+                      See related work →
+                    </p>
+                  </div>
+                </Link>
               </li>
             ))}
           </ul>
@@ -78,6 +106,5 @@ const Services = () => {
     </main>
   );
 };
-
 
 export default Services;
