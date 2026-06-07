@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import RevealSection from "./RevealSection";
 import Container from "./Container";
 import Lightbox from "./gallery/Lightbox";
-import { uploadedProjectPhotos } from "@/assets/photography";
+import { homeRecentPhotos } from "@/assets/photography";
 
 /**
- * RecentWorkPreview — six real photos in a 1/2/3-col grid, lightbox on tap,
+ * RecentWorkPreview — six curated real photos in a 1/2/3-col grid, lightbox on tap,
  * one quiet "See all work" link below.
  */
 const RecentWorkPreview = () => {
-  const tiles = uploadedProjectPhotos.slice(0, 6);
+  const tiles = homeRecentPhotos;
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   return (
