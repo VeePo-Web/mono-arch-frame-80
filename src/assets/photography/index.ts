@@ -103,3 +103,15 @@ export const uploadedProjectPhotos: UploadedProjectPhoto[] = [
   { src: upload18, alt: "Haven Creek Renovations project photograph" },
 ];
 
+// Curated 6-photo subset for the home Recent Work grid. Spread across the
+// 18 uploads to maximise visual variety (different subjects, framings, scales)
+// so the home teaser never reads as "the same photo twice".
+export const homeRecentPhotos: UploadedProjectPhoto[] = [
+  uploadedProjectPhotos[0],
+  uploadedProjectPhotos[3],
+  uploadedProjectPhotos[6],
+  uploadedProjectPhotos[9],
+  uploadedProjectPhotos[12],
+  uploadedProjectPhotos[17],
+];
+
