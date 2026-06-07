@@ -1,16 +1,17 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import RevealSection from "./RevealSection";
 import Container from "./Container";
-import ProjectPlaceholder from "./gallery/ProjectPlaceholder";
-import { galleryPlates } from "@/data/galleryPlates";
-import { workPhotos } from "@/assets/photography";
+import Lightbox from "./gallery/Lightbox";
+import { uploadedProjectPhotos } from "@/assets/photography";
 
 /**
- * RecentWorkPreview — six photo tiles, no captions, one quiet "See more" link.
- * The grid is the message.
+ * RecentWorkPreview — six real photos in a 1/2/3-col grid, lightbox on tap,
+ * one quiet "See all work" link below.
  */
 const RecentWorkPreview = () => {
-  const tiles = galleryPlates.slice(0, 6);
+  const tiles = uploadedProjectPhotos.slice(0, 6);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   return (
     <RevealSection
@@ -28,25 +29,25 @@ const RecentWorkPreview = () => {
           <h2 id="recent-work-heading" className="t-eyebrow m-0">Recent work</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-9">
-          {tiles.map((p, i) => (
-            <div
-              key={p.slug}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5 md:gap-2 lg:gap-3">
+          {tiles.map((photo, i) => (
+            <button
+              type="button"
+              key={i}
+              onClick={() => setLightboxIndex(i)}
+              aria-label={`Open photo ${i + 1} of ${tiles.length}`}
               data-reveal
               style={{ ["--reveal-delay" as string]: `${120 + i * 70}ms` }}
+              className="group relative aspect-[4/5] overflow-hidden bg-evergreen/[0.04] transition-transform duration-500 ease-weighted hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-evergreen"
             >
-              <ProjectPlaceholder
-                project={{
-                  slug: p.slug,
-                  title: p.title,
-                  area: p.area,
-                  category: p.category,
-                }}
-                index={i}
-                photoSrc={workPhotos[p.slug]}
-                priority={false}
+              <img
+                src={photo.src}
+                alt={photo.alt}
+                loading={i < 2 ? "eager" : "lazy"}
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-weighted will-change-transform group-hover:scale-[1.02]"
               />
-            </div>
+            </button>
           ))}
         </div>
 
@@ -59,10 +60,17 @@ const RecentWorkPreview = () => {
             to="/work"
             className="inline-block text-foreground hover:text-evergreen transition-colors duration-300 underline underline-offset-[6px] decoration-evergreen/40 hover:decoration-evergreen"
           >
-            See more of our work →
+            See all work →
           </Link>
         </div>
       </Container>
+
+      <Lightbox
+        photos={tiles}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onIndexChange={setLightboxIndex}
+      />
     </RevealSection>
   );
 };
