@@ -68,7 +68,6 @@ import upload07 from "./uploads/IMG_6400.jpeg";
 import upload08 from "./uploads/IMG_6401.jpeg";
 import upload09 from "./uploads/IMG_6402.jpeg";
 import upload10 from "./uploads/IMG_6403.jpeg";
-import upload11 from "./uploads/IMG_6404.jpeg";
 import upload12 from "./uploads/IMG_6405.jpeg";
 import upload13 from "./uploads/IMG_6406.jpeg";
 import upload14 from "./uploads/IMG_6407.jpeg";
