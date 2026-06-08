@@ -111,6 +111,6 @@ export const homeRecentPhotos: UploadedProjectPhoto[] = [
   uploadedProjectPhotos[6],
   uploadedProjectPhotos[9],
   uploadedProjectPhotos[12],
-  uploadedProjectPhotos[17],
+  uploadedProjectPhotos[16],
 ];
 
