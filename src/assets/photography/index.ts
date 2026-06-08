@@ -92,7 +92,7 @@ export const uploadedProjectPhotos: UploadedProjectPhoto[] = [
   { src: upload08, alt: "Haven Creek Renovations project photograph" },
   { src: upload09, alt: "Haven Creek Renovations project photograph" },
   { src: upload10, alt: "Haven Creek Renovations project photograph" },
-  { src: upload11, alt: "Haven Creek Renovations project photograph" },
+  
   { src: upload12, alt: "Haven Creek Renovations project photograph" },
   { src: upload13, alt: "Haven Creek Renovations project photograph" },
   { src: upload14, alt: "Haven Creek Renovations project photograph" },
