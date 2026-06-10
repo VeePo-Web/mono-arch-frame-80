@@ -68,7 +68,7 @@ import upload07 from "./uploads/IMG_6400.jpeg";
 import upload08 from "./uploads/IMG_6401.jpeg";
 import upload09 from "./uploads/IMG_6402.jpeg";
 import upload10 from "./uploads/IMG_6403.jpeg";
-import upload12 from "./uploads/IMG_6405.jpeg";
+
 import upload13 from "./uploads/IMG_6406.jpeg";
 import upload14 from "./uploads/IMG_6407.jpeg";
 import upload15 from "./uploads/IMG_6408.jpeg";
@@ -92,8 +92,6 @@ export const uploadedProjectPhotos: UploadedProjectPhoto[] = [
   { src: upload08, alt: "Haven Creek Renovations project photograph" },
   { src: upload09, alt: "Haven Creek Renovations project photograph" },
   { src: upload10, alt: "Haven Creek Renovations project photograph" },
-  
-  { src: upload12, alt: "Haven Creek Renovations project photograph" },
   { src: upload13, alt: "Haven Creek Renovations project photograph" },
   { src: upload14, alt: "Haven Creek Renovations project photograph" },
   { src: upload15, alt: "Haven Creek Renovations project photograph" },
@@ -110,7 +108,7 @@ export const homeRecentPhotos: UploadedProjectPhoto[] = [
   uploadedProjectPhotos[3],
   uploadedProjectPhotos[6],
   uploadedProjectPhotos[9],
-  uploadedProjectPhotos[12],
-  uploadedProjectPhotos[16],
+  uploadedProjectPhotos[11],
+  uploadedProjectPhotos[15],
 ];
 
