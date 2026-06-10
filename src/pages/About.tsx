@@ -1,6 +1,6 @@
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
-import SubPageHero from "@/components/SubPageHero";
+import AboutHero from "@/components/AboutHero";
 import PhotoBleed from "@/components/PhotoBleed";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
