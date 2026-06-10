@@ -74,7 +74,9 @@ import upload14 from "./uploads/IMG_6407.jpeg";
 import upload15 from "./uploads/IMG_6408.jpeg";
 import upload16 from "./uploads/IMG_6409.jpeg";
 import upload17 from "./uploads/IMG_6410.jpeg";
-import upload18 from "./uploads/IMG_3788_1.jpeg";
+import coryHeadshotSrc from "./uploads/IMG_3788_1.jpeg";
+
+export const coryHeadshot = coryHeadshotSrc;
 
 export interface UploadedProjectPhoto {
   src: string;
