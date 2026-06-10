@@ -99,7 +99,7 @@ export const uploadedProjectPhotos: UploadedProjectPhoto[] = [
   { src: upload15, alt: "Haven Creek Renovations project photograph" },
   { src: upload16, alt: "Haven Creek Renovations project photograph" },
   { src: upload17, alt: "Haven Creek Renovations project photograph" },
-  { src: upload18, alt: "Haven Creek Renovations project photograph" },
+
 ];
 
 // Curated 6-photo subset for the home Recent Work grid. Spread across the
