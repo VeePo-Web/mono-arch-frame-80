@@ -41,12 +41,26 @@ const About = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10">
             {/* Left rail — signature column */}
             <div className="lg:col-span-3">
-              <p className="t-eyebrow" data-reveal>A note from Cory</p>
+              <img
+                src={coryHeadshot}
+                alt="Cory, Haven Creek Renovations"
+                loading="lazy"
+                decoding="async"
+                className="block w-32 md:w-40 aspect-square object-cover mb-6"
+                data-reveal
+              />
+              <p
+                className="t-eyebrow"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "120ms" }}
+              >
+                A note from Cory
+              </p>
               <span
                 className="mt-5 block h-px w-8 bg-foreground/20"
                 aria-hidden="true"
                 data-reveal
-                style={{ ["--reveal-delay" as string]: "120ms" }}
+                style={{ ["--reveal-delay" as string]: "240ms" }}
               />
             </div>
 
