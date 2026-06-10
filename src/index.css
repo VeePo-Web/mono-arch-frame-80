@@ -1794,3 +1794,149 @@
     }
   }
 }
+
+/* ==========================================================================
+   AboutHero — cinematic /about hero only.
+   Scoped utilities. Do not reuse on other heroes.
+   ========================================================================== */
+@layer components {
+  .about-hero {
+    /* content frame inset for corner hairlines + meta strip */
+    --about-hero-inset: 24px;
+  }
+  @media (min-width: 768px) {
+    .about-hero { --about-hero-inset: 40px; }
+  }
+  @media (min-width: 1024px) {
+    .about-hero { --about-hero-inset: 64px; }
+  }
+
+  .about-hero__photo {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .about-hero__photo-shift {
+    position: absolute;
+    inset: 0;
+    transform: translate3d(0, var(--parallax-y, 0px), 0);
+    will-change: transform;
+  }
+  .about-hero__photo-img {
+    position: absolute;
+    inset: -6%;
+    width: 112%;
+    height: 112%;
+    object-fit: cover;
+    filter: blur(18px) saturate(1.05);
+    opacity: 0;
+    transform: scale(1.08);
+    animation:
+      about-hero-photo-in 1600ms var(--ease-weighted) forwards,
+      about-hero-burns 22s var(--ease-weighted) 1600ms infinite alternate;
+  }
+  .about-hero__veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--background) / 0.92) 0%,
+      hsl(var(--background) / 0.55) 28%,
+      hsl(var(--background) / 0.25) 52%,
+      hsl(var(--background) / 0.78) 86%,
+      hsl(var(--background)) 100%
+    );
+  }
+  .about-hero__vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 38% 48%,
+      hsl(var(--background) / 0) 0%,
+      hsl(var(--background) / 0) 40%,
+      hsl(var(--background) / 0.18) 100%
+    );
+  }
+
+  .about-hero__watermark {
+    position: absolute;
+    left: -0.05em;
+    bottom: -0.18em;
+    font-family: var(--font-serif, ui-serif, Georgia, serif);
+    font-weight: 400;
+    font-size: clamp(11rem, 26vw, 26rem);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    color: hsl(var(--foreground) / 0.04);
+    transform: translate3d(0, var(--parallax-y, 0px), 0);
+    will-change: transform;
+    z-index: 0;
+    white-space: nowrap;
+  }
+
+  .about-hero__corner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .about-hero__corner::before,
+  .about-hero__corner::after {
+    content: "";
+    position: absolute;
+    background: hsl(var(--foreground) / 0.18);
+  }
+  .about-hero__corner--tl {
+    top: var(--about-hero-inset);
+    left: var(--about-hero-inset);
+  }
+  .about-hero__corner--tl::before {
+    top: 0; left: 0; height: 1px; width: 100%;
+  }
+  .about-hero__corner--tl::after {
+    top: 0; left: 0; width: 1px; height: 100%;
+  }
+  .about-hero__corner--br {
+    bottom: calc(var(--about-hero-inset) + 64px);
+    right: var(--about-hero-inset);
+  }
+  .about-hero__corner--br::before {
+    bottom: 0; right: 0; height: 1px; width: 100%;
+  }
+  .about-hero__corner--br::after {
+    bottom: 0; right: 0; width: 1px; height: 100%;
+  }
+
+  .about-hero__meta {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 24px;
+    z-index: 2;
+  }
+  @media (min-width: 768px) {
+    .about-hero__meta { bottom: 32px; }
+  }
+
+  @keyframes about-hero-photo-in {
+    to { opacity: 1; }
+  }
+  @keyframes about-hero-burns {
+    0%   { transform: scale(1.08) translate3d(0, 0, 0); }
+    100% { transform: scale(1.14) translate3d(-1.2%, -0.8%, 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-hero__photo-img {
+      animation: about-hero-photo-in 600ms ease-out forwards;
+    }
+    .about-hero__photo-shift,
+    .about-hero__watermark {
+      transform: none !important;
+    }
+  }
+}
+
