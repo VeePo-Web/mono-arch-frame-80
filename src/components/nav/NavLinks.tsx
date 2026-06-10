@@ -56,7 +56,7 @@ const NavLinks = () => {
   };
 
   return (
-    <ul className="hidden lg:flex items-center justify-center gap-x-8 xl:gap-x-10">
+    <ul className="nav-links-row hidden lg:flex items-center justify-center gap-x-8 xl:gap-x-10">
       {sections.map(({ id, label }) => {
         const isActive = activeId === id;
         return (
