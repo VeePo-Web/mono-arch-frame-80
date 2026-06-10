@@ -28,7 +28,7 @@ const About = () => {
         ]}
       />
 
-      <SubPageHero
+      <AboutHero
         headline="A hands-on renovation partner for rural properties."
         subhead="Haven Creek was built for homeowners who want a more personal, less scattered way to improve the property they care about."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
