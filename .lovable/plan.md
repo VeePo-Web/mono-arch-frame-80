@@ -1,18 +1,25 @@
 ## Goal
 
-Remove the remaining snowy-road photo (`IMG_6405.jpeg`, upload12) from the `/work` grid. Like the previous `IMG_6404`, it's a landscape shot of a highway through trees — not project work, so it doesn't belong in the portfolio.
+`IMG_3788_1.jpeg` (currently `upload18` — Cory in mask/gloves holding a small critter) is a portrait, not project work. Pull it out of the `/work` grid and use it as the owner headshot in the "A note from Cory" section on `/about`. No caption.
 
-## Change
+## Changes
 
-- `src/assets/photography/index.ts`: drop the `upload12` import and remove its entry from `uploadedProjectPhotos` (16 photos total after this).
-- `homeRecentPhotos` references index 12 (`uploadedProjectPhotos[12]`). After removal, the array length is 16 (indices 0–15), so update that entry to `uploadedProjectPhotos[11]` to keep the home grid intact.
-- Delete the file `src/assets/photography/uploads/IMG_6405.jpeg`.
+**`src/assets/photography/index.ts`**
+- Rename the `upload18` import to `coryHeadshot` (same file, clearer intent).
+- Export it as `coryHeadshot` so `About.tsx` can import it.
+- Remove its entry from `uploadedProjectPhotos` (15 photos remain).
+- `homeRecentPhotos` currently references index 15 (the headshot). Re-point that slot to `uploadedProjectPhotos[14]` (last remaining real project photo) so the home 6-tile grid still renders 6 unique shots.
+
+**`src/pages/About.tsx`**
+- Import `coryHeadshot`.
+- In the "How we work" section's left signature column (currently: eyebrow "A note from Cory" + hair rule), insert the headshot above the eyebrow as a small square portrait — `aspect-square`, `w-32 md:w-40`, `object-cover`, hair-rule below it for visual continuity. No caption, no figcaption, no alt text beyond `"Cory, Haven Creek Renovations"`.
+- Reveal cadence matches existing column (initial reveal, then eyebrow +120ms, rule +240ms).
 
 ## Out of scope
 
-No layout or grid changes. `/work` still renders everything in `uploadedProjectPhotos` — just one fewer tile.
+No layout changes elsewhere. `/work` simply renders one fewer tile. The image file stays in `uploads/` (now reused by About) — nothing deleted.
 
 ## Files touched
 
 - `src/assets/photography/index.ts`
-- `src/assets/photography/uploads/IMG_6405.jpeg` (deleted)
+- `src/pages/About.tsx`

@@ -74,7 +74,9 @@ import upload14 from "./uploads/IMG_6407.jpeg";
 import upload15 from "./uploads/IMG_6408.jpeg";
 import upload16 from "./uploads/IMG_6409.jpeg";
 import upload17 from "./uploads/IMG_6410.jpeg";
-import upload18 from "./uploads/IMG_3788_1.jpeg";
+import coryHeadshotSrc from "./uploads/IMG_3788_1.jpeg";
+
+export const coryHeadshot = coryHeadshotSrc;
 
 export interface UploadedProjectPhoto {
   src: string;
@@ -97,7 +99,7 @@ export const uploadedProjectPhotos: UploadedProjectPhoto[] = [
   { src: upload15, alt: "Haven Creek Renovations project photograph" },
   { src: upload16, alt: "Haven Creek Renovations project photograph" },
   { src: upload17, alt: "Haven Creek Renovations project photograph" },
-  { src: upload18, alt: "Haven Creek Renovations project photograph" },
+
 ];
 
 // Curated 6-photo subset for the home Recent Work grid. Spread across the
@@ -109,6 +111,6 @@ export const homeRecentPhotos: UploadedProjectPhoto[] = [
   uploadedProjectPhotos[6],
   uploadedProjectPhotos[9],
   uploadedProjectPhotos[11],
-  uploadedProjectPhotos[15],
+  uploadedProjectPhotos[14],
 ];
 
