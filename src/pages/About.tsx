@@ -6,7 +6,7 @@ import BigCloseCTA from "@/components/BigCloseCTA";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { serviceAreas } from "@/data/serviceAreas";
-import { photography } from "@/assets/photography";
+import { photography, coryHeadshot } from "@/assets/photography";
 
 
 const SITE = "https://havencreekrenovations.ca";
