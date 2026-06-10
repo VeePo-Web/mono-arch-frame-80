@@ -1,112 +1,93 @@
-## Goal
+# About Hero — Upgrade Pass (Fantasy.co-grade craft, same composition)
 
-Lift the `/about` hero from "type on a soft photo wash" to a quietly cinematic editorial frame — Fantasy.co's restraint (almost nothing on screen, every pixel intentional) crossed with Hickory & Rose's parallax photo hero (depth, ghosted watermark, anchored corner chrome). Keep the brand promise of dark-on-cream restraint — the current hero is *good*, this just makes it feel more **expensive**.
+## Intent
 
-The change is scoped strictly to the About hero. Header, body sections, About areas rail, BigCloseCTA — untouched.
+Keep the current arrangement (full-bleed photo → ghosted "About" watermark → H1 → subhead → CTA → meta strip with locator + scroll cue). Don't add new content, don't change copy, don't break a single brand rail. Make every existing layer feel one tier more expensive — the way fantasy.co, hickoryandrose and the Halle reference earn their "premium" feel: through unhurried motion, filmic light, and obsessive type detail rather than new ornament.
 
-## Design references — what we're borrowing
+## Hard rails (unchanged — these stay forbidden)
 
-- **Fantasy.co** — extreme typographic restraint, monumental negative space, near-imperceptible chrome, slow blur-to-sharp reveals. Lesson: *less, but every element calibrated*.
-- **Hickory & Rose `/about`** — full-bleed photo at 60-70vh with subtle Ken Burns parallax, oversized ghosted page-name watermark (~3% opacity) behind the H1, hairline gold frame inset, refined credential micro-strip at the bottom, scroll cue. Lesson: *photo as atmosphere with depth, watermark for scale, hairline for craft*.
-- **Lashes by Halle About** — left-type / right-portrait split with a tinted plate behind the photo. We're **not** copying this split — single-column type-only is on-brand. The lesson taken: warm portrait-grade photography belongs near the type, not exiled below the fold.
+- No eyebrow line above the H1, no italic-evergreen `accentWord`, no folio numerals.
+- No "Plate N / Edition / Fig. / Section No." chrome (`mem://constraint/no-editorial-cosplay`).
+- Single primary CTA, copy stays **"Get a Free Quote"**, solid evergreen `.cta-spring`.
+- Dark-on-cream palette only. No "Two business days" promise in the hero.
+- No new dependency. No `framer-motion`. Pure CSS + the existing rAF scroll writer.
 
-## Hard brand rails (these do NOT change)
+## What changes (six precise moves)
 
-From `mem://index`:
-- No eyebrow line above the H1 ("Family-run · Foothills, AB" stays banned).
-- No `accentWord` italic-evergreen / no SVG underline / no folio numerals / no "Plate N" / "Edition" / "Fig." chrome.
-- Single primary CTA "Get a Free Quote" — no secondary, no ghost pair.
-- Dark-on-cream palette. No dark `evergreen-deep` slab on this page.
-- Headline stays plain `text-foreground` in `.t-headline`.
-- "Two business days" reply promise is **not** on About — don't leak it in.
-- One motion cadence (800ms reveal, `ease-weighted`).
+### 1. Line-by-line clip reveal on the H1 (replaces the single opacity+translate fade)
 
-## What gets built
+The current `data-reveal` opacity+blur on the whole headline is fine but generic. Upgrade to a per-line mask reveal — each visual line of the H1 rises from a clipped bottom edge with its own delay. This is the single biggest "expensive" tell.
 
-A new dedicated `AboutHero` component (so `SubPageHero` stays untouched for Services + Work + Contact). About swaps `<SubPageHero …/>` for `<AboutHero />`. The component does five things, in this order of priority:
+- Split the H1 into a stack of `<span class="about-hero__line">` rows via a small render helper that wraps each whitespace-separated visual line. Because the existing H1 is short ("People · Property · Process" style), wrap each word in its own `.about-hero__line` and let flex-wrap handle line breaks; each word animates as its own clip.
+- Each `.about-hero__line` wraps an inner `<span class="about-hero__line-inner">`. Outer = `overflow: hidden`, inner = `transform: translateY(110%)` → `translateY(0)` with `clip-path: inset(0 0 0 0)` from `inset(100% 0 0 0)`.
+- Easing: `cubic-bezier(0.22, 1, 0.36, 1)` (existing `ease-weighted`), duration **1100ms**, stagger **90ms** per word, kicking off at **360ms** after section reveal.
+- Subhead and CTA delays bump to 1100ms / 1320ms so the cascade still resolves in order.
+- `prefers-reduced-motion`: collapse to a plain 600ms opacity fade with no transform.
 
-### 1. Photograph promoted from wash → cinematic layer
+### 2. Lit cream radial veil (replaces the 3-stop linear gradient)
 
-The current `backdrop={photography.areaFoothills}` photo is blurred 48px and almost erased by a 70%-opacity cream veil. New treatment:
+The current veil is a flat top→bottom cream wash. Swap for a soft radial centered roughly where the headline sits — gives the impression the type is lit by a window opening onto the photo, which is the Halle/hickoryandrose move.
 
-- Blur drops to **16-20px** (still atmosphere, no longer a smudge — you can read "foothills at dusk" now).
-- Veil is a **two-stop directional gradient**: cream at top (`background/85`), almost-transparent through the middle band where there's no type (`background/25`), back to full cream at the bottom (`background`). The photo only "shows itself" in the breathing-room between H1 and CTA. Cream palette still owns the page.
-- Slow **Ken Burns drift** — `scale(1.08) → scale(1.14)` over 22s, `translate(0,0) → translate(-1.2%, -0.8%)`, infinite alternate. Pure transform, GPU-cheap. Disabled under `prefers-reduced-motion`.
-- A **2-3% radial vignette** (cream → transparent → cream/15) anchored to the H1's optical center so the type sits in its own pool of light.
+- `background: radial-gradient(120% 90% at 18% 70%, hsl(var(--background) / 0.92) 0%, hsl(var(--background) / 0.72) 38%, hsl(var(--background) / 0.34) 68%, hsl(var(--background) / 0.08) 100%);`
+- Keep the existing `.about-hero__vignette` corner darkening but lower to 2% so it doesn't fight the radial.
+- Mobile (<lg) anchor the radial center to `50% 75%` so the type column still gets lift when stacked.
 
-### 2. Ghosted serif watermark — depth, scale, swagger
+### 3. Filmic grain (3% noise, mix-blend-overlay) over the photo only
 
-A monumental `font-serif` "About" set behind the H1, **`leading-[0.85]`, `tracking-[-0.04em]`, `clamp(12rem, 26vw, 26rem)`**, color `foreground/[0.035]` (just barely there — like H&R's `text-white/3` but inverted for cream). Anchored bottom-left of the hero so its baseline runs *below* the H1 baseline and one giant "A" peeks behind the first word. Parallax: translates at **0.6× scroll** while the photo translates at **0.3× scroll** — depth without flash.
+A single SVG `feTurbulence` data-URI applied as a `background-image` on a `.about-hero__grain` layer above the photo and beneath the veil. 240×240 tile, `opacity: 0.06`, `mix-blend-mode: overlay`. Pointer-events none, aria-hidden. This is what gives fantasy.co photos their tactility without darkening them.
 
-This is the single biggest "expensive" lever: it's what gives Fantasy.co + H&R their monumentality.
+### 4. Watermark gets a drawing hair-rule + multiply blend (replaces the flat 3.5% ghost)
 
-### 3. Corner hairlines — quiet anchoring chrome
+- Change the watermark blend from a flat `color: hsl(var(--foreground) / 0.035)` to `color: hsl(var(--foreground) / 0.06)` + `mix-blend-mode: multiply`. It now picks up the photo's tonality and feels printed-into the image, not stickered on top.
+- Add a 1px evergreen hair rule that draws in under the watermark on mount: `::after` pseudo, `width: 96px`, `height: 1px`, `background: hsl(var(--evergreen) / 0.55)`, `transform-origin: left`, `scaleX(0) → scaleX(1)` over **1400ms** at delay **520ms**, `ease-weighted`. Positioned at the watermark's bottom-left, inset 4px. Tiny but signature.
 
-Two L-shaped hairlines (16px × 16px, 1px `foreground/12`) anchored top-left and bottom-right of the hero's content frame (inset 24px / md:40px / lg:64px). Not a closed box, not a "Plate" frame — just two whispers of structure. Fades in at 0ms with the section, before the type. This is the H&R `GoldFrame` move, dialed *way* down to stay within the no-editorial-cosplay rule.
+### 5. Refined corner brackets (longer, thinner, animated draw-in)
 
-### 4. Type cascade — slower, more confident
+Today's corners are 16×16, 1px, full-opacity-on-mount. Upgrade:
+- Length **28px** each leg, thickness **0.5px** rendered via box-shadow inset trick so it stays crisp on HiDPI.
+- Color `hsl(var(--foreground) / 0.18)`.
+- Draw in: clip-path reveal from corner outward, `inset(0 100% 100% 0) → inset(0)` (TL) and mirrored for BR, 900ms ease-weighted, delay 240ms.
+- Same `prefers-reduced-motion` fallback: render at full state, no draw.
 
-Hero height bumps from `min-h-[88vh]` → **`min-h-[92vh]`** with `flex flex-col justify-center`. Cascade timing:
+### 6. Desktop-only cursor parallax on the photo (±6px, inertial)
 
-| Element                        | Delay  | Move                                         |
-| ------------------------------ | ------ | -------------------------------------------- |
-| Corner hairlines (scaleX 0→1)  | 0ms    | 800ms, `ease-weighted`                       |
-| Watermark (opacity + 12px up)  | 200ms  | 1200ms blur-to-sharp `blur(8px)→blur(0)`    |
-| H1 (`.t-headline`)             | 360ms  | existing 800ms `data-reveal` cadence         |
-| Subhead (`.t-lede`)            | 540ms  | same                                         |
-| Primary CTA                    | 720ms  | same + `.cta-spring`                         |
-| Bottom meta strip + scroll cue | 900ms  | opacity only, 600ms                          |
+In addition to the existing scroll parallax, add a gentle pointer-tracking offset on the `.about-hero__photo-shift` element when `(pointer: fine)` and `(prefers-reduced-motion: no-preference)` both match.
 
-Slightly slower than current (which fires everything in 120-360ms band) — the *unhurried* cadence is what reads as luxury.
+- Listen on `section.about-hero` `pointermove`, compute `(mx, my)` normalized to `-1..1` around the section center.
+- Lerp toward target each rAF tick with factor **0.06** (slow inertia → premium, not jittery).
+- Apply as a second CSS custom property: `--cursor-x` / `--cursor-y` translating by `calc(var(--cursor-x) * 6px)` / `calc(var(--cursor-y) * 6px)`. Multiplies cleanly with the existing `--parallax-y` via a single `transform: translate3d(calc(var(--cursor-x)*6px), calc(var(--parallax-y) + var(--cursor-y)*6px), 0) scale(1.08)`.
+- Cleanup on unmount, pointer leave resets target to 0,0.
 
-### 5. Bottom meta strip — single quiet hairline
+### 7. (bonus, free) Meta strip — live dot + smarter scroll cue
 
-Pinned to the bottom of the hero, inside the content frame. One row, hairline above (1px `foreground/12`):
+- Locator gets a 4px evergreen dot before it with a slow 2.4s `pulse-soft` keyframe (opacity 0.6 ↔ 1, scale 1 ↔ 1.15). Reads as "studio is live, not a brochure."
+- The existing `ChevronDown` keeps its bob; add `opacity: 0` → fade to 0.45 over the same 900ms delay it already has, then start bobbing.
 
-```
-FOOTHILLS · ALBERTA                              [scroll cue ↓]
-```
+## Files touched
 
-- Left: `.t-eyebrow` (uppercase, tracked, `foreground/55`) — places the studio without claiming an eyebrow above the H1. Locator-as-footnote, not as label.
-- Right: existing `<ScrollCue />`, repositioned from absolute-center to inside this strip.
+- `src/components/AboutHero.tsx` — render H1 words as `.about-hero__line`/`-inner` spans, add `.about-hero__grain` div, extend the rAF tick to include cursor lerp and `--cursor-x` / `--cursor-y` writes, add `pointermove`/`pointerleave` listeners gated by `matchMedia('(pointer: fine)')`, add the live-dot span before the locator. Adjust reveal delays for the subhead/CTA/meta (1100 / 1320 / 1480ms).
+- `src/index.css` — under the existing `.about-hero` layer:
+  - swap `.about-hero__veil` to the radial gradient described above
+  - add `.about-hero__grain` (data-URI noise, mix-blend overlay)
+  - add `.about-hero__line` / `.about-hero__line-inner` + `@keyframes about-hero-line-rise`
+  - rewrite `.about-hero__watermark` color + add `::after` rule + `@keyframes about-hero-rule-draw`
+  - rewrite `.about-hero__corner` to box-shadow + clip-path draw + `@keyframes about-hero-corner-draw`
+  - add `.about-hero__live-dot` + `@keyframes pulse-soft`
+  - mirror every new animation under the existing `@media (prefers-reduced-motion: reduce)` block to a no-op
 
-No "Two business days," no "Family-run," no postal codes, no per-page folio.
+No other file touched. No new component. No new asset. No new dep.
 
-## Implementation sketch
+## Technical notes
 
-### Files
+- All new motion runs on `transform`, `clip-path`, or `opacity` only — composited, no layout thrash.
+- The cursor parallax shares the existing rAF loop (one tick services scroll write + cursor lerp).
+- Grain is a single inline data-URI ~1.2KB gzipped; no network round-trip.
+- The H1 word-split is purely presentational (`aria-label={headline}` on the H1, each inner span `aria-hidden`), so screen readers still hear the full headline once.
+- All timings stay inside the site's existing motion cadence (`ease-weighted`, 800–1400ms reveals, 300–500ms hovers).
 
-- **`src/components/AboutHero.tsx`** *(new)* — self-contained. Props: `headline`, `subhead`, `primaryCta`, `backdrop`, `watermark` (default `"About"`). Uses a single rAF scroll handler for parallax (no `framer-motion` dependency — keeps bundle flat; we already do this for `--nav-progress` in `Navigation.tsx`).
-- **`src/pages/About.tsx`** — replace `<SubPageHero …/>` with `<AboutHero headline=… subhead=… primaryCta=… backdrop={photography.areaFoothills} />`. Headline copy unchanged.
-- **`src/index.css`** — add `.about-hero-*` utilities scoped to this component:
-  - `.about-hero-veil` — three-stop directional gradient described above.
-  - `.about-hero-burns` — 22s Ken Burns keyframes + `prefers-reduced-motion` kill switch.
-  - `.about-hero-watermark` — base styling (the parallax translate is set inline via `--scroll-y`, written by the rAF handler).
-  - `.about-hero-corner` — L-shaped pseudo-element trick (`::before` horizontal rule + `::after` vertical rule).
-- **`src/components/SubPageHero.tsx`** — untouched. Services, Work, Contact heroes stay exactly as they are.
+## Out of scope (explicitly not doing)
 
-### Performance
-
-- Backdrop `<img>` stays `loading="lazy" decoding="async"` (it's offscreen as LCP — type is LCP).
-- All parallax via `transform` on a `will-change: transform` layer, single rAF tick, throttled with the existing scroll handler pattern from `Navigation.tsx`.
-- No new dependencies.
-
-### Accessibility
-
-- Watermark is `aria-hidden`, `pointer-events-none`, `select-none`.
-- Photo `<img>` has empty `alt=""` (decorative atmosphere).
-- Reduced motion: Ken Burns off, parallax off, blur reveal collapses to plain opacity fade.
-
-## Out of scope
-
-- Other sub-page heroes (Services, Work, Contact) — explicitly not touched.
-- About body sections (`How we work`, `Where we work` rail) — untouched.
-- Header / footer / BigCloseCTA — untouched.
-- Copy changes — none. Same headline, same subhead, same CTA label.
-- New photography — re-uses the existing `photography.areaFoothills` already wired in.
-
-## Visual gut-check (what the user will see)
-
-Land on `/about` — for a beat, you see two near-invisible corner hairlines and a giant ghosted "About" feathering in from below. The foothills photo settles into the middle band with a slow, almost imperceptible drift. The H1 unblurs into focus a half-second later. The subhead and CTA cascade in unhurriedly. A single hairline anchors the bottom with "FOOTHILLS · ALBERTA" and the scroll cue. As you scroll, the photo drifts up slower than the page, the watermark drifts faster — parallax depth without a single library.
-
-The page feels like the cover of a quiet, well-art-directed magazine. Same content, same restraint — just *staged*.
+- No layout change (no split-screen, no framed photo plate, no new sections).
+- No copy change. No new metadata. No second CTA.
+- No change to `SubPageHero`, `Navigation`, body sections, `BigCloseCTA`, or `/about` below the hero.
+- No new memory entries (composition is unchanged, only craft deepens).

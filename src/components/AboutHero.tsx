@@ -19,13 +19,14 @@ interface AboutHeroProps {
 /**
  * AboutHero — cinematic single-purpose hero for /about only.
  *
- * Five layered moves, ordered back-to-front:
- *   1. Photograph backdrop with slow Ken Burns drift + directional cream veil
- *      (cream top → almost-transparent middle band → cream bottom).
- *   2. Monumental ghosted serif watermark, parallaxed against the photo.
- *   3. Two L-shaped corner hairlines anchoring the content frame.
- *   4. Unhurried type cascade (corner → watermark → H1 → subhead → CTA → meta).
- *   5. Bottom hairline meta strip (locator left, scroll cue right).
+ * Upgrade pass (craft, not composition):
+ *   1. Photo backdrop with slow Ken Burns + scroll parallax + filmic grain.
+ *   2. Lit cream radial veil (anchored to the type column).
+ *   3. Monumental ghosted serif watermark with multiply blend + drawing rule.
+ *   4. Refined corner brackets (28px legs, hairline, clip-path draw-in).
+ *   5. H1 with per-word clip reveal cascade (overflow-hidden, translateY 110%→0).
+ *   6. Desktop-only cursor parallax (inertial, ±6px) layered on the photo.
+ *   7. Bottom meta strip: live evergreen dot + locator + scroll cue.
  *
  * Honors brand rails: no eyebrow above H1, no italic-evergreen accent,
  * no folio/Plate chrome, single primary CTA, dark-on-cream, reduced-motion
@@ -43,15 +44,26 @@ const AboutHero = ({
   const photoRef = useRef<HTMLDivElement>(null);
   const watermarkRef = useRef<HTMLSpanElement>(null);
 
-  // Parallax: photo drifts up at 0.3× scroll, watermark at 0.6× scroll.
-  // Single rAF tick, transform-only — same pattern as Navigation's
-  // --nav-progress writer. Disabled under prefers-reduced-motion.
+  // Scroll parallax (photo 0.3×, watermark 0.6×) + desktop cursor parallax
+  // (±6px on photo, inertial lerp). Single rAF loop services both writes.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    const section = ref.current;
 
+    // cursor state
+    const target = { x: 0, y: 0 };
+    const current = { x: 0, y: 0 };
     let raf = 0;
+    let running = false;
+
+    const writePhoto = () => {
+      if (!photoRef.current) return;
+      photoRef.current.style.setProperty("--cursor-x", current.x.toFixed(3));
+      photoRef.current.style.setProperty("--cursor-y", current.y.toFixed(3));
+    };
+
     const tick = () => {
       raf = 0;
       const y = window.scrollY;
@@ -61,18 +73,63 @@ const AboutHero = ({
       if (watermarkRef.current) {
         watermarkRef.current.style.setProperty("--parallax-y", `${y * -0.6}px`);
       }
+
+      // cursor lerp toward target
+      const dx = target.x - current.x;
+      const dy = target.y - current.y;
+      if (Math.abs(dx) > 0.001 || Math.abs(dy) > 0.001) {
+        current.x += dx * 0.06;
+        current.y += dy * 0.06;
+        writePhoto();
+        running = true;
+        raf = window.requestAnimationFrame(tick);
+      } else {
+        running = false;
+      }
     };
-    const onScroll = () => {
+
+    const requestTick = () => {
       if (raf) return;
       raf = window.requestAnimationFrame(tick);
     };
+
+    const onScroll = () => requestTick();
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      target.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      target.y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+      if (!running) requestTick();
+    };
+
+    const onPointerLeave = () => {
+      target.x = 0;
+      target.y = 0;
+      if (!running) requestTick();
+    };
+
+    // initial paint
     tick();
     window.addEventListener("scroll", onScroll, { passive: true });
+
+    if (finePointer && !reduce && section) {
+      section.addEventListener("pointermove", onPointerMove);
+      section.addEventListener("pointerleave", onPointerLeave);
+    }
+
     return () => {
       window.removeEventListener("scroll", onScroll);
+      if (section) {
+        section.removeEventListener("pointermove", onPointerMove);
+        section.removeEventListener("pointerleave", onPointerLeave);
+      }
       if (raf) window.cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [ref]);
+
+  // Split headline into words for clip-reveal cascade.
+  const words = headline.split(/(\s+)/);
 
   return (
     <section
@@ -92,6 +149,7 @@ const AboutHero = ({
               decoding="async"
             />
           </div>
+          <div className="about-hero__grain" />
           <div className="about-hero__veil" />
           <div className="about-hero__vignette" />
         </div>
@@ -101,41 +159,48 @@ const AboutHero = ({
       <span
         aria-hidden="true"
         className="about-hero__corner about-hero__corner--tl"
-        data-reveal
-        style={{ ["--reveal-delay" as string]: "0ms" }}
       />
       <span
         aria-hidden="true"
         className="about-hero__corner about-hero__corner--br"
-        data-reveal
-        style={{ ["--reveal-delay" as string]: "0ms" }}
       />
 
       <Container size="wide" className="relative z-10">
-        {/* Monumental ghosted watermark */}
+        {/* Monumental ghosted watermark with drawing hair-rule */}
         <span
           ref={watermarkRef}
           aria-hidden="true"
           className="about-hero__watermark select-none pointer-events-none"
-          data-reveal
-          style={{ ["--reveal-delay" as string]: "200ms" }}
         >
           {watermark}
         </span>
 
         <h1
           id="about-hero-heading"
-          data-reveal
-          style={{ ["--reveal-delay" as string]: "360ms" }}
-          className="t-headline wrap-editorial text-foreground relative"
+          aria-label={headline}
+          className="t-headline wrap-editorial text-foreground relative about-hero__h1"
         >
-          {headline}
+          {words.map((w, i) => {
+            if (/^\s+$/.test(w)) return <span key={i}>{w}</span>;
+            // visible-word slot count for staggering
+            const wordIndex = words.slice(0, i).filter((s) => !/^\s+$/.test(s)).length;
+            return (
+              <span
+                key={i}
+                className="about-hero__line"
+                aria-hidden="true"
+                style={{ ["--word-delay" as string]: `${360 + wordIndex * 90}ms` }}
+              >
+                <span className="about-hero__line-inner">{w}</span>
+              </span>
+            );
+          })}
         </h1>
 
         {subhead && (
           <p
             data-reveal
-            style={{ ["--reveal-delay" as string]: "540ms" }}
+            style={{ ["--reveal-delay" as string]: "1100ms" }}
             className="t-lede mt-7 max-w-[52ch] relative"
           >
             {subhead}
@@ -145,7 +210,7 @@ const AboutHero = ({
         {primaryCta && (
           <div
             data-reveal
-            style={{ ["--reveal-delay" as string]: "720ms" }}
+            style={{ ["--reveal-delay" as string]: "1320ms" }}
             className="mt-10 relative"
           >
             <Link
@@ -167,11 +232,14 @@ const AboutHero = ({
       <div
         className="about-hero__meta"
         data-reveal
-        style={{ ["--reveal-delay" as string]: "900ms" }}
+        style={{ ["--reveal-delay" as string]: "1480ms" }}
       >
         <Container size="wide">
           <div className="border-t border-foreground/12 pt-5 md:pt-6 flex items-center justify-between">
-            <span className="t-eyebrow text-foreground/55">{locator}</span>
+            <span className="inline-flex items-center gap-2.5">
+              <span aria-hidden="true" className="about-hero__live-dot" />
+              <span className="t-eyebrow text-foreground/55">{locator}</span>
+            </span>
             <span className="inline-flex items-center gap-2 text-foreground/45">
               <span className="t-micro hidden sm:inline">Scroll</span>
               <ChevronDown size={14} strokeWidth={1.5} className="scroll-cue-bob" />
