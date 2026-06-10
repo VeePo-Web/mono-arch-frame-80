@@ -12,78 +12,36 @@ import Container from "@/components/Container";
 const MenuOverlay = lazy(() => import("@/components/nav/MenuOverlay"));
 
 /**
- * Navigation — Logo · inline routes · CTA · (mobile: hamburger).
+ * Navigation — Logo · inline section anchors · Phone · Quote CTA · Menu pill.
  *
- * Three-col flex. At lg+ the route row + solid evergreen "Get a Free Quote"
- * CTA render inline; below lg the hamburger reveals MenuOverlay (unchanged).
- *
- * A single rAF scroll handler drives:
- *  • `--nav-progress` (0..1) for the brand-mark + nav-link crossfade
- *  • `data-scrolled` for the cream backdrop past 80px
- *  • direction-aware hide past 240px
+ * Always sticky. A single rAF scroll handler writes `--nav-progress` (0..1)
+ * across the first 80px of scroll, which drives the brand-mark crossfade,
+ * the inline `.nav-link` colour blend, AND the progressive cream backdrop
+ * fade (background, blur, hairline, brushed-glass top highlight). The
+ * `data-scrolled` attribute remains for the discrete legibility switches
+ * (underline colour, active route colour, phone hover).
  */
 const NAV_PROGRESS_MAX = 80;
-const HIDE_THRESHOLD = 320;
-const DOWN_DELTA = 12;
-const UP_DELTA = 8;
-const TOGGLE_COOLDOWN_MS = 180;
 
 const Navigation = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuTouched, setMenuTouched] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const lastYRef = useRef(0);
   const headerRef = useRef<HTMLElement | null>(null);
   const { pathname } = useLocation();
   const transparentRoute = routeHasTransparentTop(pathname);
-  const lastToggleAtRef = useRef(0);
 
-  // Single rAF loop — progress + scrolled + direction-aware hide.
+  // Single rAF loop — write `--nav-progress` + toggle `data-scrolled`.
   useEffect(() => {
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
     let raf = 0;
     let pending = false;
     const apply = () => {
       const y = window.scrollY;
-      const last = lastYRef.current;
       const p = Math.min(y / NAV_PROGRESS_MAX, 1);
       if (headerRef.current) {
         headerRef.current.style.setProperty("--nav-progress", p.toFixed(3));
       }
       setScrolled(y > NAV_PROGRESS_MAX);
-
-      if (reduceMotion) {
-        setHidden(false);
-      } else if (menuOpen) {
-        setHidden(false);
-      } else {
-        const now = performance.now();
-        const cooled = now - lastToggleAtRef.current > TOGGLE_COOLDOWN_MS;
-        if (y < 80) {
-          setHidden((h) => {
-            if (h) lastToggleAtRef.current = now;
-            return false;
-          });
-        } else if (cooled) {
-          if (y > HIDE_THRESHOLD && y - last > DOWN_DELTA) {
-            setHidden((h) => {
-              if (!h) lastToggleAtRef.current = now;
-              return true;
-            });
-          } else if (last - y > UP_DELTA) {
-            setHidden((h) => {
-              if (h) lastToggleAtRef.current = now;
-              return false;
-            });
-          }
-        }
-      }
-
-      lastYRef.current = y;
       pending = false;
     };
     const onScroll = () => {
@@ -91,14 +49,13 @@ const Navigation = () => {
       pending = true;
       raf = requestAnimationFrame(apply);
     };
-    lastYRef.current = window.scrollY;
     apply();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [menuOpen]);
+  }, []);
 
   // Warm the overlay chunk shortly after first paint.
   useEffect(() => {
@@ -145,13 +102,10 @@ const Navigation = () => {
       <header
         ref={headerRef}
         role="banner"
-        data-hidden={hidden && !menuOpen}
         data-scrolled={scrolled}
         className={cn(
           "havencreek-nav fixed inset-x-0 top-0 z-50",
           "min-h-[64px] md:min-h-[72px] lg:min-h-[80px]",
-          "transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-          "data-[hidden=true]:-translate-y-full",
         )}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
@@ -169,7 +123,7 @@ const Navigation = () => {
               aria-label="Haven Creek Renovations — home"
               className={cn(
                 "brand-mark inline-flex items-center shrink-0 rounded-sm",
-                "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02]",
+                "transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1px]",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evergreen focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               )}
             >
