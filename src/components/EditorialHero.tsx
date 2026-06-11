@@ -7,7 +7,7 @@ import { ChevronDown } from "lucide-react";
 
 interface CtaSpec { to: string; label: string }
 
-interface AboutHeroProps {
+interface EditorialHeroProps {
   headline: string;
   subhead?: string;
   primaryCta?: CtaSpec;
@@ -32,14 +32,14 @@ interface AboutHeroProps {
  * no folio/Plate chrome, single primary CTA, dark-on-cream, reduced-motion
  * collapses to plain opacity fades.
  */
-const AboutHero = ({
+const EditorialHero = ({
   headline,
   subhead,
   primaryCta,
   backdrop,
   watermark = "About",
   locator = "Foothills · Alberta",
-}: AboutHeroProps) => {
+}: EditorialHeroProps) => {
   const { ref, revealed } = useReveal<HTMLElement>({ threshold: 0 });
   const photoRef = useRef<HTMLDivElement>(null);
   const watermarkRef = useRef<HTMLSpanElement>(null);
@@ -251,4 +251,4 @@ const AboutHero = ({
   );
 };
 
-export default AboutHero;
+export default EditorialHero;
