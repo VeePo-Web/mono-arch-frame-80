@@ -85,6 +85,93 @@ cory@havencreekrenovations.com
 
 havencreekrenovations.ca`;
 
+interface LeadVars {
+  name: string;
+  contactDisplay: string;
+  contactKind: "email" | "phone" | "unknown";
+  projectType: string | null;
+  message: string;
+  receivedAt: string;
+}
+
+const buildLeadHtml = ({ name, contactDisplay, contactKind, projectType, message, receivedAt }: LeadVars) => {
+  const contactHref =
+    contactKind === "email"
+      ? `mailto:${contactDisplay}`
+      : contactKind === "phone"
+        ? `tel:${contactDisplay.replace(/[^\d+]/g, "")}`
+        : "";
+  const contactCell = contactHref
+    ? `<a href="${contactHref}" style="color:#2E3E2E;text-decoration:none;">${escapeHtml(contactDisplay)}</a>`
+    : escapeHtml(contactDisplay);
+  const rows: Array<[string, string]> = [
+    ["Name", escapeHtml(name)],
+    [contactKind === "phone" ? "Phone" : "Email", contactCell],
+  ];
+  if (projectType) rows.push(["Project", escapeHtml(projectType)]);
+
+  const rowsHtml = rows
+    .map(
+      ([k, v]) => `
+        <tr>
+          <td style="padding:10px 0;width:90px;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(26,26,26,0.55);vertical-align:top;">${k}</td>
+          <td style="padding:10px 0;font-size:15px;color:#1A1A1A;vertical-align:top;">${v}</td>
+        </tr>`,
+    )
+    .join("");
+
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>New lead</title></head>
+<body style="margin:0;padding:0;background:#F5F1EA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#1A1A1A;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F5F1EA;padding:48px 16px;">
+  <tr><td align="center">
+    <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#F5F1EA;">
+      <tr><td style="padding:8px 40px 0 40px;">
+        <p style="margin:0;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#2E3E2E;font-weight:600;">New Lead &middot; Haven Creek Renovations</p>
+        <div style="height:1px;background:rgba(26,26,26,0.12);margin:28px 0 36px 0;"></div>
+
+        <h1 style="margin:0;font-family:'Cormorant Garamond',Garamond,Georgia,'Times New Roman',serif;font-weight:400;font-size:38px;line-height:1.1;letter-spacing:-0.01em;color:#1A1A1A;">
+          ${escapeHtml(name)} just reached out.
+        </h1>
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:32px 0 0 0;border-top:1px solid rgba(26,26,26,0.08);border-bottom:1px solid rgba(26,26,26,0.08);">
+          ${rowsHtml}
+        </table>
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:36px 0 0 0;">
+          <tr>
+            <td width="2" style="background:#2E3E2E;width:2px;"></td>
+            <td style="padding:4px 0 4px 20px;font-family:'Cormorant Garamond',Garamond,Georgia,'Times New Roman',serif;font-style:italic;font-size:18px;line-height:1.55;color:#1A1A1A;">
+              &ldquo;${escapeHtml(message)}&rdquo;
+            </td>
+          </tr>
+        </table>
+
+        <div style="height:1px;background:rgba(26,26,26,0.08);margin:44px 0 24px 0;"></div>
+
+        <p style="margin:0;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(26,26,26,0.45);">
+          Received ${escapeHtml(receivedAt)} &middot; havencreekrenovations.ca
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+};
+
+const buildLeadText = ({ name, contactDisplay, contactKind, projectType, message, receivedAt }: LeadVars) =>
+  `NEW LEAD · HAVEN CREEK RENOVATIONS
+
+${name} just reached out.
+
+Name: ${name}
+${contactKind === "phone" ? "Phone" : "Email"}: ${contactDisplay}${projectType ? `\nProject: ${projectType}` : ""}
+
+"${message}"
+
+Received ${receivedAt} · havencreekrenovations.ca`;
+
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
