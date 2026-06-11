@@ -153,6 +153,20 @@ const ConsultationForm = ({
       return;
     }
 
+    // Fire-and-forget confirmation email (only for email leads)
+    if (detected.kind === "email") {
+      supabase.functions
+        .invoke("send-contact-confirmation", {
+          body: {
+            name: values.name,
+            email: detected.value,
+            message: values.message,
+            projectType: values.projectType ?? null,
+          },
+        })
+        .catch((e) => console.warn("confirmation email failed", e));
+    }
+
     const stamp = new Date();
 
     if (resolvedSuccessMode === "redirect") {
