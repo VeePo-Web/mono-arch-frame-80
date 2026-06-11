@@ -9,7 +9,12 @@ interface Payload {
   email?: string | null;
   message?: string;
   projectType?: string | null;
+  contactDisplay?: string | null;
+  contactKind?: "email" | "phone" | null;
 }
+
+const NOTIFY_TO = "parker@veepo.ca";
+
 
 const escapeHtml = (s: string) =>
   s.replace(/[&<>"']/g, (c) =>
