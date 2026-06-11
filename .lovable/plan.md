@@ -1,125 +1,71 @@
-# Nav Bar — Always-Sticky + Craft Upgrade (fantasy.co tier)
+# Services Hero — Editorial Upgrade (AboutHero parity)
 
 ## Intent
 
-Keep the existing composition exactly as it is — **Logo · inline section anchors · Phone · Quote CTA · Menu pill** at `lg+`, **Logo · Menu pill** below `lg`. Don't add a link, don't change copy, don't introduce a new control. Make the bar always sticky (never auto-hide) and let every existing layer feel one tier more expensive through smoother transitions, brushed-glass legibility chrome, and refined micro-motion — the same craft pass as the About hero upgrade, applied to the header.
+Bring `/services` up to the same cinematic, expensive register as `/about` by applying the exact AboutHero craft pass — photo backdrop with Ken Burns + scroll parallax, lit cream radial veil, filmic grain, monumental ghosted serif watermark with drawing hair-rule, refined corner hairlines, per-word H1 clip-reveal cascade, desktop-only cursor parallax, and a bottom meta strip with live evergreen dot + locator + scroll cue.
 
-## Hard rails (unchanged — these stay forbidden)
+Same content, same single CTA, same brand rails — just a hero that finally matches the value of the work.
 
-- Bar layout: **Logo · inline section anchors (current page only) · Phone · Quote CTA · Menu pill** at `lg+`; **Logo · Menu pill** below `lg`. No new links, no route list in the bar.
-- `min-h-[64px] md:min-h-[72px] lg:min-h-[80px]` (never a fixed `h-*`).
-- Bar starts **transparent at `scrollY=0`** over hero-transparent routes; paints a cream backdrop as the page scrolls.
-- Brand-mark stays the two-layer `BrandMark.tsx` crossfade driven by `--nav-progress`.
-- Active route on `.nav-link--active` keeps its 2px evergreen underline, drawing from the left over 300ms `ease-weighted`.
-- Quote CTA copy stays **"Get a Free Quote"**, solid evergreen, `rounded-lg`, text-only (no arrow, no icon).
-- Menu pill silhouette stays `rounded-full`, `h-10 md:h-11`, dark evergreen, cream "Menu"/"Close" word visible at every breakpoint.
-- No `backdrop-filter` on MenuOverlay (memory). The header's existing blur is fine.
-- Phone visible at `lg+` only. No phone on mobile header chrome.
-- No new dependency, no new component file.
+## Move: generalize, don't fork
 
-## Behavior change
+Rename `AboutHero` → `EditorialHero` and reuse it on both `/about` and `/services` (and later `/work` and `/contact`). The component already accepts `headline`, `subhead`, `primaryCta`, `backdrop`, `watermark`, `locator` props — these are the only knobs needed per page. Forking would mean two copies of ~250 lines of identical motion logic to maintain.
 
-### Always sticky — remove direction-aware hide
+### Why a rename instead of a copy
 
-The current header hides past 320px on down-scroll and reveals on up-scroll. **Kill it.** The bar is pinned at all times so the Quote CTA and section anchors are always one click away.
+- Zero new motion code. Zero duplicated CSS.
+- One source of truth for the upgrade pass — future tweaks ship to every editorial hero at once.
+- Per-page voice still differentiates via watermark word + backdrop photo + locator string.
 
-- Delete `hidden` state, `HIDE_THRESHOLD`, `DOWN_DELTA`, `UP_DELTA`, `TOGGLE_COOLDOWN_MS`, `lastToggleAtRef`, and the entire direction-aware branch in the rAF loop.
-- Remove the `data-hidden` attribute from `<header>` and the `data-[hidden=true]:-translate-y-full` Tailwind variant.
-- Keep `transition-transform duration-[600ms]` token (it now only ever animates to the resting position, but the class is harmless and matches the rest of the cadence). Or drop the transform classes entirely — preference: drop, since nothing else uses them.
-- `lastYRef` is no longer needed; remove. The rAF loop now only writes `--nav-progress` and toggles `scrolled`.
+### What ships in this build
 
-The `useEffect` no longer depends on `menuOpen`, so its dep array becomes `[]`.
+1. **`src/components/EditorialHero.tsx`** — renamed from `AboutHero.tsx` (`git mv` semantically; in practice: create new file, delete old). API and internals identical. CSS class names stay `about-hero*` for now (no churn in `index.css`); a follow-up can rename them. The component name is what callers see.
 
-## Craft upgrades (seven precise moves)
+2. **`src/pages/About.tsx`** — import swap only: `AboutHero` → `EditorialHero`. No prop change.
 
-### 1. Progressive backdrop fade (replaces the hard `data-scrolled` flip)
+3. **`src/pages/Services.tsx`** — replace the current `<SubPageHero …>` (which currently and incorrectly passes a `backdrop` prop to a type-only component) with:
 
-Today the backdrop pops on at scroll=80px. Make it bloom in smoothly across the first 80px so the transition is invisible.
+   ```tsx
+   <EditorialHero
+     headline="Three services. One standard."
+     subhead="Three focused services, held to the same hands-on standard."
+     primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
+     backdrop={photography.interiorDetailTrim}
+     watermark="Services"
+     locator="Foothills · Alberta"
+   />
+   ```
 
-- Drive `background-color`, `backdrop-filter` blur amount, and the bottom hairline opacity off `--nav-progress` (already written 0→1 across the same range) using `color-mix` and `calc`.
-- `background: color-mix(in oklab, transparent, hsl(var(--background) / 0.88) calc(var(--nav-progress) * 100%));`
-- `backdrop-filter: saturate(calc(100% + 50% * var(--nav-progress))) blur(calc(14px * var(--nav-progress)));`
-- Bottom hairline: `border-bottom-color: hsl(var(--foreground) / calc(0.10 * var(--nav-progress)));`
-- Keep `data-scrolled` attribute (rules that depend on it for legibility — `.nav-link::after` color, `.nav-link--active` color, `.nav-phone:hover`, scroll-cue text — still need a discrete switch around 50% progress). Just stop using it for background.
+   `photography.interiorDetailTrim` is already imported and is the closest-cropped craft shot in the library — perfect tonal match for the cinematic treatment. The page composition below (3-service row list, PhotoBleed, BigCloseCTA) stays exactly as is.
 
-### 2. Brushed-glass top highlight
+4. **`src/index.css`** — no changes. All existing `.about-hero*` selectors keep working because we are not renaming them yet.
 
-Once the backdrop is visible, add a 1px inset cream highlight along the very top edge so the bar reads as polished glass, not a flat wash. Opacity also rides `--nav-progress` so it doesn't appear over the hero.
+## Hard rails preserved
 
-- `box-shadow: inset 0 1px 0 hsl(var(--evergreen-foreground) / calc(0.10 * var(--nav-progress)));`
+- Headline stays plain `text-foreground` — no italic-evergreen accent, no eyebrow above H1.
+- Single primary CTA, "Get a Free Quote", solid evergreen, `rounded-lg`.
+- Dark-on-cream palette.
+- No folio, no Plate/Fig./Section No. chrome, no postal-code chips, no testimonials.
+- Reduced-motion users get plain opacity fades (already handled).
+- `SubPageHero` retired in usage for these two pages; it still exists for any other future caller, but `/about` and `/services` now use `EditorialHero`.
 
-### 3. Nav-link micro-lift on hover
+## Per-page voice (the only differences)
 
-Today nav-links only shift colour and grow the underline. Add a 1px lift + a 360ms underline glow for tactile premium feedback.
+| Page         | Watermark word | Backdrop photo               | Locator              |
+| ------------ | -------------- | ---------------------------- | -------------------- |
+| `/about`     | `About`        | `photography.aboutOwnerCory` | `Foothills · Alberta` |
+| `/services`  | `Services`     | `photography.interiorDetailTrim` | `Foothills · Alberta` |
 
-- `.nav-link:hover { transform: translateY(-0.5px); }` with `transition: transform 360ms var(--ease-weighted), color 300ms var(--ease-weighted);`
-- `.nav-link::after` gains a subtle `box-shadow: 0 1px 4px hsl(var(--evergreen) / 0.35)` only when `:hover` or `--active`, so the underline picks up a quiet evergreen halo.
-- Active state itself stays exactly as is.
+Watermark word automatically sizes to fit its column via the existing `clamp(…)` rule — no per-page tuning needed. "Services" is one character shorter than "About" visually balanced, no overflow risk.
 
-### 4. Brand-mark refined hover
+## Out of scope (explicitly not now)
 
-Replace `hover:scale-[1.02]` with a 1px translateY lift + 320ms `ease-weighted`. Scale on a logo is jittery at high DPR; a lift is what fantasy.co does.
-
-- Tailwind: drop `hover:scale-[1.02]`, add `hover:-translate-y-[1px]`.
-
-### 5. Quote CTA gets a brushed-glass inner highlight
-
-Bring the CTA into the same surface vocabulary as the menu pill (inset cream hairline) so the two right-cluster buttons feel cut from the same material.
-
-- `.nav-quote-cta { box-shadow: inset 0 1px 0 hsl(var(--evergreen-foreground) / 0.10), 0 1px 2px hsl(145 24% 8% / 0.10); }`
-- Hover keeps the existing lift + halo, with the inset highlight preserved in the layered shadow.
-
-### 6. Menu pill — tighter, deeper shadow
-
-- Resting shadow becomes `inset 0 1px 0 hsl(0 0% 100% / 0.09), 0 4px 14px -8px hsl(var(--evergreen-deep) / 0.55)` — a tighter softness; the looser shadow read slightly cheap.
-- Hover bumps to `0 12px 30px -10px` for a real "lifting off the surface" feel. No timing change.
-
-### 7. Inline anchor row — soft edge fade mask (lg+ only)
-
-The section-anchors row sits in the center column. Add an 8px linear-gradient mask on its left and right edges so anchors fade in/out of view rather than starting/ending at a hard line — feels contained without adding visible rails.
-
-- `.nav-links-row { mask-image: linear-gradient(to right, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%); }`
-- Only applies at `lg+` (matches the existing `NavLinks` visibility breakpoint).
-
-### Bonus: Phone link mirrors the nav-link micro-lift
-
-- `.nav-phone:hover { transform: translateY(-0.5px); }` same 360ms `ease-weighted`. Keeps the right cluster cohesive.
-
-## Files touched
-
-- `src/components/Navigation.tsx`
-  - Remove `hidden`, `lastYRef`, `lastToggleAtRef`, all `HIDE_THRESHOLD`/delta/cooldown constants and branching.
-  - Simplify rAF body to: write `--nav-progress` + `setScrolled(y > NAV_PROGRESS_MAX)`.
-  - Drop `data-hidden` attribute and `data-[hidden=true]:-translate-y-full` class from `<header>`. Drop `transition-transform duration-[600ms]` (no longer doing anything).
-  - Effect dep array becomes `[]`.
-  - Brand-mark `<Link>` swap `hover:scale-[1.02]` → `hover:-translate-y-[1px]`.
-  - Wrap the existing `<NavLinks />` slot output OR add `nav-links-row` class to the existing slot (NavLinks.tsx renders its own wrapper — if so, add the class there; otherwise wrap in a `<div className="nav-links-row">` here).
-- `src/components/nav/NavLinks.tsx` — quick read; if it already returns a `<div>` wrapper, add the `nav-links-row` class there to keep the mask scoped. If it returns `null` for routes without anchors, do nothing (the mask only matters when there are anchors).
-- `src/index.css` — under the existing nav block:
-  - rewrite `.havencreek-nav` background/blur/border to use `color-mix` + `calc` against `--nav-progress` (kills the `[data-scrolled="true"]` background rule, keeps the attribute for `.nav-link::after` colour switch and friends).
-  - add the inset cream highlight (also progress-bound).
-  - `.nav-link` gets the `transform` transition; `.nav-link::after` gains the conditional evergreen halo box-shadow on `:hover` / `--active`.
-  - `.nav-phone:hover` gains the `translateY(-0.5px)`.
-  - `.nav-quote-cta` gains the inset cream highlight in its base shadow.
-  - `.menu-pill` shadow tightening.
-  - Add `.nav-links-row { mask-image: …; -webkit-mask-image: …; }`.
-  - Mirror new `transform` transitions inside the `prefers-reduced-motion` block (`transition-duration: 0ms`).
-
-No other file touched. No new component. No new asset. No new dep.
+- Work hero and Contact hero — separate turns. Contact especially needs care because its `/contact` desktop layout is the two-column split (cream cascade + dark form panel) per memory; it likely doesn't get `EditorialHero` at all on desktop.
+- Renaming `.about-hero*` CSS selectors to `.editorial-hero*` — pure churn, do it once all four heroes have shipped.
+- Touching `SubPageHero` itself — still in use elsewhere conceptually; leave the file alone.
+- Adding a memory entry — composition rule ("editorial hero on /about and /services") will go in once Work + Contact land and the pattern is locked.
 
 ## Technical notes
 
-- All new motion runs on `transform`, `opacity`, `box-shadow`, or `color-mix` — composited, no layout thrash.
-- The rAF loop becomes smaller (no direction logic), so scroll cost goes **down**, not up.
-- `color-mix(in oklab, transparent, …)` is supported in all evergreen browsers we ship to (already used elsewhere in the nav).
-- `mask-image` with a linear-gradient is safe; the `-webkit-mask-image` fallback is included for Safari.
-- Removing `data-hidden` simplifies the DOM contract — overlay, scroll-spy, and `routeHasTransparentTop` logic are untouched.
-- The bar's `z-50 fixed inset-x-0 top-0` plus the spacer `<div>` for non-transparent routes continue to handle layout offset. Nothing else needs to change.
-
-## Out of scope (explicitly not doing)
-
-- No layout change (no centering, no logo move, no new right-cluster item).
-- No copy change.
-- No change to `MenuOverlay`, `BrandMark`, `HamburgerButton` internals, `PhoneLink` markup, `pageSections`, scroll-spy, or route prefetch wiring.
-- No change to mobile (`<lg`) right cluster.
-- No new memory entries — composition is unchanged; the "direction-aware hide past 320px" line in the core memory note will be tightened in a follow-up but doesn't block this build.
+- `EditorialHero` reuses `useReveal`, `Container`, the rAF cursor lerp, `prefers-reduced-motion` gate, and `pointer: fine` gate. Nothing new is imported.
+- File move is a `code--write` of the new path + `rm` of the old; no tooling magic needed.
+- No new dep, no new asset, no new CSS rule. One existing photo is now wired through one new prop slot on one existing page.
