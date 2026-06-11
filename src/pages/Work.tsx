@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Container from "@/components/Container";
 import RevealSection from "@/components/RevealSection";
-import SubPageHero from "@/components/SubPageHero";
+import EditorialHero from "@/components/EditorialHero";
 import BigCloseCTA from "@/components/BigCloseCTA";
 import Lightbox from "@/components/gallery/Lightbox";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
@@ -29,10 +29,12 @@ const Work = () => {
         ]}
       />
 
-      <SubPageHero
+      <EditorialHero
         headline="Real properties. Real outcomes."
+        subhead="A working portfolio of recent renovation work across rural Alberta — interior finishing, exterior repairs, and decking."
         primaryCta={{ to: "/contact", label: "Get a Free Quote" }}
         backdrop={photography.exteriorDetailSoffit}
+        watermark="Work"
       />
 
       <RevealSection aria-labelledby="grid-heading" className="section-y">
