@@ -189,14 +189,17 @@ Deno.serve(async (req) => {
     const name = (body.name ?? "").trim().slice(0, 100);
     const email = (body.email ?? "").trim().toLowerCase();
     const message = (body.message ?? "").trim().slice(0, 2000);
+    const projectType = body.projectType?.trim() || null;
+    const contactKindRaw = body.contactKind ?? null;
+    const contactDisplay =
+      (body.contactDisplay ?? body.email ?? "").toString().trim().slice(0, 200) || "(not provided)";
+    const contactKind: "email" | "phone" | "unknown" =
+      contactKindRaw === "email" || contactKindRaw === "phone"
+        ? contactKindRaw
+        : email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+          ? "email"
+          : "unknown";
 
-    // Basic email shape — silently no-op for phone-only leads
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return new Response(JSON.stringify({ skipped: true }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
     if (!name || !message) {
       return new Response(JSON.stringify({ error: "Missing fields" }), {
         status: 400,
@@ -205,37 +208,69 @@ Deno.serve(async (req) => {
     }
 
     const firstName = name.split(/\s+/)[0];
-
-    const res = await fetch(`${GATEWAY_URL}/emails`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "X-Connection-Api-Key": RESEND_API_KEY,
-      },
-      body: JSON.stringify({
-        from: "Haven Creek Renovations <onboarding@resend.dev>",
-        to: [email],
-        reply_to: "cory@havencreekrenovations.com",
-        subject: "We received your note — Haven Creek Renovations",
-        html: buildHtml({ firstName, message }),
-        text: buildText({ firstName, message }),
-      }),
+    const emailIsValid = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const receivedAt = new Date().toLocaleString("en-CA", {
+      timeZone: "America/Edmonton",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
     });
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      console.error("Resend gateway error", res.status, data);
-      return new Response(JSON.stringify({ error: "Send failed", status: res.status, data }), {
-        status: 502,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const sendEmail = (payload: Record<string, unknown>) =>
+      fetch(`${GATEWAY_URL}/emails`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": RESEND_API_KEY,
+        },
+        body: JSON.stringify(payload),
       });
+
+    // 1) Internal lead notification — always sent
+    const notifyPromise = sendEmail({
+      from: "Haven Creek Leads <onboarding@resend.dev>",
+      to: [NOTIFY_TO],
+      reply_to: emailIsValid ? email : "cory@havencreekrenovations.com",
+      subject: `New lead — ${firstName}`,
+      html: buildLeadHtml({ name, contactDisplay, contactKind, projectType, message, receivedAt }),
+      text: buildLeadText({ name, contactDisplay, contactKind, projectType, message, receivedAt }),
+    });
+
+    // 2) Submitter confirmation — only when we have a valid email
+    const confirmPromise = emailIsValid
+      ? sendEmail({
+          from: "Haven Creek Renovations <onboarding@resend.dev>",
+          to: [email],
+          reply_to: "cory@havencreekrenovations.com",
+          subject: "We received your note — Haven Creek Renovations",
+          html: buildHtml({ firstName, message }),
+          text: buildText({ firstName, message }),
+        })
+      : Promise.resolve(null);
+
+    const [notifyRes, confirmRes] = await Promise.all([notifyPromise, confirmPromise]);
+
+    if (!notifyRes.ok) {
+      const errData = await notifyRes.json().catch(() => ({}));
+      console.error("Lead notification failed", notifyRes.status, errData);
+    }
+    if (confirmRes && !confirmRes.ok) {
+      const errData = await confirmRes.json().catch(() => ({}));
+      console.error("Confirmation send failed", confirmRes.status, errData);
     }
 
-    return new Response(JSON.stringify({ ok: true, id: data?.id ?? null }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        ok: true,
+        notified: notifyRes.ok,
+        confirmed: confirmRes?.ok ?? false,
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+
   } catch (err) {
     console.error("send-contact-confirmation error", err);
     return new Response(JSON.stringify({ error: String(err) }), {
