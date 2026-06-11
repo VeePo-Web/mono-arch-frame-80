@@ -1,48 +1,51 @@
-# Contact Hero — Editorial Craft, Friction-Free
+# Resend confirmation email for Contact form
 
-## Frame the problem
-Contact is the conversion page. The form is the page. Anything that pushes the form below the fold, adds a CTA that competes with Send, or layers a heavy photo backdrop = lost leads.
+Resend is already connected (`RESEND_API_KEY` live). Plan:
 
-The editorial pass we shipped on `/about`, `/services`, `/work` is a *full-bleed photo hero* — exactly the wrong move here. So we don't copy it literally. We copy its **craft grammar** (ghosted serif watermark, corner hairlines, per-word H1 cascade, meta strip with live evergreen dot) and apply it to the existing Contact surfaces *without moving the form an inch*.
+## 1. Edge function — `supabase/functions/send-contact-confirmation/index.ts`
+- POST with `{ name, email, message, projectType? }`.
+- Validates input (zod), CORS, returns JSON.
+- Sends one email through the Resend connector gateway (`https://connector-gateway.lovable.dev/resend/emails`) using `LOVABLE_API_KEY` + `RESEND_API_KEY`.
+- `from`: `Haven Creek Renovations <onboarding@resend.dev>` (testing default — swap to a verified domain when ready).
+- `reply_to`: `cory@havencreekrenovations.com` so replies go straight to Cory.
+- `to`: the submitter's email (only sent when the contact field is an email — phone-only leads skip the send silently).
+- Subject: `We received your note — Haven Creek Renovations`.
+- Logs failures but never blocks the user (form already saved to DB).
 
-Form stays where it is. Field count stays at 3. Mobile sticky Send stays. Desktop right-column form panel stays pinned. We're only dressing the type column.
+## 2. Luxury email template (inline HTML, single file)
+Editorial, restrained — same grammar as the site:
+- Cream background `#F5F1EA`, evergreen `#2E3E2E`, foreground `#1A1A1A`.
+- Serif display headline (Georgia/Garamond stack) + sans body (system).
+- Layout: 560px centered card on cream, generous padding (48px desktop / 32px mobile).
+- Structure:
+  1. Tiny eyebrow: `HAVEN CREEK RENOVATIONS · FOOTHILLS, ALBERTA`
+  2. Hairline rule
+  3. Serif H1: `Thank you, {firstName}.`
+  4. Lede: `Your note is in. A real person — Cory — will reply within two business days.`
+  5. Quoted recap of their project message in italic serif, indented with a left evergreen hairline (like a pull-quote).
+  6. Hairline rule
+  7. Sign-off block: `Cory Tymchuk · Founder` + tel link `403 970-7691` + email link.
+  8. Quiet footer micro-copy with address line + 11px tracked-uppercase `HAVENCREEKRENOVATIONS.CA`.
+- All inline styles, table-based for Outlook safety, no external fonts (system serif stack), no images so it renders instantly.
+- Plain-text fallback included.
 
-## Two scoped moves, zero new components
+## 3. Wire from `ConsultationForm.tsx`
+After the successful `supabase.from('consultations').insert(...)`:
+```ts
+supabase.functions.invoke('send-contact-confirmation', {
+  body: { name, email: detected.kind === 'email' ? detected.value : null, message: values.message, projectType: values.projectType ?? null }
+}).catch(err => console.warn('confirmation email failed', err));
+```
+Fire-and-forget — never blocks redirect to `/thank-you`.
 
-### 1. Desktop left column — luxury cascade
-Edit `src/components/contact/ContactBrandStack.tsx`. Keep the existing brand mark → wordmark → tagline → direct rail structure, but layer the same craft chrome the EditorialHero uses, reusing the `.about-hero__*` CSS that already exists:
+## 4. Deploy
+Deploy the new edge function after creating it.
 
-- **Ghosted serif "Contact" watermark** — `<span class="about-hero__watermark">Contact</span>` positioned above the brand mark, with the drawing hair-rule animation. Same multiply-blended `hsl(foreground / 0.06)` color, same `clamp()` size. It anchors the column with weight without adding a single new pixel of UI noise.
-- **Corner hairlines** — `<span class="about-hero__corner about-hero__corner--tl">` + `--br`, scoped to the brand stack container (not the whole section, so they don't fight the dark form panel on the right). Anchors the column edges.
-- **Live meta strip at the bottom of the column** — replace the current `STUDIO_LOCATION` row's plain text with the same `.about-hero__live-dot` pulsing evergreen dot + "Foothills · Alberta" eyebrow used on /about. Quiet "the studio is real, the reply is real" cue — proven conversion lift on contact pages.
-- **Per-word reveal on the tagline** — wrap "Trusted renovations for rural Alberta." in the same `.about-hero__line` / `.about-hero__line-inner` clip-cascade markup the EditorialHero uses on its H1. Reuses existing keyframes and `--word-delay` stagger. No new CSS.
+## Notes / decisions
+- Using `onboarding@resend.dev` for the From address so it works immediately. To send from `@havencreekrenovations.com` you'd need to verify that domain in Resend later — I'll flag it in the closing message.
+- No internal notification email to Cory in this pass (you only asked for the submitter confirmation). Easy to add later as a second `fetch` in the same function.
+- No new dependencies, no schema changes.
 
-Container needs `position: relative` and `overflow: hidden` so the corner hairlines and watermark stay inside the column. The existing `contact-cascade-item` fade-in stays — we're layering on top, not replacing.
-
-**No photo backdrop on desktop.** The dark `evergreen-deep` form panel on the right is already the visual anchor; a photo on the left would create two competing focal points. The watermark + corner hairlines + cascade gives the same "expensive" register without the visual weight.
-
-### 2. Mobile header — same craft, no extra bytes above the form
-Edit the `lg:hidden` section in `src/pages/Contact.tsx` (lines 89-100). The current eyebrow + H1 stays — we just add:
-
-- **Ghosted "Contact" watermark** behind the H1 (`.about-hero__watermark` positioned absolute, smaller `clamp()` per existing rule — already scales to viewport).
-- **Per-word H1 clip-cascade** — same split-and-wrap pattern the EditorialHero uses on its H1, applied to "Tell us about your project." Adds the cinematic rise without one extra pixel of vertical space.
-- **One quiet hair-rule meta row** between H1 and form — `.about-hero__live-dot` + "Foothills · Alberta · replies in 2 business days" in `.t-eyebrow text-foreground/55`. Replaces the standalone "Get in touch · Replies in 2 business days" eyebrow above the H1 (consolidates the reply-promise into one place per memory rule about the "two business days" line).
-
-**No corner brackets on mobile** — they'd crowd the viewport edges with the form right below.
-**No backdrop photo on mobile** — would push form below the fold.
-**No min-h-[92vh]** — current top section keeps its `pt-6 pb-2` so the form is still one short scroll away. Friction stays at zero.
-
-Form, sticky Send, and the direct-contact rail below stay byte-identical.
-
-## What we are explicitly NOT doing
-- No swap to `<EditorialHero>` on Contact (its `min-h-[92vh]` + photo backdrop would tank conversion).
-- No new CTA in the hero region — the form *is* the CTA. Header Quote CTA + mobile sticky Send already cover the redundant-CTA need.
-- No field count changes, no new optional fields, no progressive disclosure. Three-field rule holds.
-- No dark backdrop on desktop left column. The form panel owns the dark surface; we keep the brand cascade cream.
-- No memory entry yet — wait until this lands and reads right in preview.
-
-## Technical notes
-- All new visual chrome reuses existing `.about-hero__watermark`, `.about-hero__corner`, `.about-hero__live-dot`, `.about-hero__line`, `.about-hero__line-inner` selectors from `src/index.css`. Zero new CSS.
-- Two files edited: `src/components/contact/ContactBrandStack.tsx` (desktop) and `src/pages/Contact.tsx` (mobile only — desktop section in this file is untouched aside from being driven by ContactBrandStack).
-- No new imports beyond what each file already pulls in.
-- Reduced-motion already handled by the existing `.about-hero__*` rules in `src/index.css`.
+## Files
+- **new** `supabase/functions/send-contact-confirmation/index.ts`
+- **edit** `src/components/ConsultationForm.tsx` (one invoke call after insert)
