@@ -86,18 +86,53 @@ const Contact = () => {
           MOBILE (< lg) — Original single-column layout. UNCHANGED.
           ────────────────────────────────────────────────────────────────── */}
       <div className="lg:hidden">
-        <section aria-labelledby="contact-mobile-heading" className="pt-6 pb-2">
+        <section aria-labelledby="contact-mobile-heading" className="pt-8 pb-2">
           <Container size="wide">
-            <div className="mx-auto max-w-xl">
-              <p className="t-eyebrow text-evergreen/70">
-                Get in touch · Replies in 2 business days
-              </p>
-              <h1 id="contact-mobile-heading" className="mt-4 t-headline text-foreground">
-                Tell us about your project.
+            <div className="mx-auto max-w-xl relative overflow-hidden">
+              {/* Ghosted serif "Contact" watermark behind the headline */}
+              <span
+                aria-hidden="true"
+                className="about-hero__watermark select-none pointer-events-none"
+                style={{ fontSize: "clamp(5rem, 22vw, 9rem)" }}
+              >
+                Contact
+              </span>
+
+              <h1
+                id="contact-mobile-heading"
+                aria-label="Tell us about your project."
+                className="relative t-headline text-foreground about-hero__h1"
+              >
+                {"Tell us about your project.".split(/(\s+)/).map((w, i, arr) => {
+                  if (/^\s+$/.test(w)) return <span key={i}>{w}</span>;
+                  const wordIndex = arr.slice(0, i).filter((s) => !/^\s+$/.test(s)).length;
+                  return (
+                    <span
+                      key={i}
+                      className="about-hero__line"
+                      aria-hidden="true"
+                      style={{ ["--word-delay" as string]: `${240 + wordIndex * 90}ms` }}
+                    >
+                      <span className="about-hero__line-inner">{w}</span>
+                    </span>
+                  );
+                })}
               </h1>
+
+              <div
+                className="relative mt-6 pt-4 border-t border-foreground/12 flex items-center gap-2.5"
+                data-reveal
+                style={{ ["--reveal-delay" as string]: "900ms" }}
+              >
+                <span aria-hidden="true" className="about-hero__live-dot" />
+                <span className="t-eyebrow text-foreground/55">
+                  Foothills · Alberta · replies in 2 business days
+                </span>
+              </div>
             </div>
           </Container>
         </section>
+
 
         <section id="form" aria-labelledby="form-heading" className="pt-6 pb-40">
           <Container size="wide">
