@@ -1,23 +1,16 @@
-Add an internal notification email to `parker@veepo.ca` whenever the contact form is submitted, alongside the existing submitter confirmation.
+## Problem
+Both logo images (dark and cream) are RGBA with alpha channels. In `BrandMark.tsx`, the dark base logo is always rendered at full opacity while the cream overlay sits on top with `opacity: calc(1 - var(--nav-progress))`. At `scrollY=0` on the home page hero, the cream overlay is at opacity 1 but the dark logo underneath is also at opacity 1. Because both images have transparency, the dark logo bleeds through the cream one, making the brand mark look ghosted / transparent.
 
 ## Change
-In `supabase/functions/send-contact-confirmation/index.ts`, after the confirmation email send (and regardless of whether the submitter provided an email or phone), POST a second email to the Resend gateway:
+In `src/components/nav/BrandMark.tsx`, add an inline `opacity` style to the dark base `<img>`:
 
-- **to**: `parker@veepo.ca`
-- **from**: `Haven Creek Leads <onboarding@resend.dev>`
-- **reply_to**: submitter's email if present, otherwise `cory@havencreekrenovations.com`
-- **subject**: `New lead — {firstName}` (e.g. `New lead — Sarah`)
-- **html / text**: same luxury cream-and-evergreen template grammar as the submitter email, but reframed as a lead notification:
-  - Eyebrow: `NEW LEAD · HAVEN CREEK RENOVATIONS`
-  - Headline: `{Name} just reached out.`
-  - Contact block: name, email or phone, project type (if present)
-  - Pull-quoted recap of their message (same evergreen left-rule italic serif)
-  - Footer: timestamp + `havencreekrenovations.ca`
+```tsx
+style={{ opacity: "var(--nav-progress, 0)" }}
+```
 
-The notification fires for every submission (email or phone-only leads), so Parker sees every form fill. The submitter confirmation still only sends when an email was provided.
+This completes the two-way crossfade:
+- At `scrollY=0`: dark logo opacity = 0, cream logo opacity = 1 → only cream visible
+- At `scrollY>=80px`: dark logo opacity = 1, cream logo opacity = 0 → only dark visible
+- During scroll: standard crossfade with no bleed-through
 
-Also extend the function payload to accept `contactDisplay` (raw email or phone string from the form) so the notification can show the lead's actual contact method. `ConsultationForm.tsx` gets a one-line update to pass `contactDisplay: detected.value` and `contactKind: detected.kind` in the invoke body.
-
-## Files
-- **edit** `supabase/functions/send-contact-confirmation/index.ts`
-- **edit** `src/components/ConsultationForm.tsx` (extend invoke payload)
+No other files are touched.
