@@ -20,6 +20,7 @@ const BrandMark = () => (
       {...({ fetchpriority: "high" } as Record<string, string>)}
       decoding="async"
       draggable={false}
+      style={{ opacity: "var(--nav-progress, 0)" }}
     />
     <img
       src={logoCream}
