@@ -231,7 +231,7 @@ Deno.serve(async (req) => {
 
     // 1) Internal lead notification — always sent
     const notifyPromise = sendEmail({
-      from: "Haven Creek Leads <onboarding@resend.dev>",
+      from: "Haven Creek Leads <leads@havencreekrenovations.ca>",
       to: NOTIFY_TO,
       reply_to: emailIsValid ? email : "coryschwindt@gmail.com",
       subject: `New lead — ${firstName}`,
