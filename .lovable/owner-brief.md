@@ -98,7 +98,7 @@ These are deliberate and intentional. We didn't ship them yet because they need 
 These are hardcoded across the site. Tell us if any of these should change before round 2:
 
 - **Phone:** 403 970-7691
-- **Email:** cory@havencreekrenovations.com
+- **Email:** coryschwindt@gmail.com
 - **Location label:** Foothills, AB
 
 ---

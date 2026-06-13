@@ -1,16 +1,23 @@
-## Problem
-Both logo images (dark and cream) are RGBA with alpha channels. In `BrandMark.tsx`, the dark base logo is always rendered at full opacity while the cream overlay sits on top with `opacity: calc(1 - var(--nav-progress))`. At `scrollY=0` on the home page hero, the cream overlay is at opacity 1 but the dark logo underneath is also at opacity 1. Because both images have transparency, the dark logo bleeds through the cream one, making the brand mark look ghosted / transparent.
+## Changes
 
-## Change
-In `src/components/nav/BrandMark.tsx`, add an inline `opacity` style to the dark base `<img>`:
+### 1. Replace all display email addresses → `coryschwindt@gmail.com`
+- `src/components/QuickContactSheet.tsx` line 17: `STUDIO_EMAIL`
+- `src/components/contact/ContactBrandStack.tsx` line 5: `STUDIO_EMAIL`
+- `src/components/nav/MenuOverlay.tsx` line 22: `STUDIO_EMAIL` (was `hello@havencreek.ca`)
+- `src/pages/Contact.tsx` line 14: `STUDIO_EMAIL`
+- `.lovable/owner-brief.md` line 101: docs reference
 
-```tsx
-style={{ opacity: "var(--nav-progress, 0)" }}
-```
+### 2. Edge function `supabase/functions/send-contact-confirmation/index.ts`
+- `NOTIFY_TO` becomes an array: `["parker@veepo.ca", "coryschwindt@gmail.com"]` and is passed directly as the Resend `to` field so both addresses receive the lead notification.
+- `reply_to` fallback (line 236) → `coryschwindt@gmail.com`
+- Submitter confirmation `reply_to` (line 247) → `coryschwindt@gmail.com`
+- HTML body mailto link + display (line 59) → `coryschwindt@gmail.com`
+- Text body line 84 → `coryschwindt@gmail.com`
 
-This completes the two-way crossfade:
-- At `scrollY=0`: dark logo opacity = 0, cream logo opacity = 1 → only cream visible
-- At `scrollY>=80px`: dark logo opacity = 1, cream logo opacity = 0 → only dark visible
-- During scroll: standard crossfade with no bleed-through
+### 3. Deploy + test
+- Deploy `send-contact-confirmation`.
+- Call it via `supabase--curl_edge_functions` with a sample payload (name, email, message) and confirm a 200 response + both notifyRes/confirmRes succeed in logs.
+- Pull recent function logs to verify both sends succeeded.
 
-No other files are touched.
+### Note on Resend sender
+`from` stays on `onboarding@resend.dev` (Resend's shared sandbox sender). With that sender, Resend only delivers to verified addresses on the account; if `parker@veepo.ca` or `coryschwindt@gmail.com` aren't both verified on the Resend connector account, one of the two notification sends will be rejected. I'll flag this in the test result rather than try to switch the sender domain in this turn.
