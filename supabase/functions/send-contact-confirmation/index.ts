@@ -231,7 +231,7 @@ Deno.serve(async (req) => {
 
     // 1) Internal lead notification — always sent
     const notifyPromise = sendEmail({
-      from: "Haven Creek Leads <onboarding@resend.dev>",
+      from: "Haven Creek Leads <leads@havencreekrenovations.ca>",
       to: NOTIFY_TO,
       reply_to: emailIsValid ? email : "coryschwindt@gmail.com",
       subject: `New lead — ${firstName}`,
@@ -242,7 +242,7 @@ Deno.serve(async (req) => {
     // 2) Submitter confirmation — only when we have a valid email
     const confirmPromise = emailIsValid
       ? sendEmail({
-          from: "Haven Creek Renovations <onboarding@resend.dev>",
+          from: "Haven Creek Renovations <hello@havencreekrenovations.ca>",
           to: [email],
           reply_to: "coryschwindt@gmail.com",
           subject: "We received your note — Haven Creek Renovations",

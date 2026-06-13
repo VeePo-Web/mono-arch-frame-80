@@ -1,23 +1,23 @@
+# Switch Resend sends to verified domain
+
+Now that `havencreekrenovations.ca` is verified in Resend, swap both `from` addresses off the sandbox so the lead notification + submitter confirmation actually deliver to both `parker@veepo.ca` and `coryschwindt@gmail.com`.
+
 ## Changes
 
-### 1. Replace all display email addresses → `coryschwindt@gmail.com`
-- `src/components/QuickContactSheet.tsx` line 17: `STUDIO_EMAIL`
-- `src/components/contact/ContactBrandStack.tsx` line 5: `STUDIO_EMAIL`
-- `src/components/nav/MenuOverlay.tsx` line 22: `STUDIO_EMAIL` (was `hello@havencreek.ca`)
-- `src/pages/Contact.tsx` line 14: `STUDIO_EMAIL`
-- `.lovable/owner-brief.md` line 101: docs reference
+**File:** `supabase/functions/send-contact-confirmation/index.ts`
 
-### 2. Edge function `supabase/functions/send-contact-confirmation/index.ts`
-- `NOTIFY_TO` becomes an array: `["parker@veepo.ca", "coryschwindt@gmail.com"]` and is passed directly as the Resend `to` field so both addresses receive the lead notification.
-- `reply_to` fallback (line 236) → `coryschwindt@gmail.com`
-- Submitter confirmation `reply_to` (line 247) → `coryschwindt@gmail.com`
-- HTML body mailto link + display (line 59) → `coryschwindt@gmail.com`
-- Text body line 84 → `coryschwindt@gmail.com`
+1. Lead notification `from`: `"Haven Creek Leads <leads@havencreekrenovations.ca>"` (was `onboarding@resend.dev`)
+2. Submitter confirmation `from`: `"Haven Creek Renovations <hello@havencreekrenovations.ca>"` (was `onboarding@resend.dev`)
+3. Everything else stays as-is:
+   - `to: ["parker@veepo.ca", "coryschwindt@gmail.com"]` for the lead notification
+   - `reply_to: "coryschwindt@gmail.com"` on both sends
+   - HTML/text bodies unchanged
 
-### 3. Deploy + test
-- Deploy `send-contact-confirmation`.
-- Call it via `supabase--curl_edge_functions` with a sample payload (name, email, message) and confirm a 200 response + both notifyRes/confirmRes succeed in logs.
-- Pull recent function logs to verify both sends succeeded.
+## Deploy + verify
 
-### Note on Resend sender
-`from` stays on `onboarding@resend.dev` (Resend's shared sandbox sender). With that sender, Resend only delivers to verified addresses on the account; if `parker@veepo.ca` or `coryschwindt@gmail.com` aren't both verified on the Resend connector account, one of the two notification sends will be rejected. I'll flag this in the test result rather than try to switch the sender domain in this turn.
+1. Deploy `send-contact-confirmation`.
+2. Fire a test submission through the edge function with a real test payload.
+3. Confirm 200s on both Resend calls in the function logs (no more 403 sandbox errors).
+4. Report back what landed where.
+
+No frontend or template changes needed.
