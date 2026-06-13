@@ -13,7 +13,7 @@ interface Payload {
   contactKind?: "email" | "phone" | null;
 }
 
-const NOTIFY_TO = "parker@veepo.ca";
+const NOTIFY_TO = ["parker@veepo.ca", "coryschwindt@gmail.com"];
 
 
 const escapeHtml = (s: string) =>
@@ -56,7 +56,7 @@ const buildHtml = ({ firstName, message }: { firstName: string; message: string 
         </p>
         <p style="margin:18px 0 0 0;font-size:14px;line-height:1.7;color:#1A1A1A;">
           <a href="tel:+14039707691" style="color:#2E3E2E;text-decoration:none;">403 970-7691</a><br>
-          <a href="mailto:cory@havencreekrenovations.com" style="color:#2E3E2E;text-decoration:none;">cory@havencreekrenovations.com</a>
+          <a href="mailto:coryschwindt@gmail.com" style="color:#2E3E2E;text-decoration:none;">coryschwindt@gmail.com</a>
         </p>
 
         <div style="height:1px;background:rgba(26,26,26,0.08);margin:48px 0 24px 0;"></div>
@@ -81,7 +81,7 @@ Your note is in. A real person — Cory — will reply within two business days.
 
 Cory Tymchuk · Founder
 403 970-7691
-cory@havencreekrenovations.com
+coryschwindt@gmail.com
 
 havencreekrenovations.ca`;
 
@@ -232,8 +232,8 @@ Deno.serve(async (req) => {
     // 1) Internal lead notification — always sent
     const notifyPromise = sendEmail({
       from: "Haven Creek Leads <onboarding@resend.dev>",
-      to: [NOTIFY_TO],
-      reply_to: emailIsValid ? email : "cory@havencreekrenovations.com",
+      to: NOTIFY_TO,
+      reply_to: emailIsValid ? email : "coryschwindt@gmail.com",
       subject: `New lead — ${firstName}`,
       html: buildLeadHtml({ name, contactDisplay, contactKind, projectType, message, receivedAt }),
       text: buildLeadText({ name, contactDisplay, contactKind, projectType, message, receivedAt }),
@@ -244,7 +244,7 @@ Deno.serve(async (req) => {
       ? sendEmail({
           from: "Haven Creek Renovations <onboarding@resend.dev>",
           to: [email],
-          reply_to: "cory@havencreekrenovations.com",
+          reply_to: "coryschwindt@gmail.com",
           subject: "We received your note — Haven Creek Renovations",
           html: buildHtml({ firstName, message }),
           text: buildText({ firstName, message }),

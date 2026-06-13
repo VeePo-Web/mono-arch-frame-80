@@ -19,7 +19,7 @@ const ROUTES = [
 
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_PHONE_DISPLAY = "403 970-7691";
-const STUDIO_EMAIL = "hello@havencreek.ca";
+const STUDIO_EMAIL = "coryschwindt@gmail.com";
 
 /**
  * MenuOverlay — full-viewport editorial veil (desktop + mobile).

@@ -14,7 +14,7 @@ import { subscribeQuickContact } from "@/lib/quickContact";
 
 const STUDIO_PHONE_TEL = "+14039707691";
 const STUDIO_PHONE_DISPLAY = "403 970-7691";
-const STUDIO_EMAIL = "cory@havencreekrenovations.com";
+const STUDIO_EMAIL = "coryschwindt@gmail.com";
 
 /**
  * QuickContactSheet — mobile-only bottom-sheet contact escape hatch.
