@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { cn } from "@/lib/utils";
 import { prefetchRoute } from "@/lib/routePrefetch";
+import { STUDIO_EMAIL, STUDIO_PHONE_DISPLAY, STUDIO_PHONE_TEL } from "@/lib/studioContact";
 
 interface MenuOverlayProps {
   open: boolean;
@@ -16,10 +17,6 @@ const ROUTES = [
   { label: "Work", to: "/work" },
   { label: "Contact", to: "/contact" },
 ];
-
-const STUDIO_PHONE_TEL = "+14039707691";
-const STUDIO_PHONE_DISPLAY = "403 970-7691";
-const STUDIO_EMAIL = "coryschwindt@gmail.com";
 
 /**
  * MenuOverlay — full-viewport editorial veil (desktop + mobile).

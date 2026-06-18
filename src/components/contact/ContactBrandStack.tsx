@@ -1,8 +1,7 @@
 import havenCreekMark from "@/assets/logo/haven-creek-mark.webp";
 import havenCreekWordmark from "@/assets/logo/haven-creek-horizontal.webp";
-import { STUDIO_PHONE_DISPLAY, STUDIO_PHONE_TEL } from "@/lib/studioContact";
+import { STUDIO_EMAIL, STUDIO_PHONE_DISPLAY, STUDIO_PHONE_TEL } from "@/lib/studioContact";
 
-const STUDIO_EMAIL = "coryschwindt@gmail.com";
 const STUDIO_LOCATION = "Foothills, AB";
 
 /**
