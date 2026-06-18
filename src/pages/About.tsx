@@ -47,7 +47,7 @@ const About = () => {
                 alt="Cory, Haven Creek Renovations"
                 loading="lazy"
                 decoding="async"
-                className="block w-32 md:w-40 aspect-square object-cover mb-6"
+                className="mx-auto lg:mx-0 w-44 sm:w-56 lg:w-full aspect-[3/4] object-cover rounded-sm hero-plate mb-8"
                 data-reveal
               />
               <p
