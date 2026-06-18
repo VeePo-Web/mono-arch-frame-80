@@ -13,7 +13,7 @@ interface Payload {
   contactKind?: "email" | "phone" | null;
 }
 
-const NOTIFY_TO = ["parker@veepo.ca", "coryschwindt@gmail.com"];
+const NOTIFY_TO = ["coryschwindt@gmail.com"];
 
 
 const escapeHtml = (s: string) =>
@@ -51,7 +51,7 @@ const buildHtml = ({ firstName, message }: { firstName: string; message: string 
         <div style="height:1px;background:rgba(26,26,26,0.12);margin:44px 0 32px 0;"></div>
 
         <p style="margin:0;font-size:15px;line-height:1.6;color:#1A1A1A;">
-          Cory Tymchuk<br>
+          Cory Schwindt<br>
           <span style="color:rgba(26,26,26,0.55);font-size:13px;letter-spacing:0.08em;text-transform:uppercase;">Founder</span>
         </p>
         <p style="margin:18px 0 0 0;font-size:14px;line-height:1.7;color:#1A1A1A;">
@@ -79,7 +79,7 @@ Your note is in. A real person — Cory — will reply within two business days.
 
 "${message}"
 
-Cory Tymchuk · Founder
+Cory Schwindt · Founder
 403 970-7691
 coryschwindt@gmail.com
 
