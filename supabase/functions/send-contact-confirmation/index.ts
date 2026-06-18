@@ -83,7 +83,7 @@ Cory Tymchuk · Founder
 403 970-7691
 coryschwindt@gmail.com
 
-havencreekrenovations.ca`;
+havencreek-renovations.com`;
 
 interface LeadVars {
   name: string;
@@ -150,7 +150,7 @@ const buildLeadHtml = ({ name, contactDisplay, contactKind, projectType, message
         <div style="height:1px;background:rgba(26,26,26,0.08);margin:44px 0 24px 0;"></div>
 
         <p style="margin:0;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(26,26,26,0.45);">
-          Received ${escapeHtml(receivedAt)} &middot; havencreekrenovations.ca
+          Received ${escapeHtml(receivedAt)} &middot; havencreek-renovations.com
         </p>
       </td></tr>
     </table>
@@ -169,7 +169,7 @@ ${contactKind === "phone" ? "Phone" : "Email"}: ${contactDisplay}${projectType ?
 
 "${message}"
 
-Received ${receivedAt} · havencreekrenovations.ca`;
+Received ${receivedAt} · havencreek-renovations.com`;
 
 
 Deno.serve(async (req) => {
@@ -231,7 +231,7 @@ Deno.serve(async (req) => {
 
     // 1) Internal lead notification — always sent
     const notifyPromise = sendEmail({
-      from: "Haven Creek Leads <leads@havencreekrenovations.ca>",
+      from: "Haven Creek Leads <leads@havencreek-renovations.com>",
       to: NOTIFY_TO,
       reply_to: emailIsValid ? email : "coryschwindt@gmail.com",
       subject: `New lead — ${firstName}`,
@@ -242,7 +242,7 @@ Deno.serve(async (req) => {
     // 2) Submitter confirmation — only when we have a valid email
     const confirmPromise = emailIsValid
       ? sendEmail({
-          from: "Haven Creek Renovations <hello@havencreekrenovations.ca>",
+          from: "Haven Creek Renovations <hello@havencreek-renovations.com>",
           to: [email],
           reply_to: "coryschwindt@gmail.com",
           subject: "We received your note — Haven Creek Renovations",
