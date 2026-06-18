@@ -5,13 +5,11 @@ import ContactBrandStack from "@/components/contact/ContactBrandStack";
 import { BreadcrumbJsonLd } from "@/components/JsonLd";
 import { useSeo } from "@/hooks/useSeo";
 import { projectTypeFromQuery } from "@/lib/validation/consultation";
+import { STUDIO_EMAIL, STUDIO_PHONE_DISPLAY as STUDIO_PHONE, STUDIO_PHONE_TEL } from "@/lib/studioContact";
 
 const ConsultationForm = lazy(() => import("@/components/ConsultationForm"));
 
 const SITE = "https://havencreekrenovations.ca";
-const STUDIO_PHONE = "403 970-7691";
-const STUDIO_PHONE_TEL = "+14039707691";
-const STUDIO_EMAIL = "coryschwindt@gmail.com";
 const STUDIO_LOCATION = "Foothills, AB";
 const FORM_ID = "contact-form";
 

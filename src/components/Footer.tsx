@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Container from "./Container";
 import logo from "@/assets/logo/haven-creek-mark.webp";
+import { STUDIO_EMAIL, STUDIO_PHONE_DISPLAY, STUDIO_PHONE_TEL } from "@/lib/studioContact";
 
 const PAGES = [
   { label: "About", to: "/about" },
@@ -65,7 +66,27 @@ const Footer = () => {
             </ul>
           </nav>
 
-          <p className="t-micro">Foothills, AB · © {year}</p>
+          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <li>
+              <a
+                href={`tel:${STUDIO_PHONE_TEL}`}
+                className="t-micro hover:text-evergreen transition-colors duration-300"
+              >
+                {STUDIO_PHONE_DISPLAY}
+              </a>
+            </li>
+            <li>
+              <a
+                href={`mailto:${STUDIO_EMAIL}`}
+                className="t-micro hover:text-evergreen transition-colors duration-300 break-all"
+              >
+                {STUDIO_EMAIL}
+              </a>
+            </li>
+            <li>
+              <span className="t-micro">Foothills, AB · © {year}</span>
+            </li>
+          </ul>
         </div>
       </Container>
     </footer>

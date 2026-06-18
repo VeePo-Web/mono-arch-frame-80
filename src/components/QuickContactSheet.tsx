@@ -11,10 +11,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { detectContact } from "@/lib/validation/consultation";
 import { subscribeQuickContact } from "@/lib/quickContact";
-
-const STUDIO_PHONE_TEL = "+14039707691";
-const STUDIO_PHONE_DISPLAY = "403 970-7691";
-const STUDIO_EMAIL = "coryschwindt@gmail.com";
+import { STUDIO_EMAIL, STUDIO_PHONE_DISPLAY, STUDIO_PHONE_TEL } from "@/lib/studioContact";
 
 /**
  * QuickContactSheet — mobile-only bottom-sheet contact escape hatch.
