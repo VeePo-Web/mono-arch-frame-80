@@ -1,23 +1,26 @@
-# Switch contact-form sender to havencreek-renovations.com
+# Test the contact form end-to-end
 
-Your `havencreek-renovations.com` domain is already verified in Resend (DNS on Vercel), so no DNS work needed. This is a code-only change in one edge function. Zero visible changes on the website — only the "From" address on the two contact-form emails.
+Fire a real submission against the deployed `send-contact-confirmation` edge function with `parker@veepo.ca` as the submitter, then verify both emails actually sent from `havencreek-renovations.com`.
 
-## What changes
+## Steps
 
-File: `supabase/functions/send-contact-confirmation/index.ts`
+1. **Invoke the edge function** with a realistic payload:
+   - name: `Parker Test`
+   - email: `parker@veepo.ca`
+   - contactDisplay: `parker@veepo.ca`
+   - contactKind: `email`
+   - projectType: `Get a Free Quote — test`
+   - message: short test sentence
 
-1. Internal lead email `from:` → `Haven Creek Leads <leads@havencreek-renovations.com>`
-2. Client confirmation email `from:` → `Haven Creek Renovations <hello@havencreek-renovations.com>`
-3. Email-body footer text `havencreekrenovations.ca` → `havencreek-renovations.com` (two spots, both inside the email HTML/text — not on the website)
-4. Redeploy the function and fire a live test submission to confirm both emails arrive
+2. **Check the response** for `{ ok: true, notified: true, confirmed: true }`.
 
-## What does NOT change
+3. **Tail edge function logs** for `send-contact-confirmation` to confirm no Resend errors (look for "Lead notification failed" / "Confirmation send failed").
 
-- No website copy, links, or branding touched — site still reads `havencreekrenovations.ca` everywhere visitors look
-- `reply_to` stays `coryschwindt@gmail.com` so replies still land in Cory's inbox
-- Recipients (Parker + Cory) unchanged
-- No DNS work, no `.ca` Resend setup, no Lovable Emails
+4. **Query `email_send_log`** (dedup by `message_id`) for the last few minutes to confirm both rows show `status = sent`.
 
-## Confirm before I build
+5. **Tell you to check Parker's inbox** — both the internal lead email (also goes to Cory) and the client confirmation should arrive from `@havencreek-renovations.com`.
 
-The two mailbox names — `leads@` (internal notifications) and `hello@` (client-facing confirmations) — are just labels Resend will send as; you don't need to create real inboxes for them since `reply_to` redirects replies. Good to proceed with those, or want different prefixes (e.g. `noreply@`)?
+## Notes
+
+- This sends a real email to `parker@veepo.ca` AND `coryschwindt@gmail.com` (Cory is hardcoded in `NOTIFY_TO`). Heads up if you want to skip Cory's copy — I'd need to temporarily remove him from the notify list, which I'd rather not touch.
+- No code changes. Pure verification.
