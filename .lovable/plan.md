@@ -1,53 +1,30 @@
-## What's actually wrong
+## Yes — switch to Cloudflare DNS (free, easiest)
 
-I checked Resend directly. `havencreekrenovations.ca` is in the account, but its status is **`failed`** — meaning Resend cannot find the DNS records it needs. I also ran live DNS lookups against Google's resolver for the three records Resend expects, and **all three return empty**. So the records were never added at the registrar (or were added on a different domain).
+Cloudflare is the standard answer here. It's free, the UI is clean, and adding the Resend records takes about 60 seconds once nameservers are switched. Vercel DNS works too but Cloudflare is better for this use case (faster propagation, better UI, no Vercel account needed).
 
-That's why every send returns 403 — Resend refuses to send from a domain it hasn't verified.
+**Important:** don't change nameservers for `havencreekrenovations.ca` yet — your live site, custom domain on Lovable, and any existing email all resolve through Canspace's DNS today. We need to copy every existing record into Cloudflare *first*, then flip nameservers, otherwise the site goes dark for up to 48 hours.
 
-Side note: `havencreek-renovations.com` (with a hyphen) IS verified on the same account. We could fall back to that if you'd rather not touch DNS right now.
+## Steps
 
-## Fix — add 3 DNS records at your registrar (Canspace)
+1. **Create a free Cloudflare account** at cloudflare.com → "Add a site" → enter `havencreekrenovations.ca` → Free plan.
+2. **Let Cloudflare auto-scan** existing DNS at Canspace. It will pull in your A records (the Lovable `185.158.133.1` records for `@` and `www`), the `_lovable` TXT verification record, and anything else.
+3. **Review the imported records** — confirm both A records and the `_lovable` TXT are present. Add anything Cloudflare missed manually.
+4. **Add the 3 Resend records** (same values I gave you earlier — Cloudflare's UI just asks for Type / Name / Content):
+   - TXT  `resend._domainkey`  → the long `p=MIGf…` DKIM value
+   - MX   `send`               → `feedback-smtp.us-east-1.amazonses.com`  priority `10`
+   - TXT  `send`               → `v=spf1 include:amazonses.com ~all`
+5. **Turn OFF the orange cloud (proxy)** on the A records for `@` and `www` — set them to "DNS only" (grey cloud). Lovable's custom domain needs un-proxied A records unless you enable proxy mode in Lovable's domain settings.
+6. **Copy Cloudflare's two nameservers** (something like `xxx.ns.cloudflare.com` / `yyy.ns.cloudflare.com`).
+7. **At Canspace**, change the nameservers for `havencreekrenovations.ca` to those two Cloudflare nameservers.
+8. **Wait for propagation** (usually 10 min – a few hours, max 48). Cloudflare emails you when active.
+9. **Verify in Resend** → Domains → `havencreekrenovations.ca` → "Verify DNS records". Should flip to green.
+10. I run a live test through the contact form edge function to confirm both emails (lead + confirmation) actually send.
 
-Log into Canspace → DNS for `havencreekrenovations.ca` → add exactly these three records (TTL = Auto/3600 is fine):
+## Why this is easier going forward
+- Any future DNS change (new subdomain, email provider swap, verification record) is instant and self-serve in Cloudflare's UI.
+- No more Canspace support tickets.
+- Free SSL/analytics/DDoS as a bonus, even with proxy off.
 
-```text
-Type   Host                    Value                                          Priority
-----   --------------------    -------------------------------------------    --------
-TXT    resend._domainkey       p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCw     —
-                               b9vl7AWaaAvVwGm72Lx4bWA/+Kfy+59yRR/rwCbpQ
-                               xWVht9nN/XQcDLLXLvOa/IhgDKLRKR9JyUDLXftwzE
-                               m7d1/kARAzomfSPfjV2rAmCXHdwgmeDkTLUMaCGUY8
-                               ViNOYD4lho2pJQHXZtuW8sIh9PZRi+nRM6IrbxFAxb
-                               bEwIDAQAB
-                               (paste as ONE single line, no spaces/breaks)
-
-MX     send                    feedback-smtp.us-east-1.amazonses.com          10
-
-TXT    send                    v=spf1 include:amazonses.com ~all              —
-```
-
-Notes:
-- **Host = `resend._domainkey`** and **`send`** — NOT the full domain. Canspace will append `.havencreekrenovations.ca` automatically. If their UI requires the FQDN, use `resend._domainkey.havencreekrenovations.ca` and `send.havencreekrenovations.ca`.
-- The DKIM TXT value must be one continuous string — line breaks will break it.
-- If you already added these but on the wrong host name (e.g. `@` or the full domain typed twice like `resend._domainkey.havencreekrenovations.ca.havencreekrenovations.ca`), delete those and re-add.
-
-Then in Resend → Domains → `havencreekrenovations.ca` → **Verify DNS records**. Usually flips green in a few minutes.
-
-## Then I verify + retest (no code change needed)
-
-The edge function already points at `leads@havencreekrenovations.ca` and `hello@havencreekrenovations.ca`. Once Resend flips to Verified, I will:
-
-1. Re-list Resend domains to confirm `status: verified`.
-2. Fire a test submission via `curl_edge_functions`.
-3. Confirm response shows `"notified": true, "confirmed": true` (not the current `false/false`).
-4. Report back.
-
-## Fallback option (if you don't want to touch DNS)
-
-I can swap both `from` addresses in `supabase/functions/send-contact-confirmation/index.ts` to the already-verified `havencreek-renovations.com` domain (`leads@havencreek-renovations.com` / `hello@havencreek-renovations.com`) and emails will start sending immediately. The downside is the From address won't match your `.ca` brand. Tell me "use the .com fallback" and I'll do that instead.
-
-## Technical detail
-
-- Resend domain ID: `1a2d2a92-7335-4411-880c-fbd93f45d145`, status `failed`, all 3 records `status: failed`.
-- Live DNS check (`dig @8.8.8.8`) of `resend._domainkey.havencreekrenovations.ca`, `send.havencreekrenovations.ca` (TXT + MX) all returned empty.
-- Gateway credentials themselves verify fine (`outcome: verified`) — this is purely a domain DNS issue, not an API key issue.
+## What I need from you
+- Confirm you want to do this, then ping me once nameservers are switched at Canspace and Cloudflare shows the zone as "Active." I'll re-check Resend and fire the test send.
+- If you'd rather just add the 3 records at Canspace one more time and skip the migration, say the word — that's still the fastest path to working email *today*.
